@@ -1,19 +1,25 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+describe("Critter", function () {
+  it("Should post a squeak", async function () {
+    const [owner] = await ethers.getSigners();
+    const Critter = await ethers.getContractFactory("Critter");
+    const critter = await Critter.deploy();
+    await critter.deployed();
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
-
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+    const postContent = "hello blockchain!";
+    const postSqueakTx = await critter.postSqueak(postContent);
 
     // wait until the transaction is mined
-    await setGreetingTx.wait();
+    await postSqueakTx.wait();
+    const nonce = await critter.getNonce();
+    const squeak = await critter.getSqueak(nonce);
 
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+    expect(nonce).to.equal(1);
+    expect(squeak.content).to.equal(postContent);
+    expect(squeak.account).to.equal(owner.address);
+
+    console.log(postSqueakTx);
   });
 });
