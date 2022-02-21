@@ -6,29 +6,48 @@ import { ethers } from "hardhat";
 import type { Contract, ContractFactory } from "ethers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-describe("Squeaks", function () {
+describe("Squeaks", () => {
   let factory: ContractFactory;
-  let critter: Contract;
+  let contract: Contract;
   let owner: SignerWithAddress;
 
-  beforeEach(async function () {
+  beforeEach(async () => {
     factory = await ethers.getContractFactory("Critter");
     [owner] = await ethers.getSigners();
-    critter = await factory.deploy();
+    contract = await factory.deploy();
   });
 
-  it("lets a user post a squeak", async function () {
+  it("posts a squeak", async () => {
     // create the transaction to post a squeak
-    const postContent = "hello blockchain!";
-    const postSqueakTx = await critter.postSqueak(postContent);
+    const content = "hello blockchain!";
+    const postSqueakTx = await contract.postSqueak(content);
 
-    // wait until the transaction is mined
+    // wait until it's mined
     await postSqueakTx.wait();
-    const nonce = await critter.getNonce();
-    const squeak = await critter.getSqueak(nonce);
+    const nonce = await contract.getNonce();
+    const squeak = await contract.getSqueak(nonce);
 
-    expect(nonce).to.equal(1);
-    expect(squeak.content).to.equal(postContent);
+    // assertions
+    expect(squeak.content).to.equal(content);
     expect(squeak.account).to.equal(owner.address);
+  });
+
+  it("does not post an empty squeak", async () => {
+    const emptySqueak = "";
+
+    // assertions
+    await expect(contract.postSqueak(emptySqueak)).to.be.revertedWith(
+      "Squeak cannot be empty"
+    );
+  });
+
+  it("does not post a squeak that's too long", async () => {
+    const longSqueak =
+      "Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not. It’s not a story the Jedi would tell you. It’s a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life...";
+
+    // assertions
+    await expect(contract.postSqueak(longSqueak)).to.be.revertedWith(
+      "Squeak length is over the limit"
+    );
   });
 });

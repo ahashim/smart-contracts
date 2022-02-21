@@ -24,6 +24,9 @@ contract Critter {
   }
 
   function postSqueak(string memory _content) public {
+    require(bytes(_content).length > 0, "Squeak cannot be empty");
+    require(bytes(_content).length <= 256, "Squeak length is over the limit");
+
     // update nonce
     nonce++;
 
