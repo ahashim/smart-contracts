@@ -7,20 +7,21 @@ import type { Contract, ContractFactory } from "ethers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("Squeaks", () => {
-  let factory: ContractFactory;
+  let ahmed: SignerWithAddress;
   let contract: Contract;
-  let owner: SignerWithAddress;
+  let factory: ContractFactory;
 
   beforeEach(async () => {
+    // ignoring the first owner account in order to test posting by regular user accounts
+    [, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory("Critter");
-    [owner] = await ethers.getSigners();
     contract = await factory.deploy();
   });
 
   it("posts a squeak from the senders address", async () => {
     // create the transaction to post a squeak
     const content = "hello blockchain!";
-    const postSqueakTx = await contract.postSqueak(content);
+    const postSqueakTx = await contract.connect(ahmed).postSqueak(content);
 
     // wait until it's mined
     await postSqueakTx.wait();
@@ -29,7 +30,7 @@ describe("Squeaks", () => {
 
     // assertions
     expect(squeak.content).to.equal(content);
-    expect(squeak.account).to.equal(owner.address);
+    expect(squeak.account).to.equal(ahmed.address);
   });
 
   it("does not post an empty squeak", async () => {
