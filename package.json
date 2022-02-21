@@ -4,6 +4,7 @@
   "description": "crypto twitter",
   "main": "index.js",
   "scripts": {
+    "lint": "solhint contracts/**/*.sol",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
