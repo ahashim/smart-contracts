@@ -5,7 +5,7 @@ import "hardhat/console.sol";
 
 contract Critter {
   // keeps track of Squeak id's
-  uint nonce;
+  uint public nonce;
 
   struct Squeak {
     address account;
