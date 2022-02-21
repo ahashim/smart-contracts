@@ -17,7 +17,7 @@ describe("Squeaks", () => {
     contract = await factory.deploy();
   });
 
-  it("posts a squeak", async () => {
+  it("posts a squeak from the senders address", async () => {
     // create the transaction to post a squeak
     const content = "hello blockchain!";
     const postSqueakTx = await contract.postSqueak(content);
