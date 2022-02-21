@@ -8,7 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
+    "blockchain",
     "crypto",
+    "microblog",
     "twitter"
   ],
   "author": "Ahmed Hashim <ahashim@users.noreply.github.com> (https://ahmedhashim.app/)",
