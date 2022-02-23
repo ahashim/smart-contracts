@@ -1,43 +1,48 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity 0.8.9;
+pragma solidity ^0.8.9;
 
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC721/presets/ERC721PresetMinterPauserAutoId.sol";
 
-contract Critter {
-  // keeps track of Squeak id's
-  uint public nonce;
+contract Critter is ERC721PresetMinterPauserAutoId {
+    struct Squeak {
+        address account;
+        string content;
+    }
 
-  struct Squeak {
-    address account;
-    string content;
-  }
+    mapping(uint256 => Squeak) public squeaks;
+    mapping(string => address) public addresses;
+    mapping(address => string) public usernames;
 
-  // list of all Squeaks
-  mapping(uint => Squeak) public squeaks;
+    constructor(
+        string memory name,
+        string memory symbol,
+        string memory baseTokenURI
+    ) ERC721PresetMinterPauserAutoId(name, symbol, baseTokenURI) {}
 
-  function getNonce() public view returns (uint) {
-    return nonce;
-  }
+    function getUser(address _address) public view returns (string memory username) {
+        return usernames[_address];
+    }
 
-  function getSqueak(uint id) public view returns (Squeak memory) {
-    return squeaks[id];
-  }
+    function getSqueak(uint256 id) public view returns (Squeak memory) {
+        return squeaks[id];
+    }
 
-  function postSqueak(string memory _content) public {
-    require(bytes(_content).length > 0, "Squeak cannot be empty");
-    require(bytes(_content).length <= 256, "Squeak length is over the limit");
+    function createAccount(string memory username) public returns (bool success) {
+        require(
+            bytes(usernames[msg.sender]).length == 0,
+            "address already registered"
+        );
+        require(bytes(username).length > 0, "username cannot be empty");
+        require(bytes(username).length <= 32, "username is too long");
 
-    // update nonce
-    nonce++;
+        addresses[username] = msg.sender;
+        usernames[msg.sender] = username;
+        _grantRole(MINTER_ROLE, msg.sender);
 
-    // create a new squeak
-    Squeak memory squeak;
-    squeak.account = msg.sender;
-    squeak.content = _content;
+        return true;
+    }
 
-    // add it to the mapping
-    squeaks[nonce] = squeak;
-  }
     // function postSqueak(string memory content) public {
     //     require(bytes(content).length > 0, "squeak cannot be empty");
     //     require(bytes(content).length <= 256, "squeak is too long");
