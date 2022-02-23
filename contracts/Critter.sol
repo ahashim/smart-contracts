@@ -11,8 +11,8 @@ contract Critter is ERC721PresetMinterPauserAutoId {
     }
 
     mapping(uint256 => Squeak) public squeaks;
-    mapping(string => address) public addresses;
-    mapping(address => string) public usernames;
+    mapping(string => address) public addresses; // usernames to addresses
+    mapping(address => string) public usernames; // addresses to usernames
 
     constructor(
         string memory name,
@@ -28,19 +28,21 @@ contract Critter is ERC721PresetMinterPauserAutoId {
         return squeaks[id];
     }
 
-    function createAccount(string memory username) public returns (bool success) {
+    function createAccount(string memory username) public {
         require(
             bytes(usernames[msg.sender]).length == 0,
             "address already registered"
         );
         require(bytes(username).length > 0, "username cannot be empty");
         require(bytes(username).length <= 32, "username is too long");
+        require(
+            addresses[username] == address(0),
+            "username taken"
+        );
 
         addresses[username] = msg.sender;
         usernames[msg.sender] = username;
-        _grantRole(MINTER_ROLE, msg.sender);
-
-        return true;
+        grantRole(MINTER_ROLE, msg.sender);
     }
 
     // function postSqueak(string memory content) public {
