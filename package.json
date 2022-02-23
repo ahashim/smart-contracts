@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "solhint contracts/**/*.sol",
+    "prettier": "prettier --write 'contracts/**/*.sol'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
