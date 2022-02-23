@@ -6,7 +6,7 @@ import { ethers } from "hardhat";
 import type { Contract, ContractFactory } from "ethers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-describe("Squeaks", () => {
+describe.skip("Squeaks", () => {
   let ahmed: SignerWithAddress;
   let contract: Contract;
   let factory: ContractFactory;

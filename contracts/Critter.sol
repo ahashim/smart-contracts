@@ -38,4 +38,16 @@ contract Critter {
     // add it to the mapping
     squeaks[nonce] = squeak;
   }
+    // function postSqueak(string memory content) public {
+    //     require(bytes(content).length > 0, "squeak cannot be empty");
+    //     require(bytes(content).length <= 256, "squeak is too long");
+    //
+    //     // create a new squeak
+    //     Squeak memory squeak;
+    //     squeak.account = msg.sender;
+    //     squeak.content = content;
+    //
+    //     // add it to the mapping
+    //     squeaks[_tokenIdTracker.current()] = squeak;
+    // }
 }
