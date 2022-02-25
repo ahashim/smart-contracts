@@ -49,6 +49,23 @@ describe("Accounts", () => {
     );
   });
 
+  it("updates the username", async () => {
+    // create account tx
+    const createAccountTx = await contract.createAccount(username);
+    await createAccountTx.wait(); // wait until it's mined
+
+    // assert we have a username
+    expect(await contract.getUser(owner.address)).to.equal(username);
+
+    // change username tx
+    const newUsername = "ahashim";
+    const changeUsernameTx = await contract.updateUser(newUsername);
+    await changeUsernameTx.wait();
+
+    // assert our username changed
+    expect(await contract.getUser(owner.address)).to.equal(newUsername);
+  });
+
   it("reverts when the username is already taken", async () => {
     // first create account tx
     const firstCreateAccountTx = await contract.createAccount(username);

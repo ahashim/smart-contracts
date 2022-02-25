@@ -14,13 +14,37 @@ contract Critter is ERC721PresetMinterPauserAutoId {
     mapping(string => address) public addresses; // usernames to addresses
     mapping(address => string) public usernames; // addresses to usernames
 
+    modifier isRegistered(address _address) {
+        require(bytes(usernames[_address]).length > 0, "no username found");
+        _;
+    }
+
+    modifier isNotRegistered(address _address) {
+        require(
+            bytes(usernames[msg.sender]).length == 0,
+            "address already registered"
+        );
+        _;
+    }
+
+    modifier isValidUsername(string memory username) {
+        require(bytes(username).length > 0, "username cannot be empty");
+        require(bytes(username).length <= 32, "username is too long");
+        require(addresses[username] == address(0), "username taken");
+        _;
+    }
+
     constructor(
         string memory name,
         string memory symbol,
         string memory baseTokenURI
     ) ERC721PresetMinterPauserAutoId(name, symbol, baseTokenURI) {}
 
-    function getUser(address _address) public view returns (string memory username) {
+    function getUser(address _address)
+        public
+        view
+        returns (string memory username)
+    {
         return usernames[_address];
     }
 
@@ -28,33 +52,22 @@ contract Critter is ERC721PresetMinterPauserAutoId {
         return squeaks[id];
     }
 
-    function createAccount(string memory username) public {
-        require(
-            bytes(usernames[msg.sender]).length == 0,
-            "address already registered"
-        );
-        require(bytes(username).length > 0, "username cannot be empty");
-        require(bytes(username).length <= 32, "username is too long");
-        require(
-            addresses[username] == address(0),
-            "username taken"
-        );
-
+    function createAccount(string memory username)
+        public
+        isNotRegistered(msg.sender)
+        isValidUsername(username)
+    {
+        // console.log(bytes20(msg.sender));
         addresses[username] = msg.sender;
         usernames[msg.sender] = username;
         grantRole(MINTER_ROLE, msg.sender);
     }
 
-    // function postSqueak(string memory content) public {
-    //     require(bytes(content).length > 0, "squeak cannot be empty");
-    //     require(bytes(content).length <= 256, "squeak is too long");
-    //
-    //     // create a new squeak
-    //     Squeak memory squeak;
-    //     squeak.account = msg.sender;
-    //     squeak.content = content;
-    //
-    //     // add it to the mapping
-    //     squeaks[_tokenIdTracker.current()] = squeak;
-    // }
+    function updateUser(string memory username)
+        public
+        isRegistered(msg.sender)
+        isValidUsername(username)
+    {
+        usernames[msg.sender] = username;
+    }
 }
