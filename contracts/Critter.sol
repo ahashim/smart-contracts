@@ -57,7 +57,6 @@ contract Critter is ERC721PresetMinterPauserAutoId {
         isNotRegistered(msg.sender)
         isValidUsername(username)
     {
-        // console.log(bytes20(msg.sender));
         addresses[username] = msg.sender;
         usernames[msg.sender] = username;
         grantRole(MINTER_ROLE, msg.sender);
