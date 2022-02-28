@@ -21,7 +21,7 @@ contract Critter is ERC721PresetMinterPauserAutoId {
 
     modifier isNotRegistered(address _address) {
         require(
-            bytes(usernames[msg.sender]).length == 0,
+            bytes(usernames[_msgSender()]).length == 0,
             "address already registered"
         );
         _;
@@ -54,27 +54,27 @@ contract Critter is ERC721PresetMinterPauserAutoId {
 
     function createAccount(string memory username)
         public
-        isNotRegistered(msg.sender)
+        isNotRegistered(_msgSender())
         isValidUsername(username)
     {
-        addresses[username] = msg.sender;
-        usernames[msg.sender] = username;
+        addresses[username] = _msgSender();
+        usernames[_msgSender()] = username;
 
         // bypassing the admin-check to grant roles in order to dynamically add users
-        _grantRole(MINTER_ROLE, msg.sender);
+        _grantRole(MINTER_ROLE, _msgSender());
     }
 
     function updateUsername(string memory newUsername)
         public
-        isRegistered(msg.sender)
+        isRegistered(_msgSender())
         isValidUsername(newUsername)
     {
         // clear current username from the addresses mapping
-        delete addresses[usernames[msg.sender]];
+        delete addresses[usernames[_msgSender()]];
 
         // set new usernames & address mappings
-        addresses[newUsername] = msg.sender;
-        usernames[msg.sender] = newUsername;
+        addresses[newUsername] = _msgSender();
+        usernames[_msgSender()] = newUsername;
     }
     }
 }
