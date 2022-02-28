@@ -62,14 +62,13 @@ contract Critter is ERC721PresetMinterPauserAutoId {
         grantRole(MINTER_ROLE, msg.sender);
     }
 
-    function updateUser(string memory newUsername)
+    function updateUsername(string memory newUsername)
         public
         isRegistered(msg.sender)
         isValidUsername(newUsername)
     {
         // clear current username from the addresses mapping
-        string memory currentUsername = usernames[msg.sender];
-        addresses[currentUsername] = address(0);
+        delete addresses[usernames[msg.sender]];
 
         // set new usernames & address mappings
         addresses[newUsername] = msg.sender;
