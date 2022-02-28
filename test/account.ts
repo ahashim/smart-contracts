@@ -18,6 +18,9 @@ describe("Accounts", () => {
   // account variables
   const username = "a-rock";
 
+  // roles
+  const MINTER_ROLE = ethers.utils.id("MINTER_ROLE");
+
   beforeEach(async () => {
     [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory("Critter");
@@ -46,6 +49,33 @@ describe("Accounts", () => {
     // second create account tx from the same address
     await expect(contract.createAccount("some-other-name")).to.be.revertedWith(
       "address already registered"
+    );
+  });
+
+  it("grants each member the role of MINTER", async () => {
+    // bytes32 identifier of "MINTER_ROLE"
+
+    // contract owner
+    const createAccountTx = await contract.createAccount(username);
+    await createAccountTx.wait(); // wait until it's mined
+
+    // another account
+    const anotherCreateAccountTx = await contract
+      .connect(ahmed)
+      .createAccount("ahmed");
+    await anotherCreateAccountTx.wait(); // wait until it's mined
+
+    // assert 2 accounts have the role of minter
+    expect(await contract.getRoleMemberCount(MINTER_ROLE)).to.equal(2);
+
+    // first account belongs to the owner
+    expect(await contract.getRoleMember(MINTER_ROLE, 0)).to.equal(
+      owner.address
+    );
+
+    // second is a regular registration
+    expect(await contract.getRoleMember(MINTER_ROLE, 1)).to.equal(
+      ahmed.address
     );
   });
 

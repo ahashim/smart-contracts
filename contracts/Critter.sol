@@ -59,7 +59,9 @@ contract Critter is ERC721PresetMinterPauserAutoId {
     {
         addresses[username] = msg.sender;
         usernames[msg.sender] = username;
-        grantRole(MINTER_ROLE, msg.sender);
+
+        // bypassing the admin-check to grant roles in order to dynamically add users
+        _grantRole(MINTER_ROLE, msg.sender);
     }
 
     function updateUsername(string memory newUsername)
