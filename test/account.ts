@@ -50,20 +50,39 @@ describe("Accounts", () => {
   });
 
   it("updates the username", async () => {
-    // create account tx
+    // create account
     const createAccountTx = await contract.createAccount(username);
     await createAccountTx.wait(); // wait until it's mined
 
     // assert we have a username
     expect(await contract.getUser(owner.address)).to.equal(username);
 
-    // change username tx
+    // change username
     const newUsername = "ahashim";
-    const changeUsernameTx = await contract.updateUser(newUsername);
+    const changeUsernameTx = await contract.updateUsername(newUsername);
     await changeUsernameTx.wait();
 
     // assert our username changed
     expect(await contract.getUser(owner.address)).to.equal(newUsername);
+  });
+
+  it("makes an old username available when updating to a new one", async () => {
+    // contract owner is regisetering as 'a-rock'
+    const createAccountTx = await contract.createAccount(username);
+    await createAccountTx.wait();
+
+    // contract owner updates their username to 'ahashim'
+    const updateUsernameTx = await contract.updateUsername("ahashim");
+    await updateUsernameTx.wait();
+
+    // another account can now register as 'a-rock'
+    const anotherCreateAccountTx = await contract
+      .connect(ahmed)
+      .createAccount(username);
+    await anotherCreateAccountTx.wait();
+
+    // assert our new account has the original username
+    expect(await contract.getUser(ahmed.address)).to.equal(username);
   });
 
   it("reverts when the username is already taken", async () => {
