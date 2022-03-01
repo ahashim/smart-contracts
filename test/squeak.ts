@@ -6,31 +6,45 @@ import { ethers } from "hardhat";
 import type { Contract, ContractFactory } from "ethers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-describe.skip("Squeaks", () => {
-  let ahmed: SignerWithAddress;
+describe("Squeaks", () => {
+  // contract
   let contract: Contract;
   let factory: ContractFactory;
 
+  // users
+  let owner: SignerWithAddress;
+  let ahmed: SignerWithAddress;
+
   beforeEach(async () => {
-    // ignoring the first owner account in order to test posting by regular user accounts
-    [, ahmed] = await ethers.getSigners();
+    [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory("Critter");
-    contract = await factory.deploy();
+
+    // deploy our contract
+    contract = await factory.deploy(
+      "Critter", // name
+      "CRTR", // symbol
+      "https://critter.fyi/token/" // baseURL
+    );
+
+    // create an account
+    const createAccountTx = await contract.createAccount("a-rock");
+    await createAccountTx.wait();
   });
 
   it("posts a squeak from the senders address", async () => {
-    // create the transaction to post a squeak
     const content = "hello blockchain!";
-    const postSqueakTx = await contract.connect(ahmed).postSqueak(content);
 
-    // wait until it's mined
-    await postSqueakTx.wait();
-    const nonce = await contract.getNonce();
-    const squeak = await contract.getSqueak(nonce);
+    // post a squeak
+    const createSqueakTx = await contract.createSqueak(content);
+    await createSqueakTx.wait();
+
+    // retrieve it based on its id
+    const squeak = await contract.getSqueak(1);
 
     // assertions
     expect(squeak.content).to.equal(content);
-    expect(squeak.account).to.equal(ahmed.address);
+    expect(squeak.account).to.equal(owner.address);
+  });
 
   it("does not allow a user to post without a registered address", async () => {
     // assertions
@@ -44,8 +58,8 @@ describe.skip("Squeaks", () => {
     const emptySqueak = "";
 
     // assertions
-    await expect(contract.postSqueak(emptySqueak)).to.be.revertedWith(
-      "Squeak cannot be empty"
+    await expect(contract.createSqueak(emptySqueak)).to.be.revertedWith(
+      "Critter: squeak cannot be empty"
     );
   });
 
@@ -56,8 +70,8 @@ describe.skip("Squeaks", () => {
       use the Force to influence the midichlorians to create life...`;
 
     // assertions
-    await expect(contract.postSqueak(longSqueak)).to.be.revertedWith(
-      "Squeak length is over the limit"
+    await expect(contract.createSqueak(longSqueak)).to.be.revertedWith(
+      "Critter: squeak is too long"
     );
   });
 });
