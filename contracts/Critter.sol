@@ -142,6 +142,7 @@ contract Critter is
         public
         isNotRegistered(_msgSender())
         isValidUsername(username)
+        returns (bool)
     {
         addresses[username] = _msgSender();
         usernames[_msgSender()] = username;
@@ -149,6 +150,8 @@ contract Critter is
         // bypassing the admin-check to grant roles in order to
         // dynamically add users when they create an account.
         _grantRole(MINTER_ROLE, _msgSender());
+
+        return true;
     }
 
     /**
@@ -164,6 +167,7 @@ contract Critter is
         public
         isRegistered(_msgSender())
         isValidUsername(username)
+        returns (bool)
     {
         // clear current username from the addresses mapping
         delete addresses[usernames[_msgSender()]];
@@ -171,6 +175,8 @@ contract Critter is
         // set new usernames & address mappings
         addresses[username] = _msgSender();
         usernames[_msgSender()] = username;
+
+        return true;
     }
 
     /**
@@ -185,7 +191,7 @@ contract Critter is
     function createSqueak(string memory content)
         public
         isRegistered(_msgSender())
-        returns (Squeak memory squeak)
+        returns (bool)
     {
         require(bytes(content).length > 0, "Critter: squeak cannot be empty");
         require(bytes(content).length <= 256, "Critter: squeak is too long");
@@ -196,7 +202,7 @@ contract Critter is
 
         mint(_msgSender());
 
-        return squeak;
+        return true;
     }
 
     /**
