@@ -120,7 +120,7 @@ describe("Accounts", () => {
     ).to.be.revertedWith("Critter: address not registered");
   });
 
-  it("reverts when updating username & the username is already taken", async () => {
+  it("reverts when updating username & new the username is already taken", async () => {
     // first create account tx
     const firstCreateAccountTx = await contract.createAccount(username);
     await firstCreateAccountTx.wait(); // wait until it's mined
@@ -131,13 +131,13 @@ describe("Accounts", () => {
     ).to.be.revertedWith("Critter: username taken");
   });
 
-  it("reverts when the username is empty", async () => {
+  it("reverts when updating the username & the new username is empty", async () => {
     await expect(contract.createAccount("")).to.be.revertedWith(
       "Critter: username cannot be empty"
     );
   });
 
-  it("reverts when the username is longer than 256 bytes", async () => {
+  it("reverts when updating the username & the new username is longer than 256 bytes", async () => {
     await expect(
       contract.createAccount("000000000000000000000000000000001")
     ).to.be.revertedWith("Critter: username is too long");
