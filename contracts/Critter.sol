@@ -190,7 +190,7 @@ contract Critter is
         require(bytes(content).length > 0, "Critter: squeak cannot be empty");
         require(bytes(content).length <= 256, "Critter: squeak is too long");
 
-        squeaks[_tokenIdTracker.current()];
+        Squeak storage squeak = squeaks[_tokenIdTracker.current()];
         squeak.account = _msgSender();
         squeak.content = content;
 
