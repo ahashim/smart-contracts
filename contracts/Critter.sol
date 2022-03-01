@@ -100,6 +100,9 @@ contract Critter is
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(MINTER_ROLE, _msgSender());
         _setupRole(PAUSER_ROLE, _msgSender());
+
+        // Set first token ID to 1
+        _tokenIdTracker.increment();
     }
 
     /**
