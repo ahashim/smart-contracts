@@ -18,7 +18,7 @@ describe("Accounts", () => {
   // account variables
   const username = "a-rock";
 
-  // roles
+  // bytes32 role identifiers
   const MINTER_ROLE = ethers.utils.id("MINTER_ROLE");
 
   beforeEach(async () => {
@@ -27,7 +27,7 @@ describe("Accounts", () => {
     contract = await factory.deploy(
       "Critter", // name
       "CRTR", // symbol
-      "https://critter.fyi" // baseURL
+      "https://critter.fyi/token/" // baseURL
     );
   });
 
@@ -37,7 +37,7 @@ describe("Accounts", () => {
     await createAccountTx.wait(); // wait until it's mined
 
     // compare username for that address from the blockchain
-    const name = await contract.getUser(owner.address);
+    const name = await contract.getUsername(owner.address);
     expect(name).to.equal(username);
   });
 
@@ -48,13 +48,11 @@ describe("Accounts", () => {
 
     // second create account tx from the same address
     await expect(contract.createAccount("some-other-name")).to.be.revertedWith(
-      "address already registered"
+      "Critter: address already registered"
     );
   });
 
-  it("grants each member the role of MINTER", async () => {
-    // bytes32 identifier of "MINTER_ROLE"
-
+  it("grants every account the role of MINTER", async () => {
     // contract owner
     const createAccountTx = await contract.createAccount(username);
     await createAccountTx.wait(); // wait until it's mined
@@ -73,7 +71,7 @@ describe("Accounts", () => {
       owner.address
     );
 
-    // second is a regular registration
+    // second is a regular user
     expect(await contract.getRoleMember(MINTER_ROLE, 1)).to.equal(
       ahmed.address
     );
@@ -85,7 +83,7 @@ describe("Accounts", () => {
     await createAccountTx.wait(); // wait until it's mined
 
     // assert we have a username
-    expect(await contract.getUser(owner.address)).to.equal(username);
+    expect(await contract.getUsername(owner.address)).to.equal(username);
 
     // change username
     const newUsername = "ahashim";
@@ -93,7 +91,7 @@ describe("Accounts", () => {
     await changeUsernameTx.wait();
 
     // assert our username changed
-    expect(await contract.getUser(owner.address)).to.equal(newUsername);
+    expect(await contract.getUsername(owner.address)).to.equal(newUsername);
   });
 
   it("makes an old username available when updating to a new one", async () => {
@@ -112,7 +110,7 @@ describe("Accounts", () => {
     await anotherCreateAccountTx.wait();
 
     // assert our new account has the original username
-    expect(await contract.getUser(ahmed.address)).to.equal(username);
+    expect(await contract.getUsername(ahmed.address)).to.equal(username);
   });
 
   it("reverts when the username is already taken", async () => {
@@ -123,18 +121,18 @@ describe("Accounts", () => {
     // second create account tx from a different address but duplicate username
     await expect(
       contract.connect(ahmed).createAccount(username)
-    ).to.be.revertedWith("username taken");
+    ).to.be.revertedWith("Critter: username taken");
   });
 
-  it("reverts when the username is too short", async () => {
+  it("reverts when the username is empty", async () => {
     await expect(contract.createAccount("")).to.be.revertedWith(
-      "username cannot be empty"
+      "Critter: username cannot be empty"
     );
   });
 
-  it("reverts when the username is too long", async () => {
+  it("reverts when the username is longer than 256 bytes", async () => {
     await expect(
       contract.createAccount("000000000000000000000000000000001")
-    ).to.be.revertedWith("username is too long");
+    ).to.be.revertedWith("Critter: username is too long");
   });
 });
