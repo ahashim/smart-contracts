@@ -60,7 +60,7 @@ contract Critter is
     modifier isRegistered(address _address) {
         require(
             bytes(usernames[_address]).length > 0,
-            "Critter: no username found"
+            "Critter: address not registered"
         );
         _;
     }

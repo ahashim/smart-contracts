@@ -113,7 +113,14 @@ describe("Accounts", () => {
     expect(await contract.getUsername(ahmed.address)).to.equal(username);
   });
 
-  it("reverts when the username is already taken", async () => {
+  it("reverts when updating username & the address is not registered", async () => {
+    // second create account tx from a different address but duplicate username
+    await expect(
+      contract.connect(ahmed).updateUsername("ahmed")
+    ).to.be.revertedWith("Critter: address not registered");
+  });
+
+  it("reverts when updating username & the username is already taken", async () => {
     // first create account tx
     const firstCreateAccountTx = await contract.createAccount(username);
     await firstCreateAccountTx.wait(); // wait until it's mined

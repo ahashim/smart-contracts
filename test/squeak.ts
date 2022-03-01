@@ -31,6 +31,13 @@ describe.skip("Squeaks", () => {
     // assertions
     expect(squeak.content).to.equal(content);
     expect(squeak.account).to.equal(ahmed.address);
+
+  it("does not allow a user to post without a registered address", async () => {
+    // assertions
+    await expect(
+      // trying to create a squeak from ahmed's account who never registered
+      contract.connect(ahmed).createSqueak("hello blockchain!")
+    ).to.be.revertedWith("Critter: address not registered");
   });
 
   it("does not post an empty squeak", async () => {
