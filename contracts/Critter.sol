@@ -136,10 +136,10 @@ contract Critter is
     }
 
     /**
-     * @dev Get a squeak based on its ID.
+     * @dev Get a squeak from it tokenID.
      */
-    function getSqueak(uint256 id) public view returns (Squeak memory) {
-        return squeaks[id];
+    function getSqueak(uint256 tokenID) public view returns (Squeak memory) {
+        return squeaks[tokenID];
     }
 
     /**
