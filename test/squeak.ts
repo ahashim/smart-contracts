@@ -1,12 +1,12 @@
 // libraries
-import { expect } from "chai";
-import { ethers } from "hardhat";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
 
 // types
-import type { Contract, ContractFactory } from "ethers";
-import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { Contract, ContractFactory } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-describe("Squeaks", () => {
+describe('Squeaks', () => {
   // contract
   let contract: Contract;
   let factory: ContractFactory;
@@ -17,22 +17,22 @@ describe("Squeaks", () => {
 
   beforeEach(async () => {
     [owner, ahmed] = await ethers.getSigners();
-    factory = await ethers.getContractFactory("Critter");
+    factory = await ethers.getContractFactory('Critter');
 
     // deploy our contract
     contract = await factory.deploy(
-      "Critter", // name
-      "CRTR", // symbol
-      "https://critter.fyi/token/" // baseURL
+      'Critter', // name
+      'CRTR', // symbol
+      'https://critter.fyi/token/' // baseURL
     );
 
     // create an account
-    const createAccountTx = await contract.createAccount("a-rock");
+    const createAccountTx = await contract.createAccount('a-rock');
     await createAccountTx.wait();
   });
 
-  it("posts a squeak from the senders address", async () => {
-    const content = "hello blockchain!";
+  it('posts a squeak from the senders address', async () => {
+    const content = 'hello blockchain!';
 
     // post a squeak
     const createSqueakTx = await contract.createSqueak(content);
@@ -46,21 +46,19 @@ describe("Squeaks", () => {
     expect(squeak.account).to.equal(owner.address);
   });
 
-  it("does not allow a user to post without a registered address", async () => {
+  it('does not allow a user to post without a registered address', async () => {
     // assertions
     await expect(
       // trying to create a squeak from ahmed's account who never registered
-      contract.connect(ahmed).createSqueak("hello blockchain!")
-    ).to.be.revertedWith("Critter: address not registered");
+      contract.connect(ahmed).createSqueak('hello blockchain!')
+    ).to.be.revertedWith('Critter: address not registered');
   });
 
-  it("does not post an empty squeak", async () => {
-    const emptySqueak = "";
+  it('does not post an empty squeak', async () => {
+    const emptySqueak = '';
 
     // assertions
-    await expect(contract.createSqueak(emptySqueak)).to.be.revertedWith(
-      "Critter: squeak cannot be empty"
-    );
+    await expect(contract.createSqueak(emptySqueak)).to.be.revertedWith('Critter: squeak cannot be empty');
   });
 
   it("does not post a squeak that's too long", async () => {
@@ -70,8 +68,6 @@ describe("Squeaks", () => {
       use the Force to influence the midichlorians to create life...`;
 
     // assertions
-    await expect(contract.createSqueak(longSqueak)).to.be.revertedWith(
-      "Critter: squeak is too long"
-    );
+    await expect(contract.createSqueak(longSqueak)).to.be.revertedWith('Critter: squeak is too long');
   });
 });
