@@ -53,22 +53,27 @@ contract Critter is
 
     // Mappings
     mapping(uint256 => Squeak) public squeaks;
-    mapping(string => address) public addresses; // usernames to addresses
-    mapping(address => string) public usernames; // addresses to usernames
+    mapping(string => address) public addresses; // usernames <=> addresses mappings enables the
+    mapping(address => string) public usernames; // ability to look up either value in O(1) time.
+
+    // Events
+    event AccountCreated(address indexed sender, string username);
+    event SqueakCreated(address indexed sender, uint tokenId, string content);
+    event UsernameUpdated(address indexed sender, string oldUsername, string newUsername);
 
     // Modifiers
-    modifier isRegistered(address _address) {
+    modifier hasAccount(address _address) {
         require(
             bytes(usernames[_address]).length > 0,
-            'Critter: address not registered'
+            'Critter: address does not have an account'
         );
         _;
     }
 
-    modifier isNotRegistered(address _address) {
+    modifier noAccount(address _address) {
         require(
             bytes(usernames[_msgSender()]).length == 0,
-            'Critter: address already registered'
+            'Critter: account already exists'
         );
         _;
     }
@@ -101,7 +106,7 @@ contract Critter is
         _setupRole(MINTER_ROLE, _msgSender());
         _setupRole(PAUSER_ROLE, _msgSender());
 
-        // Set first token ID to 1
+        // Set initial token ID to 1
         _tokenIdTracker.increment();
     }
 
@@ -136,20 +141,26 @@ contract Critter is
      * Requirements:
      *
      * - The caller must not have an account.
-     * - Username must be valid ({isValidUsername}).
+     * - Username must be valid (see {isValidUsername} for requirements).
+     *
+     * Emits {AccountCreated} & {RoleGranted} events.
      */
     function createAccount(string memory username)
         public
-        isNotRegistered(_msgSender())
+        noAccount(_msgSender())
         isValidUsername(username)
         returns (bool)
     {
+        // set our address & username mappings
         addresses[username] = _msgSender();
         usernames[_msgSender()] = username;
 
         // bypassing the admin-check to grant roles in order to
         // dynamically add users when they create an account.
         _grantRole(MINTER_ROLE, _msgSender());
+
+        // log account creation
+        emit AccountCreated(_msgSender(), username);
 
         return true;
     }
@@ -162,19 +173,25 @@ contract Critter is
      * - The caller must already have an account.
      * - The caller must have the `MINTER_ROLE`.
      * - Username must be valid ({isValidUsername}).
+     *
+     * Emits {UsernameUpdated} event.
      */
-    function updateUsername(string memory username)
+    function updateUsername(string memory newUsername)
         public
-        isRegistered(_msgSender())
-        isValidUsername(username)
+        hasAccount(_msgSender())
+        isValidUsername(newUsername)
         returns (bool)
     {
         // clear current username from the addresses mapping
-        delete addresses[usernames[_msgSender()]];
+        string memory oldUsername = getUsername(_msgSender());
+        delete addresses[oldUsername];
 
         // set new usernames & address mappings
-        addresses[username] = _msgSender();
-        usernames[_msgSender()] = username;
+        addresses[newUsername] = _msgSender();
+        usernames[_msgSender()] = newUsername;
+
+        // log the change
+        emit UsernameUpdated(_msgSender(), oldUsername, newUsername);
 
         return true;
     }
@@ -190,17 +207,27 @@ contract Critter is
      */
     function createSqueak(string memory content)
         public
-        isRegistered(_msgSender())
+        hasAccount(_msgSender())
         returns (bool)
     {
+        // check invariants
         require(bytes(content).length > 0, 'Critter: squeak cannot be empty');
         require(bytes(content).length <= 256, 'Critter: squeak is too long');
 
+        // save to storage
         Squeak storage squeak = squeaks[_tokenIdTracker.current()];
         squeak.account = _msgSender();
         squeak.content = content;
 
+        // mint our token
         mint(_msgSender());
+
+        // log the squeak
+        emit SqueakCreated(
+            _msgSender(),
+            _tokenIdTracker.current() - 1,  // {mint} increments current value
+            squeak.content
+        );
 
         return true;
     }
