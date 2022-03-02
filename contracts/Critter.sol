@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol';
+import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import '@openzeppelin/contracts/utils/Context.sol';
+import '@openzeppelin/contracts/utils/Counters.sol';
 
 /**
  * @dev {ERC721} token, including:
@@ -45,8 +45,8 @@ contract Critter is
     Counters.Counter private _tokenIdTracker;
 
     // Roles
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
+    bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
 
     // https://critter.fyi/token/
     string private _baseTokenURI;
@@ -60,7 +60,7 @@ contract Critter is
     modifier isRegistered(address _address) {
         require(
             bytes(usernames[_address]).length > 0,
-            "Critter: address not registered"
+            'Critter: address not registered'
         );
         _;
     }
@@ -68,7 +68,7 @@ contract Critter is
     modifier isNotRegistered(address _address) {
         require(
             bytes(usernames[_msgSender()]).length == 0,
-            "Critter: address already registered"
+            'Critter: address already registered'
         );
         _;
     }
@@ -76,10 +76,10 @@ contract Critter is
     modifier isValidUsername(string memory username) {
         require(
             bytes(username).length > 0,
-            "Critter: username cannot be empty"
+            'Critter: username cannot be empty'
         );
-        require(bytes(username).length <= 32, "Critter: username is too long");
-        require(addresses[username] == address(0), "Critter: username taken");
+        require(bytes(username).length <= 32, 'Critter: username is too long');
+        require(addresses[username] == address(0), 'Critter: username taken');
         _;
     }
 
@@ -193,8 +193,8 @@ contract Critter is
         isRegistered(_msgSender())
         returns (bool)
     {
-        require(bytes(content).length > 0, "Critter: squeak cannot be empty");
-        require(bytes(content).length <= 256, "Critter: squeak is too long");
+        require(bytes(content).length > 0, 'Critter: squeak cannot be empty');
+        require(bytes(content).length <= 256, 'Critter: squeak is too long');
 
         Squeak storage squeak = squeaks[_tokenIdTracker.current()];
         squeak.account = _msgSender();
@@ -219,7 +219,7 @@ contract Critter is
     function mint(address to) public {
         require(
             hasRole(MINTER_ROLE, _msgSender()),
-            "Critter: must have minter role to mint"
+            'Critter: must have minter role to mint'
         );
 
         _mint(to, _tokenIdTracker.current());
@@ -238,7 +238,7 @@ contract Critter is
     function pause() public {
         require(
             hasRole(PAUSER_ROLE, _msgSender()),
-            "Critter: must have pauser role to pause"
+            'Critter: must have pauser role to pause'
         );
         _pause();
     }
@@ -255,7 +255,7 @@ contract Critter is
     function unpause() public {
         require(
             hasRole(PAUSER_ROLE, _msgSender()),
-            "Critter: must have pauser role to unpause"
+            'Critter: must have pauser role to unpause'
         );
         _unpause();
     }
