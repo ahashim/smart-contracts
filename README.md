@@ -1,6 +1,19 @@
 # Critter
 
-An open source microblogging NFT platform for Ethereum. Visit [https://critter.fyi](https://critter.fyi) to start squeaking on the blockchain.
+An open source microblogging NFT platform for Ethereum.
+
+**Core concepts**:
+
+- Every address is a unique username.
+- Every post (called a squeak) is an NFT.
+- Squeaks can be bought & sold via a bidding price discovery mechanism.
+- Once the author sells their squeak, the ownership is transferred.
+- Actions (such as "favorites" & "resqueaks") cost a fee.
+- Fees are paid out to the **owner** of said squeak.
+- Only owners can delete squeaks.
+- Deleting a squeak costs a fee of `blocks elapsed x deletion fee`.
+
+Visit [https://critter.fyi](https://critter.fyi) to start squeaking on the blockchain.
 
 ## Local Development
 
