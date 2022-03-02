@@ -30,20 +30,21 @@ describe('Squeaks', () => {
     );
 
     // create an account
-    const createAccountTx = await contract.createAccount('a-rock');
+    const createAccountTx = await contract.createAccount(USERNAME);
     await createAccountTx.wait();
   });
 
   describe('create', () => {
     it('posts a squeak from the senders address', async () => {
       const content = 'hello blockchain!';
+      const tokenID = 1;
 
       // post a squeak
       const createSqueakTx = await contract.createSqueak(content);
       await createSqueakTx.wait();
 
       // retrieve it based on its id
-      const squeak = await contract.getSqueak(1);
+      const squeak = await contract.getSqueak(tokenID);
 
       // assertions
       expect(squeak.content).to.equal(content);
@@ -86,7 +87,6 @@ describe('Squeaks', () => {
       const content = 'General Kenobi! You are a bold one.';
       const tokenID = 1; // should be the first token minted
 
-      // then change username
       await expect(contract.createSqueak(content))
         .to.emit(contract, eventName)
         .withArgs(owner.address, tokenID, content);

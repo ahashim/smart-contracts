@@ -39,9 +39,8 @@ contract Critter is
         string content;
     }
 
-    // Using token counter because for safe increment & decrement
-    // functions of the total count. Cannot use {balanceOf} because of
-    // token burning.
+    // Using a counter to keep track of ID's instead
+    // of {balanceOf} due to potential token burning
     Counters.Counter private _tokenIdTracker;
 
     // Roles
@@ -58,8 +57,16 @@ contract Critter is
 
     // Events
     event AccountCreated(address indexed sender, string username);
-    event SqueakCreated(address indexed sender, uint tokenId, string content);
-    event UsernameUpdated(address indexed sender, string oldUsername, string newUsername);
+    event SqueakCreated(
+        address indexed sender,
+        uint256 tokenId,
+        string content
+    );
+    event UsernameUpdated(
+        address indexed sender,
+        string oldUsername,
+        string newUsername
+    );
 
     // Modifiers
     modifier hasAccount(address _address) {
@@ -214,18 +221,21 @@ contract Critter is
         require(bytes(content).length > 0, 'Critter: squeak cannot be empty');
         require(bytes(content).length <= 256, 'Critter: squeak is too long');
 
-        // save to storage
-        Squeak storage squeak = squeaks[_tokenIdTracker.current()];
+        // get token ID
+        uint tokenID = _tokenIdTracker.current();
+
+        // build squeak & save it to storage
+        Squeak storage squeak = squeaks[tokenID];
         squeak.account = _msgSender();
         squeak.content = content;
 
         // mint our token
         mint(_msgSender());
 
-        // log the squeak
+        // log the token ID & content
         emit SqueakCreated(
             _msgSender(),
-            _tokenIdTracker.current() - 1,  // {mint} increments current value
+            tokenID,
             squeak.content
         );
 
