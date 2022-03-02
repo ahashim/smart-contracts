@@ -58,7 +58,9 @@ describe('Squeaks', () => {
     const emptySqueak = '';
 
     // assertions
-    await expect(contract.createSqueak(emptySqueak)).to.be.revertedWith('Critter: squeak cannot be empty');
+    await expect(contract.createSqueak(emptySqueak)).to.be.revertedWith(
+      'Critter: squeak cannot be empty'
+    );
   });
 
   it("does not post a squeak that's too long", async () => {
@@ -68,6 +70,8 @@ describe('Squeaks', () => {
       use the Force to influence the midichlorians to create life...`;
 
     // assertions
-    await expect(contract.createSqueak(longSqueak)).to.be.revertedWith('Critter: squeak is too long');
+    await expect(contract.createSqueak(longSqueak)).to.be.revertedWith(
+      'Critter: squeak is too long'
+    );
   });
 });

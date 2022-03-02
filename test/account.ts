@@ -47,7 +47,9 @@ describe('Accounts', () => {
     await firstCreateAccountTx.wait(); // wait until it's mined
 
     // second create account tx from the same address
-    await expect(contract.createAccount('some-other-name')).to.be.revertedWith('Critter: address already registered');
+    await expect(contract.createAccount('some-other-name')).to.be.revertedWith(
+      'Critter: address already registered'
+    );
   });
 
   it('grants every account the role of MINTER', async () => {
@@ -56,17 +58,23 @@ describe('Accounts', () => {
     await createAccountTx.wait(); // wait until it's mined
 
     // another account
-    const anotherCreateAccountTx = await contract.connect(ahmed).createAccount('ahmed');
+    const anotherCreateAccountTx = await contract
+      .connect(ahmed)
+      .createAccount('ahmed');
     await anotherCreateAccountTx.wait(); // wait until it's mined
 
     // assert 2 accounts have the role of minter
     expect(await contract.getRoleMemberCount(MINTER_ROLE)).to.equal(2);
 
     // first account belongs to the owner
-    expect(await contract.getRoleMember(MINTER_ROLE, 0)).to.equal(owner.address);
+    expect(await contract.getRoleMember(MINTER_ROLE, 0)).to.equal(
+      owner.address
+    );
 
     // second is a regular user
-    expect(await contract.getRoleMember(MINTER_ROLE, 1)).to.equal(ahmed.address);
+    expect(await contract.getRoleMember(MINTER_ROLE, 1)).to.equal(
+      ahmed.address
+    );
   });
 
   it('updates the username', async () => {
@@ -96,7 +104,9 @@ describe('Accounts', () => {
     await updateUsernameTx.wait();
 
     // another account can now register as 'a-rock'
-    const anotherCreateAccountTx = await contract.connect(ahmed).createAccount(username);
+    const anotherCreateAccountTx = await contract
+      .connect(ahmed)
+      .createAccount(username);
     await anotherCreateAccountTx.wait();
 
     // assert our new account has the original username
@@ -105,7 +115,9 @@ describe('Accounts', () => {
 
   it('reverts when updating username & the address is not registered', async () => {
     // second create account tx from a different address but duplicate username
-    await expect(contract.connect(ahmed).updateUsername('ahmed')).to.be.revertedWith('Critter: address not registered');
+    await expect(
+      contract.connect(ahmed).updateUsername('ahmed')
+    ).to.be.revertedWith('Critter: address not registered');
   });
 
   it('reverts when updating username & new the username is already taken', async () => {
@@ -114,16 +126,20 @@ describe('Accounts', () => {
     await firstCreateAccountTx.wait(); // wait until it's mined
 
     // second create account tx from a different address but duplicate username
-    await expect(contract.connect(ahmed).createAccount(username)).to.be.revertedWith('Critter: username taken');
+    await expect(
+      contract.connect(ahmed).createAccount(username)
+    ).to.be.revertedWith('Critter: username taken');
   });
 
   it('reverts when updating the username & the new username is empty', async () => {
-    await expect(contract.createAccount('')).to.be.revertedWith('Critter: username cannot be empty');
+    await expect(contract.createAccount('')).to.be.revertedWith(
+      'Critter: username cannot be empty'
+    );
   });
 
   it('reverts when updating the username & the new username is longer than 256 bytes', async () => {
-    await expect(contract.createAccount('000000000000000000000000000000001')).to.be.revertedWith(
-      'Critter: username is too long'
-    );
+    await expect(
+      contract.createAccount('000000000000000000000000000000001')
+    ).to.be.revertedWith('Critter: username is too long');
   });
 });

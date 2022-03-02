@@ -21,7 +21,8 @@ const config: HardhatUserConfig = {
     hardhat: {},
     ropsten: {
       url: process.env.ROPSTEN_URL || '',
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
   },
   solidity: {
@@ -44,10 +45,14 @@ task('accounts', 'Prints the list of accounts', async (args, hre) => {
   }
 });
 
-task('blockNumber', 'Prints the current block number', async (args, { ethers }) => {
-  await ethers.provider.getBlockNumber().then((blockNumber) => {
-    console.log('Current block number: ' + blockNumber);
-  });
-});
+task(
+  'blockNumber',
+  'Prints the current block number',
+  async (args, { ethers }) => {
+    await ethers.provider.getBlockNumber().then((blockNumber) => {
+      console.log('Current block number: ' + blockNumber);
+    });
+  }
+);
 
 export default config;
