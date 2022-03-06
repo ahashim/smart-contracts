@@ -10,7 +10,7 @@ import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
 /**
- * @dev {ERC721} token, including:
+ * @dev Critter: an {ERC721} token, including:
  *
  *  - ability for holders to burn (destroy) their tokens
  *  - a minter role that allows for token minting (creation)
