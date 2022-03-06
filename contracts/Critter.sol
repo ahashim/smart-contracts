@@ -62,6 +62,7 @@ contract Critter is
         uint256 tokenId,
         string content
     );
+    event SqueakDeleted(address indexed sender, uint256 tokenId);
     event UsernameUpdated(
         address indexed sender,
         string oldUsername,
@@ -162,7 +163,7 @@ contract Critter is
      * - The caller must not have an account.
      * - Username must be valid (see {isValidUsername} for requirements).
      *
-     * Emits {AccountCreated} & {RoleGranted} events.
+     * Emits {AccountCreated} event.
      */
     function createAccount(string memory username)
         public
@@ -175,7 +176,7 @@ contract Critter is
         usernames[_msgSender()] = username;
 
         // bypassing the admin-check to grant roles in order to
-        // dynamically add users when they create an account.
+        // automatically initialize users when they create an account.
         _grantRole(MINTER_ROLE, _msgSender());
 
         // log account creation
@@ -234,7 +235,7 @@ contract Critter is
         require(bytes(content).length <= 256, 'Critter: squeak is too long');
 
         // get token ID
-        uint tokenID = _tokenIdTracker.current();
+        uint256 tokenID = _tokenIdTracker.current();
 
         // build squeak & save it to storage
         Squeak storage squeak = squeaks[tokenID];
@@ -245,11 +246,33 @@ contract Critter is
         mint(_msgSender());
 
         // log the token ID & content
-        emit SqueakCreated(
-            _msgSender(),
-            tokenID,
-            squeak.content
-        );
+        emit SqueakCreated(_msgSender(), tokenID, squeak.content);
+
+        return true;
+    }
+
+    /**
+     * @dev Burns squeak at `tokenId`. See {ERC721-_burn}.
+     *
+     * Requirements:
+     *
+     * - The caller must own `tokenId` or be an approved operator.
+     *
+     * Emits {Transfer} and {SqueakDeleted} events.
+     */
+    function deleteSqueak(uint256 tokenId)
+        public
+        hasAccount(_msgSender())
+        returns (bool)
+    {
+        // burn ERC721 token
+        burn(tokenId);
+
+        // delete squeak from storage
+        delete squeaks[tokenId];
+
+        // log deleted token ID
+        emit SqueakDeleted(_msgSender(), tokenId);
 
         return true;
     }

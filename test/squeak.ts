@@ -29,13 +29,13 @@ describe('Squeaks', () => {
       'https://critter.fyi/token/' // baseURL
     );
 
-    // create an account
+    // create an owner account
     const createAccountTx = await contract.createAccount(USERNAME);
     await createAccountTx.wait();
   });
 
   describe('create', () => {
-    it('posts a squeak from the senders address', async () => {
+    it('creates a squeak from the senders address', async () => {
       const content = 'hello blockchain!';
       const tokenID = 1;
 
@@ -51,7 +51,7 @@ describe('Squeaks', () => {
       expect(squeak.account).to.equal(owner.address);
     });
 
-    it('does not allow a user to post without an account', async () => {
+    it('reverts when a user tries to post without an account', async () => {
       // assertions
       await expect(
         // trying to create a squeak from ahmed's account who never registered
@@ -59,7 +59,7 @@ describe('Squeaks', () => {
       ).to.be.revertedWith('Critter: address does not have an account');
     });
 
-    it('does not post an empty squeak', async () => {
+    it('reverts when the squeak has no content', async () => {
       const emptySqueak = '';
 
       // assertions
@@ -68,7 +68,7 @@ describe('Squeaks', () => {
       );
     });
 
-    it("does not post a squeak that's too long", async () => {
+    it('reverts when a squeak is too long', async () => {
       const longSqueak = `Did you ever hear the tragedy of Darth Plagueis The Wise?
       I thought not. It’s not a story the Jedi would tell you. It’s a Sith legend.
       Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could
@@ -81,15 +81,68 @@ describe('Squeaks', () => {
     });
   });
 
+  describe('delete', () => {
+    const content = 'hello blockchain!';
+    const tokenID = 1;
+
+    beforeEach(async () => {
+      // create a squeak
+      const createSqueakTx = await contract.createSqueak(content);
+      await createSqueakTx.wait();
+    });
+
+    it('allows a user to delete their squeak', async () => {
+      // assert existence/ownership
+      expect(await contract.balanceOf(owner.address)).to.equal(tokenID);
+      expect(await contract.ownerOf(tokenID)).to.equal(owner.address);
+
+      // delete the squeak
+      const deleteSqueakTx = await contract.deleteSqueak(tokenID);
+      await deleteSqueakTx.wait();
+
+      // assert it no longer exists
+      expect(await contract.balanceOf(owner.address)).to.equal(0);
+      await expect(contract.ownerOf(tokenID)).to.be.revertedWith(
+        'ERC721: owner query for nonexistent token'
+      );
+    });
+
+    it('reverts when a user tries to delete a squeak they do not own', async () => {
+      // new user ahmed
+      const createAccountTx = await contract
+        .connect(ahmed)
+        .createAccount('ahmed');
+      await createAccountTx.wait();
+
+      await expect(
+        // ahmed trying to delete contract owners squeak
+        contract.connect(ahmed).deleteSqueak(tokenID)
+      ).to.be.revertedWith('ERC721Burnable: caller is not owner nor approved');
+    });
+  });
+
   describe('events', () => {
     it('emits a SqueakCreated event', async () => {
       const eventName = 'SqueakCreated';
       const content = 'General Kenobi! You are a bold one.';
-      const tokenID = 1; // should be the first token minted
+      const tokenID = 1;
 
       await expect(contract.createSqueak(content))
         .to.emit(contract, eventName)
         .withArgs(owner.address, tokenID, content);
+    });
+
+    it('emits a SqueakDeleted event', async () => {
+      const eventName = 'SqueakDeleted';
+      const content = 'Impossible. Perhaps the archives are incomplete.';
+      const tokenID = 1;
+
+      const createSqueakTx = await contract.createSqueak(content);
+      await createSqueakTx.wait();
+
+      await expect(await contract.deleteSqueak(tokenID))
+        .to.emit(contract, eventName)
+        .withArgs(owner.address, tokenID);
     });
   });
 });
