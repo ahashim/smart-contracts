@@ -40,7 +40,7 @@ describe('Accounts', () => {
       expect(name).to.equal(USERNAME);
     });
 
-    it('grants every account the role of MINTER', async () => {
+    it('grants a new account the role of MINTER', async () => {
       // contract owner
       const createAccountTx = await contract.createAccount(USERNAME);
       await createAccountTx.wait();
