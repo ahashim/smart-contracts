@@ -8,6 +8,9 @@ import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol';
 import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
+import '@openzeppelin/contracts/utils/introspection/ERC165Storage.sol';
+import '@openzeppelin/contracts/interfaces/IERC165.sol';
+import './interfaces/ICritter.sol';
 
 /**
  * @dev Critter: an {ERC721} token, including:
@@ -27,49 +30,45 @@ import '@openzeppelin/contracts/utils/Counters.sol';
 contract Critter is
     Context,
     AccessControlEnumerable,
+    ERC165Storage,
     ERC721Enumerable,
     ERC721Burnable,
-    ERC721Pausable
+    ERC721Pausable,
+    ICritter
 {
-    using Counters for Counters.Counter;
-
-    // Types
-    struct Squeak {
-        address account;
-        string content;
-    }
-
     // Using a counter to keep track of ID's instead
     // of {balanceOf} due to potential token burning
+    using Counters for Counters.Counter;
     Counters.Counter private _tokenIdTracker;
 
-    // Roles
+    // ROLES
     bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
     bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
 
     // https://critter.fyi/token/
     string private _baseTokenURI;
 
-    // Mappings
+    // MAPPINGS
+    /**
+     * @dev Mapping of tokenId's to Squeaks.
+     * See {ICritter-Squeak} for more info.
+     */
     mapping(uint256 => Squeak) public squeaks;
-    mapping(string => address) public addresses; // usernames <=> addresses mappings enables the
-    mapping(address => string) public usernames; // ability to look up either value in O(1) time.
 
-    // Events
-    event AccountCreated(address indexed sender, string username);
-    event SqueakCreated(
-        address indexed sender,
-        uint256 tokenId,
-        string content
-    );
-    event SqueakDeleted(address indexed sender, uint256 tokenId);
-    event UsernameUpdated(
-        address indexed sender,
-        string oldUsername,
-        string newUsername
-    );
+    /**
+     * @dev Mapping of usernames => account addresses.
+     */
+    mapping(string => address) public addresses;
 
-    // Modifiers
+    /**
+     * @dev Mapping of account addresses => usernames.
+     */
+    mapping(address => string) public usernames;
+
+    // MODIFIERS
+    /**
+     * @dev ensures that `_address` has a Critter account.
+     */
     modifier hasAccount(address _address) {
         require(
             bytes(usernames[_address]).length > 0,
@@ -78,6 +77,9 @@ contract Critter is
         _;
     }
 
+    /**
+     * @dev ensures that `_address` does not have a Critter account.
+     */
     modifier noAccount(address _address) {
         require(
             bytes(usernames[_msgSender()]).length == 0,
@@ -86,6 +88,13 @@ contract Critter is
         _;
     }
 
+    /**
+     * @dev ensures that `username` satisfies the following requirements:
+     *
+     * - Greater than 0 bytes (cannot be empty).
+     * - Less than 32 bytes (upper bound for storage slot optimization).
+     * - Is not already in use.
+     */
     modifier isValidUsername(string memory username) {
         require(
             bytes(username).length > 0,
@@ -96,6 +105,8 @@ contract Critter is
         _;
     }
 
+    // FUNCTIONS
+    /**
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE` and `PAUSER_ROLE` to the
      * account that deploys the contract.
@@ -107,6 +118,7 @@ contract Critter is
         string memory symbol,
         string memory baseTokenURI
     ) ERC721(name, symbol) {
+        // Set base token URI
         _baseTokenURI = baseTokenURI;
 
         // Contract owner is the default admin
@@ -116,22 +128,31 @@ contract Critter is
 
         // Set initial token ID to 1
         _tokenIdTracker.increment();
+
+        // Register contract interface with {IERC165Data}
+        _registerInterface(type(ICritter).interfaceId);
     }
 
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @dev See {IERC165Data-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(AccessControlEnumerable, ERC721, ERC721Enumerable)
+        override(
+            AccessControlEnumerable,
+            IERC165,
+            ERC165Storage,
+            ERC721,
+            ERC721Enumerable
+        )
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
     }
 
     /**
-     * @dev Get a username from an address.
+     * @dev See {ICritter-getUsername}.
      */
     function getUsername(address _address)
         public
@@ -142,28 +163,21 @@ contract Critter is
     }
 
     /**
-     * @dev Get an address from a username.
+     * @dev See {ICritter-getAddress}.
      */
     function getAddress(string memory username) public view returns (address) {
         return addresses[username];
     }
 
     /**
-     * @dev Get a squeak from it tokenID.
+     * @dev See {ICritter-getSqueak}.
      */
     function getSqueak(uint256 tokenID) public view returns (Squeak memory) {
         return squeaks[tokenID];
     }
 
     /**
-     * @dev Create a critter account.
-     *
-     * Requirements:
-     *
-     * - The caller must not have an account.
-     * - Username must be valid (see {isValidUsername} for requirements).
-     *
-     * Emits {AccountCreated} event.
+     * @dev See {ICritter-createAccount}.
      */
     function createAccount(string memory username)
         public
@@ -186,15 +200,7 @@ contract Critter is
     }
 
     /**
-     * @dev Update your critter username.
-     *
-     * Requirements:
-     *
-     * - The caller must already have an account.
-     * - The caller must have the `MINTER_ROLE`.
-     * - Username must be valid ({isValidUsername}).
-     *
-     * Emits {UsernameUpdated} event.
+     * @dev See {ICritter-updateUsername}.
      */
     function updateUsername(string memory newUsername)
         public
@@ -217,13 +223,7 @@ contract Critter is
     }
 
     /**
-     * @dev Create a squeak.
-     *
-     * Requirements:
-     *
-     * - The caller must already have an account.
-     * - The caller must have the `MINTER_ROLE`.
-     * - Squeak must be between 0 & 256 bytes.
+     * @dev See {ICritter-createSqueak}.
      */
     function createSqueak(string memory content)
         public
@@ -252,13 +252,7 @@ contract Critter is
     }
 
     /**
-     * @dev Burns squeak at `tokenId`. See {ERC721-_burn}.
-     *
-     * Requirements:
-     *
-     * - The caller must own `tokenId` or be an approved operator.
-     *
-     * Emits {Transfer} and {SqueakDeleted} events.
+     * @dev See {ICritter-deleteSqueak}.
      */
     function deleteSqueak(uint256 tokenId)
         public
@@ -278,15 +272,7 @@ contract Critter is
     }
 
     /**
-     * @dev Creates a new token for `to`. Its token ID will be automatically
-     * assigned (and available on the emitted {IERC721-Transfer} event), and the token
-     * URI autogenerated based on the base URI passed at construction.
-     *
-     * See {ERC721-_mint}.
-     *
-     * Requirements:
-     *
-     * - The caller must have the `MINTER_ROLE`.
+     * @dev See {ICritter-mint}.
      */
     function mint(address to) public {
         require(
@@ -299,13 +285,7 @@ contract Critter is
     }
 
     /**
-     * @dev Pauses all token transfers.
-     *
-     * See {ERC721Pausable} and {Pausable-_pause}.
-     *
-     * Requirements:
-     *
-     * - The caller must have the `PAUSER_ROLE`.
+     * @dev See {ICritter-pause}.
      */
     function pause() public {
         require(
@@ -316,13 +296,7 @@ contract Critter is
     }
 
     /**
-     * @dev Unpauses all token transfers.
-     *
-     * See {ERC721Pausable} and {Pausable-_unpause}.
-     *
-     * Requirements:
-     *
-     * - The caller must have the `PAUSER_ROLE`.
+     * @dev See {ICritter-unpause}.
      */
     function unpause() public {
         require(
