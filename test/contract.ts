@@ -12,13 +12,14 @@ describe('Contract', () => {
   let factory: ContractFactory;
 
   // users
+  let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
 
   // account variables
   const USERNAME = 'a-rock';
 
   beforeEach(async () => {
-    [, ahmed] = await ethers.getSigners();
+    [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory('Critter');
 
     // deploy our contract
@@ -35,13 +36,13 @@ describe('Contract', () => {
 
   describe('state', () => {
     it('can be paused & unpaused by a user with the PAUSER_ROLE', async () => {
-      // pause the contract
+      // pause the contract from owner account
       const pauseContractTx = await contract.pause();
       await pauseContractTx.wait();
 
       expect(await contract.paused()).to.equal(true);
 
-      // unpause the contract
+      // unpause the contract from the same account
       const unpauseContractTx = await contract.unpause();
       await unpauseContractTx.wait();
 
@@ -53,6 +54,28 @@ describe('Contract', () => {
         // ahmed trying to delete contract owners squeak
         contract.connect(ahmed).pause()
       ).to.be.revertedWith('Critter: must have pauser role to pause');
+    });
+  });
+
+  describe('events', () => {
+    it('emits a Paused event', async () => {
+      const eventName = 'Paused';
+
+      await expect(contract.pause())
+        .to.emit(contract, eventName)
+        .withArgs(owner.address);
+    });
+
+    it('emits an Unpaused event', async () => {
+      const eventName = 'Unpaused';
+
+      // first pause contract
+      const pauseContractTx = await contract.pause();
+      await pauseContractTx.wait();
+
+      await expect(contract.unpause())
+        .to.emit(contract, eventName)
+        .withArgs(owner.address);
     });
   });
 });
