@@ -1,6 +1,6 @@
 # Critter
 
-An open source microblogging NFT platform for Ethereum.
+An open source peer-to-peer microblogging NFT platform for EVM compatible blockchains.
 
 **Core concepts**:
 
@@ -13,7 +13,8 @@ An open source microblogging NFT platform for Ethereum.
 - Only owners can delete squeaks.
 - Deleting a squeak costs a fee of `blocks elapsed x deletion fee`.
 
-Visit [https://critter.fyi](https://critter.fyi) to start squeaking on the blockchain.
+<!-- TODO: setup hosting when working on the client -->
+<!-- Visit [https://critter.fyi](https://critter.fyi) to start squeaking on the blockchain. -->
 
 ## Local Development
 
