@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
+// Libraries
+import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol';
-import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
-import '@openzeppelin/contracts/utils/introspection/ERC165Storage.sol';
-import '@openzeppelin/contracts/interfaces/IERC165.sol';
+
+// Interfaces
 import './interfaces/ICritter.sol';
 
 /**
@@ -30,7 +31,6 @@ import './interfaces/ICritter.sol';
 contract Critter is
     Context,
     AccessControlEnumerable,
-    ERC165Storage,
     ERC721Enumerable,
     ERC721Burnable,
     ERC721Pausable,
@@ -128,27 +128,20 @@ contract Critter is
 
         // Set initial token ID to 1
         _tokenIdTracker.increment();
-
-        // Register contract interface with {IERC165Data}
-        _registerInterface(type(ICritter).interfaceId);
     }
 
     /**
-     * @dev See {IERC165Data-supportsInterface}.
+     * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(
-            AccessControlEnumerable,
-            IERC165,
-            ERC165Storage,
-            ERC721,
-            ERC721Enumerable
-        )
+        override(AccessControlEnumerable, IERC165, ERC721, ERC721Enumerable)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return
+            interfaceId == type(ICritter).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**

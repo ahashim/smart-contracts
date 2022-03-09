@@ -34,6 +34,24 @@ describe('Contract', () => {
     await createAccountTx.wait();
   });
 
+  describe('interfaces', () => {
+    it('supports the ERCI65 interface', async () => {
+      expect(await contract.supportsInterface('0x01ffc9a7')).to.equal(true);
+    });
+
+    it('supports the ERC721 interface', async () => {
+      expect(await contract.supportsInterface('0x80ac58cd')).to.equal(true);
+    });
+
+    it('supports the ERC721Metadata interface', async () => {
+      expect(await contract.supportsInterface('0x5b5e139f')).to.equal(true);
+    });
+
+    it('supports the ERC721Enumerable interface', async () => {
+      expect(await contract.supportsInterface('0x780e9d63')).to.equal(true);
+    });
+  });
+
   describe('state', () => {
     it('can be paused & unpaused by a user with the PAUSER_ROLE', async () => {
       // pause the contract from owner account
