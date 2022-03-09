@@ -103,12 +103,12 @@ npx hardhat coverage
 
 ## Architecture
 
-##### Smart Contracts
+#### Smart Contracts
 
 - All smart contracts are written in Solidity & deployed to an EVM compatible Layer 2 solution.
 - Deploying to [zkSync](https://portal.zksync.io/) is the current best option.
 
-##### Indexer
+#### Indexer
 
 - Indexer written in Golang or Node to watch on-chain event logs & create entries from them directly to a database.
   - Will send to the server first to for further validation/sanitization.
@@ -116,7 +116,7 @@ npx hardhat coverage
 - Does not need to be highly available (one instance will suffice, and can run locally).
 - Deploy with [Fly.io](https://fly.io/).
 
-##### Database
+#### Database
 
 - All user/squeak data not-stored on chain will be in the database.
 - Database cluster will likely be MySql/MariaDB to optimize for reads.
@@ -129,20 +129,20 @@ npx hardhat coverage
     - Will need to figure out eventual consistency with primary key generation in application layer once we partition.
 - Deploy across regions with [Fly.io](https://fly.io/).
 
-##### Client
+#### Client
 
 - User interface written in Typescript & [Preact](https://preactjs.com/).
 - Deploy to edge servers (probably on [Cloudflare](https://cloudflare.com)), as well as IPFS.
 
-##### Server
+#### Server
 
 - Server written in Golang to generate API keys for relevant client operations.
 - Deploy with [Fly.io](https://fly.io/).
 
-##### Search
+#### Search
 
 - Search cluster will be powered by [Typesense](https://typesense.org)
   - Uses [Raft algorithm](https://raft.github.io/) to maintain durability, so 3 nodes might be enough.
 - Deploy across regions with [Fly.io](https://fly.io/).
 
-###### Avoid centralized cloud providers as much as possible (AWS, GCP, Azure) in order to ensure maximum decentralization.
+##### Avoid centralized cloud providers as much as possible (AWS, GCP, Azure) in order to ensure maximum decentralization.
