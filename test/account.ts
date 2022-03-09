@@ -35,9 +35,13 @@ describe('Accounts', () => {
       const createAccountTx = await contract.createAccount(USERNAME);
       await createAccountTx.wait();
 
-      // compare username for that address from the blockchain
+      // compare username in transaction with account address from the blockchain
       const name = await contract.getUsername(owner.address);
       expect(name).to.equal(USERNAME);
+
+      // compare account address in transaction with username from the blockchain
+      const address = await contract.getAddress(USERNAME);
+      expect(address).to.equal(owner.address);
     });
 
     it('grants a new account the role of MINTER', async () => {
