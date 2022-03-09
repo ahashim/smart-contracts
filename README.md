@@ -17,7 +17,17 @@ Visit [https://critter.fyi](https://critter.fyi) to start squeaking on the block
 
 ## Local Development
 
-###### **Requirements**: [Node JS](https://nodejs.org) version `^14.8.2`.
+###### **Requirements**:
+
+- [Node JS](https://nodejs.org) version `^14.8.2`.
+- Create an `.env` file in the projet root with the following info:
+
+```
+ETHERSCAN_API_KEY=<your-etherscan-api-key>
+PRIVATE_KEY=<your-ethereum-account-private-key>
+REPORT_GAS="true" # comment this line out to turn off Gas reporting during test runs
+ROPSTEN_URL=<your-ropsten-network-api-url>
+```
 
 The following commands will allow you to compile & run the contracts on a [local hardhat network](https://hardhat.org).
 
