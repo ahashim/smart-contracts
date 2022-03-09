@@ -300,14 +300,6 @@ contract Critter is
     }
 
     /**
-     * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
-     * token will be the concatenation of the `baseURI` and the `tokenId`.
-     */
-    function _baseURI() internal view override returns (string memory) {
-        return _baseTokenURI;
-    }
-
-    /**
      * @dev Hook that is called before any token transfer. This includes minting
      * and burning.
      *
