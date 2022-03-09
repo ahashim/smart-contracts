@@ -20,7 +20,7 @@ Visit [https://critter.fyi](https://critter.fyi) to start squeaking on the block
 ###### **Requirements**:
 
 - [Node JS](https://nodejs.org) version `^14.8.2`.
-- Create an `.env` file in the projet root with the following info:
+- Create an `.env` file in the project root with the following info:
 
 ```
 ETHERSCAN_API_KEY=<your-etherscan-api-key>
