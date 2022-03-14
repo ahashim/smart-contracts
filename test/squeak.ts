@@ -44,7 +44,7 @@ describe('Squeaks', () => {
       await createSqueakTx.wait();
 
       // retrieve it based on its id
-      const squeak = await contract.getSqueak(tokenID);
+      const squeak = await contract.squeaks(tokenID);
 
       // assertions
       expect(squeak.content).to.equal(content);

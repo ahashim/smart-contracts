@@ -41,14 +41,11 @@ contract Critter is
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdTracker;
 
-    // ROLES
     bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
     bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
 
-    // https://critter.fyi/token/
     string private _baseTokenURI;
 
-    // MAPPINGS
     /**
      * @dev Mapping of tokenId's to Squeaks.
      * See {ICritter-Squeak} for more info.
@@ -65,7 +62,6 @@ contract Critter is
      */
     mapping(address => string) public usernames;
 
-    // MODIFIERS
     /**
      * @dev ensures that `_address` has a Critter account.
      */
@@ -105,8 +101,6 @@ contract Critter is
         _;
     }
 
-    // FUNCTIONS
-    /**
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE` and `PAUSER_ROLE` to the
      * account that deploys the contract.
@@ -145,31 +139,6 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-getUsername}.
-     */
-    function getUsername(address _address)
-        public
-        view
-        returns (string memory username)
-    {
-        return usernames[_address];
-    }
-
-    /**
-     * @dev See {ICritter-getAddress}.
-     */
-    function getAddress(string memory username) public view returns (address) {
-        return addresses[username];
-    }
-
-    /**
-     * @dev See {ICritter-getSqueak}.
-     */
-    function getSqueak(uint256 tokenID) public view returns (Squeak memory) {
-        return squeaks[tokenID];
-    }
-
-    /**
      * @dev See {ICritter-createAccount}.
      */
     function createAccount(string memory username)
@@ -202,7 +171,7 @@ contract Critter is
         returns (bool)
     {
         // clear current username from the addresses mapping
-        string memory oldUsername = getUsername(_msgSender());
+        string memory oldUsername = this.usernames(_msgSender());
         delete addresses[oldUsername];
 
         // set new usernames & address mappings

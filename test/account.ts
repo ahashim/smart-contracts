@@ -36,11 +36,11 @@ describe('Accounts', () => {
       await createAccountTx.wait();
 
       // compare username in transaction with account address from the blockchain
-      const name = await contract.getUsername(owner.address);
+      const name = await contract.usernames(owner.address);
       expect(name).to.equal(USERNAME);
 
       // compare account address in transaction with username from the blockchain
-      const address = await contract.getAddress(USERNAME);
+      const address = await contract.addresses(USERNAME);
       expect(address).to.equal(owner.address);
     });
 
@@ -86,7 +86,7 @@ describe('Accounts', () => {
       await createAccountTx.wait();
 
       // assert we have a username
-      expect(await contract.getUsername(owner.address)).to.equal(USERNAME);
+      expect(await contract.usernames(owner.address)).to.equal(USERNAME);
 
       // change username
       const newUsername = 'ahashim';
@@ -94,7 +94,7 @@ describe('Accounts', () => {
       await changeUsernameTx.wait();
 
       // assert our username changed
-      expect(await contract.getUsername(owner.address)).to.equal(newUsername);
+      expect(await contract.usernames(owner.address)).to.equal(newUsername);
     });
 
     it('makes an old username available when updating to a new one', async () => {
@@ -113,7 +113,7 @@ describe('Accounts', () => {
       await anotherCreateAccountTx.wait();
 
       // assert our new account has the original username
-      expect(await contract.getUsername(ahmed.address)).to.equal(USERNAME);
+      expect(await contract.usernames(ahmed.address)).to.equal(USERNAME);
     });
 
     it('reverts when updating username & the address does not have an account', async () => {

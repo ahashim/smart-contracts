@@ -52,27 +52,6 @@ interface ICritter is
     );
 
     /**
-     * @dev Get a username from an account address.
-     */
-    function getUsername(address _address)
-        external
-        view
-        returns (string memory username);
-
-    /**
-     * @dev Get an account address from a username.
-     */
-    function getAddress(string memory username)
-        external
-        view
-        returns (address);
-
-    /**
-     * @dev Get a squeak from its `tokenID`.
-     */
-    function getSqueak(uint256 tokenID) external view returns (Squeak memory);
-
-    /**
      * @dev Create a Critter account.
      *
      * Requirements:
