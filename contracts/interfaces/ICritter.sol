@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.4;
 
 import '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
 import '@openzeppelin/contracts/interfaces/IERC165.sol';
