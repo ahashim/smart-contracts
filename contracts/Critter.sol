@@ -133,9 +133,9 @@ contract Critter is
         _baseTokenURI = baseTokenURI;
 
         // Contract owner is the default admin
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _setupRole(MINTER_ROLE, _msgSender());
-        _setupRole(PAUSER_ROLE, _msgSender());
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _grantRole(MINTER_ROLE, _msgSender());
+        _grantRole(PAUSER_ROLE, _msgSender());
 
         // Set initial token ID to 1
         _tokenIdTracker.increment();
@@ -266,22 +266,14 @@ contract Critter is
     /**
      * @dev See {ICritter-pause}.
      */
-    function pause() public {
-        require(
-            hasRole(PAUSER_ROLE, _msgSender()),
-            'Critter: must have pauser role to pause'
-        );
+    function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
     /**
      * @dev See {ICritter-unpause}.
      */
-    function unpause() public {
-        require(
-            hasRole(PAUSER_ROLE, _msgSender()),
-            'Critter: must have pauser role to unpause'
-        );
+    function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 

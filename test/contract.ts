@@ -71,7 +71,9 @@ describe('Contract', () => {
       await expect(
         // ahmed trying to delete contract owners squeak
         contract.connect(ahmed).pause()
-      ).to.be.revertedWith('Critter: must have pauser role to pause');
+      ).to.be.revertedWith(
+        'AccessControl: account 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 is missing role 0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a'
+      );
     });
   });
 
