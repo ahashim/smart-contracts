@@ -27,7 +27,7 @@ import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
-import '@openzeppelin/contracts/utils/Strings.sol';
+import './libraries/CritterStrings.sol';
 
 // Interfaces
 import './interfaces/ICritter.sol';
@@ -263,7 +263,12 @@ contract Critter is
     /**
      * @dev See {IERC721-_baseURI}.
      */
-    function _baseURI() internal view override(ERC721) returns (string memory) {
+    function _baseURI()
+        internal
+        view
+        override(ERC721)
+        returns (string memory)
+    {
         return _baseTokenURI;
     }
 
@@ -287,8 +292,10 @@ contract Critter is
         override(ICritter)
         onlyRole(MINTER_ROLE)
     {
+        string memory URI = _generateURI(tokenId);
+
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, Strings.toString(tokenId));
+        _setTokenURI(tokenId, URI);
     }
 
     /**
@@ -337,5 +344,16 @@ contract Critter is
         uint256 tokenId
     ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
         super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    /**
+     * @dev Generate token URI based on chain & token ID.
+     */
+    function _generateURI(uint256 tokenId) view internal returns (string memory) {
+        //
+        bytes32 hashedURI = keccak256(abi.encode(block.chainid, tokenId));
+        string memory URI = CritterStrings.lower(CritterStrings.toHexString(hashedURI));
+
+        return URI;
     }
 }

@@ -4,8 +4,9 @@ import { ethers } from 'hardhat';
 import { BASE_TOKEN_URI, NAME, SYMBOL, USERNAME } from './constants';
 
 // types
-import type { Contract, ContractFactory } from 'ethers';
+import { Contract, ContractFactory } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { keccak256, defaultAbiCoder } from 'ethers/lib/utils';
 
 describe('Squeaks', () => {
   // contract
@@ -31,6 +32,7 @@ describe('Squeaks', () => {
   describe('create', () => {
     it('creates a squeak from the senders address', async () => {
       const content = 'hello blockchain!';
+      const chainID = 31337; // default harhdat network ID
       const tokenID = 1;
 
       // post a squeak
@@ -41,10 +43,16 @@ describe('Squeaks', () => {
       const squeak = await contract.squeaks(tokenID);
       const tokenURI = await contract.tokenURI(tokenID);
 
-      // assertions
+      // squeak assertions
       expect(squeak.content).to.equal(content);
       expect(squeak.account).to.equal(owner.address);
-      expect(tokenURI).to.equal(BASE_TOKEN_URI + tokenID);
+
+      // tokenURI assertion
+      const hexURI = keccak256(
+        defaultAbiCoder.encode(['uint256', 'uint256'], [chainID, tokenID])
+      ).slice(2); // removing 0x prefix
+      const expectedTokenURI = BASE_TOKEN_URI + hexURI;
+      expect(tokenURI).to.equal(expectedTokenURI);
     });
 
     it('reverts when a user tries to post without an account', async () => {
