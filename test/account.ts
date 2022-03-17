@@ -1,6 +1,7 @@
 // libraries
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { BASE_TOKEN_URI, NAME, SYMBOL, USERNAME } from './constants';
 
 // types
 import type { Contract, ContractFactory } from 'ethers';
@@ -16,17 +17,12 @@ describe('Accounts', () => {
   let ahmed: SignerWithAddress;
 
   // account variables
-  const USERNAME = 'a-rock';
   const MINTER_ROLE = ethers.utils.id('MINTER_ROLE');
 
   beforeEach(async () => {
     [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory('Critter');
-    contract = await factory.deploy(
-      'Critter', // name
-      'CRTR', // symbol
-      'https://critter.fyi/token/' // baseURL
-    );
+    contract = await factory.deploy(NAME, SYMBOL, BASE_TOKEN_URI);
   });
 
   describe('create', () => {

@@ -27,6 +27,7 @@ import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
 
 // Interfaces
 import './interfaces/ICritter.sol';
@@ -219,6 +220,7 @@ contract Critter is
         // check invariants
         require(bytes(content).length > 0, 'Critter: squeak cannot be empty');
         require(bytes(content).length <= 256, 'Critter: squeak is too long');
+
         // get current tokenID & update counter
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -259,6 +261,13 @@ contract Critter is
     }
 
     /**
+     * @dev See {IERC721-_baseURI}.
+     */
+    function _baseURI() internal view override(ERC721) returns (string memory) {
+        return _baseTokenURI;
+    }
+
+    /**
      * @dev See {IERC721Metadata-tokenURI}.
      */
     function tokenURI(uint256 tokenId)
@@ -273,9 +282,13 @@ contract Critter is
     /**
      * @dev See {ICritter-safeMint}.
      */
-    function safeMint(address to, uint256 tokenId) public onlyRole(MINTER_ROLE) override(ICritter) {
+    function safeMint(address to, uint256 tokenId)
+        public
+        override(ICritter)
+        onlyRole(MINTER_ROLE)
+    {
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, tokenURI(tokenId));
+        _setTokenURI(tokenId, Strings.toString(tokenId));
     }
 
     /**

@@ -1,6 +1,7 @@
 // libraries
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { BASE_TOKEN_URI, NAME, SYMBOL, USERNAME } from './constants';
 
 // types
 import type { Contract, ContractFactory } from 'ethers';
@@ -15,19 +16,12 @@ describe('Squeaks', () => {
   let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
 
-  // account variables
-  const USERNAME = 'a-rock';
-
   beforeEach(async () => {
     [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory('Critter');
 
     // deploy our contract
-    contract = await factory.deploy(
-      'Critter', // name
-      'CRTR', // symbol
-      'https://critter.fyi/token/' // baseURL
-    );
+    contract = await factory.deploy(NAME, SYMBOL, BASE_TOKEN_URI);
 
     // create an owner account
     const createAccountTx = await contract.createAccount(USERNAME);
@@ -43,12 +37,14 @@ describe('Squeaks', () => {
       const createSqueakTx = await contract.createSqueak(content);
       await createSqueakTx.wait();
 
-      // retrieve it based on its id
+      // retrieve token based on its expected id
       const squeak = await contract.squeaks(tokenID);
+      const tokenURI = await contract.tokenURI(tokenID);
 
       // assertions
       expect(squeak.content).to.equal(content);
       expect(squeak.account).to.equal(owner.address);
+      expect(tokenURI).to.equal(BASE_TOKEN_URI + tokenID);
     });
 
     it('reverts when a user tries to post without an account', async () => {
