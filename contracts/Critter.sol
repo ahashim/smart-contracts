@@ -20,10 +20,11 @@ pragma solidity ^0.8.4;
 
 // Libraries
 import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import '@openzeppelin/contracts/security/Pausable.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
@@ -47,19 +48,22 @@ import './interfaces/ICritter.sol';
  */
 contract Critter is
     Context,
-    AccessControlEnumerable,
+    ERC721,
     ERC721Enumerable,
+    ERC721URIStorage,
+    Pausable,
+    AccessControlEnumerable,
     ERC721Burnable,
-    ERC721Pausable,
     ICritter
 {
-    // Using a counter to keep track of ID's instead
-    // of {balanceOf} due to potential token burning
     using Counters for Counters.Counter;
-    Counters.Counter private _tokenIdTracker;
 
     bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
     bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
+
+    // Using a counter to keep track of ID's instead
+    // of {balanceOf} due to potential token burning
+    Counters.Counter private _tokenIdCounter;
 
     string private _baseTokenURI;
 
@@ -138,7 +142,7 @@ contract Critter is
         _grantRole(PAUSER_ROLE, _msgSender());
 
         // Set initial token ID to 1
-        _tokenIdTracker.increment();
+        _tokenIdCounter.increment();
     }
 
     /**
@@ -160,6 +164,7 @@ contract Critter is
      */
     function createAccount(string memory username)
         public
+        override(ICritter)
         noAccount(_msgSender())
         isValidUsername(username)
         returns (bool)
@@ -183,6 +188,7 @@ contract Critter is
      */
     function updateUsername(string memory newUsername)
         public
+        override(ICritter)
         hasAccount(_msgSender())
         isValidUsername(newUsername)
         returns (bool)
@@ -206,26 +212,27 @@ contract Critter is
      */
     function createSqueak(string memory content)
         public
+        override(ICritter)
         hasAccount(_msgSender())
         returns (bool)
     {
         // check invariants
         require(bytes(content).length > 0, 'Critter: squeak cannot be empty');
         require(bytes(content).length <= 256, 'Critter: squeak is too long');
-
-        // get token ID
-        uint256 tokenID = _tokenIdTracker.current();
+        // get current tokenID & update counter
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
 
         // build squeak & save it to storage
-        Squeak storage squeak = squeaks[tokenID];
+        Squeak storage squeak = squeaks[tokenId];
         squeak.account = _msgSender();
         squeak.content = content;
 
         // mint our token
-        mint(_msgSender());
+        safeMint(_msgSender(), tokenId);
 
         // log the token ID & content
-        emit SqueakCreated(_msgSender(), tokenID, squeak.content);
+        emit SqueakCreated(_msgSender(), tokenId, squeak.content);
 
         return true;
     }
@@ -235,6 +242,7 @@ contract Critter is
      */
     function deleteSqueak(uint256 tokenId)
         public
+        override(ICritter)
         hasAccount(_msgSender())
         returns (bool)
     {
@@ -251,30 +259,51 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-mint}.
+     * @dev See {IERC721Metadata-tokenURI}.
      */
-    function mint(address to) public {
-        require(
-            hasRole(MINTER_ROLE, _msgSender()),
-            'Critter: must have minter role to mint'
-        );
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
 
-        _mint(to, _tokenIdTracker.current());
-        _tokenIdTracker.increment();
+    /**
+     * @dev See {ICritter-safeMint}.
+     */
+    function safeMint(address to, uint256 tokenId) public onlyRole(MINTER_ROLE) override(ICritter) {
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, tokenURI(tokenId));
     }
 
     /**
      * @dev See {ICritter-pause}.
      */
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public override(ICritter) onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
     /**
      * @dev See {ICritter-unpause}.
      */
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public override(ICritter) onlyRole(PAUSER_ROLE) {
         _unpause();
+    }
+
+    /**
+     * @dev Burns `tokenId`. See {ERC721-_burn}.
+     *
+     * Requirements:
+     *
+     * - The caller must own `tokenId` or be an approved operator.
+     */
+    function _burn(uint256 tokenId)
+        internal
+        override(ERC721, ERC721URIStorage)
+    {
+        super._burn(tokenId);
     }
 
     /**
@@ -293,7 +322,7 @@ contract Critter is
         address from,
         address to,
         uint256 tokenId
-    ) internal override(ERC721, ERC721Enumerable, ERC721Pausable) {
+    ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 }
