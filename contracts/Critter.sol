@@ -19,18 +19,18 @@
 pragma solidity ^0.8.4;
 
 // Libraries
-import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import '@openzeppelin/contracts/security/Pausable.sol';
-import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
-import '@openzeppelin/contracts/utils/Context.sol';
-import '@openzeppelin/contracts/utils/Counters.sol';
-import './libraries/CritterStrings.sol';
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "./libraries/CritterStrings.sol";
 
 // Interfaces
-import './interfaces/ICritter.sol';
+import "./interfaces/ICritter.sol";
 
 /**
  * @dev Critter: an {ERC721} token, including:
@@ -90,7 +90,7 @@ contract Critter is
     modifier hasAccount(address _address) {
         require(
             bytes(usernames[_address]).length > 0,
-            'Critter: address does not have an account'
+            "Critter: address does not have an account"
         );
         _;
     }
@@ -101,7 +101,7 @@ contract Critter is
     modifier noAccount(address _address) {
         require(
             bytes(usernames[_msgSender()]).length == 0,
-            'Critter: account already exists'
+            "Critter: account already exists"
         );
         _;
     }
@@ -116,10 +116,10 @@ contract Critter is
     modifier isValidUsername(string memory username) {
         require(
             bytes(username).length > 0,
-            'Critter: username cannot be empty'
+            "Critter: username cannot be empty"
         );
-        require(bytes(username).length <= 32, 'Critter: username is too long');
-        require(addresses[username] == address(0), 'Critter: username taken');
+        require(bytes(username).length <= 32, "Critter: username is too long");
+        require(addresses[username] == address(0), "Critter: username taken");
         _;
     }
 
@@ -218,8 +218,8 @@ contract Critter is
         returns (bool)
     {
         // check invariants
-        require(bytes(content).length > 0, 'Critter: squeak cannot be empty');
-        require(bytes(content).length <= 256, 'Critter: squeak is too long');
+        require(bytes(content).length > 0, "Critter: squeak cannot be empty");
+        require(bytes(content).length <= 256, "Critter: squeak is too long");
 
         // get current tokenID & update counter
         uint256 tokenId = _tokenIdCounter.current();
