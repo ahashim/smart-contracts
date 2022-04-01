@@ -4,9 +4,10 @@
   "description": "crypto twitter",
   "main": "index.js",
   "scripts": {
+    "coverage": "npx hardhat coverage",
+    "format": "prettier --write 'contracts/**/*.sol'",
     "lint": "solhint contracts/**/*.sol",
-    "prettier": "prettier --write 'contracts/**/*.sol'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat test"
   },
   "keywords": [
     "blockchain",
