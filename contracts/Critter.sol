@@ -59,8 +59,8 @@ contract Critter is
 {
     using Counters for Counters.Counter;
 
-    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
-    bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
     // Using a counter to keep track of ID's instead
     // of {balanceOf} due to potential token burning
@@ -292,10 +292,10 @@ contract Critter is
         override(ICritter)
         onlyRole(MINTER_ROLE)
     {
-        string memory URI = _generateURI(tokenId);
+        string memory tokenUri = _generateUri(tokenId);
 
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, URI);
+        _setTokenURI(tokenId, tokenUri);
     }
 
     /**
@@ -349,11 +349,10 @@ contract Critter is
     /**
      * @dev Generate token URI based on chain & token ID.
      */
-    function _generateURI(uint256 tokenId) view internal returns (string memory) {
-        //
-        bytes32 hashedURI = keccak256(abi.encode(block.chainid, tokenId));
-        string memory URI = CritterStrings.lower(CritterStrings.toHexString(hashedURI));
+    function _generateUri(uint256 tokenId) internal view returns (string memory) {
+        // get the hash of the token based on its chain ID & token ID
+        bytes32 hashedUri = keccak256(abi.encode(block.chainid, tokenId));
 
-        return URI;
+        return CritterStrings.lower(CritterStrings.toHexString(hashedUri));
     }
 }
