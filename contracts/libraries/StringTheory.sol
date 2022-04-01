@@ -19,14 +19,15 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev A string library with convenience functions. Mostly taken from:
- *      https://gist.github.com/whitehorse21/69a6287c3560e730eabfe05efc17ae22
+ * @dev A library of convenience functions for string manipulation.
  */
 library StringTheory {
     /**
      * @dev Converts `bytes32` data to a `string` representation of its
      *      hexadecimal value. Can be conveniently used with keccak256 hash
      *      function.
+     *
+     *      Source: https://stackoverflow.com/a/69266989
      */
     function toHexString(bytes32 data) internal pure returns (string memory) {
         return
@@ -40,7 +41,7 @@ library StringTheory {
 
     /**
      * @dev Efficiently Converts a `bytes16` to `bytes32` representation using
-     *       bit-shifts. How it works: https://stackoverflow.com/a/69266989
+     *       bit-shifts.
      */
     function toHex16(bytes16 data) internal pure returns (bytes32 result) {
         result =
@@ -86,66 +87,27 @@ library StringTheory {
     }
 
     /**
-     * @dev Converts all the values of a string to their corresponding upper case
-     *      value.
+     * @dev Converts all the values of a string to their corresponding lower
+     *      case value.
      *
-     * @param _base When being used for a data type this is the extended object
-     *              otherwise this is the string base to convert to upper case.
-     * @return string
-     */
-    function upper(string memory _base) internal pure returns (string memory) {
-        bytes memory _baseBytes = bytes(_base);
-        for (uint256 i = 0; i < _baseBytes.length; i++) {
-            _baseBytes[i] = _upper(_baseBytes[i]);
-        }
-        return string(_baseBytes);
-    }
-
-    /**
-     * @dev Converts all the values of a string to their corresponding lower case
-     *      value.
+     *      Source: https://gist.github.com/whitehorse21/69a6287c3560e730eabfe05efc17ae22
      *
      * @param _base When being used for a data type this is the extended object
      *              otherwise this is the string base to convert to lower case.
      * @return string
+     *
      */
     function lower(string memory _base) internal pure returns (string memory) {
         bytes memory _baseBytes = bytes(_base);
+
         for (uint256 i = 0; i < _baseBytes.length; i++) {
-            _baseBytes[i] = _lower(_baseBytes[i]);
+            // if the ASCII character is in the lowercase byte range
+            if (_baseBytes[i] >= 0x41 && _baseBytes[i] <= 0x5A) {
+                // swap it for its uppercase equivalent
+                _baseBytes[i] = bytes1(uint8(_baseBytes[i]) + 32);
+            }
         }
+
         return string(_baseBytes);
-    }
-
-    /**
-     * @dev Convert an alphabetic character to upper case and return the original
-     *      value when not alphabetic.
-     *
-     * @param _b1 The byte to be converted to upper case.
-     * @return bytes1 The converted value if the passed value was alphabetic
-     *                and in a lower case otherwise returns the original value.
-     */
-    function _upper(bytes1 _b1) private pure returns (bytes1) {
-        if (_b1 >= 0x61 && _b1 <= 0x7A) {
-            return bytes1(uint8(_b1) - 32);
-        }
-
-        return _b1;
-    }
-
-    /**
-     * @dev Convert an alphabetic character to lower case and return the original
-     *      value when not alphabetic.
-     *
-     * @param _b1 The byte to be converted to lower case.
-     * @return bytes1 The converted value if the passed value was alphabetic
-     *                and in a upper case otherwise returns the original value.
-     */
-    function _lower(bytes1 _b1) private pure returns (bytes1) {
-        if (_b1 >= 0x41 && _b1 <= 0x5A) {
-            return bytes1(uint8(_b1) + 32);
-        }
-
-        return _b1;
     }
 }
