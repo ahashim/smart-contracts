@@ -27,7 +27,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./libraries/CritterStrings.sol";
+import "./libraries/StringTheory.sol";
 
 // Interfaces
 import "./interfaces/ICritter.sol";

@@ -19,12 +19,15 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev Hexadecimal String operations.
+ * @dev A string library with convenience functions. Mostly taken from:
+ *      https://gist.github.com/whitehorse21/69a6287c3560e730eabfe05efc17ae22
+ *      James Lockhart <james@n3tw0rk.co.uk>
  */
-library CritterStrings {
+library StringTheory {
     /**
-     * @dev Converts `bytes32` data to a `string` representation of its hexadecimal value.
-     * Can be conveniently used with keccak256 hash function.
+     * @dev Converts `bytes32` data to a `string` representation of its
+     *      hexadecimal value. Can be conveniently used with keccak256 hash
+     *      function.
      */
     function toHexString(bytes32 data) internal pure returns (string memory) {
         return
@@ -37,8 +40,8 @@ library CritterStrings {
     }
 
     /**
-     * @dev Efficiently Converts a `bytes16` to `bytes32` representation using bit-shifts.
-     * More information on how it works: https://stackoverflow.com/a/69266989
+     * @dev Efficiently Converts a `bytes16` to `bytes32` representation using
+     *       bit-shifts. How it works: https://stackoverflow.com/a/69266989
      */
     function toHex16(bytes16 data) internal pure returns (bytes32 result) {
         result =
@@ -84,13 +87,11 @@ library CritterStrings {
     }
 
     /**
-     * Upper
-     *
-     * Converts all the values of a string to their corresponding upper case
-     * value.
+     * @dev Converts all the values of a string to their corresponding upper case
+     *      value.
      *
      * @param _base When being used for a data type this is the extended object
-     *              otherwise this is the string base to convert to upper case
+     *              otherwise this is the string base to convert to upper case.
      * @return string
      */
     function upper(string memory _base) internal pure returns (string memory) {
@@ -102,13 +103,11 @@ library CritterStrings {
     }
 
     /**
-     * Lower
-     *
-     * Converts all the values of a string to their corresponding lower case
-     * value.
+     * @dev Converts all the values of a string to their corresponding lower case
+     *      value.
      *
      * @param _base When being used for a data type this is the extended object
-     *              otherwise this is the string base to convert to lower case
+     *              otherwise this is the string base to convert to lower case.
      * @return string
      */
     function lower(string memory _base) internal pure returns (string memory) {
@@ -120,14 +119,12 @@ library CritterStrings {
     }
 
     /**
-     * Upper
+     * @dev Convert an alphabetic character to upper case and return the original
+     *      value when not alphabetic.
      *
-     * Convert an alphabetic character to upper case and return the original
-     * value when not alphabetic
-     *
-     * @param _b1 The byte to be converted to upper case
+     * @param _b1 The byte to be converted to upper case.
      * @return bytes1 The converted value if the passed value was alphabetic
-     *                and in a lower case otherwise returns the original value
+     *                and in a lower case otherwise returns the original value.
      */
     function _upper(bytes1 _b1) private pure returns (bytes1) {
         if (_b1 >= 0x61 && _b1 <= 0x7A) {
@@ -138,14 +135,12 @@ library CritterStrings {
     }
 
     /**
-     * Lower
+     * @dev Convert an alphabetic character to lower case and return the original
+     *      value when not alphabetic.
      *
-     * Convert an alphabetic character to lower case and return the original
-     * value when not alphabetic
-     *
-     * @param _b1 The byte to be converted to lower case
+     * @param _b1 The byte to be converted to lower case.
      * @return bytes1 The converted value if the passed value was alphabetic
-     *                and in a upper case otherwise returns the original value
+     *                and in a upper case otherwise returns the original value.
      */
     function _lower(bytes1 _b1) private pure returns (bytes1) {
         if (_b1 >= 0x41 && _b1 <= 0x5A) {
