@@ -14,5 +14,6 @@
         "maxLength": 64
       }
     ]
-  }
+  },
+  "quotes": ["single"]
 }

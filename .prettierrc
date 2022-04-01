@@ -1,4 +1,5 @@
 {
   "singleQuote": true,
-  "printWidth": 79
+  "printWidth": 79,
+  "plugins": ["prettier-plugin-solidity"]
 }
