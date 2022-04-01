@@ -21,7 +21,6 @@ pragma solidity ^0.8.4;
 /**
  * @dev A string library with convenience functions. Mostly taken from:
  *      https://gist.github.com/whitehorse21/69a6287c3560e730eabfe05efc17ae22
- *      James Lockhart <james@n3tw0rk.co.uk>
  */
 library StringTheory {
     /**
