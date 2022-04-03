@@ -33,7 +33,8 @@ import './libraries/StringTheory.sol';
 import './interfaces/ICritter.sol';
 
 /**
- * @dev Critter: an {ERC721} token, including:
+ * @dev Critter: a microblogging platform where each post is
+ * an {ERC721} token. Functionality includes:
  *
  *  - ability for holders to burn (destroy) their tokens
  *  - a minter role that allows for token minting (creation)
