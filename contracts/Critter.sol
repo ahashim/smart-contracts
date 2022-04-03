@@ -25,7 +25,6 @@ import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
-import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import './libraries/StringTheory.sol';
 
@@ -49,7 +48,6 @@ import './interfaces/ICritter.sol';
  * and pauser roles to other accounts.
  */
 contract Critter is
-    Context,
     ERC721,
     ERC721Enumerable,
     ERC721URIStorage,
@@ -101,7 +99,7 @@ contract Critter is
      */
     modifier noAccount(address _address) {
         require(
-            bytes(usernames[_msgSender()]).length == 0,
+            bytes(usernames[msg.sender]).length == 0,
             'Critter: account already exists'
         );
         _;
@@ -139,9 +137,9 @@ contract Critter is
         _baseTokenURI = baseTokenURI;
 
         // Contract owner is the default admin
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _grantRole(MINTER_ROLE, _msgSender());
-        _grantRole(PAUSER_ROLE, _msgSender());
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(MINTER_ROLE, msg.sender);
+        _grantRole(PAUSER_ROLE, msg.sender);
 
         // Set initial token ID to 1
         _tokenIdCounter.increment();
@@ -167,20 +165,20 @@ contract Critter is
     function createAccount(string memory username)
         public
         override(ICritter)
-        noAccount(_msgSender())
+        noAccount(msg.sender)
         isValidUsername(username)
         returns (bool)
     {
         // set our address & username mappings
-        addresses[username] = _msgSender();
-        usernames[_msgSender()] = username;
+        addresses[username] = msg.sender;
+        usernames[msg.sender] = username;
 
         // bypassing the admin-check to grant roles in order to
         // automatically initialize users when they create an account.
-        _grantRole(MINTER_ROLE, _msgSender());
+        _grantRole(MINTER_ROLE, msg.sender);
 
         // log account creation
-        emit AccountCreated(_msgSender(), username);
+        emit AccountCreated(msg.sender, username);
 
         return true;
     }
@@ -191,20 +189,20 @@ contract Critter is
     function updateUsername(string memory newUsername)
         public
         override(ICritter)
-        hasAccount(_msgSender())
+        hasAccount(msg.sender)
         isValidUsername(newUsername)
         returns (bool)
     {
         // clear current username from the addresses mapping
-        string memory oldUsername = this.usernames(_msgSender());
+        string memory oldUsername = this.usernames(msg.sender);
         delete addresses[oldUsername];
 
         // set new usernames & address mappings
-        addresses[newUsername] = _msgSender();
-        usernames[_msgSender()] = newUsername;
+        addresses[newUsername] = msg.sender;
+        usernames[msg.sender] = newUsername;
 
         // log the change
-        emit UsernameUpdated(_msgSender(), oldUsername, newUsername);
+        emit UsernameUpdated(msg.sender, oldUsername, newUsername);
 
         return true;
     }
@@ -215,7 +213,7 @@ contract Critter is
     function createSqueak(string memory content)
         public
         override(ICritter)
-        hasAccount(_msgSender())
+        hasAccount(msg.sender)
         returns (bool)
     {
         // check invariants
@@ -228,14 +226,14 @@ contract Critter is
 
         // build squeak & save it to storage
         Squeak storage squeak = squeaks[tokenId];
-        squeak.account = _msgSender();
+        squeak.account = msg.sender;
         squeak.content = content;
 
         // mint our token
-        safeMint(_msgSender(), tokenId);
+        safeMint(msg.sender, tokenId);
 
         // log the token ID & content
-        emit SqueakCreated(_msgSender(), tokenId, squeak.content);
+        emit SqueakCreated(msg.sender, tokenId, squeak.content);
 
         return true;
     }
@@ -246,7 +244,7 @@ contract Critter is
     function deleteSqueak(uint256 tokenId)
         public
         override(ICritter)
-        hasAccount(_msgSender())
+        hasAccount(msg.sender)
         returns (bool)
     {
         // burn ERC721 token
@@ -256,7 +254,7 @@ contract Critter is
         delete squeaks[tokenId];
 
         // log deleted token ID
-        emit SqueakDeleted(_msgSender(), tokenId);
+        emit SqueakDeleted(msg.sender, tokenId);
 
         return true;
     }
