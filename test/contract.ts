@@ -1,6 +1,6 @@
 // libraries
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { BASE_TOKEN_URI, NAME, SYMBOL, USERNAME } from './constants';
 
 // types
@@ -16,12 +16,21 @@ describe('Contract', () => {
   let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
 
+  // upgrade variables
+  const upgradeAddress = ethers.utils.getAddress(
+    '0x70997970c51812dc3a010c7d01b50e0d17dc79c8'
+  );
+
   beforeEach(async () => {
     [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory('Critter');
 
-    // deploy our contract
-    contract = await factory.deploy(NAME, SYMBOL, BASE_TOKEN_URI);
+    // deploy upgradeable contract
+    contract = await upgrades.deployProxy(factory, [
+      NAME,
+      SYMBOL,
+      BASE_TOKEN_URI,
+    ]);
 
     // create an owner account
     const createAccountTx = await contract.createAccount(USERNAME);
@@ -67,6 +76,17 @@ describe('Contract', () => {
         contract.connect(ahmed).pause()
       ).to.be.revertedWith(
         'AccessControl: account 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 is missing role 0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a'
+      );
+    });
+  });
+
+  describe('upgradeable', () => {
+    it('reverts when a user without an UPGRADER_ROLE tries to upgrade', async () => {
+      await expect(
+        // ahmed trying to upgrade the contract w/o an UPGRADER_ROLE
+        contract.connect(ahmed).upgradeTo(upgradeAddress)
+      ).to.be.revertedWith(
+        'AccessControl: account 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 is missing role 0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3'
       );
     });
   });

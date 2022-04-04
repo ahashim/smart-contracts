@@ -1,6 +1,6 @@
 // libraries
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { BASE_TOKEN_URI, NAME, SYMBOL, USERNAME } from './constants';
 
 // types
@@ -22,7 +22,13 @@ describe('Accounts', () => {
   beforeEach(async () => {
     [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory('Critter');
-    contract = await factory.deploy(NAME, SYMBOL, BASE_TOKEN_URI);
+
+    // deploy upgradeable contract
+    contract = await upgrades.deployProxy(factory, [
+      NAME,
+      SYMBOL,
+      BASE_TOKEN_URI,
+    ]);
   });
 
   describe('create', () => {

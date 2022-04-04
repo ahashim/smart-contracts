@@ -18,14 +18,18 @@
 */
 pragma solidity ^0.8.4;
 
+// Base Contracts
+import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
+
 // Libraries
-import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import '@openzeppelin/contracts/security/Pausable.sol';
-import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
-import '@openzeppelin/contracts/utils/Counters.sol';
 import './libraries/StringTheory.sol';
 
 // Interfaces
@@ -33,43 +37,44 @@ import './interfaces/ICritter.sol';
 
 /**
  * @dev Critter: a microblogging platform where each post is
- * an {ERC721} token. Functionality includes:
+ *      an {ERC721} token. Functionality includes:
  *
- *  - ability for holders to burn (destroy) their tokens
- *  - a minter role that allows for token minting (creation)
- *  - a pauser role that allows to stop all token transfers
- *  - token ID and URI autogeneration
+ *          - ability for holders to burn (destroy) their tokens
+ *          - a minter role that allows for token minting (creation)
+ *          - a pauser role that allows to stop all token transfers
+ *          - an upgader role that allows an address to upgrade the contract
+ *          - token ID and URI autogeneration
  *
- * This contract uses {AccessControl} to lock permissioned functions using the
- * different roles - head to its documentation for details.
- *
- * The account that deploys the contract will be granted the minter and pauser
- * roles, as well as the default admin role, which will let it grant both minter
- * and pauser roles to other accounts.
+ *      This contract uses {AccessControlEnumerable} to lock permissioned
+ *      functions using the different roles - head to its documentation for
+ *      details.
  */
 contract Critter is
-    ERC721,
-    ERC721Enumerable,
-    ERC721URIStorage,
-    Pausable,
-    AccessControlEnumerable,
-    ERC721Burnable,
+    Initializable,
+    ERC721Upgradeable,
+    ERC721EnumerableUpgradeable,
+    ERC721URIStorageUpgradeable,
+    PausableUpgradeable,
+    AccessControlEnumerableUpgradeable,
+    ERC721BurnableUpgradeable,
+    UUPSUpgradeable,
     ICritter
 {
-    using Counters for Counters.Counter;
+    using CountersUpgradeable for CountersUpgradeable.Counter;
 
+    // Roles
     bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
     bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
+    bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 
-    // Using a counter to keep track of ID's instead
-    // of {balanceOf} due to potential token burning
-    Counters.Counter private _tokenIdCounter;
+    // A counter keeps track of token ID's instead of {balanceOf} due to burning
+    CountersUpgradeable.Counter private _tokenIdCounter;
 
     string private _baseTokenURI;
 
     /**
      * @dev Mapping of tokenId's to Squeaks.
-     * See {ICritter-Squeak} for more info.
+     *      See {ICritter-Squeak} for more info.
      */
     mapping(uint256 => Squeak) public squeaks;
 
@@ -84,7 +89,7 @@ contract Critter is
     mapping(address => string) public usernames;
 
     /**
-     * @dev ensures that `_address` has a Critter account.
+     * @dev Ensures that `_address` has a Critter account.
      */
     modifier hasAccount(address _address) {
         require(
@@ -95,7 +100,7 @@ contract Critter is
     }
 
     /**
-     * @dev ensures that `_address` does not have a Critter account.
+     * @dev Ensures that `_address` does not have a Critter account.
      */
     modifier noAccount(address _address) {
         require(
@@ -106,11 +111,11 @@ contract Critter is
     }
 
     /**
-     * @dev ensures that `username` satisfies the following requirements:
+     * @dev Ensures that `username` satisfies the following requirements:
      *
-     * - Greater than 0 bytes (cannot be empty).
-     * - Less than 32 bytes (upper bound for storage slot optimization).
-     * - Is not already in use.
+     *      - Greater than 0 bytes (cannot be empty).
+     *      - Less than 32 bytes (upper bound for storage slot optimization).
+     *      - Is not already in use.
      */
     modifier isValidUsername(string memory username) {
         require(
@@ -122,36 +127,55 @@ contract Critter is
         _;
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() initializer {}
+
     /**
-     * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE` and `PAUSER_ROLE` to the
-     * account that deploys the contract.
+     * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE` `UPGRADER_ROLE`, and
+     *      `PAUSER_ROLE` to the account that deploys the contract.
      *
-     * Token URIs will be autogenerated based on `baseURI` and their token IDs.
+     *      Token URIs will be autogenerated based on `baseTokenURI` and their
+     *      token IDs.
      */
-    constructor(
+    function initialize(
         string memory name,
         string memory symbol,
         string memory baseTokenURI
-    ) ERC721(name, symbol) {
-        // Set base token URI
+    ) public initializer {
+        // initialize base contracts
+        __ERC721_init(name, symbol);
+        __ERC721Enumerable_init();
+        __ERC721URIStorage_init();
+        __Pausable_init();
+        __AccessControl_init();
+        __ERC721Burnable_init();
+        __UUPSUpgradeable_init();
+
+        // set base token URI
         _baseTokenURI = baseTokenURI;
 
-        // Contract owner is the default admin
+        // grant all roles to contract owner
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
+        _grantRole(UPGRADER_ROLE, msg.sender);
 
-        // Set initial token ID to 1
+        // set initial token ID to 1
         _tokenIdCounter.increment();
     }
 
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @dev See {IERC165Upgradeable-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(AccessControlEnumerable, IERC165, ERC721, ERC721Enumerable)
+        override(
+            ERC721Upgradeable,
+            ERC721EnumerableUpgradeable,
+            IERC165Upgradeable,
+            AccessControlEnumerableUpgradeable
+        )
         returns (bool)
     {
         return
@@ -260,24 +284,24 @@ contract Critter is
     }
 
     /**
-     * @dev See {IERC721-_baseURI}.
+     * @dev See {IERC721Upgradeable-_baseURI}.
      */
     function _baseURI()
         internal
         view
-        override(ERC721)
+        override(ERC721Upgradeable)
         returns (string memory)
     {
         return _baseTokenURI;
     }
 
     /**
-     * @dev See {IERC721Metadata-tokenURI}.
+     * @dev See {IERC721MetadataUpgradeable-tokenURI}.
      */
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721, ERC721URIStorage)
+        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
         returns (string memory)
     {
         return super.tokenURI(tokenId);
@@ -312,36 +336,47 @@ contract Critter is
     }
 
     /**
-     * @dev Burns `tokenId`. See {ERC721-_burn}.
+     * @dev Function that should revert when `msg.sender` is not authorized to
+     *      upgrade the contract.
+     */
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        view
+        onlyRole(UPGRADER_ROLE)
+        override
+    {}
+
+    /**
+     * @dev Burns `tokenId`. See {ERC721Upgradeable-_burn}.
      *
-     * Requirements:
+     *      Requirements:
      *
-     * - The caller must own `tokenId` or be an approved operator.
+     *      - The caller must own `tokenId` or be an approved operator.
      */
     function _burn(uint256 tokenId)
         internal
-        override(ERC721, ERC721URIStorage)
+        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
     {
         super._burn(tokenId);
     }
 
     /**
      * @dev Hook that is called before any token transfer. This includes minting
-     * and burning.
+     *      and burning.
      *
-     * Calling conditions:
+     *      Calling conditions:
      *
-     * - When `from` and `to` are both non-zero, ``from``'s `tokenId` will be
-     * transferred to `to`.
-     * - When `from` is zero, `tokenId` will be minted for `to`.
-     * - When `to` is zero, ``from``'s `tokenId` will be burned.
-     * - `from` and `to` are never both zero.
+     *      - When `from` and `to` are both non-zero, ``from``'s `tokenId` will
+     *      be transferred to `to`.
+     *      - When `from` is zero, `tokenId` will be minted for `to`.
+     *      - When `to` is zero, ``from``'s `tokenId` will be burned.
+     *      - `from` and `to` are never both zero.
      */
     function _beforeTokenTransfer(
         address from,
         address to,
         uint256 tokenId
-    ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
+    ) internal override(ERC721Upgradeable, ERC721EnumerableUpgradeable) whenNotPaused {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 

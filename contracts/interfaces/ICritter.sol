@@ -18,22 +18,23 @@
 */
 pragma solidity ^0.8.4;
 
-import '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
-import '@openzeppelin/contracts/interfaces/IERC165.sol';
-import '@openzeppelin/contracts/interfaces/IERC721.sol';
-import '@openzeppelin/contracts/interfaces/IERC721Enumerable.sol';
+import '@openzeppelin/contracts-upgradeable/access/IAccessControlEnumerableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/interfaces/IERC721Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/interfaces/IERC721EnumerableUpgradeable.sol';
 
 /**
  * @dev Interface for Critter contract.
  */
 interface ICritter is
-    IAccessControlEnumerable,
-    IERC165,
-    IERC721,
-    IERC721Enumerable
+    IAccessControlEnumerableUpgradeable,
+    IERC165Upgradeable,
+    IERC721Upgradeable,
+    IERC721EnumerableUpgradeable
 {
     /**
-     * @dev Squeak consists of an account address & a content string (limit: 256 bytes).
+     * @dev Squeak consists of an account address & a content string (256 bytes
+     *      limit).
      */
     struct Squeak {
         address account;
@@ -41,12 +42,14 @@ interface ICritter is
     }
 
     /**
-     * @dev Emitted when the `sender` address creates a Critter account with a `username`.
+     * @dev Emitted when the `sender` address creates a Critter account with a
+     *      `username`.
      */
     event AccountCreated(address indexed sender, string username);
 
     /**
-     * @dev Emitted when the `sender` address creates a squeak with `content` and is assigned a `tokenID`.
+     * @dev Emitted when the `sender` address creates a squeak with `content`
+     *      and is assigned a `tokenID`.
      */
     event SqueakCreated(
         address indexed sender,
@@ -60,7 +63,8 @@ interface ICritter is
     event SqueakDeleted(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Emitted when the `sender` address updates their account and changes an `oldUsername` to a `newUsername`.
+     * @dev Emitted when the `sender` address updates their account and changes
+     *      an `oldUsername` to a `newUsername`.
      */
     event UsernameUpdated(
         address indexed sender,
@@ -71,84 +75,86 @@ interface ICritter is
     /**
      * @dev Create a Critter account.
      *
-     * Requirements:
+     *      Requirements:
      *
-     * - The caller must not have an account.
-     * - Username must be valid (see {isValidUsername} modifier).
+     *      - The caller must not have an account.
+     *      - Username must be valid (see {isValidUsername} modifier).
      *
-     * Emits {AccountCreated} event.
+     *      Emits {AccountCreated} event.
      */
     function createAccount(string memory username) external returns (bool);
 
     /**
      * @dev Update your critter username.
      *
-     * Requirements:
+     *      Requirements:
      *
-     * - The caller must already have an account.
-     * - The caller must have the `MINTER_ROLE`.
-     * - Username must be valid (see {isValidUsername} modifier).
+     *      - The caller must already have an account.
+     *      - The caller must have the `MINTER_ROLE`.
+     *      - Username must be valid (see {isValidUsername} modifier).
      *
-     *
-     * Emits {UsernameUpdated} event.
+     *      Emits {UsernameUpdated} event.
      */
     function updateUsername(string memory newUsername) external returns (bool);
 
     /**
      * @dev Create a squeak.
      *
-     * Requirements:
+     *      Requirements:
      *
-     * - The caller must already have an account.
-     * - The caller must have the `MINTER_ROLE`.
-     * - Squeak must be between 0 & 256 bytes.
+     *      - The caller must already have an account.
+     *      - The caller must have the `MINTER_ROLE`.
+     *      - Squeak must be between 0 & 256 bytes.
+     *
+     *      Emits {SqueakCreated} event.
      */
     function createSqueak(string memory content) external returns (bool);
 
     /**
      * @dev Deletes squeak at `tokenId`.
      *
-     * Requirements:
+     *      Requirements:
      *
-     * - The caller must already have an account.
-     * - The caller must own `tokenId` or be an approved operator.
+     *      - The caller must already have an account.
+     *      - The caller must own `tokenId` or be an approved operator.
      *
-     * Emits {SqueakDeleted} & {Transfer} events.
+     *      Emits {SqueakDeleted} & {Transfer} events.
      */
     function deleteSqueak(uint256 tokenId) external returns (bool);
 
     /**
      * @dev Creates a new `tokenId` and transfers it to `to`.
-     * Token URI generated & assigned automatically.
+     *      Token URI generated & assigned automatically.
      *
-     * Requirements:
+     *      Requirements:
      *
-     * - `tokenId` must not exist.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+     *      - `tokenId` must not exist.
+     *      - If `to` refers to a smart contract, it must implement
+     *      {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
      *
-     * Emits a {Transfer} event.
+     *      Emits a {Transfer} event.
      */
     function safeMint(address to, uint256 tokenId) external;
 
     /**
      * @dev Pauses all token transfers.
      *
-     * See {ERC721Pausable} and {Pausable-_pause}.
+     *      See {ERC721PausableUpgradeable} and {PausableUpgradeable-_pause}.
      *
-     * Requirements:
+     *      Requirements:
      *
-     * - The caller must have the `PAUSER_ROLE`.
+     *      - The caller must have the `PAUSER_ROLE`.
      */
     function pause() external;
 
     /**
      * @dev Unpauses all token transfers.
      *
-     * See {ERC721Pausable} and {Pausable-_unpause}.
+     *      See {ERC721PausableUpgradeable} and {PausableUpgradeable-_pause}.
      *
-     * Requirements:
+     *      Requirements:
      *
-     * - The caller must have the `PAUSER_ROLE`.
+     *      - The caller must have the `PAUSER_ROLE`.
      */
     function unpause() external;
 }

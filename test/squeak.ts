@@ -1,10 +1,10 @@
 // libraries
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { BASE_TOKEN_URI, NAME, SYMBOL, USERNAME } from './constants';
 
 // types
-import { Contract, ContractFactory } from 'ethers';
+import type { Contract, ContractFactory } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { keccak256, defaultAbiCoder } from 'ethers/lib/utils';
 
@@ -21,8 +21,12 @@ describe('Squeaks', () => {
     [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory('Critter');
 
-    // deploy our contract
-    contract = await factory.deploy(NAME, SYMBOL, BASE_TOKEN_URI);
+    // deploy upgradeable contract
+    contract = await upgrades.deployProxy(factory, [
+      NAME,
+      SYMBOL,
+      BASE_TOKEN_URI,
+    ]);
 
     // create an owner account
     const createAccountTx = await contract.createAccount(USERNAME);
