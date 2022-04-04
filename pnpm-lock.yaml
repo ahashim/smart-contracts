@@ -27,7 +27,9 @@ specifiers:
   ethereum-waffle: ^3.4.4
   ethers: ^5.6.2
   hardhat: ^2.9.2
+  hardhat-contract-sizer: ^2.5.1
   hardhat-gas-reporter: ^1.0.8
+  hardhat-watcher: ^2.1.1
   lodash: ^4.17.21
   prettier: ^2.6.1
   prettier-plugin-solidity: ^1.0.0-beta.19
@@ -68,7 +70,9 @@ devDependencies:
   ethereum-waffle: 3.4.4_typescript@4.6.3
   ethers: 5.6.2
   hardhat: 2.9.2
+  hardhat-contract-sizer: 2.5.1_hardhat@2.9.2
   hardhat-gas-reporter: 1.0.8_hardhat@2.9.2
+  hardhat-watcher: 2.1.1_hardhat@2.9.2
   prettier: 2.6.1
   prettier-plugin-solidity: 1.0.0-beta.19_prettier@2.6.1
   solhint: 3.3.7
@@ -2592,6 +2596,15 @@ packages:
       colors: 1.4.0
     dev: true
 
+  /cli-table3/0.6.1:
+    resolution: {integrity: sha512-w0q/enDHhPLq44ovMGdQeeDLvwxwavsJX7oQGYt/LrBlYsyaxyDnp6z3QzFut/6kLLKnlcUVJLrpB7KBfgG/RA==}
+    engines: {node: 10.* || >= 12.*}
+    dependencies:
+      string-width: 4.2.3
+    optionalDependencies:
+      colors: 1.4.0
+    dev: true
+
   /cli-width/2.2.1:
     resolution: {integrity: sha512-GRMWDxpOB6Dgk2E5Uo+3eEBvtOOlimMmpbFiKuLFnQzYDavtLFY3K5ona41jgN/WdRZtG7utuVSVTL4HbZHGkw==}
     dev: true
@@ -4977,6 +4990,16 @@ packages:
       har-schema: 2.0.0
     dev: true
 
+  /hardhat-contract-sizer/2.5.1_hardhat@2.9.2:
+    resolution: {integrity: sha512-28yRb73e30aBVaZOOHTlHZFIdIasA/iFunIehrUviIJTubvdQjtSiQUo2wexHFtt71mQeMPP8qjw2sdbgatDnQ==}
+    peerDependencies:
+      hardhat: ^2.0.0
+    dependencies:
+      chalk: 4.1.2
+      cli-table3: 0.6.1
+      hardhat: 2.9.2
+    dev: true
+
   /hardhat-gas-reporter/1.0.8_hardhat@2.9.2:
     resolution: {integrity: sha512-1G5thPnnhcwLHsFnl759f2tgElvuwdkzxlI65fC9PwxYMEe9cmjkVAAWTf3/3y8uP6ZSPiUiOW8PgZnykmZe0g==}
     peerDependencies:
@@ -4988,6 +5011,15 @@ packages:
       sha1: 1.1.1
     transitivePeerDependencies:
       - '@codechecks/client'
+    dev: true
+
+  /hardhat-watcher/2.1.1_hardhat@2.9.2:
+    resolution: {integrity: sha512-zilmvxAYD34IofBrwOliQn4z92UiDmt2c949DW4Gokf0vS0qk4YTfVCi/LmUBICThGygNANE3WfnRTpjCJGtDA==}
+    peerDependencies:
+      hardhat: ^2.0.0
+    dependencies:
+      chokidar: 3.5.3
+      hardhat: 2.9.2
     dev: true
 
   /hardhat/2.9.2:
