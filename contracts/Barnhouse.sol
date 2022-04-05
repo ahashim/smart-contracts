@@ -21,9 +21,9 @@ pragma solidity ^0.8.4;
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 
 /**
- * @dev StorageShed is where all storage variables for Critter are held.
+ * @dev Barnhouse is where all storage variables for Critter are held.
  */
-contract StorageShed {
+contract Barnhouse {
     /// ---------------- STRUCTS ---------------- ///
 
     /**
@@ -35,7 +35,6 @@ contract StorageShed {
         // uint blockNumber;
         string content;
     }
-
 
     /// ---------------- STATE VARIABLES ---------------- ///
 
@@ -64,7 +63,6 @@ contract StorageShed {
      * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
      */
     bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
-
 
     /// ----------------  MAPPINGS ---------------- ///
 
