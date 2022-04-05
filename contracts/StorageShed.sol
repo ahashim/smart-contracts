@@ -24,7 +24,31 @@ import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
  * @dev StorageShed is where all storage variables for Critter are held.
  */
 contract StorageShed {
-    /// ---------------- CONSTANTS ---------------- ///
+    /// ---------------- STRUCTS ---------------- ///
+
+    /**
+     * @dev Squeak consists of an account address & a content string (256 bytes
+     *      limit).
+     */
+    struct Squeak {
+        address account;
+        // uint blockNumber;
+        string content;
+    }
+
+
+    /// ---------------- STATE VARIABLES ---------------- ///
+
+    /**
+     * @dev Used to autogenerate token URI's when minting.
+     */
+    string public _baseTokenURI;
+
+    /**
+     * @dev A counter keeps track of token ID's instead of {balanceOf} due to
+     *      token burning.
+     */
+    CountersUpgradeable.Counter public _tokenIdCounter;
 
     /**
      * @dev MINTER_ROLE has priviledges to mint tokens.
@@ -41,30 +65,6 @@ contract StorageShed {
      */
     bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 
-    /// ---------------- STRUCTS ---------------- ///
-
-    /**
-     * @dev Squeak consists of an account address & a content string (256 bytes
-     *      limit).
-     */
-    struct Squeak {
-        address account;
-        // uint blockNumber;
-        string content;
-    }
-
-    /// ---------------- STATE VARIABLES ---------------- ///
-
-    /**
-     * @dev Used to autogenerate token URI's when minting.
-     */
-    string public _baseTokenURI;
-
-    /**
-     * @dev A counter keeps track of token ID's instead of {balanceOf} due to
-     *      token burning.
-     */
-    CountersUpgradeable.Counter public _tokenIdCounter;
 
     /// ----------------  MAPPINGS ---------------- ///
 
