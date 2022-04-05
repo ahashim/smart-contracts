@@ -33,15 +33,6 @@ interface ICritter is
     IERC721EnumerableUpgradeable
 {
     /**
-     * @dev Squeak consists of an account address & a content string (256 bytes
-     *      limit).
-     */
-    struct Squeak {
-        address account;
-        string content;
-    }
-
-    /**
      * @dev Emitted when the `sender` address creates a Critter account with a
      *      `username`.
      */

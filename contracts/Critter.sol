@@ -18,7 +18,13 @@
 */
 pragma solidity ^0.8.4;
 
-// Base Contracts
+// Interfaces
+import './interfaces/ICritter.sol';
+
+// Libraries
+import './libraries/StringTheory.sol';
+
+// Contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
@@ -27,23 +33,17 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
-
-// Libraries
-import './libraries/StringTheory.sol';
-
-// Interfaces
-import './interfaces/ICritter.sol';
+import './StorageShed.sol';
 
 /**
  * @dev Critter: a microblogging platform where each post is
  *      an {ERC721} token. Functionality includes:
  *
- *          - ability for holders to burn (destroy) their tokens
- *          - a minter role that allows for token minting (creation)
- *          - a pauser role that allows to stop all token transfers
- *          - an upgader role that allows an address to upgrade the contract
- *          - token ID and URI autogeneration
+ *      - ability for holders to burn (destroy) their tokens
+ *      - a minter role that allows for token minting (creation)
+ *      - a pauser role that allows to stop all token transfers
+ *      - an upgader role that allows an address to upgrade the contract
+ *      - token ID and URI autogeneration
  *
  *      This contract uses {AccessControlEnumerable} to lock permissioned
  *      functions using the different roles - head to its documentation for
@@ -58,35 +58,10 @@ contract Critter is
     AccessControlEnumerableUpgradeable,
     ERC721BurnableUpgradeable,
     UUPSUpgradeable,
+    StorageShed,
     ICritter
 {
     using CountersUpgradeable for CountersUpgradeable.Counter;
-
-    // Roles
-    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
-    bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
-    bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
-
-    // A counter keeps track of token ID's instead of {balanceOf} due to burning
-    CountersUpgradeable.Counter private _tokenIdCounter;
-
-    string private _baseTokenURI;
-
-    /**
-     * @dev Mapping of tokenId's to Squeaks.
-     *      See {ICritter-Squeak} for more info.
-     */
-    mapping(uint256 => Squeak) public squeaks;
-
-    /**
-     * @dev Mapping of usernames => account addresses.
-     */
-    mapping(string => address) public addresses;
-
-    /**
-     * @dev Mapping of account addresses => usernames.
-     */
-    mapping(address => string) public usernames;
 
     /**
      * @dev Ensures that `_address` has a Critter account.
