@@ -113,7 +113,6 @@ npx hardhat contract-size
 - [ ] Implement basic moderation status on account structs:
   - Active
   - Suspended
-  - Shadow Banned
   - Banned
 - [ ] Auction mechanism to bid on posted squeaks
   - Ideally [Vickrey auctions](https://github.com/JoWxW/Vickrey-Auction/blob/master/contracts/VickreyAuction.sol).
