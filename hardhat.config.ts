@@ -46,14 +46,11 @@ const config: HardhatUserConfig = {
       files: ['contracts/**/*.sol', 'test/**/*.ts'],
       tasks: ['test', 'size-contracts'],
     },
-    prepare: {
-      tasks: ['compile', 'size-contracts', 'coverage'],
-    },
   },
 };
 
 // User defined tasks
-task('accounts', 'Prints the list of accounts', async (args, hre) => {
+task('accounts', 'Prints the list of accounts', async (_, hre) => {
   const accounts = await hre.ethers.getSigners();
 
   for (const account of accounts) {
@@ -64,10 +61,29 @@ task('accounts', 'Prints the list of accounts', async (args, hre) => {
 task(
   'blockNumber',
   'Prints the current block number',
-  async (args, { ethers }) => {
+  async (_, { ethers }) => {
     await ethers.provider.getBlockNumber().then((blockNumber) => {
       console.log('Current block number: ' + blockNumber);
     });
+  }
+);
+
+task(
+  'prepare',
+  'Compiles the latest contracts, generates a contract size report & a test coverage report',
+  async function (_, { run }) {
+    // compile contracts
+    await run('compile');
+    console.log('\n');
+
+    // contract sizing report
+    console.log('\x1b[1m%s', 'Contract Size'); // making the title bold
+    console.log('%s\x1b[0m', '============='); // reset formatting after separator
+    await run('size-contracts');
+    console.log('\n');
+
+    // test coverage report
+    await run('coverage');
   }
 );
 
