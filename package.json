@@ -7,9 +7,9 @@
     "coverage": "npx hardhat coverage",
     "format": "prettier --write 'contracts/**/*.sol'",
     "lint": "solhint contracts/**/*.sol",
-    "prepare": "npm run format && npm run lint && npx hardhat prepare",
-    "test": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat test",
-    "watch": "MODE=watch TS_NODE_TRANSPILE_ONLY=1 npx hardhat watch ci"
+    "prepare": "REPORT_GAS=1 npm run format && npm run lint && npx hardhat prepare",
+    "test": "REPORT_GAS=1 TS_NODE_TRANSPILE_ONLY=1 npx hardhat test",
+    "watch": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat watch ci"
   },
   "keywords": [
     "blockchain",

@@ -20,7 +20,7 @@ const config: HardhatUserConfig = {
   gasReporter: {
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     currency: 'USD',
-    enabled: process.env.MODE !== 'watch',
+    enabled: !!process.env.REPORT_GAS,
   },
   networks: {
     hardhat: {},
