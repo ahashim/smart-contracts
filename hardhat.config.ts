@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+import 'dotenv/config';
 import { HardhatUserConfig, task } from 'hardhat/config';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
@@ -8,8 +8,6 @@ import 'hardhat-contract-sizer';
 import 'hardhat-gas-reporter';
 import 'hardhat-watcher';
 import 'solidity-coverage';
-
-dotenv.config();
 
 const config: HardhatUserConfig = {
   contractSizer: {
@@ -22,7 +20,7 @@ const config: HardhatUserConfig = {
   gasReporter: {
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     currency: 'USD',
-    enabled: !!process.env.REPORT_GAS,
+    enabled: process.env.MODE !== 'watch',
   },
   networks: {
     hardhat: {},
