@@ -13,7 +13,7 @@
       {
         "maxLength": 64
       }
-    ]
-  },
-  "quotes": ["single"]
+    ],
+    "quotes": ["error", "single"]
+  }
 }
