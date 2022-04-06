@@ -33,6 +33,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol';
+import './Accounts.sol';
 import './Barnhouse.sol';
 
 /**
@@ -59,48 +60,10 @@ contract Critter is
     ERC721BurnableUpgradeable,
     UUPSUpgradeable,
     Barnhouse,
+    Accounts,
     ICritter
 {
     using CountersUpgradeable for CountersUpgradeable.Counter;
-
-    /**
-     * @dev Ensures that `_address` has a Critter account.
-     */
-    modifier hasAccount(address _address) {
-        require(
-            bytes(usernames[_address]).length > 0,
-            'Critter: address does not have an account'
-        );
-        _;
-    }
-
-    /**
-     * @dev Ensures that `_address` does not have a Critter account.
-     */
-    modifier noAccount(address _address) {
-        require(
-            bytes(usernames[msg.sender]).length == 0,
-            'Critter: account already exists'
-        );
-        _;
-    }
-
-    /**
-     * @dev Ensures that `username` satisfies the following requirements:
-     *
-     *      - Greater than 0 bytes (cannot be empty).
-     *      - Less than 32 bytes (upper bound for storage slot optimization).
-     *      - Is not already in use.
-     */
-    modifier isValidUsername(string memory username) {
-        require(
-            bytes(username).length > 0,
-            'Critter: username cannot be empty'
-        );
-        require(bytes(username).length <= 32, 'Critter: username is too long');
-        require(addresses[username] == address(0), 'Critter: username taken');
-        _;
-    }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -126,6 +89,7 @@ contract Critter is
         __ERC721Burnable_init();
         __UUPSUpgradeable_init();
         __Barnhouse_init();
+        __Accounts_init();
 
         // set base token URI
         _baseTokenURI = baseTokenURI;
@@ -157,54 +121,6 @@ contract Critter is
         return
             interfaceId == type(ICritter).interfaceId ||
             super.supportsInterface(interfaceId);
-    }
-
-    /**
-     * @dev See {ICritter-createAccount}.
-     */
-    function createAccount(string memory username)
-        public
-        override(ICritter)
-        noAccount(msg.sender)
-        isValidUsername(username)
-        returns (bool)
-    {
-        // set our address & username mappings
-        addresses[username] = msg.sender;
-        usernames[msg.sender] = username;
-
-        // bypassing the admin-check to grant roles in order to
-        // automatically initialize users when they create an account.
-        _grantRole(MINTER_ROLE, msg.sender);
-
-        // log account creation
-        emit AccountCreated(msg.sender, username);
-
-        return true;
-    }
-
-    /**
-     * @dev See {ICritter-updateUsername}.
-     */
-    function updateUsername(string memory newUsername)
-        public
-        override(ICritter)
-        hasAccount(msg.sender)
-        isValidUsername(newUsername)
-        returns (bool)
-    {
-        // clear current username from the addresses mapping
-        string memory oldUsername = this.usernames(msg.sender);
-        delete addresses[oldUsername];
-
-        // set new usernames & address mappings
-        addresses[newUsername] = msg.sender;
-        usernames[msg.sender] = newUsername;
-
-        // log the change
-        emit UsernameUpdated(msg.sender, oldUsername, newUsername);
-
-        return true;
     }
 
     /**

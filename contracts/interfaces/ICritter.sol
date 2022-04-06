@@ -18,26 +18,19 @@
 */
 pragma solidity ^0.8.4;
 
-import '@openzeppelin/contracts-upgradeable/access/IAccessControlEnumerableUpgradeable.sol';
+// Interfaces
 import '@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/interfaces/IERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/interfaces/IERC721EnumerableUpgradeable.sol';
 
 /**
- * @dev Interface for Critter contract.
+ * @dev Interface for `Critter` contract.
  */
 interface ICritter is
-    IAccessControlEnumerableUpgradeable,
     IERC165Upgradeable,
     IERC721Upgradeable,
     IERC721EnumerableUpgradeable
 {
-    /**
-     * @dev Emitted when the `sender` address creates a Critter account with a
-     *      `username`.
-     */
-    event AccountCreated(address indexed sender, string username);
-
     /**
      * @dev Emitted when the `sender` address creates a squeak with `content`
      *      and is assigned a `tokenID`.
@@ -52,41 +45,6 @@ interface ICritter is
      * @dev Emitted when the `sender` address deletes a squeak of `tokenID`.
      */
     event SqueakDeleted(address indexed sender, uint256 tokenId);
-
-    /**
-     * @dev Emitted when the `sender` address updates their account and changes
-     *      an `oldUsername` to a `newUsername`.
-     */
-    event UsernameUpdated(
-        address indexed sender,
-        string oldUsername,
-        string newUsername
-    );
-
-    /**
-     * @dev Create a Critter account.
-     *
-     *      Requirements:
-     *
-     *      - The caller must not have an account.
-     *      - Username must be valid (see {isValidUsername} modifier).
-     *
-     *      Emits {AccountCreated} event.
-     */
-    function createAccount(string memory username) external returns (bool);
-
-    /**
-     * @dev Update your critter username.
-     *
-     *      Requirements:
-     *
-     *      - The caller must already have an account.
-     *      - The caller must have the `MINTER_ROLE`.
-     *      - Username must be valid (see {isValidUsername} modifier).
-     *
-     *      Emits {UsernameUpdated} event.
-     */
-    function updateUsername(string memory newUsername) external returns (bool);
 
     /**
      * @dev Create a squeak.
