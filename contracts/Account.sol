@@ -19,7 +19,7 @@
 pragma solidity ^0.8.4;
 
 // Interfaces
-import './interfaces/IAccounts.sol';
+import './interfaces/IAccount.sol';
 
 // Contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
@@ -29,11 +29,11 @@ import './Barnhouse.sol';
 /**
  * @dev A contract dealing with Critter account management.
  */
-contract Accounts is
+contract Account is
     Initializable,
     AccessControlEnumerableUpgradeable,
     Barnhouse,
-    IAccounts
+    IAccount
 {
     /**
      * @dev Ensures that `_address` has a Critter account.
@@ -84,7 +84,7 @@ contract Accounts is
      */
     function createAccount(string memory username)
         public
-        override(IAccounts)
+        override(IAccount)
         noAccount(msg.sender)
         isValidUsername(username)
         returns (bool)
@@ -108,7 +108,7 @@ contract Accounts is
      */
     function updateUsername(string memory newUsername)
         public
-        override(IAccounts)
+        override(IAccount)
         hasAccount(msg.sender)
         isValidUsername(newUsername)
         returns (bool)

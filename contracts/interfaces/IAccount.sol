@@ -24,7 +24,7 @@ import '@openzeppelin/contracts-upgradeable/access/IAccessControlEnumerableUpgra
 /**
  * @dev Interface for `Accounts` contract.
  */
-interface IAccounts is IAccessControlEnumerableUpgradeable {
+interface IAccount is IAccessControlEnumerableUpgradeable {
     /**
      * @dev Emitted when the `sender` address creates a Critter account with a
      *      `username`.
