@@ -54,7 +54,7 @@ interface IAccounts is IAccessControlEnumerableUpgradeable {
     function createAccount(string memory username) external returns (bool);
 
     /**
-     * @dev Update your critter username.
+     * @dev Update an accounts critter username.
      *
      *      Requirements:
      *
