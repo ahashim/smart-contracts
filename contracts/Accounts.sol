@@ -114,7 +114,7 @@ contract Accounts is
         returns (bool)
     {
         // clear current username from the addresses mapping
-        string memory oldUsername = this.usernames(msg.sender);
+        string memory oldUsername = usernames[msg.sender];
         delete addresses[oldUsername];
 
         // set new usernames & address mappings
