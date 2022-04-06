@@ -18,14 +18,19 @@
 */
 pragma solidity ^0.8.4;
 
+import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 
 /**
  * @dev Barnhouse is where all storage variables for Critter are held.
  */
-contract Barnhouse {
-    /// ---------------- STRUCTS ---------------- ///
+contract Barnhouse is Initializable {
+    /**
+     * @dev Initializer function
+     */
+    function __Barnhouse_init() internal onlyInitializing {}
 
+    /// ---------------- STRUCTS ---------------- ///
     /**
      * @dev Squeak consists of an account address & a content string (256 bytes
      *      limit).
@@ -37,7 +42,6 @@ contract Barnhouse {
     }
 
     /// ---------------- STATE VARIABLES ---------------- ///
-
     /**
      * @dev Used to autogenerate token URI's when minting.
      */
@@ -65,7 +69,6 @@ contract Barnhouse {
     bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 
     /// ----------------  MAPPINGS ---------------- ///
-
     /**
      * @dev Mapping of tokenId's to Squeaks.
      */

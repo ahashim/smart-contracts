@@ -125,6 +125,7 @@ contract Critter is
         __AccessControl_init();
         __ERC721Burnable_init();
         __UUPSUpgradeable_init();
+        __Barnhouse_init();
 
         // set base token URI
         _baseTokenURI = baseTokenURI;
