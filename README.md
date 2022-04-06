@@ -31,7 +31,7 @@ REPORT_GAS=1 # comment this line out to turn off gas reporting during test runs
 ROPSTEN_URL=<your-ropsten-network-api-url>
 ```
 
-The only required information you need for local development is the `PRIVATE_KEY`. The rest are used for gas reporting when running unit-tests, and variuos API reports upon deployment to mainnet.
+The only required information you need for local development is the `PRIVATE_KEY`. The rest are used for gas reporting when running unit-tests, and various API reports upon deployment to mainnet.
 
 The following commands will allow you to compile & run the contracts on a [local hardhat network](https://hardhat.org).
 
