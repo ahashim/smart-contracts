@@ -23,7 +23,12 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 
 /**
- * @dev Barnhouse is where all storage variables for Critter are held.
+ * @dev A contract holding all Critter storage variables. This is upgradeable
+ *      by means of appending new variables below the existing ones in future
+ *      versions. This will maintain storage mappings in the EVM as new
+ *      features are added.
+ *
+ *      More info on EVM storage collisions: https://tinyurl.com/d424mcpx
  */
 contract Barnhouse is Initializable {
     /**
