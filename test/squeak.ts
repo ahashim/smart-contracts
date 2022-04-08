@@ -67,7 +67,9 @@ describe('Squeaks', () => {
       await expect(
         // trying to create a squeak from ahmed's account who never registered
         contract.connect(ahmed).createSqueak('hello blockchain!')
-      ).to.be.revertedWith('Critter: address does not have an account');
+      ).to.be.revertedWith(
+        'AccessControl: account 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 is missing role 0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6'
+      );
     });
 
     it('reverts when the squeak has no content', async () => {

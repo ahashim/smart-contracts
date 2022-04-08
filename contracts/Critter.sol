@@ -98,77 +98,6 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-createAccount}.
-     */
-    function createAccount(string memory username)
-        public
-        override(ICritter)
-        noAccount(msg.sender)
-        whenNotPaused
-    {
-        _createAccount(username);
-    }
-
-    /**
-     * @dev See {ICritter-createSqueak}.
-     */
-    function createSqueak(string memory content)
-        public
-        override(ICritter)
-        whenNotPaused
-        hasAccount(msg.sender)
-        onlyRole(MINTER_ROLE)
-    {
-        // validate & save content to storage, then generate token ID & URI
-        (uint256 tokenId, string memory tokenUri) = _createSqueak(content);
-
-        _safeMint(msg.sender, tokenId);
-        _setTokenURI(tokenId, tokenUri);
-    }
-
-    /**
-     * @dev See {ICritter-deleteSqueak}.
-     */
-    function deleteSqueak(uint256 tokenId)
-        public
-        override(ICritter)
-        hasAccount(msg.sender)
-        whenNotPaused
-    {
-        // validate sender owns the token & burn it
-        burn(tokenId);
-
-        // delete from storage
-        _deleteSqueak(tokenId);
-    }
-
-    /**
-     * @dev See {ICritter-updateUsername}.
-     */
-    function updateUsername(string memory username)
-        public
-        override(ICritter)
-        hasAccount(msg.sender)
-        whenNotPaused
-    {
-        _updateUsername(username);
-    }
-
-    /**
-     * @dev See {ICritter-pause}.
-     */
-    function pause() public override(ICritter) onlyRole(PAUSER_ROLE) {
-        _pause();
-    }
-
-    /**
-     * @dev See {ICritter-unpause}.
-     */
-    function unpause() public override(ICritter) onlyRole(PAUSER_ROLE) {
-        _unpause();
-    }
-
-    /**
      * @dev See {IERC165Upgradeable-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)
@@ -197,6 +126,72 @@ contract Critter is
         return super.tokenURI(tokenId);
     }
 
+    /**
+     * @dev See {ICritter-pause}.
+     */
+    function pause() public override(ICritter) onlyRole(PAUSER_ROLE) {
+        _pause();
+    }
+
+    /**
+     * @dev See {ICritter-unpause}.
+     */
+    function unpause() public override(ICritter) onlyRole(PAUSER_ROLE) {
+        _unpause();
+    }
+
+    /**
+     * @dev See {ICritter-createAccount}.
+     */
+    function createAccount(string memory username)
+        public
+        override(ICritter)
+        whenNotPaused
+    {
+        _createAccount(username);
+    }
+
+    /**
+     * @dev See {ICritter-createSqueak}.
+     */
+    function createSqueak(string memory content)
+        public
+        override(ICritter)
+        whenNotPaused
+        onlyRole(MINTER_ROLE)
+    {
+        // validate & save content to storage, then generate token ID & URI
+        (uint256 tokenId, string memory tokenUri) = _createSqueak(content);
+
+        _safeMint(msg.sender, tokenId);
+        _setTokenURI(tokenId, tokenUri);
+    }
+
+    /**
+     * @dev See {ICritter-deleteSqueak}.
+     */
+    function deleteSqueak(uint256 tokenId)
+        public
+        override(ICritter)
+        whenNotPaused
+    {
+        // validate sender owns the token & burn it
+        burn(tokenId);
+
+        // delete from storage
+        _deleteSqueak(tokenId);
+    }
+
+    /**
+     * @dev See {ICritter-updateUsername}.
+     */
+    function updateUsername(string memory username)
+        public
+        override(ICritter)
+        whenNotPaused
+    {
+        _updateUsername(username);
+    }
     /**
      * @dev Function that should revert when `msg.sender` is not authorized to
      *      upgrade the contract.
