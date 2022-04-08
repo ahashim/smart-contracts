@@ -192,6 +192,7 @@ contract Critter is
     {
         _updateUsername(username);
     }
+
     /**
      * @dev Function that should revert when `msg.sender` is not authorized to
      *      upgrade the contract.
