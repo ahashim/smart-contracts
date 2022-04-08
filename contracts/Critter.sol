@@ -111,7 +111,9 @@ contract Critter is
         )
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return
+            interfaceId == type(ICritter).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
