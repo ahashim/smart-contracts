@@ -34,9 +34,11 @@ contract Barnhouse is Initializable {
     /**
      * @dev Initializer function
      */
-    function __Barnhouse_init() internal onlyInitializing {}
+    function __Barnhouse_init() internal view onlyInitializing {}
 
-    /// ---------------- STRUCTS ---------------- ///
+    /**************************************************************************
+                                    STRUCTS
+     **************************************************************************/
     /**
      * @dev Squeak consists of an account address & a content string (256 bytes
      *      limit).
@@ -47,7 +49,9 @@ contract Barnhouse is Initializable {
         string content;
     }
 
-    /// ---------------- STATE VARIABLES ---------------- ///
+    /**************************************************************************
+                                 STATE VARIABLES
+     **************************************************************************/
     /**
      * @dev Used to autogenerate token URI's when minting.
      */
@@ -74,7 +78,9 @@ contract Barnhouse is Initializable {
      */
     bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 
-    /// ----------------  MAPPINGS ---------------- ///
+    /**************************************************************************
+                                   MAPPINGS
+     **************************************************************************/
     /**
      * @dev Mapping of tokenId's to Squeaks.
      */

@@ -32,19 +32,16 @@ interface ICritter is
     IERC721EnumerableUpgradeable
 {
     /**
-     * @dev Emitted when the `sender` address creates a squeak with `content`
-     *      and is assigned a `tokenID`.
+     * @dev Create a Critter account.
+     *
+     *      Requirements:
+     *
+     *      - The caller must not have an account.
+     *      - Username must be valid (see {isValidUsername} modifier).
+     *
+     *      Emits {AccountCreated} event.
      */
-    event SqueakCreated(
-        address indexed sender,
-        uint256 tokenId,
-        string content
-    );
-
-    /**
-     * @dev Emitted when the `sender` address deletes a squeak of `tokenID`.
-     */
-    event SqueakDeleted(address indexed sender, uint256 tokenId);
+    function createAccount(string memory username) external;
 
     /**
      * @dev Create a squeak.
@@ -57,7 +54,7 @@ interface ICritter is
      *
      *      Emits {SqueakCreated} event.
      */
-    function createSqueak(string memory content) external returns (bool);
+    function createSqueak(string memory content) external;
 
     /**
      * @dev Deletes squeak at `tokenId`.
@@ -69,21 +66,20 @@ interface ICritter is
      *
      *      Emits {SqueakDeleted} & {Transfer} events.
      */
-    function deleteSqueak(uint256 tokenId) external returns (bool);
+    function deleteSqueak(uint256 tokenId) external;
 
     /**
-     * @dev Creates a new `tokenId` and transfers it to `to`.
-     *      Token URI generated & assigned automatically.
+     * @dev Update an accounts critter username.
      *
      *      Requirements:
      *
-     *      - `tokenId` must not exist.
-     *      - If `to` refers to a smart contract, it must implement
-     *      {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+     *      - The caller must already have an account.
+     *      - The caller must have the `MINTER_ROLE`.
+     *      - Username must be valid (see {isValidUsername} modifier).
      *
-     *      Emits a {Transfer} event.
+     *      Emits {UsernameUpdated} event.
      */
-    function safeMint(address to, uint256 tokenId) external;
+    function updateUsername(string memory username) external;
 
     /**
      * @dev Pauses all token transfers.
@@ -99,7 +95,7 @@ interface ICritter is
     /**
      * @dev Unpauses all token transfers.
      *
-     *      See {ERC721PausableUpgradeable} and {PausableUpgradeable-_pause}.
+     *      See {ERC721PausableUpgradeable} and {PausableUpgradeable-_unpause}.
      *
      *      Requirements:
      *

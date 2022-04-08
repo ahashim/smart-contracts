@@ -18,23 +18,19 @@
 */
 pragma solidity ^0.8.4;
 
-// Interfaces
-import './interfaces/IAccount.sol';
-
 // Contracts
-import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './Barnhouse.sol';
 
 /**
- * @dev A contract dealing with Critter account management.
+ * @dev A contract of modifiers to validate functions used across Critter.
  */
-contract Account is
-    Initializable,
-    AccessControlEnumerableUpgradeable,
-    Barnhouse,
-    IAccount
-{
+contract Validatable is Initializable, Barnhouse {
+    /**
+     * @dev Initializer function
+     */
+    function __Validatable_init() internal view onlyInitializing {}
+
     /**
      * @dev Ensures that `_address` has a Critter account.
      */
@@ -72,58 +68,5 @@ contract Account is
         require(bytes(username).length <= 32, 'Critter: username is too long');
         require(addresses[username] == address(0), 'Critter: username taken');
         _;
-    }
-
-    /**
-     * @dev Initializer function
-     */
-    function __Accounts_init() internal onlyInitializing {}
-
-    /**
-     * @dev See {IAccounts-createAccount}.
-     */
-    function createAccount(string memory username)
-        public
-        override(IAccount)
-        noAccount(msg.sender)
-        isValidUsername(username)
-        returns (bool)
-    {
-        // set our address & username mappings
-        addresses[username] = msg.sender;
-        usernames[msg.sender] = username;
-
-        // bypassing the admin-check to grant roles in order to
-        // automatically initialize users when they create an account.
-        _grantRole(MINTER_ROLE, msg.sender);
-
-        // log account creation
-        emit AccountCreated(msg.sender, username);
-
-        return true;
-    }
-
-    /**
-     * @dev See {IAccounts-updateUsername}.
-     */
-    function updateUsername(string memory newUsername)
-        public
-        override(IAccount)
-        hasAccount(msg.sender)
-        isValidUsername(newUsername)
-        returns (bool)
-    {
-        // clear current username from the addresses mapping
-        string memory oldUsername = usernames[msg.sender];
-        delete addresses[oldUsername];
-
-        // set new usernames & address mappings
-        addresses[newUsername] = msg.sender;
-        usernames[msg.sender] = newUsername;
-
-        // log the change
-        emit UsernameUpdated(msg.sender, oldUsername, newUsername);
-
-        return true;
     }
 }

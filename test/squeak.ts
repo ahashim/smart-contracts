@@ -1,7 +1,12 @@
 // libraries
 import { expect } from 'chai';
 import { ethers, upgrades } from 'hardhat';
-import { BASE_TOKEN_URI, NAME, SYMBOL, USERNAME } from './constants';
+import {
+  BASE_TOKEN_URI,
+  CONTRACT_INITIALIZER,
+  HARDHAT_NETWORK_ID,
+  USERNAME,
+} from './constants';
 
 // types
 import type { Contract, ContractFactory } from 'ethers';
@@ -22,11 +27,7 @@ describe('Squeaks', () => {
     factory = await ethers.getContractFactory('Critter');
 
     // deploy upgradeable contract
-    contract = await upgrades.deployProxy(factory, [
-      NAME,
-      SYMBOL,
-      BASE_TOKEN_URI,
-    ]);
+    contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
     // create an owner account
     const createAccountTx = await contract.createAccount(USERNAME);
@@ -36,7 +37,6 @@ describe('Squeaks', () => {
   describe('create', () => {
     it('creates a squeak from the senders address', async () => {
       const content = 'hello blockchain!';
-      const chainID = 31337; // default harhdat network ID
       const tokenID = 1;
 
       // post a squeak
@@ -53,7 +53,10 @@ describe('Squeaks', () => {
 
       // tokenURI assertion
       const hexURI = keccak256(
-        defaultAbiCoder.encode(['uint256', 'uint256'], [chainID, tokenID])
+        defaultAbiCoder.encode(
+          ['uint256', 'uint256'],
+          [HARDHAT_NETWORK_ID, tokenID]
+        )
       ).slice(2); // removing 0x prefix
       const expectedTokenURI = BASE_TOKEN_URI + hexURI;
       expect(tokenURI).to.equal(expectedTokenURI);
@@ -101,7 +104,7 @@ describe('Squeaks', () => {
 
     it('allows a user to delete their squeak', async () => {
       // assert existence/ownership
-      expect(await contract.balanceOf(owner.address)).to.equal(tokenID);
+      expect(await contract.balanceOf(owner.address)).to.equal(1);
       expect(await contract.ownerOf(tokenID)).to.equal(owner.address);
 
       // delete the squeak

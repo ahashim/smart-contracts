@@ -21,10 +21,7 @@ pragma solidity ^0.8.4;
 // Interfaces
 import './interfaces/ICritter.sol';
 
-// Libraries
-import './libraries/StringTheory.sol';
-
-// Contracts
+// Open Zeppelin Contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
@@ -33,8 +30,12 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol';
-import './Account.sol';
+
+// Critter Contracts
+import './Accountable.sol';
 import './Barnhouse.sol';
+import './Squeakable.sol';
+import './Validatable.sol';
 
 /**
  * @dev Critter: a microblogging platform where each post is
@@ -60,11 +61,11 @@ contract Critter is
     ERC721BurnableUpgradeable,
     UUPSUpgradeable,
     Barnhouse,
-    Account,
+    Validatable,
+    Accountable,
+    Squeakable,
     ICritter
 {
-    using CountersUpgradeable for CountersUpgradeable.Counter;
-
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
@@ -80,7 +81,7 @@ contract Critter is
         string memory symbol,
         string memory baseTokenURI
     ) public initializer {
-        // initialize base contracts
+        // base Open Zeppelin contracts
         __ERC721_init(name, symbol);
         __ERC721Enumerable_init();
         __ERC721URIStorage_init();
@@ -88,39 +89,24 @@ contract Critter is
         __AccessControl_init();
         __ERC721Burnable_init();
         __UUPSUpgradeable_init();
+
+        // base Critter contracts
         __Barnhouse_init();
-        __Accounts_init();
-
-        // set base token URI
-        _baseTokenURI = baseTokenURI;
-
-        // grant all roles to contract owner
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, msg.sender);
-        _grantRole(PAUSER_ROLE, msg.sender);
-        _grantRole(UPGRADER_ROLE, msg.sender);
-
-        // set initial token ID to 1
-        _tokenIdCounter.increment();
+        __Validatable_init();
+        __Accountable_init();
+        __Squeakable_init(baseTokenURI);
     }
 
     /**
-     * @dev See {IERC165Upgradeable-supportsInterface}.
+     * @dev See {ICritter-createAccount}.
      */
-    function supportsInterface(bytes4 interfaceId)
+    function createAccount(string memory username)
         public
-        view
-        override(
-            ERC721Upgradeable,
-            ERC721EnumerableUpgradeable,
-            IERC165Upgradeable,
-            AccessControlEnumerableUpgradeable
-        )
-        returns (bool)
+        override(ICritter)
+        noAccount(msg.sender)
+        whenNotPaused
     {
-        return
-            interfaceId == type(ICritter).interfaceId ||
-            super.supportsInterface(interfaceId);
+        _createAccount(username);
     }
 
     /**
@@ -129,29 +115,15 @@ contract Critter is
     function createSqueak(string memory content)
         public
         override(ICritter)
+        whenNotPaused
         hasAccount(msg.sender)
-        returns (bool)
+        onlyRole(MINTER_ROLE)
     {
-        // check invariants
-        require(bytes(content).length > 0, 'Critter: squeak cannot be empty');
-        require(bytes(content).length <= 256, 'Critter: squeak is too long');
+        // validate & save content to storage, then generate token ID & URI
+        (uint256 tokenId, string memory tokenUri) = _createSqueak(content);
 
-        // get current tokenID & update counter
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-
-        // build squeak & save it to storage
-        Squeak storage squeak = squeaks[tokenId];
-        squeak.account = msg.sender;
-        squeak.content = content;
-
-        // mint our token
-        safeMint(msg.sender, tokenId);
-
-        // log the token ID & content
-        emit SqueakCreated(msg.sender, tokenId, squeak.content);
-
-        return true;
+        _safeMint(msg.sender, tokenId);
+        _setTokenURI(tokenId, tokenUri);
     }
 
     /**
@@ -161,56 +133,25 @@ contract Critter is
         public
         override(ICritter)
         hasAccount(msg.sender)
-        returns (bool)
+        whenNotPaused
     {
-        // burn ERC721 token
+        // validate sender owns the token & burn it
         burn(tokenId);
 
-        // delete squeak from storage
-        delete squeaks[tokenId];
-
-        // log deleted token ID
-        emit SqueakDeleted(msg.sender, tokenId);
-
-        return true;
+        // delete from storage
+        _deleteSqueak(tokenId);
     }
 
     /**
-     * @dev See {IERC721Upgradeable-_baseURI}.
+     * @dev See {ICritter-updateUsername}.
      */
-    function _baseURI()
-        internal
-        view
-        override(ERC721Upgradeable)
-        returns (string memory)
-    {
-        return _baseTokenURI;
-    }
-
-    /**
-     * @dev See {IERC721MetadataUpgradeable-tokenURI}.
-     */
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
-        returns (string memory)
-    {
-        return super.tokenURI(tokenId);
-    }
-
-    /**
-     * @dev See {ICritter-safeMint}.
-     */
-    function safeMint(address to, uint256 tokenId)
+    function updateUsername(string memory username)
         public
         override(ICritter)
-        onlyRole(MINTER_ROLE)
+        hasAccount(msg.sender)
+        whenNotPaused
     {
-        string memory tokenUri = _generateUri(tokenId);
-
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, tokenUri);
+        _updateUsername(username);
     }
 
     /**
@@ -228,6 +169,35 @@ contract Critter is
     }
 
     /**
+     * @dev See {IERC165Upgradeable-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(
+            ERC721Upgradeable,
+            ERC721EnumerableUpgradeable,
+            IERC165Upgradeable,
+            AccessControlEnumerableUpgradeable
+        )
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev See {IERC721MetadataUpgradeable-tokenURI}.
+     */
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
+    /**
      * @dev Function that should revert when `msg.sender` is not authorized to
      *      upgrade the contract.
      */
@@ -237,6 +207,18 @@ contract Critter is
         override
         onlyRole(UPGRADER_ROLE)
     {}
+
+    /**
+     * @dev See {IERC721Upgradeable-_baseURI}.
+     */
+    function _baseURI()
+        internal
+        view
+        override(ERC721Upgradeable)
+        returns (string memory)
+    {
+        return _baseTokenURI;
+    }
 
     /**
      * @dev Burns `tokenId`. See {ERC721Upgradeable-_burn}.
@@ -274,19 +256,5 @@ contract Critter is
         whenNotPaused
     {
         super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    /**
-     * @dev Generate token URI based on chain & token ID.
-     */
-    function _generateUri(uint256 tokenId)
-        internal
-        view
-        returns (string memory)
-    {
-        // get the hash of the token based on its chain ID & token ID
-        bytes32 hashedUri = keccak256(abi.encode(block.chainid, tokenId));
-
-        return StringTheory.lower(StringTheory.toHexString(hashedUri));
     }
 }
