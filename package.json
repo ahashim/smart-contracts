@@ -4,6 +4,7 @@
   "description": "crypto twitter",
   "main": "index.js",
   "scripts": {
+    "console": "npx hardhat console",
     "coverage": "npx hardhat coverage",
     "format": "prettier --write 'contracts/**/*.sol'",
     "lint": "solhint contracts/**/*.sol",
