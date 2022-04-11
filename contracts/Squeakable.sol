@@ -24,12 +24,12 @@ import './libraries/StringTheory.sol';
 // Contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
-import './Barnhouse.sol';
+import './Storeable.sol';
 
 /**
  * @dev A contract dealing with actions performed on a Squeak.
  */
-contract Squeakable is Initializable, Barnhouse {
+contract Squeakable is Initializable, Storeable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     /**
@@ -50,13 +50,7 @@ contract Squeakable is Initializable, Barnhouse {
     /**
      * @dev Initializer function
      */
-    function __Squeakable_init(string memory baseTokenURI)
-        internal
-        onlyInitializing
-    {
-        // set base token URI
-        _baseTokenURI = baseTokenURI;
-
+    function __Squeakable_init() internal onlyInitializing {
         // set initial token ID to 1
         _tokenIdCounter.increment();
     }

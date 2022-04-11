@@ -30,11 +30,17 @@ import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
  *
  *      More info on EVM storage collisions: https://tinyurl.com/d424mcpx
  */
-contract Barnhouse is Initializable {
+contract Storeable is Initializable {
     /**
      * @dev Initializer function
      */
-    function __Barnhouse_init() internal view onlyInitializing {}
+    function __Storeable_init(string memory baseTokenURI)
+        internal
+        onlyInitializing
+    {
+        // set base token URI
+        _baseTokenURI = baseTokenURI;
+    }
 
     /**************************************************************************
                                     STRUCTS

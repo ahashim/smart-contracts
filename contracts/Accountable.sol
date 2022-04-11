@@ -21,7 +21,7 @@ pragma solidity ^0.8.4;
 // Contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import './Barnhouse.sol';
+import './Storeable.sol';
 
 /**
  * @dev A contract dealing with Critter account management.
@@ -29,7 +29,7 @@ import './Barnhouse.sol';
 contract Accountable is
     Initializable,
     AccessControlEnumerableUpgradeable,
-    Barnhouse
+    Storeable
 {
     /**
      * @dev Emitted when the `sender` address creates a Critter account with a
@@ -100,11 +100,7 @@ contract Accountable is
     /**
      * @dev See {IAccounts-createAccount}.
      */
-    function _createAccount(string memory username)
-        internal
-        noAccount(msg.sender)
-        isValidUsername(username)
-    {
+    function _createAccount(string memory username) internal {
         // set our address & username mappings
         addresses[username] = msg.sender;
         usernames[msg.sender] = username;
@@ -120,11 +116,7 @@ contract Accountable is
     /**
      * @dev See {IAccounts-updateUsername}.
      */
-    function _updateUsername(string memory newUsername)
-        internal
-        hasAccount(msg.sender)
-        isValidUsername(newUsername)
-    {
+    function _updateUsername(string memory newUsername) internal {
         // clear current username from the addresses mapping
         string memory oldUsername = usernames[msg.sender];
         delete addresses[oldUsername];
