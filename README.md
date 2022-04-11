@@ -7,14 +7,11 @@ An open source peer-to-peer microblogging NFT platform for EVM compatible blockc
 - Every address is a unique username.
 - Every post (called a squeak) is an NFT.
 - Squeaks can be bought & sold via a bidding price discovery mechanism.
-- Once the author sells their squeak, the ownership is transferred.
+- Once the author sells their squeak, the ownership is transferred to a new user.
 - Actions (such as "favorites" & "resqueaks") cost a fee.
-- Fees are paid out to the **owner** of said squeak.
+- Fees are paid out to the **owner** of said squeak (not necessarily the original author).
 - Only owners can delete squeaks.
 - Deleting a squeak costs a fee of `blocks elapsed x deletion fee`.
-
-<!-- TODO: setup hosting when working on the client -->
-<!-- Visit [https://critter.fyi](https://critter.fyi) to start squeaking on the blockchain. -->
 
 ## Local Development
 
@@ -27,7 +24,6 @@ An open source peer-to-peer microblogging NFT platform for EVM compatible blockc
 COINMARKETCAP_API_KEY=<your-coinmarketcap-api-key>
 ETHERSCAN_API_KEY=<your-etherscan-api-key>
 PRIVATE_KEY=<your-ethereum-account-private-key>
-REPORT_GAS=1 # comment this line out to turn off gas reporting during test runs
 ROPSTEN_URL=<your-ropsten-network-api-url>
 ```
 
@@ -64,13 +60,7 @@ npx hardhat console
 #### Unit Tests
 
 ```bash
-npx hardhat test
-```
-
-You can increase test performance by skipping the transpilation step of the test files by setting the `TS_NODE_TRANSPILE_ONLY=1` environment variable:
-
-```bash
-TS_NODE_TRANSPILE_ONLY=1 npx hardhat test
+npm test
 ```
 
 You can also run the tests in watch mode which will rerun all unit-tests & generate a contract-size report whenever a file is changed within the `contracts` or `test` directories.
@@ -118,7 +108,7 @@ npx hardhat contract-size
   - Ideally [Vickrey auctions](https://github.com/JoWxW/Vickrey-Auction/blob/master/contracts/VickreyAuction.sol).
 - [ ] Harden contract with [security best practices](https://consensys.net/blog/developers/solidity-best-practices-for-smart-contract-security/).
 - [ ] Fuzz testing with [Echidna](https://github.com/crytic/echidna).
-- [ ] Deploy to an EVM compatible layer 2 solution such as the [zkSync testnet](https://portal.zksync.io/).
+- [ ] Deploy to an EVM compatible layer 2 solution such as [zkSync](https://portal.zksync.io/).
 
 ## Architecture
 
@@ -144,14 +134,13 @@ npx hardhat contract-size
   - Start with 3 nodes, and always keeping the # of nodes an odd number to avoid the [split-brain problem](https://www.45drives.com/community/articles/what-is-split-brain/).
 - `tokenID`'s can serve as primary keys
   - `uint256` primary key type ensures we will likely not run out before the heat death of the universe.
-- Can partition based on time in the future
-  - Critter incentivizes not deleting old squeaks so this should make it easier.
-  - Will need to figure out eventual consistency with primary key generation in application layer once we partition.
 - Deploy across regions with [Fly.io](https://fly.io/).
 
 #### Client
 
-- User interface written in Typescript & [Preact](https://preactjs.com/).
+- User interface written in Typescript using:
+  - [Preact](https://preactjs.com/)
+  - [Tailwind CSS](https://tailwindcss.com/)
 - Deploy to edge servers (probably on [Cloudflare](https://cloudflare.com)), as well as IPFS.
 
 #### Server
