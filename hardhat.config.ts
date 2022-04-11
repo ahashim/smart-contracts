@@ -67,6 +67,27 @@ task(
 );
 
 task(
+  'critterInit',
+  'Deploys Critter contracts and sets up an owner account',
+  async (_, { ethers, upgrades }) => {
+    // deploy contract
+    const factory = await ethers.getContractFactory('Critter');
+    const contract = await upgrades.deployProxy(factory, [
+      'Critter', // name
+      'CRTTR', // symbol,
+      'https://critter.fyi/token', // base token URI
+    ]);
+
+    // create an owner account
+    const createAccountTx = await contract.createAccount('a-rock');
+    await createAccountTx.wait();
+
+    // return contract instance
+    return contract;
+  }
+);
+
+task(
   'prepare',
   'Compiles the latest contracts, generates a contract size report & a test coverage report',
   async function (_, { run }) {
