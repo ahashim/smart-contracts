@@ -22,12 +22,14 @@ pragma solidity ^0.8.4;
 import './libraries/StringTheory.sol';
 
 // Contracts
-import './Validatable.sol';
+import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
+import './Barnhouse.sol';
 
 /**
  * @dev A contract dealing with actions performed on a Squeak.
  */
-contract Squeakable is Initializable, Validatable {
+contract Squeakable is Initializable, Barnhouse {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     /**
@@ -64,7 +66,6 @@ contract Squeakable is Initializable, Validatable {
      */
     function _createSqueak(string memory content)
         internal
-        hasAccount(msg.sender)
         returns (uint256, string memory)
     {
         // check invariants
@@ -92,7 +93,7 @@ contract Squeakable is Initializable, Validatable {
     /**
      * @dev See {ISqueak-deleteSqueak}.
      */
-    function _deleteSqueak(uint256 tokenId) internal hasAccount(msg.sender) {
+    function _deleteSqueak(uint256 tokenId) internal {
         // delete squeak from storage
         delete squeaks[tokenId];
 

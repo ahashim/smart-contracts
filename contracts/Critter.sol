@@ -35,7 +35,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721Burnab
 import './Accountable.sol';
 import './Barnhouse.sol';
 import './Squeakable.sol';
-import './Validatable.sol';
 
 /**
  * @dev Critter: a microblogging platform where each post is
@@ -61,7 +60,6 @@ contract Critter is
     ERC721BurnableUpgradeable,
     UUPSUpgradeable,
     Barnhouse,
-    Validatable,
     Accountable,
     Squeakable,
     ICritter
@@ -92,7 +90,6 @@ contract Critter is
 
         // base Critter contracts
         __Barnhouse_init();
-        __Validatable_init();
         __Accountable_init();
         __Squeakable_init(baseTokenURI);
     }
@@ -160,6 +157,7 @@ contract Critter is
         public
         override(ICritter)
         whenNotPaused
+        hasAccount(msg.sender)
         onlyRole(MINTER_ROLE)
     {
         // validate & save content to storage, then generate token ID & URI
@@ -176,6 +174,7 @@ contract Critter is
         public
         override(ICritter)
         whenNotPaused
+        hasAccount(msg.sender)
     {
         // validate sender owns the token & burn it
         burn(tokenId);

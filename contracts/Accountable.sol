@@ -21,7 +21,7 @@ pragma solidity ^0.8.4;
 // Contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import './Validatable.sol';
+import './Barnhouse.sol';
 
 /**
  * @dev A contract dealing with Critter account management.
@@ -29,7 +29,7 @@ import './Validatable.sol';
 contract Accountable is
     Initializable,
     AccessControlEnumerableUpgradeable,
-    Validatable
+    Barnhouse
 {
     /**
      * @dev Emitted when the `sender` address creates a Critter account with a
@@ -46,6 +46,45 @@ contract Accountable is
         string oldUsername,
         string newUsername
     );
+
+    /**
+     * @dev Ensures that `_address` has a Critter account.
+     */
+    modifier hasAccount(address _address) {
+        require(
+            bytes(usernames[_address]).length > 0,
+            'Critter: address does not have an account'
+        );
+        _;
+    }
+
+    /**
+     * @dev Ensures that `_address` does not have a Critter account.
+     */
+    modifier noAccount(address _address) {
+        require(
+            bytes(usernames[msg.sender]).length == 0,
+            'Critter: account already exists'
+        );
+        _;
+    }
+
+    /**
+     * @dev Ensures that `username` satisfies the following requirements:
+     *
+     *      - Greater than 0 bytes (cannot be empty).
+     *      - Less than 32 bytes (upper bound for storage slot optimization).
+     *      - Is not already in use.
+     */
+    modifier isValidUsername(string memory username) {
+        require(
+            bytes(username).length > 0,
+            'Critter: username cannot be empty'
+        );
+        require(bytes(username).length <= 32, 'Critter: username is too long');
+        require(addresses[username] == address(0), 'Critter: username taken');
+        _;
+    }
 
     /**
      * @dev Initializer function
