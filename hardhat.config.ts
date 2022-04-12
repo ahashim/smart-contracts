@@ -8,6 +8,7 @@ import 'hardhat-contract-sizer';
 import 'hardhat-gas-reporter';
 import 'hardhat-watcher';
 import 'solidity-coverage';
+import { CONTRACT_INITIALIZER } from './test/constants';
 
 const config: HardhatUserConfig = {
   contractSizer: {
@@ -68,15 +69,11 @@ task(
 
 task(
   'critterInit',
-  'Deploys Critter contracts and sets up an owner account',
+  'Deploys Critter contracts and sets up an owner account when using the hardhat console',
   async (_, { ethers, upgrades }) => {
     // deploy contract
     const factory = await ethers.getContractFactory('Critter');
-    const contract = await upgrades.deployProxy(factory, [
-      'Critter', // name
-      'CRTTR', // symbol,
-      'https://critter.fyi/token', // base token URI
-    ]);
+    const contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
     // create an owner account
     const createAccountTx = await contract.createAccount('a-rock');
