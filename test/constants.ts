@@ -10,7 +10,7 @@ export const CONTRACT_NAME = 'Critter';
 export const SYMBOL = 'CRTTR';
 
 // fees (in wei)
-export const FEE_REGISTRATION = 3_400_000_000_000_000; // about $10
+export const FEE_REGISTRATION = 3_400_000_000_000_000; // currently about $10
 
 // init
 export const CONTRACT_INITIALIZER = [

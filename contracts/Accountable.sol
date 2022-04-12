@@ -59,17 +59,6 @@ contract Accountable is
     }
 
     /**
-     * @dev Ensures that `_address` does not have a Critter account.
-     */
-    modifier noAccount(address _address) {
-        require(
-            bytes(usernames[msg.sender]).length == 0,
-            'Critter: account already exists'
-        );
-        _;
-    }
-
-    /**
      * @dev Ensures that `username` satisfies the following requirements:
      *
      *      - Greater than 0 bytes (cannot be empty).

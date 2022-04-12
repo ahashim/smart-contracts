@@ -13,6 +13,7 @@ import 'solidity-coverage';
 import {
   CONTRACT_INITIALIZER,
   CONTRACT_NAME,
+  FEE_REGISTRATION,
   USERNAME,
 } from './test/constants';
 
@@ -82,7 +83,9 @@ task(
     const contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
     // create an owner account
-    const createAccountTx = await contract.createAccount(USERNAME);
+    const createAccountTx = await contract.createAccount(USERNAME, {
+      value: FEE_REGISTRATION,
+    });
     await createAccountTx.wait();
 
     // return contract instance

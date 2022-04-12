@@ -33,6 +33,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721Burnab
 
 // Critter Contracts
 import './Accountable.sol';
+import './Bankable.sol';
 import './Squeakable.sol';
 import './storage/Immutable.sol';
 import './storage/Mappable.sol';
@@ -67,6 +68,7 @@ contract Critter is
     Mappable,
     Storeable,
     Accountable,
+    Bankable,
     Squeakable,
     ICritter
 {
@@ -86,7 +88,7 @@ contract Critter is
         string memory baseURI,
         uint256 registrationFee
     ) public initializer {
-        // base Open Zeppelin contracts
+        // Open Zeppelin contracts
         __ERC721_init(name, symbol);
         __ERC721Enumerable_init();
         __ERC721URIStorage_init();
@@ -95,12 +97,13 @@ contract Critter is
         __ERC721Burnable_init();
         __UUPSUpgradeable_init();
 
-        // base Critter contracts
+        // Critter contracts
         __Structable_init();
         __Immutable_init();
         __Mappable_init();
         __Storeable_init(baseURI, registrationFee);
         __Accountable_init();
+        __Bankable_init();
         __Squeakable_init();
     }
 
@@ -154,12 +157,25 @@ contract Critter is
      */
     function createAccount(string memory username)
         public
+        payable
         override(ICritter)
         whenNotPaused
-        noAccount(msg.sender)
         isValidUsername(username)
     {
+        // ensure address is not registered
+        require(
+            bytes(usernames[msg.sender]).length == 0,
+            'Critter: account already exists'
+        );
+
+        // ensure fee is covered
+        require(
+            msg.value >= feeRegistration,
+            'Critter: not enough ether to create an account'
+        );
+
         _createAccount(username);
+        _deposit(msg.sender, msg.value);
     }
 
     /**

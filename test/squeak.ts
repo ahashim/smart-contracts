@@ -4,6 +4,7 @@ import { ethers, upgrades } from 'hardhat';
 import {
   BASE_TOKEN_URI,
   CONTRACT_INITIALIZER,
+  FEE_REGISTRATION,
   HARDHAT_NETWORK_ID,
   USERNAME,
 } from './constants';
@@ -22,6 +23,11 @@ describe('Squeaks', () => {
   let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
 
+  // account variables
+  const txOptions = {
+    value: FEE_REGISTRATION,
+  };
+
   beforeEach(async () => {
     [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory('Critter');
@@ -30,7 +36,7 @@ describe('Squeaks', () => {
     contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
     // create an owner account
-    const createAccountTx = await contract.createAccount(USERNAME);
+    const createAccountTx = await contract.createAccount(USERNAME, txOptions);
     await createAccountTx.wait();
   });
 
@@ -122,7 +128,7 @@ describe('Squeaks', () => {
       // new user ahmed
       const createAccountTx = await contract
         .connect(ahmed)
-        .createAccount('ahmed');
+        .createAccount('ahmed', txOptions);
       await createAccountTx.wait();
 
       await expect(

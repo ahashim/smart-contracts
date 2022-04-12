@@ -41,7 +41,7 @@ interface ICritter is
      *
      *      Emits {AccountCreated} event.
      */
-    function createAccount(string memory username) external;
+    function createAccount(string memory username) external payable;
 
     /**
      * @dev Create a squeak.
