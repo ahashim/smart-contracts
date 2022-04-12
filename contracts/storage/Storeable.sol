@@ -38,22 +38,26 @@ contract Storeable is Initializable, Structable, Immutable, Mappable {
      * @dev Initializer function
      */
     // solhint-disable-next-line func-name-mixedcase
-    function __Storeable_init(string memory baseTokenURI)
+    function __Storeable_init(string memory baseURI)
         internal
         onlyInitializing
     {
         // set base token URI
-        _baseTokenURI = baseTokenURI;
+        baseTokenURI = baseURI;
     }
+
+    /**
+     * @dev A counter keeps track of token ID's.
+     */
+    CountersUpgradeable.Counter public tokenIdCounter;
 
     /**
      * @dev Used to autogenerate token URI's when minting.
      */
-    string public _baseTokenURI;
+    string public baseTokenURI;
 
     /**
-     * @dev A counter keeps track of token ID's instead of {balanceOf} due to
-     *      token burning.
+     * @dev Amount in wei to register an account.
      */
-    CountersUpgradeable.Counter public _tokenIdCounter;
+    uint256 public feeRegistration;
 }

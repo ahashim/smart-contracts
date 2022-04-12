@@ -52,7 +52,7 @@ contract Squeakable is Initializable, Storeable {
      */
     function __Squeakable_init() internal onlyInitializing {
         // set initial token ID to 1
-        _tokenIdCounter.increment();
+        tokenIdCounter.increment();
     }
 
     /**
@@ -67,8 +67,8 @@ contract Squeakable is Initializable, Storeable {
         require(bytes(content).length <= 256, 'Critter: squeak is too long');
 
         // get current tokenID & update counter
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+        uint256 tokenId = tokenIdCounter.current();
+        tokenIdCounter.increment();
 
         // generate the URI of the squeak based on its token ID
         string memory tokenUri = _generateUri(tokenId);

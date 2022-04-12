@@ -83,7 +83,7 @@ contract Critter is
     function initialize(
         string memory name,
         string memory symbol,
-        string memory baseTokenURI
+        string memory baseURI
     ) public initializer {
         // base Open Zeppelin contracts
         __ERC721_init(name, symbol);
@@ -98,7 +98,7 @@ contract Critter is
         __Structable_init();
         __Immutable_init();
         __Mappable_init();
-        __Storeable_init(baseTokenURI);
+        __Storeable_init(baseURI);
         __Accountable_init();
         __Squeakable_init();
     }
@@ -227,7 +227,7 @@ contract Critter is
         override(ERC721Upgradeable)
         returns (string memory)
     {
-        return _baseTokenURI;
+        return baseTokenURI;
     }
 
     /**
