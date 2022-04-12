@@ -8,7 +8,13 @@ import 'hardhat-contract-sizer';
 import 'hardhat-gas-reporter';
 import 'hardhat-watcher';
 import 'solidity-coverage';
-import { CONTRACT_INITIALIZER } from './test/constants';
+
+// task variables
+import {
+  CONTRACT_INITIALIZER,
+  CONTRACT_NAME,
+  USERNAME,
+} from './test/constants';
 
 const config: HardhatUserConfig = {
   contractSizer: {
@@ -72,11 +78,11 @@ task(
   'Deploys Critter contracts and sets up an owner account when using the hardhat console',
   async (_, { ethers, upgrades }) => {
     // deploy contract
-    const factory = await ethers.getContractFactory('Critter');
+    const factory = await ethers.getContractFactory(CONTRACT_NAME);
     const contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
     // create an owner account
-    const createAccountTx = await contract.createAccount('a-rock');
+    const createAccountTx = await contract.createAccount(USERNAME);
     await createAccountTx.wait();
 
     // return contract instance
