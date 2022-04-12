@@ -38,7 +38,7 @@ import './Squeakable.sol';
 import './storage/Immutable.sol';
 import './storage/Mappable.sol';
 import './storage/Storeable.sol';
-import './storage/Structable.sol';
+import './storage/Typeable.sol';
 
 /**
  * @dev Critter: a microblogging platform where each post is
@@ -63,7 +63,7 @@ contract Critter is
     AccessControlEnumerableUpgradeable,
     ERC721BurnableUpgradeable,
     UUPSUpgradeable,
-    Structable,
+    Typeable,
     Immutable,
     Mappable,
     Storeable,
@@ -98,7 +98,7 @@ contract Critter is
         __UUPSUpgradeable_init();
 
         // Critter contracts
-        __Structable_init();
+        __Typeable_init();
         __Immutable_init();
         __Mappable_init();
         __Storeable_init(baseURI, registrationFee);

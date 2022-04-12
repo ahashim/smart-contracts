@@ -23,7 +23,7 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import './Immutable.sol';
 import './Mappable.sol';
-import './Structable.sol';
+import './Typeable.sol';
 
 /**
  * @dev A contract holding all Critter storage variables. This is upgradeable
@@ -33,7 +33,7 @@ import './Structable.sol';
  *
  *      More info on EVM storage collisions: https://tinyurl.com/d424mcpx
  */
-contract Storeable is Initializable, Structable, Immutable, Mappable {
+contract Storeable is Initializable, Typeable, Immutable, Mappable {
     /**
      * @dev Initializer function
      */

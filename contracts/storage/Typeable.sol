@@ -22,14 +22,14 @@ pragma solidity ^0.8.4;
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 /**
- * @dev A contract holding all of the custom Critter data structures.
+ * @dev A contract holding all of the custom Critter data structure types.
  */
-contract Structable is Initializable {
+contract Typeable is Initializable {
     /**
      * @dev Initializer function
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
-    function __Structable_init() internal view onlyInitializing {}
+    function __Typeable_init() internal view onlyInitializing {}
 
     /**
      * @dev Squeak consists of an account address & a content string (256 bytes

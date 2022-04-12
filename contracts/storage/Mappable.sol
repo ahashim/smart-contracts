@@ -20,12 +20,12 @@ pragma solidity ^0.8.4;
 
 // contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import './Structable.sol';
+import './Typeable.sol';
 
 /**
  * @dev A contract holding all of the Critter data mappings.
  */
-contract Mappable is Initializable, Structable {
+contract Mappable is Initializable, Typeable {
     /**
      * @dev Initializer function
      */
