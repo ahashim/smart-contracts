@@ -21,6 +21,9 @@ pragma solidity ^0.8.4;
 // Contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
+import './Immutable.sol';
+import './Mappable.sol';
+import './Structable.sol';
 
 /**
  * @dev A contract holding all Critter storage variables. This is upgradeable
@@ -30,7 +33,7 @@ import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
  *
  *      More info on EVM storage collisions: https://tinyurl.com/d424mcpx
  */
-contract Storeable is Initializable {
+contract Storeable is Initializable, Structable, Immutable, Mappable {
     /**
      * @dev Initializer function
      */
@@ -42,22 +45,6 @@ contract Storeable is Initializable {
         _baseTokenURI = baseTokenURI;
     }
 
-    /**************************************************************************
-                                    STRUCTS
-     **************************************************************************/
-    /**
-     * @dev Squeak consists of an account address & a content string (256 bytes
-     *      limit).
-     */
-    struct Squeak {
-        address account;
-        // uint blockNumber;
-        string content;
-    }
-
-    /**************************************************************************
-                                 STATE VARIABLES
-     **************************************************************************/
     /**
      * @dev Used to autogenerate token URI's when minting.
      */
@@ -68,37 +55,4 @@ contract Storeable is Initializable {
      *      token burning.
      */
     CountersUpgradeable.Counter public _tokenIdCounter;
-
-    /**
-     * @dev MINTER_ROLE has priviledges to mint tokens.
-     */
-    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
-
-    /**
-     * @dev PAUSER_ROLE has priviledges to pause the contract.
-     */
-    bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
-
-    /**
-     * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
-     */
-    bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
-
-    /**************************************************************************
-                                   MAPPINGS
-     **************************************************************************/
-    /**
-     * @dev Mapping of tokenId's to Squeaks.
-     */
-    mapping(uint256 => Squeak) public squeaks;
-
-    /**
-     * @dev Mapping of usernames => account addresses.
-     */
-    mapping(string => address) public addresses;
-
-    /**
-     * @dev Mapping of account addresses => usernames.
-     */
-    mapping(address => string) public usernames;
 }

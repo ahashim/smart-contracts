@@ -33,8 +33,11 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721Burnab
 
 // Critter Contracts
 import './Accountable.sol';
+import './Immutable.sol';
+import './Mappable.sol';
 import './Squeakable.sol';
 import './Storeable.sol';
+import './Structable.sol';
 
 /**
  * @dev Critter: a microblogging platform where each post is
@@ -59,6 +62,9 @@ contract Critter is
     AccessControlEnumerableUpgradeable,
     ERC721BurnableUpgradeable,
     UUPSUpgradeable,
+    Structable,
+    Immutable,
+    Mappable,
     Storeable,
     Accountable,
     Squeakable,
@@ -89,6 +95,9 @@ contract Critter is
         __UUPSUpgradeable_init();
 
         // base Critter contracts
+        __Structable_init();
+        __Immutable_init();
+        __Mappable_init();
         __Storeable_init(baseTokenURI);
         __Accountable_init();
         __Squeakable_init();
