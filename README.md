@@ -22,7 +22,6 @@ An open source peer-to-peer microblogging NFT platform for EVM compatible blockc
 
 ```
 COINMARKETCAP_API_KEY=<your-coinmarketcap-api-key>
-ETHERSCAN_API_KEY=<your-etherscan-api-key>
 PRIVATE_KEY=<your-ethereum-account-private-key>
 ROPSTEN_URL=<your-ropsten-network-api-url>
 ```

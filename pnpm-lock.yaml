@@ -5,7 +5,6 @@ specifiers:
   '@ethersproject/bytes': ^5.6.1
   '@ethersproject/providers': ^5.6.2
   '@nomiclabs/hardhat-ethers': ^2.0.5
-  '@nomiclabs/hardhat-etherscan': ^3.0.3
   '@nomiclabs/hardhat-waffle': ^2.0.3
   '@openzeppelin/contracts-upgradeable': ^4.5.2
   '@openzeppelin/hardhat-upgrades': ^1.17.0
@@ -45,7 +44,6 @@ devDependencies:
   '@ethersproject/bytes': 5.6.1
   '@ethersproject/providers': 5.6.2
   '@nomiclabs/hardhat-ethers': 2.0.5_ethers@5.6.2+hardhat@2.9.3
-  '@nomiclabs/hardhat-etherscan': 3.0.3_hardhat@2.9.3
   '@nomiclabs/hardhat-waffle': 2.0.3_1e72a056bd70face082d04d2a2528008
   '@openzeppelin/contracts-upgradeable': 4.5.2
   '@openzeppelin/hardhat-upgrades': 1.17.0_c098a2b15f43a1bfbce68b3c88a804e8
@@ -681,23 +679,6 @@ packages:
     dependencies:
       ethers: 5.6.2
       hardhat: 2.9.3
-    dev: true
-
-  /@nomiclabs/hardhat-etherscan/3.0.3_hardhat@2.9.3:
-    resolution: {integrity: sha512-OfNtUKc/ZwzivmZnnpwWREfaYncXteKHskn3yDnz+fPBZ6wfM4GR+d5RwjREzYFWE+o5iR9ruXhWw/8fejWM9g==}
-    peerDependencies:
-      hardhat: ^2.0.4
-    dependencies:
-      '@ethersproject/abi': 5.6.0
-      '@ethersproject/address': 5.6.0
-      cbor: 5.2.0
-      debug: 4.3.4
-      fs-extra: 7.0.1
-      hardhat: 2.9.3
-      semver: 6.3.0
-      undici: 4.16.0
-    transitivePeerDependencies:
-      - supports-color
     dev: true
 
   /@nomiclabs/hardhat-waffle/2.0.3_1e72a056bd70face082d04d2a2528008:
@@ -2488,14 +2469,6 @@ packages:
 
   /caseless/0.12.0:
     resolution: {integrity: sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=}
-    dev: true
-
-  /cbor/5.2.0:
-    resolution: {integrity: sha512-5IMhi9e1QU76ppa5/ajP1BmMWZ2FHkhAhjeVKQ/EFCgYSEaeVaoGtL7cxJskf9oCCk+XjzaIdc3IuU/dbA/o2A==}
-    engines: {node: '>=6.0.0'}
-    dependencies:
-      bignumber.js: 9.0.2
-      nofilter: 1.0.4
     dev: true
 
   /cbor/8.1.0:
@@ -6898,11 +6871,6 @@ packages:
   /node-gyp-build/4.3.0:
     resolution: {integrity: sha512-iWjXZvmboq0ja1pUGULQBexmxq8CV4xBhX7VDOTbL7ZR4FOowwY/VOtRxBN/yKxmdGoIp4j5ysNT4u3S2pDQ3Q==}
     hasBin: true
-    dev: true
-
-  /nofilter/1.0.4:
-    resolution: {integrity: sha512-N8lidFp+fCz+TD51+haYdbDGrcBWwuHX40F5+z0qkUjMJ5Tp+rdSuAkMJ9N9eoolDlEVTf6u5icM+cNKkKW2mA==}
-    engines: {node: '>=8'}
     dev: true
 
   /nofilter/3.1.0:
