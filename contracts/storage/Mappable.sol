@@ -46,4 +46,9 @@ contract Mappable is Initializable, Structable {
      * @dev Mapping of account addresses => usernames.
      */
     mapping(address => string) public usernames;
+
+    /**
+     * @dev Mapping of account funds in ether.
+     */
+    mapping(address => uint256) public treasury;
 }
