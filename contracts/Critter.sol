@@ -33,11 +33,11 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721Burnab
 
 // Critter Contracts
 import './Accountable.sol';
-import './Immutable.sol';
-import './Mappable.sol';
 import './Squeakable.sol';
-import './Storeable.sol';
-import './Structable.sol';
+import './storage/Immutable.sol';
+import './storage/Mappable.sol';
+import './storage/Storeable.sol';
+import './storage/Structable.sol';
 
 /**
  * @dev Critter: a microblogging platform where each post is

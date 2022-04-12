@@ -24,7 +24,7 @@ import './libraries/StringTheory.sol';
 // Contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
-import './Storeable.sol';
+import './storage/Storeable.sol';
 
 /**
  * @dev A contract dealing with actions performed on a Squeak.

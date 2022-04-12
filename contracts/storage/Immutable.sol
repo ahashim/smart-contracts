@@ -20,29 +20,29 @@ pragma solidity ^0.8.4;
 
 // contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import './Structable.sol';
 
 /**
- * @dev A contract holding all of the Critter data mappings.
+ * @dev A contract holding all of the Critter constant state variables.
  */
-contract Mappable is Initializable, Structable {
+contract Immutable is Initializable {
     /**
      * @dev Initializer function
      */
-    function __Mappable_init() internal view onlyInitializing {}
+    // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
+    function __Immutable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Mapping of tokenId's to Squeaks.
+     * @dev MINTER_ROLE has priviledges to mint tokens.
      */
-    mapping(uint256 => Squeak) public squeaks;
+    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
 
     /**
-     * @dev Mapping of usernames => account addresses.
+     * @dev PAUSER_ROLE has priviledges to pause the contract.
      */
-    mapping(string => address) public addresses;
+    bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
 
     /**
-     * @dev Mapping of account addresses => usernames.
+     * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
      */
-    mapping(address => string) public usernames;
+    bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 }

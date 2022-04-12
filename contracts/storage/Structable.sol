@@ -28,6 +28,7 @@ contract Structable is Initializable {
     /**
      * @dev Initializer function
      */
+    // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Structable_init() internal view onlyInitializing {}
 
     /**

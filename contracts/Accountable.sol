@@ -21,7 +21,7 @@ pragma solidity ^0.8.4;
 // Contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import './Storeable.sol';
+import './storage/Storeable.sol';
 
 /**
  * @dev A contract dealing with Critter account management.

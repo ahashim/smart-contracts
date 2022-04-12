@@ -37,6 +37,7 @@ contract Storeable is Initializable, Structable, Immutable, Mappable {
     /**
      * @dev Initializer function
      */
+    // solhint-disable-next-line func-name-mixedcase
     function __Storeable_init(string memory baseTokenURI)
         internal
         onlyInitializing
