@@ -2,7 +2,13 @@
 
 An open source peer-to-peer microblogging NFT platform for EVM compatible blockchains.
 
-**Core concepts**:
+- [Core Concepts](#core-concepts)
+- [Local Development](#local-development)
+- [Testing](#testing)
+- [Project Roadmap](#project-roadmap)
+- [Architecture](#architecture)
+
+## Core concepts
 
 - Every address is a unique username.
 - Every post (called a squeak) is an NFT.
@@ -25,7 +31,7 @@ COINMARKETCAP_API_KEY=<your-coinmarketcap-api-key>
 PRIVATE_KEY=<your-ethereum-account-private-key>
 ```
 
-`PRIVATE_KEY` is all you need for local development. `COINMARKETCAP_API_KEY` is used for reporting gas in dollar amounts.
+`PRIVATE_KEY` is all you need for local development, while the `COINMARKETCAP_API_KEY` is used for reporting gas in dollar amounts.
 
 The following commands will allow you to compile & run the contracts on a [local hardhat network](https://hardhat.org).
 
