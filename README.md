@@ -24,16 +24,14 @@ An open source peer-to-peer microblogging NFT platform for EVM compatible blockc
 ###### **Requirements**:
 
 - [Node JS](https://nodejs.org) version `^14.8.2`.
-- Create an `.env` file in the project root with the following info:
+
+###### **Optional**:
+
+- An `.env` file in the project root with your `COINMARKETCAP_API_KEY` if you would like to see realtime currency values in the gas report:
 
 ```
 COINMARKETCAP_API_KEY=<your-coinmarketcap-api-key>
-PRIVATE_KEY=<your-ethereum-account-private-key>
 ```
-
-`PRIVATE_KEY` is all you need for local development, while the `COINMARKETCAP_API_KEY` is used for reporting gas in dollar amounts.
-
-The following commands will allow you to compile & run the contracts on a [local hardhat network](https://hardhat.org).
 
 #### Install dependencies
 

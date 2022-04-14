@@ -20,20 +20,12 @@ const config: HardhatUserConfig = {
   contractSizer: {
     strict: true,
   },
-  defaultNetwork: 'hardhat',
   gasReporter: {
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     currency: 'USD',
     enabled: !!process.env.REPORT_GAS,
   },
-  networks: {
-    hardhat: {},
-    ropsten: {
-      url: process.env.ROPSTEN_URL || '',
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-    },
-  },
+  networks: {},
   solidity: {
     version: '0.8.4',
     settings: {
