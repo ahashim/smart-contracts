@@ -22,7 +22,7 @@ pragma solidity ^0.8.4;
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 /**
- * @name Immutable
+ * @title Immutable
  * @dev A contract that only holds constant state variables. These variables
  * do not take up storage slots upon deployment because they are constant. As a
  * result, one can append more constant variables below the existing ones in

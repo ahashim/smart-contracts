@@ -113,9 +113,9 @@ contract Squeakable is Initializable, Storeable {
 
     /**
      * @dev Generate a token URI based on a hash of the chain ID & token ID. it
-     * uses library functions from {StringTheory} under the hood. Notice: this
-     * is not a pure function due to the usage of `block.chainid`.
+     * uses library functions from {StringTheory} under the hood.
      * @param tokenId Numerical token ID to generate a URI for.
+     * @notice This is not a pure function due to the usage of `block.chainid`.
      */
     function _generateUri(uint256 tokenId)
         private

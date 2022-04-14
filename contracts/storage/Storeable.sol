@@ -26,7 +26,7 @@ import './Mappable.sol';
 import './Typeable.sol';
 
 /**
- * @name Storeable
+ * @title Storeable
  * @dev A contract holding all Critter storage variables. This is upgradeable
  * by means of appending new variables below the existing ones in future
  * versions. This will maintain storage mappings in the EVM as new features are

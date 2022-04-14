@@ -41,5 +41,12 @@ describe('Finance', () => {
       const amount = await contract.treasury(owner.address);
       expect(amount).to.equal(FEE_REGISTRATION);
     });
+
+    it('reverts when the user does not have enough to cover the registration fee', async () => {
+      // create account tx with only 1 wei
+      await expect(
+        contract.createAccount('this-is-the-wei', { value: 1 })
+      ).to.be.revertedWith('Critter: not enough funds to create an account');
+    });
   });
 });

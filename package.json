@@ -4,11 +4,14 @@
   "description": "crypto twitter",
   "main": "index.js",
   "scripts": {
+    "compile": "npx hardhat compile",
     "console": "npx hardhat console",
     "coverage": "npx hardhat coverage",
     "format": "prettier --write 'contracts/**/*.sol'",
     "lint": "solhint contracts/**/*.sol",
     "prepare": "npm run format && npm run lint && npx hardhat prepare",
+    "size": "npx hardhat contract-size",
+    "start": "npx hardhat node",
     "test": "REPORT_GAS=1 TS_NODE_TRANSPILE_ONLY=1 npx hardhat test",
     "watch": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat watch ci"
   },

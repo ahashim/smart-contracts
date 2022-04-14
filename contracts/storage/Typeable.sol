@@ -22,7 +22,7 @@ pragma solidity ^0.8.4;
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 /**
- * @name Typeable
+ * @title Typeable
  * @dev A contract holding all Critter data structure types.
  */
 contract Typeable is Initializable {

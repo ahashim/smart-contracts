@@ -88,13 +88,6 @@ describe('Accounts', () => {
         contract.createAccount('some-other-name')
       ).to.be.revertedWith('Critter: account already exists');
     });
-
-    it('reverts when the user does not have enough to cover the registration fee', async () => {
-      // create account tx with only 1 wei
-      await expect(
-        contract.createAccount('this-is-the-wei', { value: 1 })
-      ).to.be.revertedWith('Critter: not enough ether to create an account');
-    });
   });
 
   describe('update', () => {

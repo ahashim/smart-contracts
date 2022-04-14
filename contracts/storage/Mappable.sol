@@ -23,7 +23,7 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './Typeable.sol';
 
 /**
- * @name Mappable
+ * @title Mappable
  * @dev A contract that only holds data mappings. Mappings do not fill storage
  * slots in a linear fashion, rather a hash of the key/value inserted. This
  * makes "good enough" collision avoidance gaurantee, and thus can be appended
