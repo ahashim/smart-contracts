@@ -102,13 +102,11 @@ describe('Squeaks', () => {
     const content = 'hello blockchain!';
     const tokenID = 1;
 
-    beforeEach(async () => {
+    it('allows a user to delete their squeak', async () => {
       // create a squeak
       const createSqueakTx = await contract.createSqueak(content);
       await createSqueakTx.wait();
-    });
 
-    it('allows a user to delete their squeak', async () => {
       // assert existence/ownership
       expect(await contract.balanceOf(owner.address)).to.equal(1);
       expect(await contract.ownerOf(tokenID)).to.equal(owner.address);
@@ -125,6 +123,10 @@ describe('Squeaks', () => {
     });
 
     it('reverts when a user tries to delete a squeak they do not own', async () => {
+      // create a squeak
+      const createSqueakTx = await contract.createSqueak(content);
+      await createSqueakTx.wait();
+
       // new user ahmed
       const createAccountTx = await contract
         .connect(ahmed)
@@ -144,9 +146,12 @@ describe('Squeaks', () => {
       const content = 'General Kenobi! You are a bold one.';
       const tokenID = 1;
 
-      await expect(contract.createSqueak(content))
+      // create squeak
+      const tx = await contract.createSqueak(content);
+
+      await expect(tx)
         .to.emit(contract, eventName)
-        .withArgs(owner.address, tokenID, content);
+        .withArgs(owner.address, tokenID, tx.blockNumber, content);
     });
 
     it('emits a SqueakDeleted event', async () => {

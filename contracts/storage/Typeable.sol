@@ -38,7 +38,7 @@ contract Typeable is Initializable {
      */
     struct Squeak {
         address account;
-        // uint blockNumber;
+        uint256 blockNumber;
         string content;
     }
 }

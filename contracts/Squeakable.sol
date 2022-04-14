@@ -44,6 +44,7 @@ contract Squeakable is Initializable, Storeable {
     event SqueakCreated(
         address indexed sender,
         uint256 tokenId,
+        uint256 blockNumber,
         string content
     );
 
@@ -90,10 +91,16 @@ contract Squeakable is Initializable, Storeable {
         // build squeak & save it to storage
         Squeak storage squeak = squeaks[tokenId];
         squeak.account = msg.sender;
+        squeak.blockNumber = block.number;
         squeak.content = content;
 
         // log the token ID & content
-        emit SqueakCreated(msg.sender, tokenId, squeak.content);
+        emit SqueakCreated(
+            msg.sender,
+            tokenId,
+            squeak.blockNumber,
+            squeak.content
+        );
 
         return (tokenId, tokenUri);
     }
