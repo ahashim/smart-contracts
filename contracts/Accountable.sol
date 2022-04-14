@@ -18,13 +18,14 @@
 */
 pragma solidity ^0.8.4;
 
-// Contracts
+// contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './storage/Storeable.sol';
 
 /**
- * @dev A contract dealing with Critter account management.
+ * @title Accountable
+ * @dev A contract to handle account management.
  */
 contract Accountable is
     Initializable,
@@ -32,23 +33,29 @@ contract Accountable is
     Storeable
 {
     /**
-     * @dev Emitted when the `sender` address creates a Critter account with a
-     *      `username`.
+     * @dev Emitted when the `account` address creates a Critter account with
+     * `username`.
+     * @param account Address of the newly created account.
+     * @param username Text of the username for the newly created account.
      */
-    event AccountCreated(address indexed sender, string username);
+    event AccountCreated(address indexed account, string username);
 
     /**
-     * @dev Emitted when the `sender` address updates their account and changes
-     *      an `oldUsername` to a `newUsername`.
+     * @dev Emitted when the `account` address updates their account and changes
+     * an `oldUsername` to a `newUsername`.
+     * @param account Address of the account that updated their username.
+     * @param oldUsername The old username that was deleted from the account.
+     * @param newUsername The new username that was addded to the account.
      */
     event UsernameUpdated(
-        address indexed sender,
+        address indexed account,
         string oldUsername,
         string newUsername
     );
 
     /**
      * @dev Ensures that `_address` has a Critter account.
+     * @param _address Address of the account to verify existence of.
      */
     modifier hasAccount(address _address) {
         require(
@@ -60,10 +67,10 @@ contract Accountable is
 
     /**
      * @dev Ensures that `username` satisfies the following requirements:
-     *
-     *      - Greater than 0 bytes (cannot be empty).
-     *      - Less than 32 bytes (upper bound for storage slot optimization).
-     *      - Is not already in use.
+     *  - Greater than 0 bytes (cannot be empty).
+     *  - Less than 32 bytes (upper bound for storage slot optimization).
+     *  - Is not already in use.
+     * @param username Text of the username to be validated.
      */
     modifier isValidUsername(string memory username) {
         require(
@@ -76,7 +83,7 @@ contract Accountable is
     }
 
     /**
-     * @dev Initializer function
+     * @dev Initializer function.
      */
     function __Accountable_init() internal onlyInitializing {
         // grant all roles to contract owner
@@ -87,7 +94,9 @@ contract Accountable is
     }
 
     /**
-     * @dev See {IAccounts-createAccount}.
+     * @dev Saves the `username` & address of the sender to storage, and grants
+     * them the `MINTER_ROLE`. Emits an {AccountCreated} event.
+     * @param username The username text for the account to save.
      */
     function _createAccount(string memory username) internal {
         // set our address & username mappings
@@ -103,7 +112,10 @@ contract Accountable is
     }
 
     /**
-     * @dev See {IAccounts-updateUsername}.
+     * @dev Updates the username in storage for the sender's account. Emits a
+     * {UsernameUpdated} event.
+     * @param newUsername The text of the new username that the account is
+     * updating to.
      */
     function _updateUsername(string memory newUsername) internal {
         // clear current username from the addresses mapping

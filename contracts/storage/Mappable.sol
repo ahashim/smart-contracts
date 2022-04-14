@@ -23,7 +23,13 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './Typeable.sol';
 
 /**
- * @dev A contract holding all of the Critter data mappings.
+ * @name Mappable
+ * @dev A contract that only holds data mappings. Mappings do not fill storage
+ * slots in a linear fashion, rather a hash of the key/value inserted. This
+ * makes "good enough" collision avoidance gaurantee, and thus can be appended
+ * to with newer mappings in increasing contract versions.
+ * @notice This contract inherits from `Typeable` in order to use custom Critter
+ * data-structures such as a `Squeak`.
  */
 contract Mappable is Initializable, Typeable {
     /**
@@ -33,7 +39,7 @@ contract Mappable is Initializable, Typeable {
     function __Mappable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Mapping of tokenId's to Squeaks.
+     * @dev Mapping of tokenId's => Squeaks.
      */
     mapping(uint256 => Squeak) public squeaks;
 
@@ -48,7 +54,8 @@ contract Mappable is Initializable, Typeable {
     mapping(address => string) public usernames;
 
     /**
-     * @dev Mapping of account funds in ether.
+     * @dev Mapping of account addresses => amount of funds in wei.
+     * @notice This also tracks the amount of funds for the Critter contract.
      */
     mapping(address => uint256) public treasury;
 }

@@ -26,12 +26,12 @@ import './Mappable.sol';
 import './Typeable.sol';
 
 /**
+ * @name Storeable
  * @dev A contract holding all Critter storage variables. This is upgradeable
- *      by means of appending new variables below the existing ones in future
- *      versions. This will maintain storage mappings in the EVM as new
- *      features are added.
- *
- *      More info on EVM storage collisions: https://tinyurl.com/d424mcpx
+ * by means of appending new variables below the existing ones in future
+ * versions. This will maintain storage mappings in the EVM as new features are
+ * added.
+ * @notice EVM storage collisions & upgradeability: https://tinyurl.com/d424mcpx
  */
 contract Storeable is Initializable, Typeable, Immutable, Mappable {
     /**
@@ -51,16 +51,18 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
 
     /**
      * @dev A counter keeps track of token ID's.
+     * @notice Cannot simply increment {ERC721-balanceOf} value due to the
+     * ability to burn tokens.
      */
     CountersUpgradeable.Counter public tokenIdCounter;
 
     /**
-     * @dev Used to autogenerate token URI's when minting.
+     * @dev Global token URL prefix used when autogenerating token URI's.
      */
     string public baseTokenURI;
 
     /**
-     * @dev Amount in wei to register an account.
+     * @dev Fee amount in wei to create an account.
      */
     uint256 public feeRegistration;
 }

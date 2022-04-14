@@ -32,74 +32,65 @@ interface ICritter is
     IERC721EnumerableUpgradeable
 {
     /**
-     * @dev Create a Critter account.
+     * @dev Create a Critter account. Emits an {AccountCreated} event.
+     * @param username The username to register for the account
      *
-     *      Requirements:
-     *
-     *      - The caller must not have an account.
-     *      - Username must be valid (see {isValidUsername} modifier).
-     *
-     *      Emits {AccountCreated} event.
+     * @notice Requirements:
+     *  - The caller must not have an account
+     *  - Username must be valid (see {isValidUsername} modifier)
      */
     function createAccount(string memory username) external payable;
 
     /**
-     * @dev Create a squeak.
+     * @dev Create a squeak. Emits a {SqueakCreated} event.
+     * @param content Text content of the squeak.
      *
-     *      Requirements:
-     *
-     *      - The caller must already have an account.
-     *      - The caller must have the `MINTER_ROLE`.
-     *      - Squeak must be between 0 & 256 bytes.
-     *
-     *      Emits {SqueakCreated} event.
+     * @notice Requirements:
+     *  - The caller must already have an account.
+     *  - The caller must have the `MINTER_ROLE`.
+     *  - Squeak must be between 0 & 256 bytes.
      */
     function createSqueak(string memory content) external;
 
     /**
-     * @dev Deletes squeak at `tokenId`.
+     * @dev Deletes squeak at `tokenId`. Emits both {SqueakDeleted} & {Transfer}
+     * events.
+     * @param tokenId ID of the token (squeak) to be deleted.
      *
-     *      Requirements:
-     *
-     *      - The caller must already have an account.
-     *      - The caller must own `tokenId` or be an approved operator.
-     *
-     *      Emits {SqueakDeleted} & {Transfer} events.
+     * @notice Requirements:
+     *  - The caller must already have an account.
+     *  - The caller must own `tokenId` or be an approved operator.
      */
     function deleteSqueak(uint256 tokenId) external;
 
     /**
-     * @dev Update an accounts critter username.
+     * @dev Update an accounts critter username. Emits a {UsernameUpdated}
+     * event.
+     * @param username A new username for the account.
      *
-     *      Requirements:
+     * @notice Requirements:
+     *  - The caller must already have an account.
+     *  - The caller must have the `MINTER_ROLE`.
+     *  - Username must be valid (see {isValidUsername} modifier).
      *
-     *      - The caller must already have an account.
-     *      - The caller must have the `MINTER_ROLE`.
-     *      - Username must be valid (see {isValidUsername} modifier).
-     *
-     *      Emits {UsernameUpdated} event.
      */
     function updateUsername(string memory username) external;
 
     /**
-     * @dev Pauses all token transfers.
+     * @dev Pauses all token transfers. See {ERC721PausableUpgradeable} and
+     * {PausableUpgradeable-_pause}.
      *
-     *      See {ERC721PausableUpgradeable} and {PausableUpgradeable-_pause}.
-     *
-     *      Requirements:
-     *
-     *      - The caller must have the `PAUSER_ROLE`.
+     * @notice Requirements:
+     *  - The caller must have the `PAUSER_ROLE`.
      */
     function pause() external;
 
     /**
-     * @dev Unpauses all token transfers.
+     * @dev Unpauses all token transfers. See {ERC721PausableUpgradeable} and
+     * {PausableUpgradeable-_unpause}.
      *
-     *      See {ERC721PausableUpgradeable} and {PausableUpgradeable-_unpause}.
-     *
-     *      Requirements:
-     *
-     *      - The caller must have the `PAUSER_ROLE`.
+     * @notice Requirements:
+     *  - The caller must have the `PAUSER_ROLE`.
      */
     function unpause() external;
 }

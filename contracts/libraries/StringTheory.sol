@@ -19,15 +19,16 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev A library of convenience functions for string manipulation.
+ * @name StringTheory
+ * @dev A library of convenience functions for string manipulation in Solidity.
  */
 library StringTheory {
     /**
      * @dev Converts `bytes32` data to a `string` representation of its
-     *      hexadecimal value. Can be conveniently used with keccak256 hash
-     *      function.
-     *
-     *      Source: https://stackoverflow.com/a/69266989
+     * hexadecimal value. Can be conveniently used with keccak256 hash function.
+     * @param data A bytes32 hex value.
+     * @return A string representation of the bytes32 data.
+     * @notice: Explanation & source https://stackoverflow.com/a/69266989
      */
     function toHexString(bytes32 data) internal pure returns (string memory) {
         return
@@ -41,7 +42,9 @@ library StringTheory {
 
     /**
      * @dev Efficiently Converts a `bytes16` to `bytes32` representation using
-     *       bit-shifts.
+     * bit-shifts.
+     * @param data A bytes16 hex value.
+     * @return A padded bytes32 representation of the bytes16 input data.
      */
     function toHex16(bytes16 data) internal pure returns (bytes32 result) {
         result =
@@ -88,14 +91,12 @@ library StringTheory {
 
     /**
      * @dev Converts all the values of a string to their corresponding lower
-     *      case value.
-     *
-     *      Source: https://gist.github.com/whitehorse21/69a6287c3560e730eabfe05efc17ae22
-     *
+     * case value.
      * @param _base When being used for a data type this is the extended object
-     *              otherwise this is the string base to convert to lower case.
-     * @return string
-     *
+     * otherwise this is the string base to convert to lower case.
+     * @return string with capital letters converted to lowercase.
+     * @notice: Adapted from:
+     * https://gist.github.com/whitehorse21/69a6287c3560e730eabfe05efc17ae22
      */
     function lower(string memory _base) internal pure returns (string memory) {
         bytes memory _baseBytes = bytes(_base);

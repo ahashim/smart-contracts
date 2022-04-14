@@ -18,23 +18,28 @@
 */
 pragma solidity ^0.8.4;
 
-// Libraries
+// libraries
 import './libraries/StringTheory.sol';
 
-// Contracts
+// contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import './storage/Storeable.sol';
 
 /**
+ * @title Squeakable
  * @dev A contract dealing with actions performed on a Squeak.
  */
 contract Squeakable is Initializable, Storeable {
+    // used for ID generation by tokenIdCounter
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     /**
      * @dev Emitted when the `sender` address creates a squeak with `content`
-     *      and is assigned a `tokenID`.
+     * and is assigned a `tokenID`.
+     * @param sender Address of the account that created the squeak.
+     * @param tokenId Numerical ID of the newly minted squeak.
+     * @param content Text content of the newly minted squeak.
      */
     event SqueakCreated(
         address indexed sender,
@@ -44,6 +49,8 @@ contract Squeakable is Initializable, Storeable {
 
     /**
      * @dev Emitted when the `sender` address deletes a squeak of `tokenID`.
+     * @param sender Address of the account that deleted the squeak.
+     * @param tokenId Numerical ID of the deleted squeak.
      */
     event SqueakDeleted(address indexed sender, uint256 tokenId);
 
@@ -56,7 +63,14 @@ contract Squeakable is Initializable, Storeable {
     }
 
     /**
-     * @dev See {ISqueak-createSqueak}.
+     * @dev Creates a squeak consisting of `content` and saves it to storage.
+     * Emits a {SqueakCreated} event.
+     * @param content Text content of the squeak.
+     * @return tokenId Numerical ID of the newly created squeak.
+     * @return tokenUri Text hash of the newly created token ID to be used for
+     * its URI (in conjunction with {_baseURI} prefix).
+     * @notice Requirements:
+     *  - Squeak `content` must be between 0 and 256 bytes in length.
      */
     function _createSqueak(string memory content)
         internal
@@ -85,7 +99,9 @@ contract Squeakable is Initializable, Storeable {
     }
 
     /**
-     * @dev See {ISqueak-deleteSqueak}.
+     * @dev Deletes a squeak at `tokenId` from storage. Emits a {SqueakDeleted}
+     * event.
+     * @param tokenId Numerical ID of the squeak to delete.
      */
     function _deleteSqueak(uint256 tokenId) internal {
         // delete squeak from storage
@@ -96,7 +112,10 @@ contract Squeakable is Initializable, Storeable {
     }
 
     /**
-     * @dev Generate token URI based on chain & token ID.
+     * @dev Generate a token URI based on a hash of the chain ID & token ID. it
+     * uses library functions from {StringTheory} under the hood. Notice: this
+     * is not a pure function due to the usage of `block.chainid`.
+     * @param tokenId Numerical token ID to generate a URI for.
      */
     function _generateUri(uint256 tokenId)
         private
