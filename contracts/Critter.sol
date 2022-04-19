@@ -29,7 +29,6 @@ import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol';
 
 // Critter contracts
 import './Accountable.sol';
@@ -64,7 +63,6 @@ contract Critter is
     ERC721URIStorageUpgradeable,
     PausableUpgradeable,
     AccessControlEnumerableUpgradeable,
-    ERC721BurnableUpgradeable,
     UUPSUpgradeable,
     ICritter,
     Typeable,
@@ -100,7 +98,6 @@ contract Critter is
         __ERC721URIStorage_init();
         __Pausable_init();
         __AccessControl_init();
-        __ERC721Burnable_init();
         __UUPSUpgradeable_init();
 
         // Critter contracts
@@ -210,8 +207,13 @@ contract Critter is
         whenNotPaused
         hasAccount(msg.sender)
     {
-        // validate sender owns the token & burn it
-        burn(tokenId);
+        require(
+            _isApprovedOrOwner(msg.sender, tokenId),
+            'Critter: not approved to delete squeak'
+        );
+
+        // burn the squeak
+        _burn(tokenId);
 
         // delete from storage
         _deleteSqueak(tokenId);

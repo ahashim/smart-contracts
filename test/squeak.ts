@@ -136,7 +136,7 @@ describe('Squeaks', () => {
       await expect(
         // ahmed trying to delete contract owners squeak
         contract.connect(ahmed).deleteSqueak(tokenID)
-      ).to.be.revertedWith('ERC721Burnable: caller is not owner nor approved');
+      ).to.be.revertedWith('Critter: not approved to delete squeak');
     });
   });
 
