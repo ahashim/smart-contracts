@@ -85,6 +85,7 @@ contract Accountable is
     /**
      * @dev Initializer function.
      */
+    // solhint-disable-next-line func-name-mixedcase
     function __Accountable_init() internal onlyInitializing {
         // grant all roles to contract owner
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);

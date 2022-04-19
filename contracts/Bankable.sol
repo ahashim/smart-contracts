@@ -30,6 +30,7 @@ contract Bankable is Initializable, Storeable {
     /**
      * @dev Initializer function
      */
+    // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Bankable_init() internal view onlyInitializing {}
 
     /**

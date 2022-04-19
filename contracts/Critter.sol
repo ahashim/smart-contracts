@@ -75,7 +75,7 @@ contract Critter is
     Bankable,
     Squeakable
 {
-    /// @custom:oz-upgrades-unsafe-allow constructor
+    /// @custom:oz-upgrades-unsafe-allow constructor solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     constructor() initializer {}
 
     /**
@@ -227,6 +227,7 @@ contract Critter is
         _updateUsername(username);
     }
 
+    /* solhint-disable no-empty-blocks */
     /**
      * @dev Function that should revert when `msg.sender` is not authorized to
      * upgrade the contract.
@@ -238,6 +239,8 @@ contract Critter is
         override
         onlyRole(UPGRADER_ROLE)
     {}
+
+    /* solhint-enable no-empty-blocks */
 
     /**
      * @dev See {IERC721Upgradeable-_baseURI}.

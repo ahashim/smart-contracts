@@ -1,21 +1,29 @@
 {
   "extends": "solhint:recommended",
-  "plugins": ["prettier"],
+  "plugins": [
+    "prettier"
+  ],
   "rules": {
-    "compiler-version": ["error", "^0.8.0"],
+    "compiler-version": [
+      "error",
+      "^0.8.0"
+    ],
     "func-visibility": [
       "warn",
       {
         "ignoreConstructors": true
       }
     ],
-    "prettier/prettier": "error",
+    "prettier/prettier": "warn",
     "reason-string": [
       "warn",
       {
         "maxLength": 64
       }
     ],
-    "quotes": ["error", "single"]
+    "quotes": [
+      "error",
+      "single"
+    ]
   }
 }

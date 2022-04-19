@@ -58,6 +58,7 @@ contract Squeakable is Initializable, Storeable {
     /**
      * @dev Initializer function
      */
+    // solhint-disable-next-line func-name-mixedcase
     function __Squeakable_init() internal onlyInitializing {
         // set initial token ID to 1
         tokenIdCounter.increment();
