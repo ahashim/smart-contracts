@@ -66,14 +66,14 @@ contract Critter is
     AccessControlEnumerableUpgradeable,
     ERC721BurnableUpgradeable,
     UUPSUpgradeable,
+    ICritter,
     Typeable,
     Immutable,
     Mappable,
     Storeable,
     Accountable,
     Bankable,
-    Squeakable,
-    ICritter
+    Squeakable
 {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
