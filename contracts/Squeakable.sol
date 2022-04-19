@@ -111,6 +111,21 @@ contract Squeakable is Initializable, Storeable {
      * event.
      * @param tokenId Numerical ID of the squeak to delete.
      */
+    function _calculateDeleteFee(uint256 tokenId)
+        internal
+        view
+        returns (uint256)
+    {
+        Squeak memory squeak = squeaks[tokenId];
+
+        return squeak.blockNumber * feeDeletion;
+    }
+
+    /**
+     * @dev Deletes a squeak at `tokenId` from storage. Emits a {SqueakDeleted}
+     * event.
+     * @param tokenId Numerical ID of the squeak to delete.
+     */
     function _deleteSqueak(uint256 tokenId) internal {
         // delete squeak from storage
         delete squeaks[tokenId];

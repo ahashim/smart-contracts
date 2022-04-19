@@ -90,7 +90,8 @@ contract Critter is
         string memory name,
         string memory symbol,
         string memory baseURI,
-        uint256 registrationFee
+        uint256 registrationFee,
+        uint256 squeakDeletionFee
     ) public initializer {
         // Open Zeppelin contracts
         __ERC721_init(name, symbol);
@@ -104,7 +105,7 @@ contract Critter is
         __Typeable_init();
         __Immutable_init();
         __Mappable_init();
-        __Storeable_init(baseURI, registrationFee);
+        __Storeable_init(baseURI, registrationFee, squeakDeletionFee);
         __Accountable_init();
         __Bankable_init();
         __Squeakable_init();
@@ -203,6 +204,7 @@ contract Critter is
      */
     function deleteSqueak(uint256 tokenId)
         public
+        payable
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
@@ -212,10 +214,18 @@ contract Critter is
             'Critter: not approved to delete squeak'
         );
 
-        // burn the squeak
+        require(
+            msg.value >= _calculateDeleteFee(tokenId),
+            'Critter: not enough funds to delete squeak'
+        );
+
+        // recieve payment
+        treasury[address(this)] += msg.value;
+
+        // burn the token
         _burn(tokenId);
 
-        // delete from storage
+        // delete the squeak from storage
         _deleteSqueak(tokenId);
     }
 

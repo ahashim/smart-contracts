@@ -38,15 +38,17 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
      * @dev Initializer function
      */
     // solhint-disable-next-line func-name-mixedcase
-    function __Storeable_init(string memory baseURI, uint256 registrationFee)
-        internal
-        onlyInitializing
-    {
+    function __Storeable_init(
+        string memory baseURI,
+        uint256 registrationFee,
+        uint256 squeakDeletionFee
+    ) internal onlyInitializing {
         // set base token URI
         baseTokenURI = baseURI;
 
         // set fees
         feeRegistration = registrationFee;
+        feeDeletion = squeakDeletionFee;
     }
 
     /**
@@ -65,4 +67,11 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
      * @dev Fee amount in wei to create an account.
      */
     uint256 public feeRegistration;
+
+    /**
+     * @dev Fee amount in wei per block to delete a squeak.
+     * @notice This gets multiplied by blocks elapsed since the squeak was
+     * authored to calculate the full fee amount.
+     */
+    uint256 public feeDeletion;
 }

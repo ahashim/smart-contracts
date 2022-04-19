@@ -11,6 +11,7 @@ export const SYMBOL = 'CRTTR';
 
 // fees (in wei)
 export const FEE_REGISTRATION = 3_400_000_000_000_000; // currently about $10
+export const FEE_DELETION = 3_228_041_806_953; // about a penny per block
 
 // init
 export const CONTRACT_INITIALIZER = [
@@ -18,4 +19,5 @@ export const CONTRACT_INITIALIZER = [
   SYMBOL,
   BASE_TOKEN_URI,
   FEE_REGISTRATION,
+  FEE_DELETION,
 ];

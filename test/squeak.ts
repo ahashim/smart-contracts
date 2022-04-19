@@ -5,6 +5,7 @@ import {
   BASE_TOKEN_URI,
   CONTRACT_INITIALIZER,
   FEE_REGISTRATION,
+  FEE_DELETION,
   HARDHAT_NETWORK_ID,
   USERNAME,
 } from './constants';
@@ -24,7 +25,7 @@ describe('Squeaks', () => {
   let ahmed: SignerWithAddress;
 
   // account variables
-  const txOptions = {
+  const createAccountTxOptions = {
     value: FEE_REGISTRATION,
   };
 
@@ -36,7 +37,10 @@ describe('Squeaks', () => {
     contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
     // create an owner account
-    const createAccountTx = await contract.createAccount(USERNAME, txOptions);
+    const createAccountTx = await contract.createAccount(
+      USERNAME,
+      createAccountTxOptions
+    );
     await createAccountTx.wait();
   });
 
@@ -112,7 +116,12 @@ describe('Squeaks', () => {
       expect(await contract.ownerOf(tokenID)).to.equal(owner.address);
 
       // delete the squeak
-      const deleteSqueakTx = await contract.deleteSqueak(tokenID);
+      const { blockNumber } = await contract.squeaks(tokenID);
+      const deleteSqueakTxOptions = { value: blockNumber * FEE_DELETION };
+      const deleteSqueakTx = await contract.deleteSqueak(
+        tokenID,
+        deleteSqueakTxOptions
+      );
       await deleteSqueakTx.wait();
 
       // assert it no longer exists
@@ -130,7 +139,7 @@ describe('Squeaks', () => {
       // new user ahmed
       const createAccountTx = await contract
         .connect(ahmed)
-        .createAccount('ahmed', txOptions);
+        .createAccount('ahmed', createAccountTxOptions);
       await createAccountTx.wait();
 
       await expect(
@@ -162,7 +171,10 @@ describe('Squeaks', () => {
       const createSqueakTx = await contract.createSqueak(content);
       await createSqueakTx.wait();
 
-      await expect(await contract.deleteSqueak(tokenID))
+      const { blockNumber } = await contract.squeaks(tokenID);
+      const deleteSqueakTxOptions = { value: blockNumber * FEE_DELETION };
+
+      await expect(await contract.deleteSqueak(tokenID, deleteSqueakTxOptions))
         .to.emit(contract, eventName)
         .withArgs(owner.address, tokenID);
     });

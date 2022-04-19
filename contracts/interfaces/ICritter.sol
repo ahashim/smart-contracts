@@ -61,7 +61,7 @@ interface ICritter is
      *  - The caller must already have an account.
      *  - The caller must own `tokenId` or be an approved operator.
      */
-    function deleteSqueak(uint256 tokenId) external;
+    function deleteSqueak(uint256 tokenId) external payable;
 
     /**
      * @dev Update an accounts critter username. Emits a {UsernameUpdated}
