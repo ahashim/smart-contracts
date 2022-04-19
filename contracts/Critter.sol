@@ -75,8 +75,11 @@ contract Critter is
     Bankable,
     Squeakable
 {
-    /// @custom:oz-upgrades-unsafe-allow constructor solhint-disable-next-line func-name-mixedcase, no-empty-blocks
+    /* solhint-disable func-name-mixedcase, no-empty-blocks */
+    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
+
+    /* solhint-enable func-name-mixedcase, no-empty-blocks */
 
     /**
      * @dev Upgradeable "constructor" function to initialize sub-contracts.
