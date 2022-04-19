@@ -8,7 +8,7 @@
     "console": "npx hardhat console",
     "coverage": "npx hardhat coverage",
     "format": "prettier --write 'contracts/**/*.sol'",
-    "lint": "solhint contracts/**/*.sol",
+    "lint": "solhint 'contracts/**/*.sol'",
     "prepare": "npm run format && npm run lint && npx hardhat prepare",
     "size": "npx hardhat contract-size",
     "start": "npx hardhat node",
