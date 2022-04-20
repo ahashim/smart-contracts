@@ -21,6 +21,7 @@
         "maxLength": 64
       }
     ],
+    "var-name-mixedcase": "off",
     "quotes": [
       "error",
       "single"

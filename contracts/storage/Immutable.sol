@@ -48,5 +48,10 @@ contract Immutable is Initializable {
     /**
      * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
      */
+    bytes32 public constant TREASURER_ROLE = keccak256('TREASURER_ROLE');
+
+    /**
+     * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
+     */
     bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 }

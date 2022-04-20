@@ -25,6 +25,7 @@ import './libraries/StringTheory.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import './storage/Storeable.sol';
+import 'hardhat/console.sol';
 
 /**
  * @title Squeakable
@@ -104,21 +105,6 @@ contract Squeakable is Initializable, Storeable {
         );
 
         return (tokenId, tokenUri);
-    }
-
-    /**
-     * @dev Deletes a squeak at `tokenId` from storage. Emits a {SqueakDeleted}
-     * event.
-     * @param tokenId Numerical ID of the squeak to delete.
-     */
-    function _calculateDeleteFee(uint256 tokenId)
-        internal
-        view
-        returns (uint256)
-    {
-        Squeak memory squeak = squeaks[tokenId];
-
-        return squeak.blockNumber * feeDeletion;
     }
 
     /**

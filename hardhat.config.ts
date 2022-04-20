@@ -7,14 +7,18 @@ import 'hardhat-contract-sizer';
 import 'hardhat-gas-reporter';
 import 'hardhat-watcher';
 import 'solidity-coverage';
+import chai from 'chai';
+import { solidity } from 'ethereum-waffle';
 
 // task variables
 import {
   CONTRACT_INITIALIZER,
   CONTRACT_NAME,
-  FEE_REGISTRATION,
   USERNAME,
 } from './test/constants';
+
+// allow BigNumber comparisons in tests
+chai.use(solidity);
 
 const config: HardhatUserConfig = {
   contractSizer: {
@@ -38,7 +42,7 @@ const config: HardhatUserConfig = {
   watcher: {
     ci: {
       files: ['contracts/**/*.sol', 'test/**/*.ts'],
-      tasks: ['test', 'size-contracts'],
+      tasks: ['test'],
     },
   },
 };
@@ -71,9 +75,7 @@ task(
     const contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
     // create an owner account
-    const createAccountTx = await contract.createAccount(USERNAME, {
-      value: FEE_REGISTRATION,
-    });
+    const createAccountTx = await contract.createAccount(USERNAME);
     await createAccountTx.wait();
 
     // return contract instance

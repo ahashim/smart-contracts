@@ -1,7 +1,7 @@
 // libraries
 import { expect } from 'chai';
 import { ethers, upgrades } from 'hardhat';
-import { CONTRACT_INITIALIZER, FEE_REGISTRATION, USERNAME } from './constants';
+import { CONTRACT_INITIALIZER, USERNAME } from './constants';
 
 // types
 import type { Contract, ContractFactory } from 'ethers';
@@ -16,11 +16,6 @@ describe('Contract', () => {
   let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
 
-  // account variables
-  const txOptions = {
-    value: FEE_REGISTRATION,
-  };
-
   // upgrade variables
   const upgradeAddress = ethers.utils.getAddress(
     '0x70997970c51812dc3a010c7d01b50e0d17dc79c8'
@@ -34,7 +29,7 @@ describe('Contract', () => {
     contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
     // create an owner account
-    const createAccountTx = await contract.createAccount(USERNAME, txOptions);
+    const createAccountTx = await contract.createAccount(USERNAME);
     await createAccountTx.wait();
   });
 

@@ -50,7 +50,7 @@ interface ICritter is
      *  - The caller must have the `MINTER_ROLE`.
      *  - Squeak must be between 0 & 256 bytes.
      */
-    function createSqueak(string memory content) external;
+    function createSqueak(string memory content) external returns (uint256);
 
     /**
      * @dev Deletes squeak at `tokenId`. Emits both {SqueakDeleted} & {Transfer}
@@ -62,6 +62,22 @@ interface ICritter is
      *  - The caller must own `tokenId` or be an approved operator.
      */
     function deleteSqueak(uint256 tokenId) external payable;
+
+    /**
+     * @dev Returns the fee amount in wei to delete a squeak at `tokenId`.
+     * @param tokenId ID of the squeak to delete.
+     * @param blockConfirmationThreshold The amount of blocks to pad the fee
+     * calculation with in order to correctly estimate a price for the block in
+     * which the actual delete transaction occurs.
+     *
+     * @notice Requirements:
+     *  - The token must exist.
+     *
+     */
+    function getDeleteFee(uint256 tokenId, uint256 blockConfirmationThreshold)
+        external
+        view
+        returns (uint256);
 
     /**
      * @dev Update an accounts critter username. Emits a {UsernameUpdated}

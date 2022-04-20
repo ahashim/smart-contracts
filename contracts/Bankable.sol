@@ -34,29 +34,13 @@ contract Bankable is Initializable, Storeable {
     function __Bankable_init() internal view onlyInitializing {}
 
     /**
-     * @dev deposit `value` amount of wei into the treasury for `_address`'s
-     * account.
-     * @param _address The account which wei will be deposited into.
+     * @dev deposit `value` amount of wei into the treasury.
      * @param value The amount of wei to deposit.
-     * @notice Requirements:
-     *  - `value` must be greater than 0
+     * @notice disabling bounds check to save gas fees.
      */
-    function _deposit(address _address, uint256 value) internal {
-        require(value > 0, 'Critter: invalid amount');
-
-        _credit(_address, value);
-    }
-
-    /**
-     * @dev Increases the amount of wei in the treasury for `_address` by
-     * `value` amount.
-     * @param _address Account in treasury to credit.
-     * @param value The amount of wei to credit the account with.
-     * @notice bounds check is disabled to save gas fees.
-     */
-    function _credit(address _address, uint256 value) private {
+    function _deposit(uint256 value) internal {
         unchecked {
-            treasury[_address] += value;
+            treasury += value;
         }
     }
 }

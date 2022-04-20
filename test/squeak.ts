@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import { ethers, upgrades } from 'hardhat';
 import {
   BASE_TOKEN_URI,
+  BLOCK_CONFIRMATION_THRESHOLD,
   CONTRACT_INITIALIZER,
-  FEE_REGISTRATION,
   FEE_DELETION,
   HARDHAT_NETWORK_ID,
   USERNAME,
@@ -19,28 +19,22 @@ describe('Squeaks', () => {
   // contract
   let contract: Contract;
   let factory: ContractFactory;
+  let ownedTokens: Array<Number>;
 
   // users
   let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
 
-  // account variables
-  const createAccountTxOptions = {
-    value: FEE_REGISTRATION,
-  };
-
   beforeEach(async () => {
     [owner, ahmed] = await ethers.getSigners();
     factory = await ethers.getContractFactory('Critter');
+    ownedTokens = [];
 
     // deploy upgradeable contract
     contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
     // create an owner account
-    const createAccountTx = await contract.createAccount(
-      USERNAME,
-      createAccountTxOptions
-    );
+    const createAccountTx = await contract.createAccount(USERNAME);
     await createAccountTx.wait();
   });
 
@@ -104,24 +98,35 @@ describe('Squeaks', () => {
 
   describe('delete', () => {
     const content = 'hello blockchain!';
-    const tokenID = 1;
 
     it('allows a user to delete their squeak', async () => {
       // create a squeak
       const createSqueakTx = await contract.createSqueak(content);
       await createSqueakTx.wait();
 
+      // get the squeak ID's
+      const currentBalance = await contract.balanceOf(owner.address);
+      for (let index = 0; index < currentBalance.toNumber(); index++) {
+        const tokenId = await contract.tokenOfOwnerByIndex(
+          owner.address,
+          index
+        );
+        ownedTokens.push(tokenId.toNumber());
+      }
+      const [tokenID] = ownedTokens;
+
       // assert existence/ownership
       expect(await contract.balanceOf(owner.address)).to.equal(1);
       expect(await contract.ownerOf(tokenID)).to.equal(owner.address);
 
       // delete the squeak
-      const { blockNumber } = await contract.squeaks(tokenID);
-      const deleteSqueakTxOptions = { value: blockNumber * FEE_DELETION };
-      const deleteSqueakTx = await contract.deleteSqueak(
+      const fee = await contract.getDeleteFee(
         tokenID,
-        deleteSqueakTxOptions
+        BLOCK_CONFIRMATION_THRESHOLD
       );
+      const deleteSqueakTx = await contract.deleteSqueak(tokenID, {
+        value: fee,
+      });
       await deleteSqueakTx.wait();
 
       // assert it no longer exists
@@ -136,10 +141,21 @@ describe('Squeaks', () => {
       const createSqueakTx = await contract.createSqueak(content);
       await createSqueakTx.wait();
 
+      // get the squeak ID's
+      const currentBalance = await contract.balanceOf(owner.address);
+      for (let index = 0; index < currentBalance.toNumber(); index++) {
+        const tokenId = await contract.tokenOfOwnerByIndex(
+          owner.address,
+          index
+        );
+        ownedTokens.push(tokenId.toNumber());
+      }
+      const [tokenID] = ownedTokens;
+
       // new user ahmed
       const createAccountTx = await contract
         .connect(ahmed)
-        .createAccount('ahmed', createAccountTxOptions);
+        .createAccount('ahmed');
       await createAccountTx.wait();
 
       await expect(
@@ -166,15 +182,27 @@ describe('Squeaks', () => {
     it('emits a SqueakDeleted event', async () => {
       const eventName = 'SqueakDeleted';
       const content = 'Impossible. Perhaps the archives are incomplete.';
-      const tokenID = 1;
 
       const createSqueakTx = await contract.createSqueak(content);
       await createSqueakTx.wait();
 
-      const { blockNumber } = await contract.squeaks(tokenID);
-      const deleteSqueakTxOptions = { value: blockNumber * FEE_DELETION };
+      // get the squeak ID's
+      const currentBalance = await contract.balanceOf(owner.address);
+      for (let index = 0; index < currentBalance.toNumber(); index++) {
+        const tokenId = await contract.tokenOfOwnerByIndex(
+          owner.address,
+          index
+        );
+        ownedTokens.push(tokenId.toNumber());
+      }
+      const [tokenID] = ownedTokens;
 
-      await expect(await contract.deleteSqueak(tokenID, deleteSqueakTxOptions))
+      // delete the squeak
+      const fee = await contract.getDeleteFee(
+        tokenID,
+        BLOCK_CONFIRMATION_THRESHOLD
+      );
+      await expect(contract.deleteSqueak(tokenID, { value: fee }))
         .to.emit(contract, eventName)
         .withArgs(owner.address, tokenID);
     });

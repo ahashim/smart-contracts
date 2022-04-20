@@ -52,10 +52,4 @@ contract Mappable is Initializable, Typeable {
      * @dev Mapping of account addresses => usernames.
      */
     mapping(address => string) public usernames;
-
-    /**
-     * @dev Mapping of account addresses => amount of funds in wei.
-     * @notice This also tracks the amount of funds for the Critter contract.
-     */
-    mapping(address => uint256) public treasury;
 }

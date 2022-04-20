@@ -26,6 +26,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgrad
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
@@ -38,6 +39,7 @@ import './storage/Immutable.sol';
 import './storage/Mappable.sol';
 import './storage/Storeable.sol';
 import './storage/Typeable.sol';
+import 'hardhat/console.sol';
 
 /**
  * @title Critter: a microblogging platform where each post is an ERC721 token.
@@ -64,6 +66,7 @@ contract Critter is
     PausableUpgradeable,
     AccessControlEnumerableUpgradeable,
     UUPSUpgradeable,
+    ReentrancyGuardUpgradeable,
     ICritter,
     Typeable,
     Immutable,
@@ -84,14 +87,13 @@ contract Critter is
      * @param name Contract name (Critter).
      * @param symbol Contract symbol (CRTTR).
      * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
-     * @param registrationFee Fee amount in wei to create an account.
+     * @param feeDeletion Fee amount in wei per block to delete a squeak.
      */
     function initialize(
         string memory name,
         string memory symbol,
         string memory baseURI,
-        uint256 registrationFee,
-        uint256 squeakDeletionFee
+        uint256 feeDeletion
     ) public initializer {
         // Open Zeppelin contracts
         __ERC721_init(name, symbol);
@@ -100,12 +102,13 @@ contract Critter is
         __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
+        __ReentrancyGuard_init();
 
         // Critter contracts
         __Typeable_init();
         __Immutable_init();
         __Mappable_init();
-        __Storeable_init(baseURI, registrationFee, squeakDeletionFee);
+        __Storeable_init(baseURI, feeDeletion);
         __Accountable_init();
         __Bankable_init();
         __Squeakable_init();
@@ -172,14 +175,7 @@ contract Critter is
             'Critter: account already exists'
         );
 
-        // ensure fee is covered
-        require(
-            msg.value >= feeRegistration,
-            'Critter: not enough funds to create an account'
-        );
-
         _createAccount(username);
-        _deposit(msg.sender, msg.value);
     }
 
     /**
@@ -191,12 +187,15 @@ contract Critter is
         whenNotPaused
         hasAccount(msg.sender)
         onlyRole(MINTER_ROLE)
+        returns (uint256)
     {
         // validate & save content to storage, then generate token ID & URI
         (uint256 tokenId, string memory tokenUri) = _createSqueak(content);
 
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, tokenUri);
+
+        return tokenId;
     }
 
     /**
@@ -214,19 +213,41 @@ contract Critter is
             'Critter: not approved to delete squeak'
         );
 
+        uint256 currentBlockDeleteFee = getDeleteFee(tokenId, 0);
+
         require(
-            msg.value >= _calculateDeleteFee(tokenId),
+            msg.value >= currentBlockDeleteFee,
             'Critter: not enough funds to delete squeak'
         );
 
         // recieve payment
-        treasury[address(this)] += msg.value;
+        _deposit(msg.value);
 
         // burn the token
         _burn(tokenId);
 
         // delete the squeak from storage
         _deleteSqueak(tokenId);
+    }
+
+    /**
+     * @dev See {ICritter-getDeleteFee}.
+     */
+    function getDeleteFee(uint256 tokenId, uint256 blockConfirmationThreshold)
+        public
+        view
+        override(ICritter)
+        returns (uint256)
+    {
+        require(
+            _exists(tokenId),
+            'Critter: cannot calculate fee for nonexistent token'
+        );
+        Squeak memory squeak = squeaks[tokenId];
+        uint256 latestBlockThreshold = block.number +
+            blockConfirmationThreshold;
+
+        return (latestBlockThreshold - squeak.blockNumber) * FEE_DELETION;
     }
 
     /**
