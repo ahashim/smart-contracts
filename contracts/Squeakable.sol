@@ -25,7 +25,6 @@ import './libraries/StringTheory.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import './storage/Storeable.sol';
-import 'hardhat/console.sol';
 
 /**
  * @title Squeakable
