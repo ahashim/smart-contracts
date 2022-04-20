@@ -183,15 +183,12 @@ contract Critter is
         whenNotPaused
         hasAccount(msg.sender)
         onlyRole(MINTER_ROLE)
-        returns (uint256)
     {
         // validate & save content to storage, then generate token ID & URI
         (uint256 tokenId, string memory tokenUri) = _createSqueak(content);
 
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, tokenUri);
-
-        return tokenId;
     }
 
     /**

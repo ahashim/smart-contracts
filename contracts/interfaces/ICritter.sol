@@ -50,7 +50,7 @@ interface ICritter is
      *  - The caller must have the `MINTER_ROLE`.
      *  - Squeak must be between 0 & 256 bytes.
      */
-    function createSqueak(string memory content) external returns (uint256);
+    function createSqueak(string memory content) external;
 
     /**
      * @dev Deletes squeak at `tokenId`. Emits both {SqueakDeleted} & {Transfer}
