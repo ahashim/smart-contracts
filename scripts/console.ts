@@ -12,9 +12,9 @@ async function main() {
   // start progress
   process.stdout.write('Initializing...');
 
-  // get contract info
-  const [owner, ahmed, barbie] = await hardhat.ethers.getSigners();
-  const contract = await hardhat.run('critterInit');
+  // get contract + account info
+  const [contract, accounts] = await hardhat.run('initialize');
+  const [owner, ahmed, barbie] = accounts;
 
   // assign context
   r.context.hh = hardhat;
