@@ -1,4 +1,4 @@
-// init .env files
+// environment variables
 import 'dotenv/config';
 
 // hardhat
@@ -11,15 +11,14 @@ import 'hardhat-gas-reporter';
 import 'hardhat-watcher';
 import 'solidity-coverage';
 
-// tests
+// task files
+import './tasks/contract';
+import './tasks/network';
+import './tasks/project';
+
+// test harness
 import chai from 'chai';
 import { solidity } from 'ethereum-waffle';
-
-// custom tasks
-import './tasks/network';
-import './tasks/contract';
-
-// allow BigNumber comparisons in tests
 chai.use(solidity);
 
 const config: HardhatUserConfig = {

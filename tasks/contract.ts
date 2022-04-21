@@ -1,6 +1,28 @@
 import { subtask, task } from 'hardhat/config';
+import { faker } from '@faker-js/faker';
 import { CONTRACT_INITIALIZER, CONTRACT_NAME } from '../constants';
-import type { Contract } from 'ethers';
+
+// types
+import type { Contract, ContractTransaction } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+
+subtask(
+  'createAccount',
+  'Creates a single Critter account',
+  async ({
+    contract,
+    signer,
+  }: {
+    contract: Contract;
+    signer: SignerWithAddress;
+  }) => {
+    // create account tx
+    const createAccountTx: ContractTransaction = await contract
+      .connect(signer)
+      .createAccount(faker.name.firstName());
+    await createAccountTx.wait();
+  }
+);
 
 subtask(
   'deployContract',
@@ -15,30 +37,12 @@ subtask(
 );
 
 subtask(
-  'createAccounts',
-  'Creates an owner account + 2 user accounts',
-  async ({ contract }: { contract: Contract }, { ethers }) => {
-    const [owner, ahmed, barbie] = await ethers.getSigners();
+  'getSigners',
+  'Gets an array of signer accounts of a specified amount',
+  async ({ amount = 20 }: { amount: number }, { ethers }) => {
+    const signers: Array<SignerWithAddress> = await ethers.getSigners();
 
-    // create an owner account
-    const createOwnerAccountTx = await contract
-      .connect(owner)
-      .createAccount('owner');
-    await createOwnerAccountTx.wait();
-
-    // create ahmed's account
-    const createAhmedAccountTx = await contract
-      .connect(ahmed)
-      .createAccount('ahmed');
-    await createAhmedAccountTx.wait();
-
-    // create barbie's account
-    const createBarbieAccountTx = await contract
-      .connect(barbie)
-      .createAccount('barbie');
-    await createBarbieAccountTx.wait();
-
-    return [owner, ahmed, barbie];
+    return amount === 20 ? signers : signers.slice(0, amount);
   }
 );
 
@@ -46,29 +50,17 @@ task(
   'initialize',
   'Deploys contracts and sets up 1 owner + 2 regular accounts',
   async (_, { run }) => {
-    const contract = await run('deployContract');
-    const accounts = await run('createAccounts', { contract });
+    const numberOfAccounts = 3; // including owner account
+    const contract: Contract = await run('deployContract');
+    const signers: Array<SignerWithAddress> = await run('getSigners', {
+      amount: numberOfAccounts,
+    });
 
-    // return contract instance
-    return [contract, accounts];
-  }
-);
+    signers.forEach(async (signer) => {
+      await run('createAccount', { contract, signer });
+    });
 
-task(
-  'prepare',
-  'Compiles the latest contracts, generates a contract size report & a test coverage report',
-  async function (_, { run }) {
-    // compile contracts
-    await run('compile');
-    console.log('\n');
-
-    // contract sizing report
-    console.log('\x1b[1m%s', 'Contract Size'); // making the title bold
-    console.log('%s\x1b[0m', '============='); // reset formatting after separator
-    await run('size-contracts');
-    console.log('\n');
-
-    // test coverage report
-    await run('coverage');
+    // return contract + signers
+    return [contract, signers];
   }
 );
