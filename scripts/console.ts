@@ -10,7 +10,7 @@ async function main() {
   });
 
   // start progress
-  process.stdout.write('Initializing...');
+  process.stdout.write('Warming up...');
 
   // get contract + account info
   const [contract, accounts] = await hardhat.run('initialize');
