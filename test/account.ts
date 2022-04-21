@@ -1,7 +1,7 @@
 // libraries
 import { expect } from 'chai';
 import { ethers, upgrades } from 'hardhat';
-import { CONTRACT_INITIALIZER, USERNAME } from './constants';
+import { CONTRACT_INITIALIZER, USERNAME } from '../constants';
 
 // types
 import type { Contract, ContractFactory } from 'ethers';

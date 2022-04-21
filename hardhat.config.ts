@@ -11,11 +11,7 @@ import chai from 'chai';
 import { solidity } from 'ethereum-waffle';
 
 // task variables
-import {
-  CONTRACT_INITIALIZER,
-  CONTRACT_NAME,
-  USERNAME,
-} from './test/constants';
+import { CONTRACT_INITIALIZER, CONTRACT_NAME, USERNAME } from './constants';
 
 // allow BigNumber comparisons in tests
 chai.use(solidity);

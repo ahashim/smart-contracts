@@ -6,7 +6,7 @@ import {
   CONTRACT_INITIALIZER,
   FEE_DELETION,
   USERNAME,
-} from './constants';
+} from '../constants';
 
 // types
 import type { Contract, ContractFactory } from 'ethers';

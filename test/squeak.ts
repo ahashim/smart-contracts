@@ -7,7 +7,7 @@ import {
   CONTRACT_INITIALIZER,
   HARDHAT_NETWORK_ID,
   USERNAME,
-} from './constants';
+} from '../constants';
 
 // types
 import type { Contract, ContractFactory } from 'ethers';

@@ -3,7 +3,7 @@ import hardhat from 'hardhat';
 
 async function main() {
   // start repl & get accounts
-  const r = repl.start(`[CRTTR 🐹]: `);
+  const r = repl.start(`<CRTTR 🦔>: `);
   const [owner, ahmed, barbie] = await hardhat.ethers.getSigners();
 
   // assign context

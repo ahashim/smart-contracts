@@ -4,6 +4,7 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers, upgrades } from 'hardhat';
+import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -14,13 +15,8 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const factory = await ethers.getContractFactory('Critter');
-  const contract = await upgrades.deployProxy(factory, [
-    'Critter',
-    'CRTTR',
-    'https://critter.fyi/token/',
-    3_228_041_806_953,
-  ]);
+  const factory = await ethers.getContractFactory(CONTRACT_NAME);
+  const contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
   console.log('Critter deployed to:', contract.address);
 }
