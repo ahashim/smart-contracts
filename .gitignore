@@ -1,5 +1,6 @@
-node_modules
 .env
+dist
+node_modules
 coverage
 coverage.json
 typechain
