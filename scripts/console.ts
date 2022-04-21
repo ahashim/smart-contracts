@@ -13,7 +13,9 @@ async function main() {
   process.stdout.write('Warming up...');
 
   // get contract + account info
-  const [contract, accounts] = await hardhat.run('initialize');
+  const [contract, accounts] = await hardhat.run('initialize', {
+    numberOfAccounts: 3,
+  });
   const [owner, ahmed, barbie] = accounts;
 
   // assign context
