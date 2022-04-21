@@ -1,14 +1,22 @@
-.env
-dist
-node_modules
-coverage
-coverage.json
-typechain
-typechain-types
-
-#Hardhat files
+## Hardhat
 cache
 artifacts
 
-# OpenZeppelin
+## Node
+node_modules
+
+## OpenZeppelin
 .openzeppelin/unknown-*.json
+
+## System files
+**/*.log
+.env
+
+## Test
+coverage
+coverage.json
+
+## Typescript
+dist
+typechain
+typechain-types
