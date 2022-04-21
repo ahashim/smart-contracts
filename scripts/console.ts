@@ -1,20 +1,30 @@
 import repl from 'repl';
 import hardhat from 'hardhat';
+import { SYMBOL } from '../constants';
 
 async function main() {
-  // start repl & get accounts
-  const r = repl.start(`<CRTTR 🦔>: `);
+  // start repl with options
+  const r = repl.start({
+    prompt: `🦔 <${SYMBOL}>: `,
+    useColors: true,
+  });
+
+  // start progress
+  process.stdout.write('Initializing...');
+
+  // get contract info
   const [owner, ahmed, barbie] = await hardhat.ethers.getSigners();
+  const contract = await hardhat.run('critterInit');
 
   // assign context
   r.context.hh = hardhat;
   r.context.owner = owner;
   r.context.ahmed = ahmed;
   r.context.barbie = barbie;
-  r.context.contract = await hardhat.run('critterInit');
+  r.context.contract = contract;
 
   // this is where the fun begins
-  console.log(`Ready... 🐁`);
+  process.stdout.write(' ready! 🐁\n');
 }
 
 main().catch((error) => {
