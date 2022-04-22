@@ -12,7 +12,7 @@ import {
 import type { Contract } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-describe.only('Contract', () => {
+describe('Contract', () => {
   let contract: Contract;
   let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;

@@ -9,21 +9,32 @@ async function main() {
     useColors: true,
   });
 
-  // start progress
+  // start progress indicator
   process.stdout.write('Warming up...');
 
-  // get contract + account info
-  const [contract, accounts] = await hardhat.run('initialize', {
-    numberOfAccounts: 3,
-  });
-  const [owner, ahmed, barbie] = accounts;
+  // deploy contract + create accounts
+  const signers = await hardhat.ethers.getSigners();
+  const users = ['owner', 'ahmed', 'barbie', 'carlos'];
+  const contract = await hardhat.run('deployContract');
 
-  // assign context
+  // assign hardhat context
   r.context.hh = hardhat;
-  r.context.owner = owner;
-  r.context.ahmed = ahmed;
-  r.context.barbie = barbie;
   r.context.contract = contract;
+
+  // create Critter accounts
+  for (let i = 0; i < users.length; i++) {
+    const signer = signers[i];
+    const username = users[i];
+
+    hardhat.run('createAccount', {
+      contract,
+      signer,
+      username,
+    });
+
+    // add it to the repl context
+    r.context[username] = signer;
+  }
 
   // this is where the fun begins
   process.stdout.write(' ready! 🐁\n');
