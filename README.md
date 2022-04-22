@@ -132,7 +132,7 @@ npm size
 - All user/squeak data not-stored on chain will be in the database.
 - Database cluster will likely be MySql/MariaDB to optimize for reads.
   - If using Postgres instead, we can potentially use supabase's [pg_graphql](https://github.com/supabase/pg_graphql) to directly hit datbase for reads from the client.
-- Using `read + write > # nodes` forumula to get eventual consistency
+- Using `read + write > # nodes` formula to get eventual consistency
   - Start with 3 nodes, and always keeping the # of nodes an odd number to avoid the [split-brain problem](https://www.45drives.com/community/articles/what-is-split-brain/).
 - `tokenID`'s can serve as primary keys
   - `uint256` primary key type ensures we will likely not run out before the heat death of the universe.
