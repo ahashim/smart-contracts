@@ -2,7 +2,7 @@
 import 'dotenv/config';
 
 // hardhat
-import { HardhatUserConfig, task } from 'hardhat/config';
+import type { HardhatUserConfig } from 'hardhat/config';
 import '@nomiclabs/hardhat-waffle';
 import '@openzeppelin/hardhat-upgrades';
 import '@typechain/hardhat';
@@ -42,7 +42,7 @@ const config: HardhatUserConfig = {
   },
   watcher: {
     ci: {
-      files: ['contracts/**/*.sol', 'test/**/*.ts'],
+      files: ['contracts/**/*.sol', 'test/**/*.ts', 'tasks/**/*.ts'],
       tasks: ['test'],
     },
   },
