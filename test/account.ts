@@ -1,171 +1,182 @@
 // libraries
 import { expect } from 'chai';
-import { ethers, upgrades } from 'hardhat';
-import { CONTRACT_INITIALIZER, USERNAME } from '../constants';
+import { ethers, run } from 'hardhat';
 
 // types
-import type { Contract, ContractFactory } from 'ethers';
+import type { Contract } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 describe('Accounts', () => {
-  // contract
   let contract: Contract;
-  let factory: ContractFactory;
-
-  // users
   let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
+  let barbie: SignerWithAddress;
 
   // account variables
   const MINTER_ROLE = ethers.utils.id('MINTER_ROLE');
-  beforeEach(async () => {
-    [owner, ahmed] = await ethers.getSigners();
-    factory = await ethers.getContractFactory('Critter');
 
-    // deploy upgradeable contract
-    contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
+  beforeEach(async () => {
+    contract = await run('deployContract');
+    [owner, ahmed, barbie] = await ethers.getSigners();
   });
 
   describe('create', () => {
     it('creates an account with the users address', async () => {
-      // create account tx
-      const createAccountTx = await contract.createAccount(USERNAME);
-      await createAccountTx.wait();
+      const username = 'ahmed';
 
-      // compare username in transaction with account address from the blockchain
-      const name = await contract.usernames(owner.address);
-      expect(name).to.equal(USERNAME);
+      // create account
+      expect(await contract.connect(ahmed).createAccount(username))
+        .to.emit(contract, 'AccountCreated')
+        .withArgs(ahmed.address, username);
 
-      // compare account address in transaction with username from the blockchain
-      const address = await contract.addresses(USERNAME);
-      expect(address).to.equal(owner.address);
+      // assert address <=> username mapping is correct
+      expect(await contract.usernames(ahmed.address)).to.equal(username);
+      expect(await contract.addresses(username)).to.equal(ahmed.address);
     });
 
     it('grants a new account the role of MINTER', async () => {
-      // contract owner
-      const createAccountTx = await contract.createAccount(USERNAME);
-      await createAccountTx.wait();
+      const signers = [owner, ahmed];
 
-      // another account
-      const anotherCreateAccountTx = await contract
-        .connect(ahmed)
-        .createAccount('ahmed');
-      await anotherCreateAccountTx.wait();
+      // create a single account
+      await run('createAccount', {
+        contract,
+        signer: ahmed,
+        username: 'ahmed',
+      });
 
-      // assert 2 accounts have the role of minter
-      expect(await contract.getRoleMemberCount(MINTER_ROLE)).to.equal(2);
-
-      // first account belongs to the owner
-      expect(await contract.getRoleMember(MINTER_ROLE, 0)).to.equal(
-        owner.address
+      // assert 2 accounts have the MINTER_ROLE (because the owner is
+      // automatically granted the role upon contract deployment)
+      expect(await contract.getRoleMemberCount(MINTER_ROLE)).to.equal(
+        signers.length
       );
 
-      // second is a regular user
-      expect(await contract.getRoleMember(MINTER_ROLE, 1)).to.equal(
-        ahmed.address
-      );
+      // assert the index of each role belongs to the accounts created
+      for (let i = 0; i < signers.length; i++) {
+        expect(await contract.getRoleMember(MINTER_ROLE, i)).to.equal(
+          signers[i].address
+        );
+      }
     });
 
     it('reverts when the users address already has an account', async () => {
       // first create account tx
-      const firstCreateAccountTx = await contract.createAccount(USERNAME);
-      await firstCreateAccountTx.wait();
+      await run('createAccount', {
+        contract,
+        signer: ahmed,
+        username: 'ahmed',
+      });
+
       // second create account tx from the same address
       await expect(
-        contract.createAccount('some-other-name')
+        run('createAccount', {
+          contract,
+          signer: ahmed,
+          username: 'a-rock',
+        })
       ).to.be.revertedWith('Critter: account already exists');
     });
   });
 
   describe('update', () => {
     it('updates the username', async () => {
+      const username = 'ahmed';
+      const newUsername = 'a-rock';
+
       // create account
-      const createAccountTx = await contract.createAccount(USERNAME);
-      await createAccountTx.wait();
+      await run('createAccount', {
+        contract,
+        signer: ahmed,
+        username,
+      });
 
-      // assert we have a username
-      expect(await contract.usernames(owner.address)).to.equal(USERNAME);
+      // assert existence of the account username
+      expect(await contract.usernames(ahmed.address)).to.equal(username);
 
-      // change username
-      const newUsername = 'ahashim';
-      const changeUsernameTx = await contract.updateUsername(newUsername);
-      await changeUsernameTx.wait();
+      // change username & assert the event
+      await expect(contract.connect(ahmed).updateUsername(newUsername))
+        .to.emit(contract, 'UsernameUpdated')
+        .withArgs(ahmed.address, username, newUsername);
 
-      // assert our username changed
-      expect(await contract.usernames(owner.address)).to.equal(newUsername);
+      // assert the has username changed
+      expect(await contract.usernames(ahmed.address)).to.equal(newUsername);
     });
 
-    it('makes an old username available when updating to a new one', async () => {
-      // contract owner signs up as 'a-rock'
-      const createAccountTx = await contract.createAccount(USERNAME);
-      await createAccountTx.wait();
+    it('makes an old username available when an account changes it', async () => {
+      // ahmed signs up as 'a-rock'
+      await run('createAccount', {
+        contract,
+        signer: ahmed,
+        username: 'a-rock',
+      });
 
-      // contract owner updates their username to 'ahashim'
-      const updateUsernameTx = await contract.updateUsername('ahashim');
-      await updateUsernameTx.wait();
+      // ahmed changes their username to something a bit more sensible
+      await run('updateUsername', {
+        contract,
+        signer: ahmed,
+        newUsername: 'ahmed',
+      });
 
-      // another address can now sign up as 'a-rock'
-      const anotherCreateAccountTx = await contract
-        .connect(ahmed)
-        .createAccount(USERNAME);
-      await anotherCreateAccountTx.wait();
+      // barbie signs up as 'a-rock'
+      await run('createAccount', {
+        contract,
+        signer: barbie,
+        username: 'a-rock',
+      });
 
-      // assert our new account has the original username
-      expect(await contract.usernames(ahmed.address)).to.equal(USERNAME);
+      // assert barbie's username is 'a-rock'
+      expect(await contract.usernames(barbie.address)).to.equal('a-rock');
     });
 
     it('reverts when updating username & the address does not have an account', async () => {
-      // second create account tx from a different address but duplicate username
+      // barbie tries to update their username without an account
       await expect(
-        contract.connect(ahmed).updateUsername('ahmed')
+        run('updateUsername', {
+          contract,
+          signer: barbie,
+          newUsername: 'barbie',
+        })
       ).to.be.revertedWith('Critter: address does not have an account');
     });
 
     it('reverts when updating username & new the username is already taken', async () => {
-      // first create account tx
-      const firstCreateAccountTx = await contract.createAccount(USERNAME);
-      await firstCreateAccountTx.wait();
+      const username = 'a-rock';
 
-      // second create account tx from a different address but duplicate username
+      // ahmed signs up as 'a-rock'
+      await run('createAccount', {
+        contract,
+        signer: ahmed,
+        username,
+      });
+
+      // barbie attempts to sign up with the same username
       await expect(
-        contract.connect(ahmed).createAccount(USERNAME)
+        run('createAccount', {
+          contract,
+          signer: barbie,
+          username,
+        })
       ).to.be.revertedWith('Critter: username taken');
     });
 
     it('reverts when updating the username & the new username is empty', async () => {
-      await expect(contract.createAccount('')).to.be.revertedWith(
-        'Critter: username cannot be empty'
-      );
+      await expect(
+        run('createAccount', {
+          contract,
+          signer: ahmed,
+          username: '',
+        })
+      ).to.be.revertedWith('Critter: username cannot be empty');
     });
 
     it('reverts when updating the username & the new username is longer than 256 bytes', async () => {
       await expect(
-        contract.createAccount('000000000000000000000000000000001')
+        run('createAccount', {
+          contract,
+          signer: ahmed,
+          username:
+            'has-anyone-really-been-far-even-as-decided-to-use-even-go-want-to-do-look-more-like?',
+        })
       ).to.be.revertedWith('Critter: username is too long');
-    });
-  });
-
-  describe('events', () => {
-    it('emits an AccountCreated event', async () => {
-      const eventName = 'AccountCreated';
-
-      await expect(contract.createAccount(USERNAME))
-        .to.emit(contract, eventName)
-        .withArgs(owner.address, USERNAME);
-    });
-
-    it('emits a UsernameUpdated event', async () => {
-      const eventName = 'UsernameUpdated';
-      const newUsername = 'ahmed';
-
-      // first create an account
-      const createAccountTx = await contract.createAccount(USERNAME);
-      await createAccountTx.wait();
-
-      // then change username
-      await expect(contract.updateUsername(newUsername))
-        .to.emit(contract, eventName)
-        .withArgs(owner.address, USERNAME, newUsername);
     });
   });
 });

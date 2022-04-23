@@ -1,14 +1,21 @@
 import { task } from 'hardhat/config';
-import { CONTRACT_INITIALIZER, CONTRACT_NAME } from '../constants';
+
+// constants
+import {
+  BLOCK_CONFIRMATION_THRESHOLD,
+  CONTRACT_INITIALIZER,
+  CONTRACT_NAME,
+} from '../constants';
 
 // types
 import type { Contract, ContractFactory, ContractTransaction } from 'ethers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { TransactionReceipt } from '@ethersproject/providers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { TransactionReceipt } from '@ethersproject/providers';
+import type { Event } from '@ethersproject/providers/lib/base-provider';
 
 task(
   'createAccount',
-  'creates a single Critter account',
+  'Create & confirm a signed createAccount transaction',
   async ({
     contract,
     signer,
@@ -18,28 +25,101 @@ task(
     signer: SignerWithAddress;
     username: string;
   }): Promise<TransactionReceipt> => {
+    // create account tx
     const tx: ContractTransaction = await contract
       .connect(signer)
       .createAccount(username);
-    const transactionReceipt: TransactionReceipt = await tx.wait();
 
-    return transactionReceipt;
+    // wait for a confirmation
+    return await tx.wait();
   }
 );
 
 task(
   'deployContract',
-  'Deploys upgradeable contracts via a proxy from owner account',
+  'Deploys contracts via an upgradeable proxy from the owner EOA',
   async (_, { ethers, upgrades }): Promise<Contract> => {
-    // deploy contract
+    // get contract factory instance
     const factory: ContractFactory = await ethers.getContractFactory(
       CONTRACT_NAME
     );
-    const contract: Contract = await upgrades.deployProxy(
-      factory,
-      CONTRACT_INITIALIZER
+
+    // deploy contract via upgradeable proxy
+    return await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
+  }
+);
+
+task(
+  'createSqueak',
+  'Create & confirm a signed squeak transaction',
+  async ({
+    contract,
+    signer,
+    content,
+  }: {
+    contract: Contract;
+    signer: SignerWithAddress;
+    content: string;
+  }) => {
+    // create squeak tx
+    const tx: ContractTransaction = await contract
+      .connect(signer)
+      .createSqueak(content);
+
+    // wait for a confirmation
+    const receipt = await tx.wait();
+
+    // return event data
+    return receipt.events!.find(({ event }) => event === 'SqueakCreated');
+  }
+);
+
+task(
+  'deleteSqueak',
+  'Create & confirm a signed delete squeak transaction',
+  async ({
+    contract,
+    signer,
+    tokenId,
+  }: {
+    contract: Contract;
+    signer: SignerWithAddress;
+    tokenId: number;
+  }): Promise<TransactionReceipt> => {
+    // get delete fee tx (view function, so no need to wait)
+    const fee = await contract.getDeleteFee(
+      tokenId,
+      BLOCK_CONFIRMATION_THRESHOLD
     );
 
-    return contract;
+    // delete the token w/ fee amount
+    const tx: ContractTransaction = await contract
+      .connect(signer)
+      .deleteSqueak(tokenId, { value: fee });
+
+    // wait for a confirmation
+    return await tx.wait();
+  }
+);
+
+task(
+  'updateUsername',
+  'Create & confirm a signed updateUsername transaction',
+  async ({
+    contract,
+    signer,
+    newUsername,
+  }: {
+    contract: Contract;
+    signer: SignerWithAddress;
+    newUsername: string;
+  }): Promise<TransactionReceipt> => {
+    // update username tx
+    const tx: ContractTransaction = await contract
+      .connect(signer)
+      .updateUsername(newUsername);
+
+    // wait for a confirmation
+    return await tx.wait();
   }
 );

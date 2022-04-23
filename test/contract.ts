@@ -60,13 +60,13 @@ describe('Contract', () => {
     });
 
     it('can be paused & unpaused by PAUSER_ROLE', async () => {
-      // pause the contract from owner account
+      // pause the contract from owner account & assert the event
       expect(await contract.connect(owner).pause())
         .to.emit(contract, 'Paused')
         .withArgs(owner.address);
       expect(await contract.paused()).to.equal(true);
 
-      // unpause the contract from the same account
+      // unpause the contract from the same account & assert the event
       expect(await contract.connect(owner).unpause())
         .to.emit(contract, 'Unpaused')
         .withArgs(owner.address);
