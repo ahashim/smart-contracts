@@ -236,11 +236,10 @@ contract Critter is
             _exists(tokenId),
             'Critter: cannot calculate fee for nonexistent token'
         );
-        Squeak memory squeak = squeaks[tokenId];
-        uint256 latestBlockThreshold = block.number +
-            blockConfirmationThreshold;
 
-        return (latestBlockThreshold - squeak.blockNumber) * FEE_DELETION;
+        uint256 fee = _getDeleteFee(tokenId, blockConfirmationThreshold);
+
+        return fee;
     }
 
     /**

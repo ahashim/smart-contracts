@@ -137,4 +137,23 @@ contract Squeakable is Initializable, Storeable {
 
         return StringTheory.lower(StringTheory.toHexString(hashedUri));
     }
+
+    /**
+     * @dev Returns the fee amount in wei to delete a squeak at `tokenId`.
+     * @param tokenId ID of the squeak to delete.
+     * @param blockConfirmationThreshold The amount of blocks to pad the fee
+     * calculation with in order to correctly estimate a price for the block in
+     * which the actual delete transaction occurs.
+     */
+    function _getDeleteFee(uint256 tokenId, uint256 blockConfirmationThreshold)
+        internal
+        view
+        returns (uint256)
+    {
+        Squeak memory squeak = squeaks[tokenId];
+        uint256 latestBlockThreshold = block.number +
+            blockConfirmationThreshold;
+
+        return (latestBlockThreshold - squeak.blockNumber) * FEE_DELETION;
+    }
 }
