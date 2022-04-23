@@ -33,12 +33,16 @@ contract Typeable is Initializable {
     function __Typeable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Squeak consists of an account address & a content string up to 256
-     * bytes.
+     * @dev Squeak is the primary Critter message.
+     * @param blockNumber Block in which the squeak was created.
+     * @param author Address of the original author of the squeak.
+     * @param owner Address of the current owner of the squeak.
+     * @param content Message content of the squeak.
      */
     struct Squeak {
-        address account;
         uint256 blockNumber;
+        address author;
+        address owner;
         string content;
     }
 }

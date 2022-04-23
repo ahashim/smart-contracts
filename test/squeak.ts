@@ -53,8 +53,10 @@ describe('Squeaks', () => {
         .withArgs(ahmed.address, tokenId, tx.blockNumber, content);
 
       // assert correct squeak info
+      expect(squeak.blockNumber).to.equal(tx.blockNumber);
+      expect(squeak.author).to.equal(ahmed.address);
+      expect(squeak.owner).to.equal(ahmed.address);
       expect(squeak.content).to.equal(content);
-      expect(squeak.account).to.equal(ahmed.address);
 
       // assert correct tokenURI
       expect(tokenURI).to.equal(BASE_TOKEN_URI + hexURI);

@@ -37,13 +37,13 @@ contract Squeakable is Initializable, Storeable {
     /**
      * @dev Emitted when the `sender` address creates a squeak with `content`
      * and is assigned a `tokenID`.
-     * @param account Address of the account that created the squeak.
+     * @param author Address of the account that created the squeak.
      * @param tokenId Numerical ID of the newly minted squeak.
      * @param blockNumber Number of the block in which the squeak was authored.
      * @param content Text content of the newly minted squeak.
      */
     event SqueakCreated(
-        address indexed account,
+        address indexed author,
         uint256 tokenId,
         uint256 blockNumber,
         string content
@@ -92,8 +92,9 @@ contract Squeakable is Initializable, Storeable {
 
         // build squeak & save it to storage
         Squeak storage squeak = squeaks[tokenId];
-        squeak.account = msg.sender;
         squeak.blockNumber = block.number;
+        squeak.author = msg.sender;
+        squeak.owner = msg.sender;
         squeak.content = content;
 
         // log the token ID & content
