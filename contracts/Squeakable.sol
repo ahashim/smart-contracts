@@ -156,4 +156,14 @@ contract Squeakable is Initializable, Storeable {
 
         return (latestBlockThreshold - squeak.blockNumber) * FEE_DELETION;
     }
+
+    /**
+     * @dev Reassigns the owner of the squeak at `tokenId` to the `to` address.
+     * @param to Address of the new owner of the squeak.
+     * @param tokenId ID of the squeak to transfer ownership of.
+     */
+    function _transferSqueakOwnership(address to, uint256 tokenId) internal {
+        Squeak storage squeak = squeaks[tokenId];
+        squeak.owner = to;
+    }
 }

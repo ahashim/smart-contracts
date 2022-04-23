@@ -318,5 +318,6 @@ contract Critter is
         whenNotPaused
     {
         super._beforeTokenTransfer(from, to, tokenId);
+        _transferSqueakOwnership(to, tokenId);
     }
 }

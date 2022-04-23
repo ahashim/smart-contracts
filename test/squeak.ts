@@ -11,7 +11,6 @@ import { Event } from '@ethersproject/providers/lib/base-provider';
 
 describe('Squeaks', () => {
   let contract: Contract;
-  let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
   let barbie: SignerWithAddress;
 
@@ -20,7 +19,7 @@ describe('Squeaks', () => {
 
   beforeEach(async () => {
     contract = await run('deployContract');
-    [owner, ahmed, barbie] = await ethers.getSigners();
+    [, ahmed, barbie] = await ethers.getSigners(); // ignore owner account
 
     await run('createAccount', {
       contract,
@@ -147,6 +146,63 @@ describe('Squeaks', () => {
         // barbie trying to delete ahmed's squeak
         contract.connect(barbie).deleteSqueak(ahmedsTokenId)
       ).to.be.revertedWith('Critter: not approved to delete squeak');
+    });
+  });
+
+  describe('transfer', () => {
+    it('transfers a squeaks ownership to another account', async () => {
+      // ahmed creates a squeak & gets the tokenId
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+      let squeak = await contract.squeaks(tokenId);
+
+      // assert ahmed owns the token
+      expect(await contract.ownerOf(tokenId)).to.equal(ahmed.address);
+      expect(squeak.owner).to.equal(ahmed.address);
+
+      // ahmed transfers the token to barbie (an unregistered account)
+      const transferTx = await contract
+        .connect(ahmed)
+        .transferFrom(ahmed.address, barbie.address, tokenId);
+      await transferTx.wait();
+      squeak = await contract.squeaks(tokenId);
+
+      // assert barbie now owns the token
+      expect(await contract.ownerOf(tokenId)).to.equal(barbie.address);
+      expect(squeak.owner).to.equal(barbie.address);
+    });
+
+    it('reverts if a signer who does not own the token tries to transfer it', async () => {
+      // ahmed creates a squeak & gets the tokenId
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+      let squeak = await contract.squeaks(tokenId);
+
+      // assert ahmed owns the token
+      expect(await contract.ownerOf(tokenId)).to.equal(ahmed.address);
+      expect(squeak.owner).to.equal(ahmed.address);
+
+      // barbie (an unregistered account) attempts to transfers the token
+      await expect(
+        contract
+          .connect(barbie)
+          .transferFrom(ahmed.address, barbie.address, tokenId)
+      ).to.be.revertedWith(
+        'ERC721: transfer caller is not owner nor approved'
+      );
+
+      // assert ahmed still owns the token
+      squeak = await contract.squeaks(tokenId);
+      expect(await contract.ownerOf(tokenId)).to.equal(ahmed.address);
+      expect(squeak.owner).to.equal(ahmed.address);
     });
   });
 });
