@@ -9,6 +9,6 @@
     "target": "es2018",
     "declaration": true
   },
-  "include": ["./scripts", "./test", "./typechain"],
+  "include": ["./scripts", "./tasks/", "./test", "./typechain"],
   "files": ["./hardhat.config.ts"]
 }
