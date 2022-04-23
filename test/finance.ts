@@ -102,10 +102,10 @@ describe('Finance', () => {
         tokenId: firstSqueakId,
       });
 
-      // assert ahmed only has 1 token now
+      // assert ahmed only has 1 squeak now
       expect(await contract.balanceOf(ahmed.address)).to.equal(1);
 
-      // assert the treasury received the fee to delete the latest squeak
+      // assert the treasury received the fee to delete the first queak
       expect(await contract.treasury()).to.equal(fee);
     });
 
