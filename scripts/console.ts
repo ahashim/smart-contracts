@@ -19,7 +19,7 @@ async function main() {
 
   // assign hardhat & contract context
   r.context.hh = hardhat;
-  r.context.contract = contract;
+  r.context.critter = contract;
 
   // create Critter accounts
   for (let i = 0; i < users.length; i++) {
@@ -39,6 +39,9 @@ async function main() {
 
   // this is where the fun begins
   process.stdout.write(' ready! 🐁\n');
+  console.log('Contract: critter');
+  console.log('Owner account: owner');
+  console.log('User accounts: ahmed, barbie, carlos');
 }
 
 main().catch((error) => {
