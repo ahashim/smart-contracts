@@ -2,7 +2,6 @@
   "name": "critter",
   "version": "0.0.1",
   "description": "crypto twitter",
-  "main": "index.js",
   "scripts": {
     "compile": "npx hardhat compile",
     "console": "NODE_OPTIONS=--experimental-repl-await npx hardhat run scripts/console.ts",
