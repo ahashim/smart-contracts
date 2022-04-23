@@ -11,8 +11,8 @@ import {
 import type { Contract, ContractFactory, ContractTransaction } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { TransactionReceipt } from '@ethersproject/providers';
-import type { Event } from '@ethersproject/providers/lib/base-provider';
 
+// tasks
 task(
   'createAccount',
   'Create & confirm a signed createAccount transaction',
@@ -86,7 +86,7 @@ task(
     signer: SignerWithAddress;
     tokenId: number;
   }): Promise<TransactionReceipt> => {
-    // get delete fee tx (view function, so no need to wait)
+    // get delete fee tx (in the current block, so no waiting)
     const fee = await contract.getDeleteFee(
       tokenId,
       BLOCK_CONFIRMATION_THRESHOLD
