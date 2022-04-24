@@ -237,9 +237,7 @@ contract Critter is
             'Critter: cannot calculate fee for nonexistent token'
         );
 
-        uint256 fee = _getDeleteFee(tokenId, blockConfirmationThreshold);
-
-        return fee;
+        return _getDeleteFee(tokenId, blockConfirmationThreshold);
     }
 
     /**
