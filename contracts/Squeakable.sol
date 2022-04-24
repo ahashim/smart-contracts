@@ -24,13 +24,14 @@ import './libraries/StringTheory.sol';
 // contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
+import './Bankable.sol';
 import './storage/Storeable.sol';
 
 /**
  * @title Squeakable
  * @dev A contract dealing with actions performed on a Squeak.
  */
-contract Squeakable is Initializable, Storeable {
+contract Squeakable is Initializable, Storeable, Bankable {
     // used for ID generation by tokenIdCounter
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
@@ -55,6 +56,13 @@ contract Squeakable is Initializable, Storeable {
      * @param tokenId Numerical ID of the deleted squeak.
      */
     event SqueakDeleted(address indexed sender, uint256 tokenId);
+
+    /**
+     * @dev Emitted when the `sender` address likes a squeak of `tokenID`.
+     * @param sender Address of the account that liked the squeak.
+     * @param tokenId Numerical ID of the liked squeak.
+     */
+    event SqueakLiked(address indexed sender, uint256 tokenId);
 
     /**
      * @dev Initializer function
@@ -139,22 +147,22 @@ contract Squeakable is Initializable, Storeable {
     }
 
     /**
-     * @dev Returns the fee amount in wei to delete a squeak at `tokenId`.
-     * @param tokenId ID of the squeak to delete.
-     * @param blockConfirmationThreshold The amount of blocks to pad the fee
-     * calculation with in order to correctly estimate a price for the block in
-     * which the actual delete transaction occurs.
+     * @dev transfers PLATFORM_CHARGE from msg.sender to `tokenId` squeak owner.
+     * @param tokenId ID of the squeak to "like".
      */
-    function _getDeleteFee(uint256 tokenId, uint256 blockConfirmationThreshold)
-        internal
-        view
-        returns (uint256)
-    {
+    function _likeSqueak(uint256 tokenId) internal {
+        // look up squeak
         Squeak memory squeak = squeaks[tokenId];
-        uint256 latestBlockThreshold = block.number +
-            blockConfirmationThreshold;
 
-        return (latestBlockThreshold - squeak.blockNumber) * FEE_DELETION;
+        // calculate amounts to deposit & transfer
+        (uint256 fee, uint256 transferAmount) = _getInteractionAmounts(
+            msg.value
+        );
+        _deposit(fee);
+        _transferFunds(squeak.owner, transferAmount);
+
+        // log liked token ID
+        emit SqueakLiked(msg.sender, tokenId);
     }
 
     /**

@@ -38,15 +38,17 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
      * @dev Initializer function
      */
     // solhint-disable-next-line func-name-mixedcase
-    function __Storeable_init(string memory baseURI, uint256 feeDeletion)
-        internal
-        onlyInitializing
-    {
+    function __Storeable_init(
+        string memory baseURI,
+        uint256 platformCharge,
+        uint256 platformFeePercentage
+    ) internal onlyInitializing {
         // set base token URI
         baseTokenURI = baseURI;
 
         // set fees
-        FEE_DELETION = feeDeletion;
+        PLATFORM_CHARGE = platformCharge;
+        PLATFORM_FEE_PERCENTAGE = platformFeePercentage;
     }
 
     /**
@@ -67,9 +69,14 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
     uint256 public treasury;
 
     /**
-     * @dev Fee amount in wei per block to delete a squeak.
-     * @notice This gets multiplied by blocks elapsed since the squeak was
-     * authored to calculate the full fee amount.
+     * @dev Fee amount in wei used across Critter transactions across the
+     * platform such as like, resqueak, delete, etc...
      */
-    uint256 public FEE_DELETION;
+    uint256 public PLATFORM_CHARGE;
+
+    /**
+     * @dev Percentage amount to add to the treasury from each chargable
+     * transaction on the platform.
+     */
+    uint256 public PLATFORM_FEE_PERCENTAGE;
 }

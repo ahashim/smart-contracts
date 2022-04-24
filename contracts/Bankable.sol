@@ -28,6 +28,29 @@ import './storage/Storeable.sol';
  */
 contract Bankable is Initializable, Storeable {
     /**
+     * @dev Emitted when funds of `amount` are deposited into the treasury.
+     * @param amount Amount in wei of funds that were deposited.
+     */
+    event FeeDeposited(uint256 amount);
+
+    /**
+     * @dev Emitted when funds of `amount` are transferred to the `to` address.
+     * @param to Address of the account that funds were transferred to.
+     * @param amount Amount in wei of funds that were transferred.
+     */
+    event FundsTransferred(address indexed to, uint256 amount);
+
+    /**
+     * @dev Ensures that `_address` has a Critter account.
+     * @param amount Amount in wei sent by the user.
+     * @param fee The required fee the `amount` is compared to.
+     */
+    modifier hasEnoughFunds(uint256 amount, uint256 fee) {
+        require(amount >= fee, 'Critter: not enough funds to perform action');
+        _;
+    }
+
+    /**
      * @dev Initializer function
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
@@ -35,12 +58,67 @@ contract Bankable is Initializable, Storeable {
 
     /**
      * @dev deposit `value` amount of wei into the treasury.
-     * @param value The amount of wei to deposit.
-     * @notice disabling bounds check to save gas fees.
+     * @param amount The amount of wei to deposit.
      */
-    function _deposit(uint256 value) internal {
-        unchecked {
-            treasury += value;
-        }
+    function _deposit(uint256 amount) internal {
+        treasury += amount;
+        emit FeeDeposited(amount);
+    }
+
+    /**
+     * @dev Returns the fee amount in wei to delete a squeak at `tokenId`.
+     * @param tokenId ID of the squeak to delete.
+     * @param blockConfirmationThreshold The amount of blocks to pad the fee
+     * calculation with in order to correctly estimate a price for the block in
+     * which the actual delete transaction occurs.
+     * @notice This gets multiplied by `PLATFORM_CHARGE` * squeak.blockNumber
+     * to calculate the full fee amount.
+     */
+    function _getDeleteFee(uint256 tokenId, uint256 blockConfirmationThreshold)
+        internal
+        view
+        returns (uint256)
+    {
+        Squeak memory squeak = squeaks[tokenId];
+        uint256 latestBlockThreshold = block.number +
+            blockConfirmationThreshold;
+
+        return (latestBlockThreshold - squeak.blockNumber) * PLATFORM_CHARGE;
+    }
+
+    /**
+     * @dev Calculate both the fee to add to treasury based on a percentage
+     * of the `amount` sent for the ineteraction, as well as the amount to
+     * transfer to the user based as a remaining percentage of `amount` without
+     * using floating point math (thanks Obama!)
+     * @param amount Amount in wei to base calculations off.
+     * @return fee Amount to deposit into treasury.
+     * @return transferAmount Amount to transfer to the user.
+     */
+    function _getInteractionAmounts(uint256 amount)
+        internal
+        view
+        returns (uint256, uint256)
+    {
+        uint256 fee;
+        uint256 transferAmount;
+
+        fee = (amount * PLATFORM_FEE_PERCENTAGE) / 100;
+        transferAmount = (amount * (100 - PLATFORM_FEE_PERCENTAGE)) / 100;
+
+        return (fee, transferAmount);
+    }
+
+    /**
+     * @dev Transfers msg.value amount of wei into `to`'s account.
+     * @param to Address of the account to transfer eth into
+     * @param amount Amount in wei of eth to transfer
+     */
+    function _transferFunds(address to, uint256 amount) internal {
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool sent, ) = to.call{value: amount}('');
+        require(sent, 'Critter: failed to transfer funds');
+
+        emit FundsTransferred(to, amount);
     }
 }

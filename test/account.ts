@@ -24,7 +24,7 @@ describe('Accounts', () => {
     it('creates an account with the users address', async () => {
       const username = 'ahmed';
 
-      // create account
+      // create account & assert event
       expect(await contract.connect(ahmed).createAccount(username))
         .to.emit(contract, 'AccountCreated')
         .withArgs(ahmed.address, username);

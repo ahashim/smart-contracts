@@ -26,6 +26,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgrad
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
@@ -62,6 +63,7 @@ contract Critter is
     ERC721EnumerableUpgradeable,
     ERC721URIStorageUpgradeable,
     PausableUpgradeable,
+    ReentrancyGuardUpgradeable,
     AccessControlEnumerableUpgradeable,
     UUPSUpgradeable,
     ICritter,
@@ -84,19 +86,23 @@ contract Critter is
      * @param name Contract name (Critter).
      * @param symbol Contract symbol (CRTTR).
      * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
-     * @param feeDeletion Fee amount in wei per block to delete a squeak.
+     * @param platformCharge Fee amount in wei to charge per interaction.
+     * @param platformFeePercentage Fee in percent of interaction amount to add
+     * to the treasury.
      */
     function initialize(
         string memory name,
         string memory symbol,
         string memory baseURI,
-        uint256 feeDeletion
+        uint256 platformCharge,
+        uint256 platformFeePercentage
     ) public initializer {
         // Open Zeppelin contracts
         __ERC721_init(name, symbol);
         __ERC721Enumerable_init();
         __ERC721URIStorage_init();
         __Pausable_init();
+        __ReentrancyGuard_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
@@ -104,7 +110,7 @@ contract Critter is
         __Typeable_init();
         __Immutable_init();
         __Mappable_init();
-        __Storeable_init(baseURI, feeDeletion);
+        __Storeable_init(baseURI, platformCharge, platformFeePercentage);
         __Accountable_init();
         __Bankable_init();
         __Squeakable_init();
@@ -210,7 +216,7 @@ contract Critter is
 
         require(
             msg.value >= currentBlockDeleteFee,
-            'Critter: not enough funds to delete squeak'
+            'Critter: not enough funds to perform action'
         );
 
         // recieve payment
@@ -238,6 +244,23 @@ contract Critter is
         );
 
         return _getDeleteFee(tokenId, blockConfirmationThreshold);
+    }
+
+    /**
+     * @dev See {ICritter-likeSqueak}.
+     */
+    function likeSqueak(uint256 tokenId)
+        public
+        payable
+        override(ICritter)
+        whenNotPaused
+        hasAccount(msg.sender)
+        hasEnoughFunds(msg.value, PLATFORM_CHARGE)
+        nonReentrant
+    {
+        require(_exists(tokenId), 'Critter: cannot like a nonexistent token');
+
+        _likeSqueak(tokenId);
     }
 
     /**

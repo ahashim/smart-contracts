@@ -13,12 +13,14 @@ export const TREASURER_ROLE = 'TREASURER_ROLE';
 export const UPGRADER_ROLE = 'UPGRADER_ROLE';
 
 // fees (in wei)
-export const FEE_DELETION = 3_228_041_806_953; // about a penny per block
+export const PLATFORM_CHARGE = 33_927_831_361_389; // ~10 cents USD
+export const PLATFORM_FEE_PERCENTAGE = 20; // "my 2 ¢…"
 
 // init
 export const CONTRACT_INITIALIZER = [
   CONTRACT_NAME,
   CONTRACT_SYMBOL,
   BASE_TOKEN_URI,
-  FEE_DELETION,
+  PLATFORM_CHARGE,
+  PLATFORM_FEE_PERCENTAGE,
 ];

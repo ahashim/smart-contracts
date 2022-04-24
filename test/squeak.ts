@@ -1,10 +1,15 @@
 // libraries
 import { expect } from 'chai';
 import { ethers, network, run } from 'hardhat';
-import { BASE_TOKEN_URI, BLOCK_CONFIRMATION_THRESHOLD } from '../constants';
+import {
+  BASE_TOKEN_URI,
+  BLOCK_CONFIRMATION_THRESHOLD,
+  PLATFORM_CHARGE,
+  PLATFORM_FEE_PERCENTAGE,
+} from '../constants';
 
 // types
-import type { Contract } from 'ethers';
+import { Contract } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { keccak256, defaultAbiCoder } from 'ethers/lib/utils';
 import { Event } from '@ethersproject/providers/lib/base-provider';
@@ -13,20 +18,40 @@ describe('Squeaks', () => {
   let contract: Contract;
   let ahmed: SignerWithAddress;
   let barbie: SignerWithAddress;
+  let carlos: SignerWithAddress;
 
   // squeak variables
   const content = 'hello blockchain!';
 
-  beforeEach(async () => {
-    contract = await run('deployContract');
-    [, ahmed, barbie] = await ethers.getSigners(); // ignore owner account
+  // treasury fee
+  const treasuryFee = ethers.BigNumber.from(PLATFORM_CHARGE)
+    .mul(ethers.BigNumber.from(PLATFORM_FEE_PERCENTAGE))
+    .div(ethers.BigNumber.from(100));
 
-    await run('createAccount', {
-      contract,
-      signer: ahmed,
-      username: 'ahmed',
-    });
-  });
+  // transferAmount
+  const transferAmount = ethers.BigNumber.from(PLATFORM_CHARGE)
+    .mul(ethers.BigNumber.from(100 - PLATFORM_FEE_PERCENTAGE))
+    .div(ethers.BigNumber.from(100));
+
+  beforeEach(
+    'Deploy contracts & create accounts for Ahmed & Barbie, but not Carlos',
+    async () => {
+      contract = await run('deployContract');
+      [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+
+      await run('createAccount', {
+        contract,
+        signer: ahmed,
+        username: 'ahmed',
+      });
+
+      await run('createAccount', {
+        contract,
+        signer: barbie,
+        username: 'barbie',
+      });
+    }
+  );
 
   describe('create', () => {
     it('creates a squeak from the senders address', async () => {
@@ -64,8 +89,8 @@ describe('Squeaks', () => {
     it('reverts when a user tries to post without an account', async () => {
       // assertions
       await expect(
-        // trying to create a squeak from ahmed's account who never registered
-        contract.connect(barbie).createSqueak('hello blockchain!')
+        // carlos, who never created an account, trying to create a squeak
+        contract.connect(carlos).createSqueak('hello blockchain!')
       ).to.be.revertedWith('Critter: address does not have an account');
     });
 
@@ -91,7 +116,7 @@ describe('Squeaks', () => {
   });
 
   describe('delete', () => {
-    it('allows a user to delete their squeak', async () => {
+    it('lets a user delete a squeak they own', async () => {
       // create a squeak & get its tokenId
       const event = await run('createSqueak', {
         contract,
@@ -117,13 +142,81 @@ describe('Squeaks', () => {
       // assert correct event info
       await expect(tx)
         .to.emit(contract, 'SqueakDeleted')
-        .withArgs(ahmed.address, tokenId);
+        .withArgs(ahmed.address, tokenId)
+        .and.to.emit(contract, 'FeeDeposited')
+        .withArgs(deleteFee);
 
       // assert it no longer exists
       expect(await contract.balanceOf(ahmed.address)).to.equal(0);
       await expect(contract.ownerOf(tokenId)).to.be.revertedWith(
         'ERC721: owner query for nonexistent token'
       );
+    });
+
+    it('deposits fees for a deleted squeak into the treasury', async () => {
+      const ahmedTokens = [];
+      const gospelQuotes = [
+        'Now THIS is podracing!',
+        'I love democracy',
+        'Impossible! Perhaps the archives are incomplete…',
+        'Hello there!',
+      ];
+
+      // assert the treasury is empty
+      expect(await contract.treasury()).to.equal(0);
+
+      // ahmed creates a few squeaks
+      for (let i = 0; i < gospelQuotes.length; i++) {
+        const event = await run('createSqueak', {
+          contract,
+          signer: ahmed,
+          content: gospelQuotes[i],
+        });
+        ahmedTokens.push(event.args.tokenId.toNumber());
+      }
+
+      // assert ahmed owns every squeak
+      expect(await contract.balanceOf(ahmed.address)).to.equal(
+        ahmedTokens.length
+      );
+
+      // calculate the fee & delete the first squeak
+      const firstSqueakId = ahmedTokens[0];
+      const fee = await contract
+        .connect(ahmed)
+        .getDeleteFee(firstSqueakId, BLOCK_CONFIRMATION_THRESHOLD);
+
+      // delete the squeak
+      await run('deleteSqueak', {
+        contract,
+        signer: ahmed,
+        tokenId: firstSqueakId,
+      });
+
+      // assert ahmed has 1 less squeak now
+      expect(await contract.balanceOf(ahmed.address)).to.equal(
+        ahmedTokens.length - 1
+      );
+
+      // assert the treasury received the fee to delete the first queak
+      expect(await contract.treasury()).to.equal(fee);
+    });
+
+    it('reverts when the user does not pay enough to delete the squeak', async () => {
+      // create squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content: 'this is the wei',
+      });
+      const { tokenId } = event.args;
+
+      // delete squeak tx
+      await expect(
+        contract.connect(ahmed).deleteSqueak(tokenId, {
+          value: 1, // one wei
+        })
+      ).to.be.revertedWith('Critter: not enough funds to perform action');
     });
 
     it('reverts when a user tries to delete a squeak they do not own', async () => {
@@ -135,23 +228,102 @@ describe('Squeaks', () => {
       });
       const { tokenId: ahmedsTokenId } = event.args;
 
-      // new user barbie
-      await run('createAccount', {
-        contract,
-        signer: barbie,
-        username: 'barbie',
-      });
-
       await expect(
         // barbie trying to delete ahmed's squeak
         contract.connect(barbie).deleteSqueak(ahmedsTokenId)
       ).to.be.revertedWith('Critter: not approved to delete squeak');
     });
+
+    it('lets anybody get a delete fee for an existing token', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content: 'is this thing on?',
+      });
+      const { tokenId } = event.args;
+      const squeak = await contract.squeaks(tokenId);
+
+      // calculate the fee expected to delete it
+      const { number: latestBlockNumber } = await ethers.provider.getBlock(
+        'latest'
+      );
+      const latestBlockThreshold =
+        latestBlockNumber + BLOCK_CONFIRMATION_THRESHOLD;
+      const expectedFee =
+        (latestBlockThreshold - squeak.blockNumber) * PLATFORM_CHARGE;
+
+      // barbie does not have a critter account, but is able calculate the
+      // delete fee for ahmeds squeak from the contract
+      const fee = await contract
+        .connect(barbie)
+        .getDeleteFee(tokenId, BLOCK_CONFIRMATION_THRESHOLD);
+
+      // assert expected fee matches the actual delete fee
+      expect(fee).to.equal(expectedFee);
+    });
+
+    it('reverts when getting delete fees for a nonexistent token', async () => {
+      const nonExistentTokenID = 420; // 🌿 hhhehehe
+      await expect(
+        contract.getDeleteFee(nonExistentTokenID, BLOCK_CONFIRMATION_THRESHOLD)
+      ).to.be.revertedWith(
+        'Critter: cannot calculate fee for nonexistent token'
+      );
+    });
+  });
+
+  describe('like', () => {
+    it('lets a user like a squeak', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      // get current balance for ahmed & barbie
+      const ahmedStartingBalance = await ahmed.getBalance();
+
+      // barbie likes ahmeds squeak
+      const tx = await contract
+        .connect(barbie)
+        .likeSqueak(tokenId, { value: PLATFORM_CHARGE });
+
+      // assert events
+      await expect(tx)
+        .to.emit(contract, 'SqueakLiked')
+        .withArgs(barbie.address, tokenId)
+        .and.to.emit(contract, 'FeeDeposited')
+        .withArgs(treasuryFee)
+        .and.to.emit(contract, 'FundsTransferred')
+        .withArgs(ahmed.address, transferAmount);
+
+      // ahmed now has funds from barbie via the platform
+      expect(await ahmed.getBalance()).to.equal(
+        ahmedStartingBalance.add(transferAmount)
+      );
+    });
+
+    it('reverts if a user tries to like a squeak without enough funds', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      await expect(
+        contract.connect(barbie).likeSqueak(tokenId, { value: 1 })
+      ).to.be.revertedWith('Critter: not enough funds to perform action');
+    });
   });
 
   describe('transfer', () => {
-    it('transfers a squeaks ownership to another account', async () => {
-      // ahmed creates a squeak & gets the tokenId
+    it('lets a user transfers squeak ownership to another user', async () => {
+      // ahmed creates a squeak
       const event = await run('createSqueak', {
         contract,
         signer: ahmed,
@@ -170,6 +342,11 @@ describe('Squeaks', () => {
         .transferFrom(ahmed.address, barbie.address, tokenId);
       await transferTx.wait();
       squeak = await contract.squeaks(tokenId);
+
+      // assert events
+      expect(transferTx)
+        .to.emit(contract, 'Transfer')
+        .withArgs(ahmed.address, barbie.address, tokenId);
 
       // assert barbie now owns the token
       expect(await contract.ownerOf(tokenId)).to.equal(barbie.address);
