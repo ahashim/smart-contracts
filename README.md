@@ -1,4 +1,4 @@
-# Critter
+# 🦔 Critter
 
 An open source peer-to-peer microblogging NFT platform for EVM compatible blockchains.
 
@@ -45,17 +45,27 @@ npm install
 npm compile
 ```
 
-#### Start JSON-RPC node
+#### `CRTTR` console
 
-```bash
-npm start
-```
-
-#### Open hardhat console
+The `CRTTR` console allows local interaction with the deployed Critter contracts via a node repl:
 
 ```bash
 npm console
 ```
+
+Available commands are:
+
+- `critter`: returns the deployed contract instance & all available methods on it.
+- `owner`: returns the `owner` signer account instance & all available methods on it.
+  - By default the owner account has all available roles granted to it:
+    - `DEFAULT_ADMIN_ROLE`
+    - `MINTER_ROLE`
+    - `PAUSER_ROLE`
+    - `TREASURER_ROLE`
+    - `UPGRADER_ROLE`
+  - The `owner` signer does not have a Critter account.
+- `ahmed`, `barbie`, `carlos`: each returns an individual signer account instance & all available methods on it.
+  - **Note:** these are all normal signers which only have `MINTER_ROLE` access, and a single Critter account associated with their address.
 
 ## Testing
 
@@ -71,7 +81,7 @@ You can also run the tests in watch mode which will rerun all unit-tests & gener
 npm watch
 ```
 
-_*NOTE: this runs with `TSNODE_TRANSPILE_ONLY=1` for faster performance.*_
+_*NOTE: this doesn't typecheck test files for faster performance per test run.*_
 
 #### Test Coverage
 
@@ -95,11 +105,12 @@ npm size
 - [x] Account creation/update & validation.
 - [x] Sqeak creation/deletion & validation.
 - [x] Upgradeable contracts via [UUPS proxy pattern](https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable).
-- [ ] Account funding via ERC-20 compatible tokens.
+- [x] `CRTTR` console for local contract interaction.
 - [ ] Squeak actions + pricing:
-  - Favorite
+  - Like
   - Dislike
   - Resqueak
+- [ ] Account funding via ERC-20 compatible tokens.
 - [ ] Media support for squeaks via IPFS (images, video, documents, etc&hellip;).
   - Can use a pinning service such as [Pinata](https://www.pinata.cloud/) for writes, and [Cloudflare IPFS](https://cloudflare-ipfs.com/ipns/ipfs.io/) for reads.
 - [ ] Implement basic moderation status on account structs:
@@ -117,13 +128,16 @@ npm size
 #### Smart Contracts
 
 - All smart contracts are written in Solidity & deployed to an EVM compatible Layer 2 solution.
-- Deploying to [zkSync](https://portal.zksync.io/) is the current best option.
+- Deploying to [zkSync](https://portal.zksync.io/) is the current cheapest option in terms of price per transaction.
+- Contracts are pausable & upgradeable in order to safely add features & fix bugs in an iterative manner.
+  - Existing storage variables will always remain, and only be appended to.
+  - New functionality will be added via additional contracts and/or deploying new versions of existing contract methods.
 
 #### Indexer
 
 - Indexer written in Golang or Node to watch on-chain event logs & create entries from them directly to a database.
-  - Will send to the server first to for further validation/sanitization.
-  - Upgrade this to use a message queue w/ built-in backpressure out to the database when squeaks volume kicks up.
+  - Will send to the `fanout-service` for further data validation/sanitization.
+  - Upgrade this to use a message queue after indexing (w/ built-in backpressure), which then sends data out to the `fanout-service` service when squeaks volume kicks up.
 - Does not need to be highly available (one instance will suffice, and can run locally).
 - Deploy with [Fly.io](https://fly.io/).
 
@@ -147,13 +161,18 @@ npm size
 
 #### Server
 
-- Server written in Golang to generate API keys for relevant client operations.
+- Server written in Golang.
+  - Handles client/service API key generation via `auth-service`.
+    - Can likely use `redis` or another in-memory k/v store to handle session keys.
+  - Handles data routing from the indexer/message-queue via a `fanout-service`.
+  - Local LRU cache layer for reading high volume squeaks.
 - Deploy with [Fly.io](https://fly.io/).
 
 #### Search
 
 - Search cluster will be powered by [Typesense](https://typesense.org)
   - Uses [Raft algorithm](https://raft.github.io/) to maintain durability, so 3 nodes might be enough.
+- API keys generated on a per client basis via `auth-service` to directly have clients hit search servers (with limited permissions).
 - Deploy across regions with [Fly.io](https://fly.io/).
 
 ##### Avoid centralized cloud providers as much as possible (AWS, GCP, Azure) in order to ensure maximum decentralization.
