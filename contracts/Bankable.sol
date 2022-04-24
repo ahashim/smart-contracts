@@ -88,7 +88,7 @@ contract Bankable is Initializable, Storeable {
 
     /**
      * @dev Calculate both the fee to add to treasury based on a percentage
-     * of the `amount` sent for the ineteraction, as well as the amount to
+     * of the `amount` sent for the interaction, as well as the amount to
      * transfer to the user based as a remaining percentage of `amount` without
      * using floating point math (thanks Obama!)
      * @param amount Amount in wei to base calculations off.
