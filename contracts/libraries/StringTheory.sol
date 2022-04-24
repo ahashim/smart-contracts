@@ -89,7 +89,7 @@ library StringTheory {
 
     /**
      * @dev Converts all the values of a string to their corresponding lower
-     * case value.Adapted from:
+     * case value. Adapted from:
      * https://gist.github.com/whitehorse21/69a6287c3560e730eabfe05efc17ae22
      * @param _base When being used for a data type this is the extended object
      * otherwise this is the string base to convert to lower case.
