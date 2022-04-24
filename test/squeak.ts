@@ -5,7 +5,7 @@ import {
   BASE_TOKEN_URI,
   BLOCK_CONFIRMATION_THRESHOLD,
   PLATFORM_CHARGE,
-  PLATFORM_FEE_PERCENTAGE,
+  PLATFORM_FEE_PERCENT,
 } from '../constants';
 
 // types
@@ -25,12 +25,12 @@ describe('Squeaks', () => {
 
   // treasury fee
   const treasuryFee = ethers.BigNumber.from(PLATFORM_CHARGE)
-    .mul(ethers.BigNumber.from(PLATFORM_FEE_PERCENTAGE))
+    .mul(ethers.BigNumber.from(PLATFORM_FEE_PERCENT))
     .div(ethers.BigNumber.from(100));
 
   // transferAmount
   const transferAmount = ethers.BigNumber.from(PLATFORM_CHARGE)
-    .mul(ethers.BigNumber.from(100 - PLATFORM_FEE_PERCENTAGE))
+    .mul(ethers.BigNumber.from(100 - PLATFORM_FEE_PERCENT))
     .div(ethers.BigNumber.from(100));
 
   beforeEach(

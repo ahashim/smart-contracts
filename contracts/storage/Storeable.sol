@@ -41,14 +41,14 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
     function __Storeable_init(
         string memory baseURI,
         uint256 platformCharge,
-        uint256 platformFeePercentage
+        uint256 platformFeePercent
     ) internal onlyInitializing {
         // set base token URI
         baseTokenURI = baseURI;
 
         // set fees
         PLATFORM_CHARGE = platformCharge;
-        PLATFORM_FEE_PERCENTAGE = platformFeePercentage;
+        PLATFORM_FEE_PERCENT = platformFeePercent;
     }
 
     /**
@@ -78,5 +78,5 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
      * @dev Percentage amount to add to the treasury from each chargable
      * transaction on the platform.
      */
-    uint256 public PLATFORM_FEE_PERCENTAGE;
+    uint256 public PLATFORM_FEE_PERCENT;
 }

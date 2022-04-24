@@ -87,15 +87,15 @@ contract Critter is
      * @param symbol Contract symbol (CRTTR).
      * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
      * @param platformCharge Fee amount in wei to charge per interaction.
-     * @param platformFeePercentage Fee in percent of interaction amount to add
-     * to the treasury.
+     * @param platformFeePercent Fee in percent of interaction amount to add to
+     * the treasury.
      */
     function initialize(
         string memory name,
         string memory symbol,
         string memory baseURI,
         uint256 platformCharge,
-        uint256 platformFeePercentage
+        uint256 platformFeePercent
     ) public initializer {
         // Open Zeppelin contracts
         __ERC721_init(name, symbol);
@@ -110,7 +110,7 @@ contract Critter is
         __Typeable_init();
         __Immutable_init();
         __Mappable_init();
-        __Storeable_init(baseURI, platformCharge, platformFeePercentage);
+        __Storeable_init(baseURI, platformCharge, platformFeePercent);
         __Accountable_init();
         __Bankable_init();
         __Squeakable_init();
