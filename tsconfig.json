@@ -9,6 +9,12 @@
     "target": "es2018",
     "declaration": true
   },
-  "include": ["./scripts", "./tasks/", "./test", "./typechain"],
+  "include": [
+    "./constants.ts",
+    "./scripts",
+    "./tasks/",
+    "./test",
+    "./typechain"
+  ],
   "files": ["./hardhat.config.ts"]
 }
