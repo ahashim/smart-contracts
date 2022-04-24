@@ -107,10 +107,10 @@ npm size
 - [x] Sqeak creation/deletion & validation.
 - [x] Upgradeable contracts via [UUPS proxy pattern](https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable).
 - [x] `CRTTR` console for local contract interaction.
-- [ ] Squeak actions + pricing:
-  - Like
-  - Dislike
-  - Resqueak
+- [x] Platform Fees + P2P payments.
+- [x] Liking a squeak.
+- [ ] Disliking a squeak.
+- [ ] Resqueaking.
 - [ ] Account funding via ERC-20 compatible tokens.
 - [ ] Media support for squeaks via IPFS (images, video, documents, etc&hellip;).
   - Can use a pinning service such as [Pinata](https://www.pinata.cloud/) for writes, and [Cloudflare IPFS](https://cloudflare-ipfs.com/ipns/ipfs.io/) for reads.
