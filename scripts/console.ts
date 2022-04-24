@@ -39,6 +39,7 @@ async function main() {
 
   // this is where the fun begins
   process.stdout.write(' ready! 🐁\n');
+  console.log('Hardhat: hh');
   console.log('Contract: critter');
   console.log('Owner account: owner');
   console.log('User accounts: ahmed, barbie, carlos');
