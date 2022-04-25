@@ -63,7 +63,7 @@ contract Bankable is Initializable, Storeable {
      * @param to Address of the user to transfer remaining funds to.
      * @param amount Amount in wei of funds to split.
      */
-    function _basicFeeSplitAndTransfer(address to, uint256 amount) internal {
+    function _feeSplitAndTransfer(address to, uint256 amount) internal {
         // calculate amounts to deposit & transfer
         (uint256 fee, uint256 transferAmount) = _getInteractionAmounts(amount);
 

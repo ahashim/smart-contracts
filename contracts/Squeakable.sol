@@ -27,14 +27,15 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import './Bankable.sol';
 import './storage/Storeable.sol';
+import 'hardhat/console.sol';
 
 /**
  * @title Squeakable
  * @dev A contract dealing with actions performed on a Squeak.
  */
 contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
-    // used for ID generation by tokenIdCounter
     using CountersUpgradeable for CountersUpgradeable.Counter;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     /**
      * @dev Emitted when the `sender` address reposts a squeak at `tokenID`.
@@ -196,11 +197,29 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
      * @param tokenId ID of the squeak to "like".
      */
     function _likeSqueak(uint256 tokenId) internal {
-        // look up squeak
+        // get squeak details
         Squeak memory squeak = squeaks[tokenId];
+        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
+        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
+            tokenId
+        ];
+
+        // ensure account has not already liked the squeak
+        require(
+            !likers.contains(msg.sender),
+            'Critter: cannot like a squeak twice'
+        );
+
+        // first remove them from dislikers set if they're in there
+        if (dislikers.contains(msg.sender)) {
+            dislikers.remove(msg.sender);
+        }
+
+        // then add them to the likers set
+        likers.add(msg.sender);
 
         // split & transfer fees to treasury & squeak owner
-        _basicFeeSplitAndTransfer(squeak.owner, msg.value);
+        _feeSplitAndTransfer(squeak.owner, msg.value);
 
         // log liked squeak
         emit SqueakLiked(msg.sender, tokenId);
@@ -217,7 +236,7 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         Squeak memory squeak = squeaks[tokenId];
 
         // split & transfer fees to treasury & squeak owner
-        _basicFeeSplitAndTransfer(squeak.owner, msg.value);
+        _feeSplitAndTransfer(squeak.owner, msg.value);
 
         // log liked squeak
         emit Resqueaked(msg.sender, tokenId);
