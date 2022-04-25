@@ -117,17 +117,6 @@ contract Critter is
     }
 
     /**
-     * @dev Check if squeak exists at `tokenId`.
-     */
-    modifier squeakExists(uint256 tokenId) {
-        require(
-            _exists(tokenId),
-            'Critter: cannot perform action on a nonexistent token'
-        );
-        _;
-    }
-
-    /**
      * @dev See {IERC165Upgradeable-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)

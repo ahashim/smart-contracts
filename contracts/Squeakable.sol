@@ -23,6 +23,7 @@ import './libraries/StringTheory.sol';
 
 // contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import './Bankable.sol';
 import './storage/Storeable.sol';
@@ -31,7 +32,7 @@ import './storage/Storeable.sol';
  * @title Squeakable
  * @dev A contract dealing with actions performed on a Squeak.
  */
-contract Squeakable is Initializable, Storeable, Bankable {
+contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     // used for ID generation by tokenIdCounter
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
@@ -49,6 +50,18 @@ contract Squeakable is Initializable, Storeable, Bankable {
         uint256 blockNumber,
         string content
     );
+
+    /**
+     * @dev Ensure squeak exists at `tokenId`.
+     * @param tokenId Numerical ID of the squeak
+     */
+    modifier squeakExists(uint256 tokenId) {
+        require(
+            _exists(tokenId),
+            'Critter: cannot perform action on a nonexistent token'
+        );
+        _;
+    }
 
     /**
      * @dev Emitted when the `sender` address deletes a squeak of `tokenID`.
