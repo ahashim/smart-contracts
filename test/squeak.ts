@@ -263,7 +263,7 @@ describe('Squeaks', () => {
     });
 
     it('reverts when getting delete fees for a nonexistent token', async () => {
-      const nonExistentTokenID = 420; // 🌿 hhhehehe
+      const nonExistentTokenID = 420;
       await expect(
         contract.getDeleteFee(nonExistentTokenID, BLOCK_CONFIRMATION_THRESHOLD)
       ).to.be.revertedWith(
@@ -273,12 +273,14 @@ describe('Squeaks', () => {
   });
 
   describe('dislike', () => {
+    const content = 'I don’t like sand. It’s coarse and rough and irritating…';
+
     it('lets a user dislike a squeak', async () => {
       // ahmed creates a squeak
       const event = await run('createSqueak', {
         contract,
         signer: ahmed,
-        content: 'I don’t like sand. It’s coarse and rough and irritating…',
+        content,
       });
       const { tokenId } = event.args;
 
@@ -302,7 +304,21 @@ describe('Squeaks', () => {
       expect(await contract.treasury()).to.equal(PLATFORM_CHARGE);
     });
 
-    it('reverts if a user tries to dislike a squeak without enough funds', async () => {
+    it('reverts if a user does not have an account', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      await expect(
+        contract.connect(carlos).dislikeSqueak(tokenId, { value: PLATFORM_CHARGE })
+      ).to.be.revertedWith('Critter: address does not have an account');
+    });
+
+    it('reverts if a user does not have enough funds', async () => {
       // ahmed creates a squeak
       const event = await run('createSqueak', {
         contract,
@@ -314,6 +330,14 @@ describe('Squeaks', () => {
       await expect(
         contract.connect(barbie).dislikeSqueak(tokenId, { value: 1 })
       ).to.be.revertedWith('Critter: not enough funds to perform action');
+    });
+
+    it('reverts if a user tries to dislike a nonexistent squeak ', async () => {
+      const nonExistentTokenID = 420;
+
+      await expect(
+        contract.connect(barbie).dislikeSqueak(nonExistentTokenID, { value: PLATFORM_CHARGE })
+      ).to.be.revertedWith('Critter: cannot perform action on a nonexistent token');
     });
   });
 
@@ -356,7 +380,21 @@ describe('Squeaks', () => {
       expect(await contract.treasury()).to.equal(treasuryFee);
     });
 
-    it('reverts if a user tries to like a squeak without enough funds', async () => {
+    it('reverts if a user does not have an account', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      await expect(
+        contract.connect(carlos).likeSqueak(tokenId, { value: PLATFORM_CHARGE })
+      ).to.be.revertedWith('Critter: address does not have an account');
+    });
+
+    it('reverts if a user does not have enough funds', async () => {
       // ahmed creates a squeak
       const event = await run('createSqueak', {
         contract,
@@ -368,6 +406,14 @@ describe('Squeaks', () => {
       await expect(
         contract.connect(barbie).likeSqueak(tokenId, { value: 1 })
       ).to.be.revertedWith('Critter: not enough funds to perform action');
+    });
+
+    it('reverts if a user tries to like a nonexistent squeak ', async () => {
+      const nonExistentTokenID = 420;
+
+      await expect(
+        contract.connect(barbie).dislikeSqueak(nonExistentTokenID, { value: PLATFORM_CHARGE })
+      ).to.be.revertedWith('Critter: cannot perform action on a nonexistent token');
     });
   });
 
