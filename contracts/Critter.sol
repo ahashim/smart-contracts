@@ -117,6 +117,17 @@ contract Critter is
     }
 
     /**
+     * @dev Check if squeak exists at `tokenId`.
+     */
+    modifier squeakExists(uint256 tokenId) {
+        require(
+            _exists(tokenId),
+            'Critter: cannot calculate fee for nonexistent token'
+        );
+        _;
+    }
+
+    /**
      * @dev See {IERC165Upgradeable-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)
@@ -236,13 +247,9 @@ contract Critter is
         public
         view
         override(ICritter)
+        squeakExists(tokenId)
         returns (uint256)
     {
-        require(
-            _exists(tokenId),
-            'Critter: cannot calculate fee for nonexistent token'
-        );
-
         return _getDeleteFee(tokenId, blockConfirmationThreshold);
     }
 
@@ -256,10 +263,9 @@ contract Critter is
         whenNotPaused
         hasAccount(msg.sender)
         hasEnoughFunds(msg.value, PLATFORM_CHARGE)
+        squeakExists(tokenId)
         nonReentrant
     {
-        require(_exists(tokenId), 'Critter: cannot like a nonexistent token');
-
         _likeSqueak(tokenId);
     }
 
