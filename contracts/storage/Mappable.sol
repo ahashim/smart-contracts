@@ -20,6 +20,7 @@ pragma solidity ^0.8.4;
 
 // contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 import './Typeable.sol';
 
 /**
@@ -32,6 +33,8 @@ import './Typeable.sol';
  * data-structures such as a `Squeak`.
  */
 contract Mappable is Initializable, Typeable {
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+
     /**
      * @dev Initializer function
      */
@@ -39,17 +42,35 @@ contract Mappable is Initializable, Typeable {
     function __Mappable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Mapping of tokenId's => Squeaks.
-     */
-    mapping(uint256 => Squeak) public squeaks;
-
-    /**
      * @dev Mapping of usernames => account addresses.
      */
     mapping(string => address) public addresses;
 
     /**
+     * @dev Mapping of tokenId's => Squeaks.
+     */
+    mapping(uint256 => Squeak) public squeaks;
+
+    /**
      * @dev Mapping of account addresses => usernames.
      */
     mapping(address => string) public usernames;
+
+    /**
+     * @dev Mapping of tokenId's => AddressSet of accounts which disliked the
+     * squeak.
+     */
+    mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal dislikes;
+
+    /**
+     * @dev Mapping of tokenId's => AddressSet of accounts which liked the
+     * squeak.
+     */
+    mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal likes;
+
+    /**
+     * @dev Mapping of tokenId's => AddressSet of accounts which disliked the
+     * squeak.
+     */
+    mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal resqueaks;
 }
