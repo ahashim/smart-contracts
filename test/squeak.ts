@@ -281,14 +281,16 @@ describe('Squeaks', () => {
         content,
       });
       const { tokenId } = event.args;
-
-      // get current balance for ahmed & barbie
       const ahmedStartingBalance = await ahmed.getBalance();
+
+      // assert treasury is empty
+      expect(await contract.treasury()).to.equal(0);
 
       // barbie likes ahmeds squeak
       const tx = await contract
         .connect(barbie)
         .likeSqueak(tokenId, { value: PLATFORM_CHARGE });
+      await tx.wait();
 
       // assert events
       await expect(tx)
@@ -303,6 +305,9 @@ describe('Squeaks', () => {
       expect(await ahmed.getBalance()).to.equal(
         ahmedStartingBalance.add(transferAmount)
       );
+
+      // treasury now has funds from barbie
+      expect(await contract.treasury()).to.equal(treasuryFee);
     });
 
     it('reverts if a user tries to like a squeak without enough funds', async () => {
