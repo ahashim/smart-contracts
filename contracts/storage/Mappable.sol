@@ -69,7 +69,7 @@ contract Mappable is Initializable, Typeable {
     mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal likes;
 
     /**
-     * @dev Mapping of tokenId's => AddressSet of accounts which disliked the
+     * @dev Mapping of tokenId's => AddressSet of accounts which resqueaked the
      * squeak.
      */
     mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal resqueaks;
