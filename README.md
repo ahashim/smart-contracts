@@ -111,6 +111,9 @@ npm size
 - [x] Liking a squeak.
 - [ ] Disliking a squeak.
 - [ ] Resqueaking.
+- [ ] Adding `TREASURER_ROLE` functions to update platform fees & safely withdraw funds.
+- [ ] Lurker incentives: early interactors of a squeak (`scouts`) will receive dividends from future likes.
+  - Limit to `100` to mitigate the concentration of platform interactions around any specific set of users.
 - [ ] Account funding via ERC-20 compatible tokens.
 - [ ] Media support for squeaks via IPFS (images, video, documents, etc&hellip;).
   - Can use a pinning service such as [Pinata](https://www.pinata.cloud/) for writes, and [Cloudflare IPFS](https://cloudflare-ipfs.com/ipns/ipfs.io/) for reads.
