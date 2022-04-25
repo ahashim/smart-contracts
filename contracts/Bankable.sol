@@ -24,7 +24,7 @@ import './storage/Storeable.sol';
 
 /**
  * @dev Bankable
- * @dev A contract to interact with the treasury.
+ * @dev A contract to handle user payments & interact with the treasury.
  */
 contract Bankable is Initializable, Storeable {
     /**
