@@ -110,7 +110,7 @@ npm size
 - [x] Platform Fees + P2P payments.
 - [x] Liking a squeak.
 - [x] Disliking a squeak.
-- [ ] Resqueaking.
+- [x] Resqueaking.
 - [ ] Adding `TREASURER_ROLE` functions to update platform fees & safely withdraw funds.
 - [ ] Lurker incentives: early interactors of a squeak (`scouts`) will receive dividends from future likes.
   - Limit to `100` to mitigate the concentration of platform interactions around any specific set of users.
