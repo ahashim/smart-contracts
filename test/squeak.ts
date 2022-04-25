@@ -30,8 +30,7 @@ describe('Squeaks', () => {
 
   // transferAmount
   const transferAmount = ethers.BigNumber.from(PLATFORM_CHARGE)
-    .mul(ethers.BigNumber.from(100 - PLATFORM_FEE_PERCENT))
-    .div(ethers.BigNumber.from(100));
+    .sub(treasuryFee)
 
   beforeEach(
     'Deploy contracts & create accounts for Ahmed & Barbie, but not Carlos',

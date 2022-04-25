@@ -101,7 +101,7 @@ contract Bankable is Initializable, Storeable {
         returns (uint256, uint256)
     {
         uint256 fee = (amount * PLATFORM_FEE_PERCENT) / 100;
-        uint256 transferAmount = (amount * (100 - PLATFORM_FEE_PERCENT)) / 100;
+        uint256 transferAmount = amount - fee;
 
         return (fee, transferAmount);
     }
