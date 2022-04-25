@@ -109,7 +109,7 @@ npm size
 - [x] `CRTTR` console for local contract interaction.
 - [x] Platform Fees + P2P payments.
 - [x] Liking a squeak.
-- [ ] Disliking a squeak.
+- [x] Disliking a squeak.
 - [ ] Resqueaking.
 - [ ] Adding `TREASURER_ROLE` functions to update platform fees & safely withdraw funds.
 - [ ] Lurker incentives: early interactors of a squeak (`scouts`) will receive dividends from future likes.
