@@ -167,6 +167,26 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
      * @param tokenId Numerical ID of the squeak to dislike.
      */
     function _dislikeSqueak(uint256 tokenId) internal {
+        // get liker/disklers of the squeak
+        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
+        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
+            tokenId
+        ];
+
+        // ensure account has not already disliked the squeak
+        require(
+            !dislikers.contains(msg.sender),
+            'Critter: cannot dislike a squeak twice'
+        );
+
+        // first remove them from likers set if they're in there
+        if (likers.contains(msg.sender)) {
+            likers.remove(msg.sender);
+        }
+
+        // then add them to the likers set
+        dislikers.add(msg.sender);
+
         // deposit fee into the treasury
         _deposit(msg.value);
 

@@ -7,7 +7,7 @@
     "console": "NODE_OPTIONS=--experimental-repl-await npx hardhat run scripts/console.ts",
     "coverage": "npx hardhat coverage",
     "deploy": "npx hardhat run scripts/deploy.ts",
-    "format": "prettier --write 'contracts/**/*.sol'",
+    "format": "prettier --write \"{,!(node_modules|typechain*)/**/}*.{sol,js,ts}\"",
     "lint": "solhint 'contracts/**/*.sol'",
     "prepare": "npm run format && npm run lint && npx hardhat prepare",
     "size": "npx hardhat size-contracts",

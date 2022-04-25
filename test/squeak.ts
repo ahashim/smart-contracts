@@ -574,6 +574,30 @@ describe('Squeaks', () => {
   describe('interactions', () => {
     const content = 'A surprise to be sure, but a welcome one.';
 
+    it('does not let a user "dislike" a squeak twice', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      // barbie dislikes it once
+      await run('dislikeSqueak', {
+        contract,
+        signer: barbie,
+        tokenId,
+      });
+
+      // assert it reverts when barbie dislikes it again
+      await expect(
+        contract
+          .connect(barbie)
+          .dislikeSqueak(tokenId, { value: PLATFORM_CHARGE })
+      ).to.be.revertedWith('Critter: cannot dislike a squeak twice');
+    });
+
     it('does not let a user "like" a squeak twice', async () => {
       // ahmed creates a squeak
       const event = await run('createSqueak', {

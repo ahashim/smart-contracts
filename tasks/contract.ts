@@ -5,7 +5,7 @@ import {
   BLOCK_CONFIRMATION_THRESHOLD,
   CONTRACT_INITIALIZER,
   CONTRACT_NAME,
-  PLATFORM_CHARGE
+  PLATFORM_CHARGE,
 } from '../constants';
 
 // types
@@ -97,6 +97,28 @@ task(
     const tx: ContractTransaction = await contract
       .connect(signer)
       .deleteSqueak(tokenId, { value: fee });
+
+    // wait for a confirmation
+    return await tx.wait();
+  }
+);
+
+task(
+  'dislikeSqueak',
+  'Create & confirm a signed dislike squeak transaction',
+  async ({
+    contract,
+    signer,
+    tokenId,
+  }: {
+    contract: Contract;
+    signer: SignerWithAddress;
+    tokenId: number;
+  }): Promise<TransactionReceipt> => {
+    // delete the token w/ fee amount
+    const tx: ContractTransaction = await contract
+      .connect(signer)
+      .dislikeSqueak(tokenId, { value: PLATFORM_CHARGE });
 
     // wait for a confirmation
     return await tx.wait();
