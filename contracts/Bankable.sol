@@ -57,6 +57,24 @@ contract Bankable is Initializable, Storeable {
     function __Bankable_init() internal view onlyInitializing {}
 
     /**
+     * @dev Calculates the interaction amount based on PLATFORM_CHARGE and
+     * PLATFORM_FEE_PERCENT. It then deposits transaction fee from `amount` into
+     * the treasury, and forwards the remaining funds to the address at `to`.
+     * @param to Address of the user to transfer remaining funds to.
+     * @param amount Amount in wei of funds to split.
+     */
+    function _basicFeeSplitAndTransfer(address to, uint256 amount) internal {
+        // calculate amounts to deposit & transfer
+        (uint256 fee, uint256 transferAmount) = _getInteractionAmounts(amount);
+
+        // deposit fee into treasury
+        _deposit(fee);
+
+        // transfer remaining funds to user
+        _transferFunds(to, transferAmount);
+    }
+
+    /**
      * @dev deposit `value` amount of wei into the treasury.
      * @param amount The amount of wei to deposit.
      */

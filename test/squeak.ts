@@ -341,7 +341,6 @@ describe('Squeaks', () => {
     });
   });
 
-
   describe('like', () => {
     it('lets a user like a squeak', async () => {
       // ahmed creates a squeak
@@ -412,7 +411,84 @@ describe('Squeaks', () => {
       const nonExistentTokenID = 420;
 
       await expect(
-        contract.connect(barbie).dislikeSqueak(nonExistentTokenID, { value: PLATFORM_CHARGE })
+        contract.connect(barbie).likeSqueak(nonExistentTokenID, { value: PLATFORM_CHARGE })
+      ).to.be.revertedWith('Critter: cannot perform action on a nonexistent token');
+    });
+  });
+
+  describe('resqueak', () => {
+    const content = 'There\'s always a bigger fish';
+
+    it('lets a user resqueak a squeak', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+      const ahmedStartingBalance = await ahmed.getBalance();
+
+      // assert treasury is empty
+      expect(await contract.treasury()).to.equal(0);
+
+      // barbie likes ahmeds squeak
+      const tx = await contract
+        .connect(barbie)
+        .resqueak(tokenId, { value: PLATFORM_CHARGE });
+      await tx.wait();
+
+      // assert events
+      await expect(tx)
+        .to.emit(contract, 'Resqueaked')
+        .withArgs(barbie.address, tokenId)
+        .and.to.emit(contract, 'FeeDeposited')
+        .withArgs(treasuryFee)
+        .and.to.emit(contract, 'FundsTransferred')
+        .withArgs(ahmed.address, transferAmount);
+
+      // ahmed now has funds from barbie via the platform
+      expect(await ahmed.getBalance()).to.equal(
+        ahmedStartingBalance.add(transferAmount)
+      );
+
+      // treasury now has funds from barbie
+      expect(await contract.treasury()).to.equal(treasuryFee);
+    });
+
+    it('reverts if a user does not have an account', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      await expect(
+        contract.connect(carlos).resqueak(tokenId, { value: PLATFORM_CHARGE })
+      ).to.be.revertedWith('Critter: address does not have an account');
+    });
+
+    it('reverts if a user does not have enough funds', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      await expect(
+        contract.connect(barbie).resqueak(tokenId, { value: 1 })
+      ).to.be.revertedWith('Critter: not enough funds to perform action');
+    });
+
+    it('reverts if a user tries to like a nonexistent squeak ', async () => {
+      const nonExistentTokenID = 420;
+
+      await expect(
+        contract.connect(barbie).resqueak(nonExistentTokenID, { value: PLATFORM_CHARGE })
       ).to.be.revertedWith('Critter: cannot perform action on a nonexistent token');
     });
   });

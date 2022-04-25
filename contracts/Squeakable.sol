@@ -37,6 +37,13 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     /**
+     * @dev Emitted when the `sender` address reposts a squeak at `tokenID`.
+     * @param sender Address of the account that reposted the squeak.
+     * @param tokenId Numerical ID of the reposted queak.
+     */
+    event Resqueaked(address indexed sender, uint256 tokenId);
+
+    /**
      * @dev Emitted when the `sender` address creates a squeak with `content`
      * and is assigned a `tokenID`.
      * @param author Address of the account that created the squeak.
@@ -145,6 +152,9 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         // delete squeak from storage
         delete squeaks[tokenId];
 
+        // recieve payment
+        _deposit(msg.value);
+
         // log squeak deleted
         emit SqueakDeleted(msg.sender, tokenId);
     }
@@ -182,21 +192,35 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
 
     /**
      * @dev transfers PLATFORM_CHARGE from msg.sender to `tokenId` squeak owner.
+     * Also adds fee to treasury from PLATFORM_CHARGE.
      * @param tokenId ID of the squeak to "like".
      */
     function _likeSqueak(uint256 tokenId) internal {
         // look up squeak
         Squeak memory squeak = squeaks[tokenId];
 
-        // calculate amounts to deposit & transfer
-        (uint256 fee, uint256 transferAmount) = _getInteractionAmounts(
-            msg.value
-        );
-        _deposit(fee);
-        _transferFunds(squeak.owner, transferAmount);
+        // split & transfer fees to treasury & squeak owner
+        _basicFeeSplitAndTransfer(squeak.owner, msg.value);
 
         // log liked squeak
         emit SqueakLiked(msg.sender, tokenId);
+    }
+
+    /**
+     * @dev transfers PLATFORM_CHARGE from msg.sender to `tokenId` squeak owner.
+     * Also adds fee to treasury from PLATFORM_CHARGE. Emits a {Resqueaked}
+     * event.
+     * @param tokenId ID of the squeak to "resqueak".
+     */
+    function _resqueak(uint256 tokenId) internal {
+        // look up squeak
+        Squeak memory squeak = squeaks[tokenId];
+
+        // split & transfer fees to treasury & squeak owner
+        _basicFeeSplitAndTransfer(squeak.owner, msg.value);
+
+        // log liked squeak
+        emit Resqueaked(msg.sender, tokenId);
     }
 
     /**

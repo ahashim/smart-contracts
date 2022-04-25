@@ -92,15 +92,28 @@ interface ICritter is
         returns (uint256);
 
     /**
-     * @dev Likes a squeak at `tokenId`, and pays FEE_LIKE to squeak owner. It
-     * emits a {SqueakLiked} event.
+     * @dev Likes a squeak at `tokenId`, and pays PLATFORM_CHARGE to squeak
+     * owner. It emits a {SqueakLiked} event.
      * @param tokenId ID of the token (squeak) to like.
      *
      * @notice Requirements:
      *  - The caller must already have an account.
-     *  - The caller must own `tokenId` or be an approved operator.
+     *  - The transaction has enough funds to cover the PLATFORM_CHARGE.
+     *  - The tokenId must exist.
      */
     function likeSqueak(uint256 tokenId) external payable;
+
+    /**
+     * @dev Reposts a squeak at `tokenId`, and pays PLATFORM_CHARGE to squeak
+     * owner. It emits a {Resqueaked} event.
+     * @param tokenId ID of the token (squeak) to resqueak.
+     *
+     * @notice Requirements:
+     *  - The caller must already have an account.
+     *  - The transaction has enough funds to cover the PLATFORM_CHARGE.
+     *  - The tokenId must exist.
+     */
+    function resqueak(uint256 tokenId) external payable;
 
     /**
      * @dev Update an accounts critter username. Emits a {UsernameUpdated}

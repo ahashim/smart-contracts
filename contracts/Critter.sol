@@ -219,9 +219,6 @@ contract Critter is
             'Critter: not enough funds to perform action'
         );
 
-        // recieve payment
-        _deposit(msg.value);
-
         // burn the token
         _burn(tokenId);
 
@@ -272,6 +269,22 @@ contract Critter is
         nonReentrant
     {
         _likeSqueak(tokenId);
+    }
+
+    /**
+     * @dev See {ICritter-resqueak}.
+     */
+    function resqueak(uint256 tokenId)
+        public
+        payable
+        override(ICritter)
+        whenNotPaused
+        hasAccount(msg.sender)
+        hasEnoughFunds(msg.value, PLATFORM_CHARGE)
+        squeakExists(tokenId)
+        nonReentrant
+    {
+        _resqueak(tokenId);
     }
 
     /**
