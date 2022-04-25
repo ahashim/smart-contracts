@@ -267,7 +267,7 @@ describe('Squeaks', () => {
       await expect(
         contract.getDeleteFee(nonExistentTokenID, BLOCK_CONFIRMATION_THRESHOLD)
       ).to.be.revertedWith(
-        'Critter: cannot calculate fee for nonexistent token'
+        'Critter: cannot perform action on a nonexistent token'
       );
     });
   });

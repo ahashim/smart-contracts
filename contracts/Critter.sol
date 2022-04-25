@@ -122,7 +122,7 @@ contract Critter is
     modifier squeakExists(uint256 tokenId) {
         require(
             _exists(tokenId),
-            'Critter: cannot calculate fee for nonexistent token'
+            'Critter: cannot perform action on a nonexistent token'
         );
         _;
     }
