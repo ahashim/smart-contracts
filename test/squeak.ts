@@ -272,6 +272,52 @@ describe('Squeaks', () => {
     });
   });
 
+  describe('dislike', () => {
+    it('lets a user dislike a squeak', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content: 'I don’t like sand. It’s coarse and rough and irritating…',
+      });
+      const { tokenId } = event.args;
+
+      // assert treasury is empty
+      expect(await contract.treasury()).to.equal(0);
+
+      // barbie dislikes ahmeds squeak
+      const tx = await contract
+        .connect(barbie)
+        .dislikeSqueak(tokenId, { value: PLATFORM_CHARGE });
+      await tx.wait();
+
+      // assert events
+      await expect(tx)
+        .to.emit(contract, 'SqueakDisliked')
+        .withArgs(barbie.address, tokenId)
+        .and.to.emit(contract, 'FeeDeposited')
+        .withArgs(PLATFORM_CHARGE)
+
+      // treasury now has funds from barbie
+      expect(await contract.treasury()).to.equal(PLATFORM_CHARGE);
+    });
+
+    it('reverts if a user tries to dislike a squeak without enough funds', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      await expect(
+        contract.connect(barbie).dislikeSqueak(tokenId, { value: 1 })
+      ).to.be.revertedWith('Critter: not enough funds to perform action');
+    });
+  });
+
+
   describe('like', () => {
     it('lets a user like a squeak', async () => {
       // ahmed creates a squeak

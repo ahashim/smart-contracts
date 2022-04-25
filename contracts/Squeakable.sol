@@ -52,6 +52,27 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     );
 
     /**
+     * @dev Emitted when the `sender` address deletes a squeak of `tokenID`.
+     * @param sender Address of the account that deleted the squeak.
+     * @param tokenId Numerical ID of the deleted squeak.
+     */
+    event SqueakDeleted(address indexed sender, uint256 tokenId);
+
+    /**
+     * @dev Emitted when the `sender` address dislikes a squeak of `tokenID`.
+     * @param sender Address of the account that disliked the squeak.
+     * @param tokenId Numerical ID of the disliked squeak.
+     */
+    event SqueakDisliked(address indexed sender, uint256 tokenId);
+
+    /**
+     * @dev Emitted when the `sender` address likes a squeak of `tokenID`.
+     * @param sender Address of the account that liked the squeak.
+     * @param tokenId Numerical ID of the liked squeak.
+     */
+    event SqueakLiked(address indexed sender, uint256 tokenId);
+
+    /**
      * @dev Ensure squeak exists at `tokenId`.
      * @param tokenId Numerical ID of the squeak
      */
@@ -62,20 +83,6 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         );
         _;
     }
-
-    /**
-     * @dev Emitted when the `sender` address deletes a squeak of `tokenID`.
-     * @param sender Address of the account that deleted the squeak.
-     * @param tokenId Numerical ID of the deleted squeak.
-     */
-    event SqueakDeleted(address indexed sender, uint256 tokenId);
-
-    /**
-     * @dev Emitted when the `sender` address likes a squeak of `tokenID`.
-     * @param sender Address of the account that liked the squeak.
-     * @param tokenId Numerical ID of the liked squeak.
-     */
-    event SqueakLiked(address indexed sender, uint256 tokenId);
 
     /**
      * @dev Initializer function
@@ -138,8 +145,22 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         // delete squeak from storage
         delete squeaks[tokenId];
 
-        // log deleted token ID
+        // log squeak deleted
         emit SqueakDeleted(msg.sender, tokenId);
+    }
+
+    /**
+     * @dev Dislikes a squeak at `tokenId` by depositing the PLATFORM_CHARGE
+     * into the treasury. Emits a {SqueakDisliked} event.
+     * event.
+     * @param tokenId Numerical ID of the squeak to dislike.
+     */
+    function _dislikeSqueak(uint256 tokenId) internal {
+        // deposit fee into the treasury
+        _deposit(msg.value);
+
+        // log disliked squeak
+        emit SqueakDisliked(msg.sender, tokenId);
     }
 
     /**
@@ -174,7 +195,7 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         _deposit(fee);
         _transferFunds(squeak.owner, transferAmount);
 
-        // log liked token ID
+        // log liked squeak
         emit SqueakLiked(msg.sender, tokenId);
     }
 

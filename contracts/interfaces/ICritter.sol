@@ -60,8 +60,20 @@ interface ICritter is
      * @notice Requirements:
      *  - The caller must already have an account.
      *  - The caller must own `tokenId` or be an approved operator.
+     *  - The transaction has enough funds to cover the delete fee.
      */
     function deleteSqueak(uint256 tokenId) external payable;
+
+    /**
+     * @dev Dislikes squeak at `tokenId`. Emits a {SqueakDisliked} event.
+     * @param tokenId ID of the token (squeak) to dislike.
+     *
+     * @notice Requirements:
+     *  - The caller must already have an account.
+     *  - The transaction has enough funds to cover the PLATFORM_CHARGE.
+     *  - The tokenId must exist.
+     */
+    function dislikeSqueak(uint256 tokenId) external payable;
 
     /**
      * @dev Returns the fee amount in wei to delete a squeak at `tokenId`.

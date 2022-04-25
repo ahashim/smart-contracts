@@ -230,6 +230,22 @@ contract Critter is
     }
 
     /**
+     * @dev See {ICritter-dislikeSqueak}.
+     */
+    function dislikeSqueak(uint256 tokenId)
+        public
+        payable
+        override(ICritter)
+        whenNotPaused
+        hasAccount(msg.sender)
+        hasEnoughFunds(msg.value, PLATFORM_CHARGE)
+        squeakExists(tokenId)
+        nonReentrant
+    {
+        _dislikeSqueak(tokenId);
+    }
+
+    /**
      * @dev See {ICritter-getDeleteFee}.
      */
     function getDeleteFee(uint256 tokenId, uint256 blockConfirmationThreshold)
