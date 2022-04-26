@@ -231,7 +231,9 @@ describe('Squeaks', () => {
         contract.connect(barbie).deleteSqueak(ahmedsTokenId)
       ).to.be.revertedWith('Critter: not approved to delete squeak');
     });
+  });
 
+  describe('get', () => {
     it('lets anybody get a delete fee for an existing token', async () => {
       // ahmed creates a squeak
       const event = await run('createSqueak', {
@@ -265,6 +267,72 @@ describe('Squeaks', () => {
       const nonExistentTokenID = 420;
       await expect(
         contract.getDeleteFee(nonExistentTokenID, BLOCK_CONFIRMATION_THRESHOLD)
+      ).to.be.revertedWith(
+        'Critter: cannot perform action on a nonexistent token'
+      );
+    });
+
+    it('lets anybody get the dislike count of a squeak', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content: 'is this thing on?',
+      });
+      const { tokenId } = event.args;
+
+      // assert the squeak has no dislikes
+      expect(await contract.getDislikeCount(tokenId)).to.equal(0);
+
+      // barbie dislikes it
+      await run('dislikeSqueak', {
+        contract,
+        signer: barbie,
+        tokenId,
+      });
+
+      // assert the squeak now has a like
+      expect(await contract.getDislikeCount(tokenId)).to.equal(1);
+    });
+
+    it('reverts when getting the dislike count of a nonexistent squeak', async () => {
+      const nonExistentTokenID = 420;
+
+      await expect(
+        contract.getDislikeCount(nonExistentTokenID)
+      ).to.be.revertedWith(
+        'Critter: cannot perform action on a nonexistent token'
+      );
+    });
+
+    it('lets anybody get the like count of a squeak', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content: 'is this thing on?',
+      });
+      const { tokenId } = event.args;
+
+      // assert the squeak has no likes
+      expect(await contract.getLikeCount(tokenId)).to.equal(0);
+
+      // barbie likes it
+      await run('likeSqueak', {
+        contract,
+        signer: barbie,
+        tokenId,
+      });
+
+      // assert the squeak now has a like
+      expect(await contract.getLikeCount(tokenId)).to.equal(1);
+    });
+
+    it('reverts when getting the like count of a nonexistent squeak', async () => {
+      const nonExistentTokenID = 420;
+
+      await expect(
+        contract.getLikeCount(nonExistentTokenID)
       ).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );

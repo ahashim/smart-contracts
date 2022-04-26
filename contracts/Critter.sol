@@ -283,9 +283,11 @@ contract Critter is
         squeakExists(tokenId)
         returns (uint256)
     {
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
+        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
+            tokenId
+        ];
 
-        return likers.length();
+        return dislikers.length();
     }
 
     /**
