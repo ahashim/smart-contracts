@@ -57,6 +57,7 @@ Available commands are:
 
 - `hh`: an instance of hardhat, [including all available tasks](https://github.com/ahashim/critter/blob/main/tasks/contract.ts#L15).
 - `critter`: returns the deployed contract instance & all available methods on it.
+- `platformFee`: The default amount in wei required for payable transactions (like, dislike, resqueak).
 - `owner`: returns the `owner` signer account instance & all available methods on it.
   - By default the owner account has all available roles granted to it:
     - `DEFAULT_ADMIN_ROLE`

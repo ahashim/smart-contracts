@@ -1,6 +1,6 @@
 import repl from 'repl';
 import hardhat from 'hardhat';
-import { CONTRACT_SYMBOL } from '../constants';
+import { CONTRACT_SYMBOL, PLATFORM_CHARGE } from '../constants';
 
 async function main() {
   // start repl with options
@@ -20,6 +20,7 @@ async function main() {
   // assign hardhat & contract context
   r.context.hh = hardhat;
   r.context.critter = contract;
+  r.context.platformFee = PLATFORM_CHARGE;
 
   // create Critter accounts
   for (let i = 0; i < users.length; i++) {
@@ -41,6 +42,7 @@ async function main() {
   process.stdout.write(' ready! 🐁\n');
   console.log('Hardhat: hh');
   console.log('Contract: critter');
+  console.log('Platform fee: platformFee');
   console.log('Owner account: owner');
   console.log('User accounts: ahmed, barbie, carlos');
 }
