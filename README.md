@@ -1,10 +1,10 @@
 # 🦔 Critter
 
-#### A peer-to-peer microblogging NFT platform for EVM-like blockchains
+### A peer-to-peer microblogging NFT platform for EVM-like blockchains
 
 Given the advertising and data-mining middlemen of traditional online content, the emerging NFT market for said content, and the crypto startups merely mimicking the same old dynamics, Critter was born.
 
-Utilizing ownership fundamentals and financial incentives, Critter consolidates the full content pipeline – creation, virality, and reward. Through it, It aims to empower makers to leverage the possibilities of Blockchain to forge a new, more transparent system that can serve them directly.
+Utilizing ownership fundamentals and financial incentives, Critter consolidates the full content pipeline – creation, virality, and reward. Through that process, it aims to empower makers to leverage the possibilities of Blockchain to forge a new, more transparent system that can serve them directly.
 
 - [Core Concepts](#core-concepts)
 - [Local Development](#local-development)
