@@ -161,7 +161,7 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Dislikes a squeak at `tokenId` by depositing the PLATFORM_CHARGE
+     * @dev Dislikes a squeak at `tokenId` by depositing the PLATFORM_FEE
      * into the treasury. Emits a {SqueakDisliked} event.
      * event.
      * @param tokenId Numerical ID of the squeak to dislike.
@@ -195,8 +195,8 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev transfers PLATFORM_CHARGE from msg.sender to `tokenId` squeak owner.
-     * Also adds fee to treasury from PLATFORM_CHARGE.
+     * @dev transfers PLATFORM_FEE from msg.sender to `tokenId` squeak owner.
+     * Also adds fee to treasury from PLATFORM_FEE.
      * @param tokenId ID of the squeak to "like".
      */
     function _likeSqueak(uint256 tokenId) internal {
@@ -229,8 +229,8 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev transfers PLATFORM_CHARGE from msg.sender to `tokenId` squeak owner.
-     * Also adds fee to treasury from PLATFORM_CHARGE. Emits a {Resqueaked}
+     * @dev transfers PLATFORM_FEE from msg.sender to `tokenId` squeak owner.
+     * Also adds fee to treasury from PLATFORM_FEE. Emits a {Resqueaked}
      * event.
      * @param tokenId ID of the squeak to "resqueak".
      */

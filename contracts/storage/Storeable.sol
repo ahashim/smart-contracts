@@ -47,7 +47,7 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
         baseTokenURI = baseURI;
 
         // set fees
-        PLATFORM_CHARGE = platformCharge;
+        PLATFORM_FEE = platformCharge;
         PLATFORM_FEE_PERCENT = platformFeePercent;
     }
 
@@ -72,7 +72,7 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
      * @dev Fee amount in wei used across Critter transactions across the
      * platform such as like, resqueak, delete, etc...
      */
-    uint256 public PLATFORM_CHARGE;
+    uint256 public PLATFORM_FEE;
 
     /**
      * @dev Percentage amount to add to the treasury from each chargable

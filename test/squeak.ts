@@ -4,7 +4,7 @@ import { ethers, network, run } from 'hardhat';
 import {
   BASE_TOKEN_URI,
   BLOCK_CONFIRMATION_THRESHOLD,
-  PLATFORM_CHARGE,
+  PLATFORM_FEE,
   PLATFORM_FEE_PERCENT,
 } from '../constants';
 
@@ -24,13 +24,12 @@ describe('Squeaks', () => {
   const content = 'hello blockchain!';
 
   // treasury fee
-  const treasuryFee = ethers.BigNumber.from(PLATFORM_CHARGE)
+  const treasuryFee = ethers.BigNumber.from(PLATFORM_FEE)
     .mul(ethers.BigNumber.from(PLATFORM_FEE_PERCENT))
     .div(ethers.BigNumber.from(100));
 
   // transferAmount
-  const transferAmount =
-    ethers.BigNumber.from(PLATFORM_CHARGE).sub(treasuryFee);
+  const transferAmount = ethers.BigNumber.from(PLATFORM_FEE).sub(treasuryFee);
 
   beforeEach(
     'Deploy contracts & create accounts for Ahmed & Barbie, but not Carlos',
@@ -250,7 +249,7 @@ describe('Squeaks', () => {
       const latestBlockThreshold =
         latestBlockNumber + BLOCK_CONFIRMATION_THRESHOLD;
       const expectedFee =
-        (latestBlockThreshold - squeak.blockNumber) * PLATFORM_CHARGE;
+        (latestBlockThreshold - squeak.blockNumber) * PLATFORM_FEE;
 
       // barbie does not have a critter account, but is able calculate the
       // delete fee for ahmeds squeak from the contract
@@ -290,7 +289,7 @@ describe('Squeaks', () => {
       // barbie dislikes ahmeds squeak
       const tx = await contract
         .connect(barbie)
-        .dislikeSqueak(tokenId, { value: PLATFORM_CHARGE });
+        .dislikeSqueak(tokenId, { value: PLATFORM_FEE });
       await tx.wait();
 
       // assert events
@@ -298,10 +297,10 @@ describe('Squeaks', () => {
         .to.emit(contract, 'SqueakDisliked')
         .withArgs(barbie.address, tokenId)
         .and.to.emit(contract, 'FeeDeposited')
-        .withArgs(PLATFORM_CHARGE);
+        .withArgs(PLATFORM_FEE);
 
       // treasury now has funds from barbie
-      expect(await contract.treasury()).to.equal(PLATFORM_CHARGE);
+      expect(await contract.treasury()).to.equal(PLATFORM_FEE);
     });
 
     it('reverts if a user does not have an account', async () => {
@@ -316,7 +315,7 @@ describe('Squeaks', () => {
       await expect(
         contract
           .connect(carlos)
-          .dislikeSqueak(tokenId, { value: PLATFORM_CHARGE })
+          .dislikeSqueak(tokenId, { value: PLATFORM_FEE })
       ).to.be.revertedWith('Critter: address does not have an account');
     });
 
@@ -340,7 +339,7 @@ describe('Squeaks', () => {
       await expect(
         contract
           .connect(barbie)
-          .dislikeSqueak(nonExistentTokenID, { value: PLATFORM_CHARGE })
+          .dislikeSqueak(nonExistentTokenID, { value: PLATFORM_FEE })
       ).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );
@@ -364,7 +363,7 @@ describe('Squeaks', () => {
       // barbie likes ahmeds squeak
       const tx = await contract
         .connect(barbie)
-        .likeSqueak(tokenId, { value: PLATFORM_CHARGE });
+        .likeSqueak(tokenId, { value: PLATFORM_FEE });
       await tx.wait();
 
       // assert events
@@ -395,9 +394,7 @@ describe('Squeaks', () => {
       const { tokenId } = event.args;
 
       await expect(
-        contract
-          .connect(carlos)
-          .likeSqueak(tokenId, { value: PLATFORM_CHARGE })
+        contract.connect(carlos).likeSqueak(tokenId, { value: PLATFORM_FEE })
       ).to.be.revertedWith('Critter: address does not have an account');
     });
 
@@ -421,7 +418,7 @@ describe('Squeaks', () => {
       await expect(
         contract
           .connect(barbie)
-          .likeSqueak(nonExistentTokenID, { value: PLATFORM_CHARGE })
+          .likeSqueak(nonExistentTokenID, { value: PLATFORM_FEE })
       ).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );
@@ -447,7 +444,7 @@ describe('Squeaks', () => {
       // barbie likes ahmeds squeak
       const tx = await contract
         .connect(barbie)
-        .resqueak(tokenId, { value: PLATFORM_CHARGE });
+        .resqueak(tokenId, { value: PLATFORM_FEE });
       await tx.wait();
 
       // assert events
@@ -478,7 +475,7 @@ describe('Squeaks', () => {
       const { tokenId } = event.args;
 
       await expect(
-        contract.connect(carlos).resqueak(tokenId, { value: PLATFORM_CHARGE })
+        contract.connect(carlos).resqueak(tokenId, { value: PLATFORM_FEE })
       ).to.be.revertedWith('Critter: address does not have an account');
     });
 
@@ -502,7 +499,7 @@ describe('Squeaks', () => {
       await expect(
         contract
           .connect(barbie)
-          .resqueak(nonExistentTokenID, { value: PLATFORM_CHARGE })
+          .resqueak(nonExistentTokenID, { value: PLATFORM_FEE })
       ).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );
@@ -594,7 +591,7 @@ describe('Squeaks', () => {
       await expect(
         contract
           .connect(barbie)
-          .dislikeSqueak(tokenId, { value: PLATFORM_CHARGE })
+          .dislikeSqueak(tokenId, { value: PLATFORM_FEE })
       ).to.be.revertedWith('Critter: cannot dislike a squeak twice');
     });
 
@@ -616,9 +613,7 @@ describe('Squeaks', () => {
 
       // assert it reverts when barbie likes it again
       await expect(
-        contract
-          .connect(barbie)
-          .likeSqueak(tokenId, { value: PLATFORM_CHARGE })
+        contract.connect(barbie).likeSqueak(tokenId, { value: PLATFORM_FEE })
       ).to.be.revertedWith('Critter: cannot like a squeak twice');
     });
   });
