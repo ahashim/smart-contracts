@@ -166,7 +166,6 @@ contract Critter is
      */
     function createAccount(string memory username)
         public
-        payable
         override(ICritter)
         whenNotPaused
         isValidUsername(username)
@@ -206,6 +205,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
+        nonReentrant
     {
         require(
             _isApprovedOrOwner(msg.sender, tokenId),

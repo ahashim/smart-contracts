@@ -39,7 +39,7 @@ interface ICritter is
      *  - The caller must not have an account
      *  - Username must be valid (see {isValidUsername} modifier)
      */
-    function createAccount(string memory username) external payable;
+    function createAccount(string memory username) external;
 
     /**
      * @dev Create a squeak. Emits a {SqueakCreated} event.
