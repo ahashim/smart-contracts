@@ -8,6 +8,7 @@ import '@openzeppelin/hardhat-upgrades';
 import '@typechain/hardhat';
 import 'hardhat-contract-sizer';
 import 'hardhat-gas-reporter';
+import 'hardhat-tracer';
 import 'hardhat-watcher';
 import 'solidity-coverage';
 

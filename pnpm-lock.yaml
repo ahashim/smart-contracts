@@ -16,6 +16,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.20.0
   '@typescript-eslint/parser': ^5.20.0
   chai: ^4.3.6
+  chalk: 4.x
   dotenv: ^16.0.0
   eslint: ^8.14.0
   eslint-config-prettier: ^8.5.0
@@ -30,6 +31,7 @@ specifiers:
   hardhat: ^2.9.3
   hardhat-contract-sizer: ^2.5.1
   hardhat-gas-reporter: ^1.0.8
+  hardhat-tracer: ^1.1.0-rc.3
   hardhat-watcher: ^2.1.1
   prettier: ^2.6.2
   prettier-plugin-solidity: ^1.0.0-beta.19
@@ -56,6 +58,7 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 5.20.0_81f0d1a74f014d44d273bd1612c85fd9
   '@typescript-eslint/parser': 5.20.0_eslint@8.14.0+typescript@4.6.3
   chai: 4.3.6
+  chalk: 4.1.2
   dotenv: 16.0.0
   eslint: 8.14.0
   eslint-config-prettier: 8.5.0_eslint@8.14.0
@@ -70,6 +73,7 @@ devDependencies:
   hardhat: 2.9.3
   hardhat-contract-sizer: 2.5.1_hardhat@2.9.3
   hardhat-gas-reporter: 1.0.8_hardhat@2.9.3
+  hardhat-tracer: 1.1.0-rc.3_chalk@4.1.2+hardhat@2.9.3
   hardhat-watcher: 2.1.1_hardhat@2.9.3
   prettier: 2.6.2
   prettier-plugin-solidity: 1.0.0-beta.19_prettier@2.6.2
@@ -5086,6 +5090,20 @@ packages:
       sha1: 1.1.1
     transitivePeerDependencies:
       - '@codechecks/client'
+    dev: true
+
+  /hardhat-tracer/1.1.0-rc.3_chalk@4.1.2+hardhat@2.9.3:
+    resolution: {integrity: sha512-UGOfwRXkdxWM66JqcyGDJfIjiDXNkqgiaomLPvILg3nppVTjxtBmddYtnvGhDrV9FE1NgWyBnP1B35NaRIKM8A==}
+    peerDependencies:
+      chalk: 4.x
+      hardhat: 2.x
+    dependencies:
+      chalk: 4.1.2
+      ethers: 5.6.4
+      hardhat: 2.9.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
     dev: true
 
   /hardhat-watcher/2.1.1_hardhat@2.9.3:
