@@ -195,23 +195,6 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Generate a token URI based on a hash of the chain ID & token ID. it
-     * uses library functions from {StringTheory} under the hood.
-     * @param tokenId Numerical token ID to generate a URI for.
-     * @notice This is not a pure function due to the usage of `block.chainid`.
-     */
-    function _generateUri(uint256 tokenId)
-        private
-        view
-        returns (string memory)
-    {
-        // get the hash of the token based on its chain ID & token ID
-        bytes32 hashedUri = keccak256(abi.encode(block.chainid, tokenId));
-
-        return StringTheory.lower(StringTheory.toHexString(hashedUri));
-    }
-
-    /**
      * @dev transfers PLATFORM_CHARGE from msg.sender to `tokenId` squeak owner.
      * Also adds fee to treasury from PLATFORM_CHARGE.
      * @param tokenId ID of the squeak to "like".
@@ -270,5 +253,22 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     function _transferSqueakOwnership(address to, uint256 tokenId) internal {
         Squeak storage squeak = squeaks[tokenId];
         squeak.owner = to;
+    }
+
+    /**
+     * @dev Generate a token URI based on a hash of the chain ID & token ID. it
+     * uses library functions from {StringTheory} under the hood.
+     * @param tokenId Numerical token ID to generate a URI for.
+     * @notice This is not a pure function due to the usage of `block.chainid`.
+     */
+    function _generateUri(uint256 tokenId)
+        private
+        view
+        returns (string memory)
+    {
+        // get the hash of the token based on its chain ID & token ID
+        bytes32 hashedUri = keccak256(abi.encode(block.chainid, tokenId));
+
+        return StringTheory.lower(StringTheory.toHexString(hashedUri));
     }
 }
