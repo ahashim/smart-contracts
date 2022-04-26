@@ -30,6 +30,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 
 // Critter contracts
 import './Accountable.sol';
@@ -75,6 +76,8 @@ contract Critter is
     Bankable,
     Squeakable
 {
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+
     /* solhint-disable func-name-mixedcase, no-empty-blocks */
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -253,6 +256,36 @@ contract Critter is
         returns (uint256)
     {
         return _getDeleteFee(tokenId, blockConfirmationThreshold);
+    }
+
+    /**
+     * @dev See {ICritter-getLikeCount}.
+     */
+    function getLikeCount(uint256 tokenId)
+        external
+        view
+        override(ICritter)
+        squeakExists(tokenId)
+        returns (uint256)
+    {
+        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
+
+        return likers.length();
+    }
+
+    /**
+     * @dev See {ICritter-getDislikeCount}.
+     */
+    function getDislikeCount(uint256 tokenId)
+        external
+        view
+        override(ICritter)
+        squeakExists(tokenId)
+        returns (uint256)
+    {
+        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
+
+        return likers.length();
     }
 
     /**
