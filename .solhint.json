@@ -1,13 +1,8 @@
 {
   "extends": "solhint:recommended",
-  "plugins": [
-    "prettier"
-  ],
+  "plugins": ["prettier"],
   "rules": {
-    "compiler-version": [
-      "error",
-      "^0.8.0"
-    ],
+    "compiler-version": ["error", "^0.8.0"],
     "func-visibility": [
       "warn",
       {
@@ -21,10 +16,6 @@
         "maxLength": 64
       }
     ],
-    "var-name-mixedcase": "off",
-    "quotes": [
-      "error",
-      "single"
-    ]
+    "quotes": ["error", "single"]
   }
 }

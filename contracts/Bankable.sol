@@ -57,8 +57,8 @@ contract Bankable is Initializable, Storeable {
     function __Bankable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Calculates the interaction amount based on PLATFORM_FEE and
-     * PLATFORM_FEE_PERCENT. It then deposits transaction fee from `amount` into
+     * @dev Calculates the interaction amount based on platformFee and
+     * platformFeePercent. It then deposits transaction fee from `amount` into
      * the treasury, and forwards the remaining funds to the address at `to`.
      * @param to Address of the user to transfer remaining funds to.
      * @param amount Amount in wei of funds to split.
@@ -89,7 +89,7 @@ contract Bankable is Initializable, Storeable {
      * @param blockConfirmationThreshold The amount of blocks to pad the fee
      * calculation with in order to correctly estimate a price for the block in
      * which the actual delete transaction occurs.
-     * @notice This gets multiplied by `PLATFORM_FEE` * squeak.blockNumber
+     * @notice This gets multiplied by `platformFee` * squeak.blockNumber
      * to calculate the full fee amount.
      */
     function _getDeleteFee(uint256 tokenId, uint256 blockConfirmationThreshold)
@@ -101,7 +101,7 @@ contract Bankable is Initializable, Storeable {
         uint256 latestBlockThreshold = block.number +
             blockConfirmationThreshold;
 
-        return (latestBlockThreshold - squeak.blockNumber) * PLATFORM_FEE;
+        return (latestBlockThreshold - squeak.blockNumber) * platformFee;
     }
 
     /**
@@ -118,7 +118,7 @@ contract Bankable is Initializable, Storeable {
         view
         returns (uint256, uint256)
     {
-        uint256 fee = (amount * PLATFORM_FEE_PERCENT) / 100;
+        uint256 fee = (amount * platformFeePercent) / 100;
         uint256 transferAmount = amount - fee;
 
         return (fee, transferAmount);

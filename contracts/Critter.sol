@@ -89,16 +89,16 @@ contract Critter is
      * @param name Contract name (Critter).
      * @param symbol Contract symbol (CRTTR).
      * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
-     * @param platformCharge Fee amount in wei to charge per interaction.
-     * @param platformFeePercent Fee in percent of interaction amount to add to
+     * @param fee Fee amount in wei to charge per interaction.
+     * @param feePercent Fee in percent of `fee` deposited into treasury.
      * the treasury.
      */
     function initialize(
         string memory name,
         string memory symbol,
         string memory baseURI,
-        uint256 platformCharge,
-        uint256 platformFeePercent
+        uint256 fee,
+        uint256 feePercent
     ) public initializer {
         // Open Zeppelin contracts
         __ERC721_init(name, symbol);
@@ -113,7 +113,7 @@ contract Critter is
         __Typeable_init();
         __Immutable_init();
         __Mappable_init();
-        __Storeable_init(baseURI, platformCharge, platformFeePercent);
+        __Storeable_init(baseURI, fee, feePercent);
         __Accountable_init();
         __Bankable_init();
         __Squeakable_init();
@@ -238,7 +238,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
-        hasEnoughFunds(msg.value, PLATFORM_FEE)
+        hasEnoughFunds(msg.value, platformFee)
         squeakExists(tokenId)
         nonReentrant
     {
@@ -299,7 +299,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
-        hasEnoughFunds(msg.value, PLATFORM_FEE)
+        hasEnoughFunds(msg.value, platformFee)
         squeakExists(tokenId)
         nonReentrant
     {
@@ -315,7 +315,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
-        hasEnoughFunds(msg.value, PLATFORM_FEE)
+        hasEnoughFunds(msg.value, platformFee)
         squeakExists(tokenId)
         nonReentrant
     {

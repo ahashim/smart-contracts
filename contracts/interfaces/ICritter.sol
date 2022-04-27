@@ -70,7 +70,7 @@ interface ICritter is
      *
      * @notice Requirements:
      *  - The caller must already have an account.
-     *  - The transaction has enough funds to cover the PLATFORM_FEE.
+     *  - The transaction has enough funds to cover the platformFee.
      *  - The tokenId must exist.
      */
     function dislikeSqueak(uint256 tokenId) external payable;
@@ -107,25 +107,25 @@ interface ICritter is
     function getDislikeCount(uint256 tokenId) external view returns (uint256);
 
     /**
-     * @dev Likes a squeak at `tokenId`, and pays PLATFORM_FEE to squeak
+     * @dev Likes a squeak at `tokenId`, and pays platformFee to squeak
      * owner. It emits a {SqueakLiked} event.
      * @param tokenId ID of the token (squeak) to like.
      *
      * @notice Requirements:
      *  - The caller must already have an account.
-     *  - The transaction has enough funds to cover the PLATFORM_FEE.
+     *  - The transaction has enough funds to cover the platformFee.
      *  - The tokenId must exist.
      */
     function likeSqueak(uint256 tokenId) external payable;
 
     /**
-     * @dev Reposts a squeak at `tokenId`, and pays PLATFORM_FEE to squeak
+     * @dev Reposts a squeak at `tokenId`, and pays platformFee to squeak
      * owner. It emits a {Resqueaked} event.
      * @param tokenId ID of the token (squeak) to resqueak.
      *
      * @notice Requirements:
      *  - The caller must already have an account.
-     *  - The transaction has enough funds to cover the PLATFORM_FEE.
+     *  - The transaction has enough funds to cover the platformFee.
      *  - The tokenId must exist.
      */
     function resqueak(uint256 tokenId) external payable;
