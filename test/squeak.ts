@@ -699,5 +699,69 @@ describe('Squeaks', () => {
         contract.connect(barbie).likeSqueak(tokenId, { value: PLATFORM_FEE })
       ).to.be.revertedWith('Critter: cannot like a squeak twice');
     });
+
+    it('removes a previous dislike when liking a squeak', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      // barbie dislikes it at first
+      await run('dislikeSqueak', {
+        contract,
+        signer: barbie,
+        tokenId,
+      });
+
+      // assert sentiment: 1 dislikes, 0 likes
+      expect(await contract.getDislikeCount(tokenId)).to.equal(1);
+      expect(await contract.getLikeCount(tokenId)).to.equal(0);
+
+      // she then changes her mind and likes the squeak instead
+      await run('likeSqueak', {
+        contract,
+        signer: barbie,
+        tokenId,
+      });
+
+      // assert sentiment: 0 dislikes, 1 likes
+      expect(await contract.getDislikeCount(tokenId)).to.equal(0);
+      expect(await contract.getLikeCount(tokenId)).to.equal(1);
+    });
+
+    it('removes a previous like when disliking a squeak', async () => {
+      // ahmed creates a squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content,
+      });
+      const { tokenId } = event.args;
+
+      // barbie likes it at first
+      await run('likeSqueak', {
+        contract,
+        signer: barbie,
+        tokenId,
+      });
+
+      // assert sentiment: 1 dislikes, 0 likes
+      expect(await contract.getDislikeCount(tokenId)).to.equal(0);
+      expect(await contract.getLikeCount(tokenId)).to.equal(1);
+
+      // she then changes her mind and dislikes the squeak instead
+      await run('dislikeSqueak', {
+        contract,
+        signer: barbie,
+        tokenId,
+      });
+
+      // assert sentiment: 0 dislikes, 1 likes
+      expect(await contract.getDislikeCount(tokenId)).to.equal(1);
+      expect(await contract.getLikeCount(tokenId)).to.equal(0);
+    });
   });
 });
