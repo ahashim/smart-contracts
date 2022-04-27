@@ -84,11 +84,6 @@ describe('Contract', () => {
   });
 
   describe('upgradeable', () => {
-    // upgrade variables
-    const upgradeAddress = ethers.utils.getAddress(
-      '0x70997970c51812dc3a010c7d01b50e0d17dc79c8'
-    );
-
     it('upgrades the contract', async () => {
       // upgrade the contract
       const factory = await ethers.getContractFactory('Critter');
@@ -102,6 +97,8 @@ describe('Contract', () => {
     });
 
     it('reverts when a user without an UPGRADER_ROLE tries to upgrade', async () => {
+      const upgradeAddress = '0x70997970c51812dc3a010c7d01b50e0d17dc79c8';
+
       await expect(
         // ahmed trying to upgrade the contract w/o an UPGRADER_ROLE
         contract.connect(ahmed).upgradeTo(upgradeAddress)
