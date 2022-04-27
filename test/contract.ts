@@ -1,6 +1,6 @@
 // libraries
 import { expect } from 'chai';
-import { ethers, run } from 'hardhat';
+import { ethers, run, upgrades } from 'hardhat';
 import {
   MINTER_ROLE,
   PAUSER_ROLE,
@@ -84,11 +84,24 @@ describe('Contract', () => {
   });
 
   describe('upgradeable', () => {
-    it('reverts when a user without an UPGRADER_ROLE tries to upgrade', async () => {
-      // upgrade variables
-      const upgradeAddress = ethers.utils.getAddress(
-        '0x70997970c51812dc3a010c7d01b50e0d17dc79c8'
+    // upgrade variables
+    const upgradeAddress = ethers.utils.getAddress(
+      '0x70997970c51812dc3a010c7d01b50e0d17dc79c8'
+    );
+
+    it('upgrades the contract', async () => {
+      // upgrade the contract
+      const factory = await ethers.getContractFactory('Critter');
+      const contractV2 = await upgrades.upgradeProxy(
+        contract.address,
+        factory
       );
+
+      // assert UUPS proxy address is the same as the old contract
+      expect(contract.address).to.equal(contractV2.address);
+    });
+
+    it('reverts when a user without an UPGRADER_ROLE tries to upgrade', async () => {
       await expect(
         // ahmed trying to upgrade the contract w/o an UPGRADER_ROLE
         contract.connect(ahmed).upgradeTo(upgradeAddress)
