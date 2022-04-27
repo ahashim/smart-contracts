@@ -231,6 +231,21 @@ describe('Squeaks', () => {
         contract.connect(barbie).deleteSqueak(ahmedsTokenId)
       ).to.be.revertedWith('Critter: not approved to delete squeak');
     });
+
+    it('reverts when the user does have an account', async () => {
+      // create squeak
+      const event = await run('createSqueak', {
+        contract,
+        signer: ahmed,
+        content: 'this is the wei',
+      });
+      const { tokenId } = event.args;
+
+      // delete squeak tx
+      await expect(
+        contract.connect(carlos).deleteSqueak(tokenId)
+      ).to.be.revertedWith('Critter: address does not have an account');
+    });
   });
 
   describe('get', () => {
