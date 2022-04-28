@@ -150,8 +150,10 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
      * @param tokenId Numerical ID of the squeak to delete.
      */
     function _deleteSqueak(uint256 tokenId) internal {
-        // delete squeak from storage
+        // delete squeak & associated sentiment from storage
         delete squeaks[tokenId];
+        delete likes[tokenId];
+        delete dislikes[tokenId];
 
         // recieve payment
         _deposit(msg.value);
