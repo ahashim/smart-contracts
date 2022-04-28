@@ -5,7 +5,7 @@ import { ethers, run, waffle } from 'hardhat';
 // types
 import type { Contract } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { freshDeploy, singleAccount } from './fixtures';
+import { freshDeploy, oneAccount } from './fixtures';
 
 describe('Accounts', () => {
   let contract: Contract;
@@ -17,7 +17,7 @@ describe('Accounts', () => {
   const MINTER_ROLE = ethers.utils.id('MINTER_ROLE');
 
   describe('create', () => {
-    beforeEach(async () => {
+    beforeEach('Deploy contracts', async () => {
       contract = await waffle.loadFixture(freshDeploy);
       [owner, ahmed] = await ethers.getSigners();
     });
@@ -82,12 +82,13 @@ describe('Accounts', () => {
     const username = 'ahmed';
     const newUsername = 'a-rock';
 
-    beforeEach(async () => {
-      // ahmed has an account with username 'ahmed', and barbie  has not made an
-      // account
-      contract = await waffle.loadFixture(singleAccount);
-      [, ahmed, barbie] = await ethers.getSigners();
-    });
+    beforeEach(
+      'Deploy contracts, and create an account for Ahmed but not Barbie',
+      async () => {
+        contract = await waffle.loadFixture(oneAccount);
+        [, ahmed, barbie] = await ethers.getSigners();
+      }
+    );
 
     it('updates the username', async () => {
       // assert existence of the username

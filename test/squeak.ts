@@ -1,6 +1,12 @@
 // libraries
 import { expect } from 'chai';
-import { ethers, network, run } from 'hardhat';
+import { ethers, network, run, waffle } from 'hardhat';
+import {
+  twoAccounts,
+  twoAccountsOneSqueak,
+  twoAccountsOneDislikedSqueak,
+  twoAccountsOneLikedSqueak,
+} from './fixtures';
 import {
   BASE_TOKEN_URI,
   BLOCK_CONFIRMATION_THRESHOLD,
@@ -19,6 +25,7 @@ describe('Squeaks', () => {
   let ahmed: SignerWithAddress;
   let barbie: SignerWithAddress;
   let carlos: SignerWithAddress;
+  let tokenId: number;
 
   // squeak variables
   const content = 'hello blockchain!';
@@ -31,27 +38,15 @@ describe('Squeaks', () => {
   // transferAmount
   const transferAmount = ethers.BigNumber.from(PLATFORM_FEE).sub(treasuryFee);
 
-  beforeEach(
-    'Deploy contracts & create accounts for Ahmed & Barbie, but not Carlos',
-    async () => {
-      contract = await run('deployContract');
-      [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
-
-      await run('createAccount', {
-        contract,
-        signer: ahmed,
-        username: 'ahmed',
-      });
-
-      await run('createAccount', {
-        contract,
-        signer: barbie,
-        username: 'barbie',
-      });
-    }
-  );
-
   describe('create', () => {
+    beforeEach(
+      'Deploy contracts & create accounts for Ahmed & Barbie, but not Carlos',
+      async () => {
+        contract = await waffle.loadFixture(twoAccounts);
+        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+      }
+    );
+
     it('creates a squeak from the senders address', async () => {
       // create squeak tx & get its info
       const tx = await contract.connect(ahmed).createSqueak(content);
@@ -114,15 +109,15 @@ describe('Squeaks', () => {
   });
 
   describe('delete', () => {
-    it('lets a user delete a squeak they own', async () => {
-      // create a squeak & get its tokenId
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
+    beforeEach(
+      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      async () => {
+        [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
+        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+      }
+    );
 
+    it('lets a user delete a squeak they own', async () => {
       // assert existence/ownership
       expect(await contract.balanceOf(ahmed.address)).to.equal(1);
       expect(await contract.ownerOf(tokenId)).to.equal(ahmed.address);
@@ -152,64 +147,28 @@ describe('Squeaks', () => {
     });
 
     it('deposits fees for a deleted squeak into the treasury', async () => {
-      const ahmedTokens = [];
-      const gospelQuotes = [
-        'Now THIS is podracing!',
-        'I love democracy',
-        'Impossible! Perhaps the archives are incomplete…',
-        'Hello there!',
-      ];
-
-      // assert the treasury is empty
+      // assert the treasury is empty & ahmed has one squeak
       expect(await contract.treasury()).to.equal(0);
+      expect(await contract.balanceOf(ahmed.address)).to.equal(1);
 
-      // ahmed creates a few squeaks
-      for (let i = 0; i < gospelQuotes.length; i++) {
-        const event = await run('createSqueak', {
-          contract,
-          signer: ahmed,
-          content: gospelQuotes[i],
-        });
-        ahmedTokens.push(event.args.tokenId.toNumber());
-      }
-
-      // assert ahmed owns every squeak
-      expect(await contract.balanceOf(ahmed.address)).to.equal(
-        ahmedTokens.length
-      );
-
-      // calculate the fee & delete the first squeak
-      const firstSqueakId = ahmedTokens[0];
+      // calculate the fee to delete the squeak
       const fee = await contract
         .connect(ahmed)
-        .getDeleteFee(firstSqueakId, BLOCK_CONFIRMATION_THRESHOLD);
+        .getDeleteFee(tokenId, BLOCK_CONFIRMATION_THRESHOLD);
 
       // delete the squeak
       await run('deleteSqueak', {
         contract,
         signer: ahmed,
-        tokenId: firstSqueakId,
+        tokenId,
       });
 
-      // assert ahmed has 1 less squeak now
-      expect(await contract.balanceOf(ahmed.address)).to.equal(
-        ahmedTokens.length - 1
-      );
-
-      // assert the treasury received the fee to delete the first queak
+      // assert ahmed has 1 less squeak now & treasury received the fees
+      expect(await contract.balanceOf(ahmed.address)).to.equal(0);
       expect(await contract.treasury()).to.equal(fee);
     });
 
     it('reverts when the user does not pay enough to delete the squeak', async () => {
-      // create squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content: 'this is the wei',
-      });
-      const { tokenId } = event.args;
-
-      // delete squeak tx
       await expect(
         contract.connect(ahmed).deleteSqueak(tokenId, {
           value: 1, // one wei
@@ -218,30 +177,12 @@ describe('Squeaks', () => {
     });
 
     it('reverts when a user tries to delete a squeak they do not own', async () => {
-      // ahmed creates a squeak & gets the tokenId
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId: ahmedsTokenId } = event.args;
-
       await expect(
-        // barbie trying to delete ahmed's squeak
-        contract.connect(barbie).deleteSqueak(ahmedsTokenId)
+        contract.connect(barbie).deleteSqueak(tokenId)
       ).to.be.revertedWith('Critter: not approved to delete squeak');
     });
 
     it('reverts when the user does have an account', async () => {
-      // create squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content: 'this is the wei',
-      });
-      const { tokenId } = event.args;
-
-      // delete squeak tx
       await expect(
         contract.connect(carlos).deleteSqueak(tokenId)
       ).to.be.revertedWith('Critter: address does not have an account');
@@ -249,14 +190,16 @@ describe('Squeaks', () => {
   });
 
   describe('get', () => {
+    beforeEach(
+      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      async () => {
+        [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
+        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+      }
+    );
+
     it('lets anybody get a delete fee for an existing token', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content: 'is this thing on?',
-      });
-      const { tokenId } = event.args;
+      // get squeak data
       const squeak = await contract.squeaks(tokenId);
 
       // calculate the fee expected to delete it
@@ -268,10 +211,10 @@ describe('Squeaks', () => {
       const expectedFee =
         (latestBlockThreshold - squeak.blockNumber) * PLATFORM_FEE;
 
-      // barbie does not have a critter account, but is able calculate the
+      // carlos does not have a critter account, but is able calculate the
       // delete fee for ahmeds squeak from the contract
       const fee = await contract
-        .connect(barbie)
+        .connect(carlos)
         .getDeleteFee(tokenId, BLOCK_CONFIRMATION_THRESHOLD);
 
       // assert expected fee matches the actual delete fee
@@ -279,23 +222,14 @@ describe('Squeaks', () => {
     });
 
     it('reverts when getting delete fees for a nonexistent token', async () => {
-      const nonExistentTokenID = 420;
       await expect(
-        contract.getDeleteFee(nonExistentTokenID, BLOCK_CONFIRMATION_THRESHOLD)
+        contract.getDeleteFee(420, BLOCK_CONFIRMATION_THRESHOLD)
       ).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );
     });
 
     it('lets anybody get the dislike count of a squeak', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content: 'is this thing on?',
-      });
-      const { tokenId } = event.args;
-
       // assert the squeak has no dislikes
       expect(await contract.getDislikeCount(tokenId)).to.equal(0);
 
@@ -311,24 +245,12 @@ describe('Squeaks', () => {
     });
 
     it('reverts when getting the dislike count of a nonexistent squeak', async () => {
-      const nonExistentTokenID = 420;
-
-      await expect(
-        contract.getDislikeCount(nonExistentTokenID)
-      ).to.be.revertedWith(
+      await expect(contract.getDislikeCount(420)).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );
     });
 
     it('lets anybody get the like count of a squeak', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content: 'is this thing on?',
-      });
-      const { tokenId } = event.args;
-
       // assert the squeak has no likes
       expect(await contract.getLikeCount(tokenId)).to.equal(0);
 
@@ -344,30 +266,25 @@ describe('Squeaks', () => {
     });
 
     it('reverts when getting the like count of a nonexistent squeak', async () => {
-      const nonExistentTokenID = 420;
-
-      await expect(
-        contract.getLikeCount(nonExistentTokenID)
-      ).to.be.revertedWith(
+      await expect(contract.getLikeCount(420)).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );
     });
   });
 
   describe('dislike', () => {
-    const content = 'I don’t like sand. It’s coarse and rough and irritating…';
+    beforeEach(
+      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      async () => {
+        [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
+        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+      }
+    );
 
     it('lets a user dislike a squeak', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
-
-      // assert treasury is empty
+      // assert squeak has no dislikes & treasury is empty
       expect(await contract.treasury()).to.equal(0);
+      expect(await contract.getDislikeCount(tokenId)).to.equal(0);
 
       // barbie dislikes ahmeds squeak
       const tx = await contract
@@ -384,17 +301,10 @@ describe('Squeaks', () => {
 
       // treasury now has funds from barbie
       expect(await contract.treasury()).to.equal(PLATFORM_FEE);
+      expect(await contract.getDislikeCount(tokenId)).to.equal(1);
     });
 
     it('reverts if a user does not have an account', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
-
       await expect(
         contract
           .connect(carlos)
@@ -403,26 +313,14 @@ describe('Squeaks', () => {
     });
 
     it('reverts if a user does not have enough funds', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
-
       await expect(
         contract.connect(barbie).dislikeSqueak(tokenId, { value: 1 })
       ).to.be.revertedWith('Critter: not enough funds to perform action');
     });
 
     it('reverts if a user tries to dislike a nonexistent squeak ', async () => {
-      const nonExistentTokenID = 420;
-
       await expect(
-        contract
-          .connect(barbie)
-          .dislikeSqueak(nonExistentTokenID, { value: PLATFORM_FEE })
+        contract.connect(barbie).dislikeSqueak(420, { value: PLATFORM_FEE })
       ).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );
@@ -430,18 +328,20 @@ describe('Squeaks', () => {
   });
 
   describe('like', () => {
+    beforeEach(
+      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      async () => {
+        [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
+        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+      }
+    );
+
     it('lets a user like a squeak', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
       const ahmedStartingBalance = await ahmed.getBalance();
 
-      // assert treasury is empty
+      // assert has no likes & treasury is empty
       expect(await contract.treasury()).to.equal(0);
+      expect(await contract.getLikeCount(tokenId)).to.equal(0);
 
       // barbie likes ahmeds squeak
       const tx = await contract
@@ -458,50 +358,31 @@ describe('Squeaks', () => {
         .and.to.emit(contract, 'FundsTransferred')
         .withArgs(ahmed.address, transferAmount);
 
-      // ahmed now has funds from barbie via the platform
+      // assert squeak has one like
+      expect(await contract.getLikeCount(tokenId)).to.equal(1);
+
+      // assert ahmed & treasury now have funds from barbie via the platform
+      expect(await contract.treasury()).to.equal(treasuryFee);
       expect(await ahmed.getBalance()).to.equal(
         ahmedStartingBalance.add(transferAmount)
       );
-
-      // treasury now has funds from barbie
-      expect(await contract.treasury()).to.equal(treasuryFee);
     });
 
     it('reverts if a user does not have an account', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
-
       await expect(
         contract.connect(carlos).likeSqueak(tokenId, { value: PLATFORM_FEE })
       ).to.be.revertedWith('Critter: address does not have an account');
     });
 
     it('reverts if a user does not have enough funds', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
-
       await expect(
         contract.connect(barbie).likeSqueak(tokenId, { value: 1 })
       ).to.be.revertedWith('Critter: not enough funds to perform action');
     });
 
     it('reverts if a user tries to like a nonexistent squeak ', async () => {
-      const nonExistentTokenID = 420;
-
       await expect(
-        contract
-          .connect(barbie)
-          .likeSqueak(nonExistentTokenID, { value: PLATFORM_FEE })
+        contract.connect(barbie).likeSqueak(420, { value: PLATFORM_FEE })
       ).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );
@@ -509,22 +390,21 @@ describe('Squeaks', () => {
   });
 
   describe('resqueak', () => {
-    const content = "There's always a bigger fish";
+    beforeEach(
+      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      async () => {
+        [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
+        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+      }
+    );
 
     it('lets a user resqueak a squeak', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
       const ahmedStartingBalance = await ahmed.getBalance();
 
       // assert treasury is empty
       expect(await contract.treasury()).to.equal(0);
 
-      // barbie likes ahmeds squeak
+      // barbie resqueaks ahmeds squeak
       const tx = await contract
         .connect(barbie)
         .resqueak(tokenId, { value: PLATFORM_FEE });
@@ -549,40 +429,20 @@ describe('Squeaks', () => {
     });
 
     it('reverts if a user does not have an account', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
-
       await expect(
         contract.connect(carlos).resqueak(tokenId, { value: PLATFORM_FEE })
       ).to.be.revertedWith('Critter: address does not have an account');
     });
 
     it('reverts if a user does not have enough funds', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
-
       await expect(
         contract.connect(barbie).resqueak(tokenId, { value: 1 })
       ).to.be.revertedWith('Critter: not enough funds to perform action');
     });
 
     it('reverts if a user tries to like a nonexistent squeak ', async () => {
-      const nonExistentTokenID = 420;
-
       await expect(
-        contract
-          .connect(barbie)
-          .resqueak(nonExistentTokenID, { value: PLATFORM_FEE })
+        contract.connect(barbie).resqueak(420, { value: PLATFORM_FEE })
       ).to.be.revertedWith(
         'Critter: cannot perform action on a nonexistent token'
       );
@@ -590,14 +450,15 @@ describe('Squeaks', () => {
   });
 
   describe('transfer', () => {
+    beforeEach(
+      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      async () => {
+        [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
+        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+      }
+    );
+
     it('lets a user transfers squeak ownership to another user', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
       let squeak = await contract.squeaks(tokenId);
 
       // assert ahmed owns the token
@@ -622,13 +483,6 @@ describe('Squeaks', () => {
     });
 
     it('reverts if a signer who does not own the token tries to transfer it', async () => {
-      // ahmed creates a squeak & gets the tokenId
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
       let squeak = await contract.squeaks(tokenId);
 
       // assert ahmed owns the token
@@ -652,116 +506,78 @@ describe('Squeaks', () => {
   });
 
   describe('interactions', () => {
-    const content = 'A surprise to be sure, but a welcome one.';
+    describe('Initially disliked', () => {
+      beforeEach(
+        'Deploy contracts & create accounts for Ahmed & Barbie, and Ahmed posts a squeak which Barbie dislikes',
+        async () => {
+          [contract, tokenId] = await waffle.loadFixture(
+            twoAccountsOneDislikedSqueak
+          );
+          [, ahmed, barbie] = await ethers.getSigners(); // ignore owner account
+        }
+      );
 
-    it('does not let a user "dislike" a squeak twice', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
+      it('does not let a user "dislike" a squeak twice', async () => {
+        // assert it reverts when barbie dislikes it again
+        await expect(
+          contract
+            .connect(barbie)
+            .dislikeSqueak(tokenId, { value: PLATFORM_FEE })
+        ).to.be.revertedWith('Critter: cannot dislike a squeak twice');
       });
-      const { tokenId } = event.args;
 
-      // barbie dislikes it once
-      await run('dislikeSqueak', {
-        contract,
-        signer: barbie,
-        tokenId,
+      it('removes a previous dislike when liking a squeak', async () => {
+        // assert sentiment: 1 dislikes, 0 likes
+        expect(await contract.getDislikeCount(tokenId)).to.equal(1);
+        expect(await contract.getLikeCount(tokenId)).to.equal(0);
+
+        // barbie changes her mind and likes the squeak instead
+        await run('likeSqueak', {
+          contract,
+          signer: barbie,
+          tokenId,
+        });
+
+        // assert sentiment: 0 dislikes, 1 likes
+        expect(await contract.getDislikeCount(tokenId)).to.equal(0);
+        expect(await contract.getLikeCount(tokenId)).to.equal(1);
       });
-
-      // assert it reverts when barbie dislikes it again
-      await expect(
-        contract
-          .connect(barbie)
-          .dislikeSqueak(tokenId, { value: PLATFORM_FEE })
-      ).to.be.revertedWith('Critter: cannot dislike a squeak twice');
     });
 
-    it('does not let a user "like" a squeak twice', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
+    describe('Initially liked', () => {
+      beforeEach(
+        'Deploy contracts & create accounts for Ahmed & Barbie, and Ahmed posts a squeak which Barbie likes',
+        async () => {
+          [contract, tokenId] = await waffle.loadFixture(
+            twoAccountsOneLikedSqueak
+          );
+          [, ahmed, barbie] = await ethers.getSigners(); // ignore owner account
+        }
+      );
 
-      // barbie likes it once
-      await run('likeSqueak', {
-        contract,
-        signer: barbie,
-        tokenId,
-      });
-
-      // assert it reverts when barbie likes it again
-      await expect(
-        contract.connect(barbie).likeSqueak(tokenId, { value: PLATFORM_FEE })
-      ).to.be.revertedWith('Critter: cannot like a squeak twice');
-    });
-
-    it('removes a previous dislike when liking a squeak', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
-
-      // barbie dislikes it at first
-      await run('dislikeSqueak', {
-        contract,
-        signer: barbie,
-        tokenId,
+      it('does not let a user "like" a squeak twice', async () => {
+        // assert it reverts when barbie likes it again
+        await expect(
+          contract.connect(barbie).likeSqueak(tokenId, { value: PLATFORM_FEE })
+        ).to.be.revertedWith('Critter: cannot like a squeak twice');
       });
 
-      // assert sentiment: 1 dislikes, 0 likes
-      expect(await contract.getDislikeCount(tokenId)).to.equal(1);
-      expect(await contract.getLikeCount(tokenId)).to.equal(0);
+      it('removes a previous like when disliking a squeak', async () => {
+        // assert sentiment: 1 dislikes, 0 likes
+        expect(await contract.getDislikeCount(tokenId)).to.equal(0);
+        expect(await contract.getLikeCount(tokenId)).to.equal(1);
 
-      // she then changes her mind and likes the squeak instead
-      await run('likeSqueak', {
-        contract,
-        signer: barbie,
-        tokenId,
+        // she then changes her mind and dislikes the squeak instead
+        await run('dislikeSqueak', {
+          contract,
+          signer: barbie,
+          tokenId,
+        });
+
+        // assert sentiment: 0 dislikes, 1 likes
+        expect(await contract.getDislikeCount(tokenId)).to.equal(1);
+        expect(await contract.getLikeCount(tokenId)).to.equal(0);
       });
-
-      // assert sentiment: 0 dislikes, 1 likes
-      expect(await contract.getDislikeCount(tokenId)).to.equal(0);
-      expect(await contract.getLikeCount(tokenId)).to.equal(1);
-    });
-
-    it('removes a previous like when disliking a squeak', async () => {
-      // ahmed creates a squeak
-      const event = await run('createSqueak', {
-        contract,
-        signer: ahmed,
-        content,
-      });
-      const { tokenId } = event.args;
-
-      // barbie likes it at first
-      await run('likeSqueak', {
-        contract,
-        signer: barbie,
-        tokenId,
-      });
-
-      // assert sentiment: 1 dislikes, 0 likes
-      expect(await contract.getDislikeCount(tokenId)).to.equal(0);
-      expect(await contract.getLikeCount(tokenId)).to.equal(1);
-
-      // she then changes her mind and dislikes the squeak instead
-      await run('dislikeSqueak', {
-        contract,
-        signer: barbie,
-        tokenId,
-      });
-
-      // assert sentiment: 0 dislikes, 1 likes
-      expect(await contract.getDislikeCount(tokenId)).to.equal(1);
-      expect(await contract.getLikeCount(tokenId)).to.equal(0);
     });
   });
 });
