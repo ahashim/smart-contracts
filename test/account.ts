@@ -1,10 +1,11 @@
 // libraries
 import { expect } from 'chai';
-import { ethers, run } from 'hardhat';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
 import type { Contract } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { freshDeploy, singleAccount } from './fixtures';
 
 describe('Accounts', () => {
   let contract: Contract;
@@ -15,13 +16,13 @@ describe('Accounts', () => {
   // account variables
   const MINTER_ROLE = ethers.utils.id('MINTER_ROLE');
 
-  beforeEach(async () => {
-    contract = await run('deployContract');
-    [owner, ahmed, barbie] = await ethers.getSigners();
-  });
-
   describe('create', () => {
-    it('creates an account with the users address', async () => {
+    beforeEach(async () => {
+      contract = await waffle.loadFixture(freshDeploy);
+      [owner, ahmed] = await ethers.getSigners();
+    });
+
+    it('creates an account with the senders address', async () => {
       const username = 'ahmed';
 
       // create account & assert event
@@ -78,18 +79,18 @@ describe('Accounts', () => {
   });
 
   describe('update', () => {
+    const username = 'ahmed';
+    const newUsername = 'a-rock';
+
+    beforeEach(async () => {
+      // ahmed has an account with username 'ahmed', and barbie  has not made an
+      // account
+      contract = await waffle.loadFixture(singleAccount);
+      [, ahmed, barbie] = await ethers.getSigners();
+    });
+
     it('updates the username', async () => {
-      const username = 'ahmed';
-      const newUsername = 'a-rock';
-
-      // create account
-      await run('createAccount', {
-        contract,
-        signer: ahmed,
-        username,
-      });
-
-      // assert existence of the account username
+      // assert existence of the username
       expect(await contract.usernames(ahmed.address)).to.equal(username);
 
       // change username & assert the event
@@ -102,52 +103,36 @@ describe('Accounts', () => {
     });
 
     it('makes an old username available when an account changes it', async () => {
-      // ahmed signs up as 'a-rock'
-      await run('createAccount', {
-        contract,
-        signer: ahmed,
-        username: 'a-rock',
-      });
-
-      // ahmed changes their username to something a bit more sensible
+      // ahmed changes their username
       await run('updateUsername', {
         contract,
         signer: ahmed,
-        newUsername: 'ahmed',
+        newUsername,
       });
 
       // barbie signs up as 'a-rock'
       await run('createAccount', {
         contract,
         signer: barbie,
-        username: 'a-rock',
+        username,
       });
 
-      // assert barbie's username is 'a-rock'
-      expect(await contract.usernames(barbie.address)).to.equal('a-rock');
+      // assert barbie's username is ahmed's original username ('ahmed')
+      expect(await contract.usernames(barbie.address)).to.equal(username);
     });
 
-    it('reverts when updating username & the address does not have an account', async () => {
+    it('reverts if the address updating the username does not have an account', async () => {
       // barbie tries to update their username without an account
       await expect(
         run('updateUsername', {
           contract,
           signer: barbie,
-          newUsername: 'barbie',
+          newUsername,
         })
       ).to.be.revertedWith('Critter: address does not have an account');
     });
 
     it('reverts when updating username & new the username is already taken', async () => {
-      const username = 'a-rock';
-
-      // ahmed signs up as 'a-rock'
-      await run('createAccount', {
-        contract,
-        signer: ahmed,
-        username,
-      });
-
       // barbie attempts to sign up with the same username
       await expect(
         run('createAccount', {
