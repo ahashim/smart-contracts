@@ -4,6 +4,7 @@ import { ethers, network, run, waffle } from 'hardhat';
 import {
   twoAccounts,
   twoAccountsOneSqueak,
+  twoAccountsOneDislikedSqueak,
   twoAccountsOneLikedSqueak,
 } from './fixtures';
 import {
@@ -41,7 +42,7 @@ describe('Squeaks', () => {
         Create accounts for Ahmed & Barbie, but not Carlos.`,
       async () => {
         contract = await waffle.loadFixture(twoAccounts);
-        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+        [, ahmed, barbie, carlos] = await ethers.getSigners();
       }
     );
 
@@ -113,7 +114,7 @@ describe('Squeaks', () => {
         Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
-        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+        [, ahmed, barbie, carlos] = await ethers.getSigners();
       }
     );
 
@@ -281,7 +282,7 @@ describe('Squeaks', () => {
         Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
-        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+        [, ahmed, barbie, carlos] = await ethers.getSigners();
       }
     );
 
@@ -338,7 +339,7 @@ describe('Squeaks', () => {
         Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
-        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+        [, ahmed, barbie, carlos] = await ethers.getSigners();
       }
     );
 
@@ -402,7 +403,7 @@ describe('Squeaks', () => {
         Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
-        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+        [, ahmed, barbie, carlos] = await ethers.getSigners();
       }
     );
 
@@ -464,7 +465,7 @@ describe('Squeaks', () => {
         Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
-        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+        [, ahmed, barbie, carlos] = await ethers.getSigners();
       }
     );
 
@@ -515,6 +516,80 @@ describe('Squeaks', () => {
     });
   });
 
+  describe('undo dislike', () => {
+    beforeEach(
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie.
+        Ahmed posts a squeak.
+        Barbie dislikes Ahmed's squeak`,
+      async () => {
+        [contract, tokenId] = await waffle.loadFixture(
+          twoAccountsOneDislikedSqueak
+        );
+        [, ahmed, barbie, carlos] = await ethers.getSigners();
+      }
+    );
+
+    it('lets a user undislike a squeak', async () => {
+      const treasuryStartingBalance = await contract.treasury();
+
+      // assert squeak has 1 dislike
+      expect(await contract.getDislikeCount(tokenId)).to.equal(1);
+
+      // barbie undoes her dislike of ahmeds squeak
+      const tx = await contract
+        .connect(barbie)
+        .undoDislikeSqueak(tokenId, { value: PLATFORM_FEE });
+      await tx.wait();
+      const treasuryEndBalance = treasuryStartingBalance.add(PLATFORM_FEE);
+
+      // assert events
+      await expect(tx)
+        .to.emit(contract, 'SqueakUndisliked')
+        .withArgs(barbie.address, tokenId)
+        .and.to.emit(contract, 'FeeDeposited')
+        .withArgs(PLATFORM_FEE);
+
+      // assert squeak has been unliked, and treasury received funds from barbie
+      expect(await contract.getDislikeCount(tokenId)).to.equal(0);
+      expect(await contract.treasury()).to.equal(treasuryEndBalance);
+    });
+
+    it('reverts if a user has not initially disliked the squeak', async () => {
+      await expect(
+        contract
+          .connect(ahmed)
+          .undoDislikeSqueak(tokenId, { value: PLATFORM_FEE })
+      ).to.be.revertedWith(
+        'Critter: cannot undislike a squeak that is not disliked'
+      );
+    });
+
+    it('reverts if a user does not have an account', async () => {
+      await expect(
+        contract
+          .connect(carlos)
+          .undoDislikeSqueak(tokenId, { value: PLATFORM_FEE })
+      ).to.be.revertedWith('Critter: address does not have an account');
+    });
+
+    it('reverts if a user does not have enough funds', async () => {
+      await expect(
+        contract.connect(barbie).undoDislikeSqueak(tokenId, { value: 1 })
+      ).to.be.revertedWith('Critter: not enough funds to perform action');
+    });
+
+    it('reverts if a user tries to undislike a nonexistent squeak ', async () => {
+      await expect(
+        contract
+          .connect(barbie)
+          .undoDislikeSqueak(420, { value: PLATFORM_FEE })
+      ).to.be.revertedWith(
+        'Critter: cannot perform action on a nonexistent token'
+      );
+    });
+  });
+
   describe('undo like', () => {
     beforeEach(
       ` Deploy contracts.
@@ -529,13 +604,13 @@ describe('Squeaks', () => {
       }
     );
 
-    it('lets a user to unlike a squeak', async () => {
+    it('lets a user unlike a squeak', async () => {
       const treasuryStartingBalance = await contract.treasury();
 
       // assert squeak has 1 like
       expect(await contract.getLikeCount(tokenId)).to.equal(1);
 
-      // barbie dislikes ahmeds squeak
+      // barbie undoes her like of ahmeds squeak
       const tx = await contract
         .connect(barbie)
         .undoLikeSqueak(tokenId, { value: PLATFORM_FEE });
@@ -578,7 +653,7 @@ describe('Squeaks', () => {
       ).to.be.revertedWith('Critter: not enough funds to perform action');
     });
 
-    it('reverts if a user tries to dislike a nonexistent squeak ', async () => {
+    it('reverts if a user tries to unlike a nonexistent squeak ', async () => {
       await expect(
         contract.connect(barbie).undoLikeSqueak(420, { value: PLATFORM_FEE })
       ).to.be.revertedWith(

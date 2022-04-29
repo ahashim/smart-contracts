@@ -144,6 +144,18 @@ interface ICritter is
     function updateUsername(string memory username) external;
 
     /**
+     * @dev Undoes the disliking of a squeak at `tokenId`.
+     * @param tokenId ID of the squeak which was disliked.
+     *
+     * @notice Requirements:
+     *  - The caller must already have an account.
+     *  - The transaction has enough funds to cover the platformFee.
+     *  - The squeak at `tokenId` must exist.
+     *  - The caller must have disliked the squeak at `tokenId`.
+     */
+    function undoDislikeSqueak(uint256 tokenId) external payable;
+
+    /**
      * @dev Undoes the liking of a squeak at `tokenId`.
      * @param tokenId ID of the squeak which was liked.
      *

@@ -190,3 +190,25 @@ task(
     return await tx.wait();
   }
 );
+
+task(
+  'undoDislike',
+  'Create & confirm a signed undoDislikeSqueak transaction',
+  async ({
+    contract,
+    signer,
+    tokenId,
+  }: {
+    contract: Contract;
+    signer: SignerWithAddress;
+    tokenId: number;
+  }): Promise<TransactionReceipt> => {
+    // undo like tx
+    const tx: ContractTransaction = await contract
+      .connect(signer)
+      .undoDislikeSqueak(tokenId);
+
+    // wait for a confirmation
+    return await tx.wait();
+  }
+);

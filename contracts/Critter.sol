@@ -336,7 +336,23 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-undoLike}.
+     * @dev See {ICritter-undoDislikeSqueak}.
+     */
+    function undoDislikeSqueak(uint256 tokenId)
+        public
+        payable
+        override(ICritter)
+        whenNotPaused
+        hasAccount(msg.sender)
+        hasEnoughFunds(msg.value, platformFee)
+        squeakExists(tokenId)
+        nonReentrant
+    {
+        _undoDislikeSqueak(tokenId);
+    }
+
+    /**
+     * @dev See {ICritter-undoLikeSqueak}.
      */
     function undoLikeSqueak(uint256 tokenId)
         public

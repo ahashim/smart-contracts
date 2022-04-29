@@ -81,6 +81,13 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     event SqueakLiked(address indexed sender, uint256 tokenId);
 
     /**
+     * @dev Emitted when the `sender` address undislikes a squeak of `tokenID`.
+     * @param sender Address of the account that undisliked the squeak.
+     * @param tokenId Numerical ID of the undisliked squeak.
+     */
+    event SqueakUndisliked(address indexed sender, uint256 tokenId);
+
+    /**
      * @dev Emitted when the `sender` address unlikes a squeak of `tokenID`.
      * @param sender Address of the account that unliked the squeak.
      * @param tokenId Numerical ID of the unliked squeak.
@@ -262,6 +269,31 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     function _transferSqueakOwnership(address to, uint256 tokenId) internal {
         Squeak storage squeak = squeaks[tokenId];
         squeak.owner = to;
+    }
+
+    /**
+     * @dev Removes the sender from the dislikes set of the squeak at `tokenId`,
+     * and deposits the platformFee into the treasury.
+     * @param tokenId ID of the squeak to undo the dislike of.
+     */
+    function _undoDislikeSqueak(uint256 tokenId) internal {
+        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
+            tokenId
+        ];
+
+        // ensure sender has already disliked the squeak
+        require(
+            dislikers.contains(msg.sender),
+            'Critter: cannot undislike a squeak that is not disliked'
+        );
+
+        // remove the caller from the dislikers set of the squeak
+        dislikers.remove(msg.sender);
+
+        // deposit fee into the treasury
+        _deposit(msg.value);
+
+        emit SqueakUndisliked(msg.sender, tokenId);
     }
 
     /**
