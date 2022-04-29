@@ -31,6 +31,9 @@ const config: HardhatUserConfig = {
     currency: 'USD',
     enabled: !!process.env.REPORT_GAS,
   },
+  mocha: {
+    timeout: 0,
+  },
   networks: {},
   solidity: {
     version: '0.8.4',

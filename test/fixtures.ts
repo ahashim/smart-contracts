@@ -24,11 +24,7 @@ export const oneAccount = async () => {
   const [, ahmed] = await ethers.getSigners();
 
   // ahmed creates an account
-  await run('createAccount', {
-    contract,
-    signer: ahmed,
-    username: 'ahmed',
-  });
+  await contract.connect(ahmed).createAccount('ahmed');
 
   return contract;
 };

@@ -14,7 +14,7 @@ let barbie: SignerWithAddress;
 let carlos: SignerWithAddress;
 let tokenId: number;
 
-describe('Undo like', () => {
+describe.skip('Undo like', () => {
   beforeEach(
     ` Deploy contracts.
         Create accounts for Ahmed & Barbie.
