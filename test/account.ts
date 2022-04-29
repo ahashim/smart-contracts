@@ -17,7 +17,7 @@ describe('Accounts', () => {
   const MINTER_ROLE = ethers.utils.id('MINTER_ROLE');
 
   describe('create', () => {
-    beforeEach('Deploy contracts', async () => {
+    beforeEach('Deploy contracts.', async () => {
       contract = await waffle.loadFixture(freshDeploy);
       [owner, ahmed] = await ethers.getSigners();
     });
@@ -83,7 +83,8 @@ describe('Accounts', () => {
     const newUsername = 'a-rock';
 
     beforeEach(
-      'Deploy contracts, and create an account for Ahmed but not Barbie',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie`,
       async () => {
         contract = await waffle.loadFixture(oneAccount);
         [, ahmed, barbie] = await ethers.getSigners();

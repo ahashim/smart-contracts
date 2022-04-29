@@ -23,7 +23,7 @@ describe('Contract', () => {
   const treasurerRole: string = ethers.utils.id(TREASURER_ROLE);
   const upgraderRole: string = ethers.utils.id(UPGRADER_ROLE);
 
-  beforeEach('Deploy contracts', async () => {
+  beforeEach('Deploy contracts.', async () => {
     contract = await run('deployContract');
     [owner, ahmed] = await ethers.getSigners();
   });

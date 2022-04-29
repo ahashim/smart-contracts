@@ -23,19 +23,18 @@ describe('Squeaks', () => {
   let tokenId: number;
 
   // squeak variables
-  const content = 'hello blockchain!';
+  const content = 'hello there!';
 
-  // treasury fee
+  // treasury fees & amount a user earns per transaction
   const treasuryFee = ethers.BigNumber.from(PLATFORM_FEE)
     .mul(ethers.BigNumber.from(PLATFORM_FEE_PERCENT))
     .div(ethers.BigNumber.from(100));
-
-  // transferAmount
   const transferAmount = ethers.BigNumber.from(PLATFORM_FEE).sub(treasuryFee);
 
   describe('create', () => {
     beforeEach(
-      'Deploy contracts & create accounts for Ahmed & Barbie, but not Carlos',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie, but not Carlos.`,
       async () => {
         contract = await waffle.loadFixture(twoAccounts);
         [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
@@ -105,7 +104,9 @@ describe('Squeaks', () => {
 
   describe('delete', () => {
     beforeEach(
-      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie, but not Carlos.
+        Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
         [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
@@ -186,7 +187,9 @@ describe('Squeaks', () => {
 
   describe('get', () => {
     beforeEach(
-      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie, but not Carlos.
+        Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
         [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
@@ -269,7 +272,9 @@ describe('Squeaks', () => {
 
   describe('dislike', () => {
     beforeEach(
-      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie, but not Carlos.
+        Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
         [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
@@ -324,7 +329,9 @@ describe('Squeaks', () => {
 
   describe('like', () => {
     beforeEach(
-      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie, but not Carlos.
+        Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
         [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
@@ -386,7 +393,9 @@ describe('Squeaks', () => {
 
   describe('resqueak', () => {
     beforeEach(
-      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie, but not Carlos.
+        Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
         [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
@@ -446,7 +455,9 @@ describe('Squeaks', () => {
 
   describe('transfer', () => {
     beforeEach(
-      'Deploy contracts & create accounts for Ahmed & Barbie (but not Carlos), and Ahmed posts a squeak',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie, but not Carlos.
+        Ahmed posts a squeak.`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(twoAccountsOneSqueak);
         [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account

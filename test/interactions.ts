@@ -18,7 +18,10 @@ describe('Interactions', () => {
 
   describe('one disliked squeak', () => {
     beforeEach(
-      'Deploy contracts & create accounts for Ahmed & Barbie, and Ahmed posts a squeak which Barbie dislikes',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie.
+        Ahmed posts a squeak.
+        Barbie dislikes Ahmed's squeak`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(
           twoAccountsOneDislikedSqueak
@@ -27,7 +30,7 @@ describe('Interactions', () => {
       }
     );
 
-    it('does not let a user "dislike" a squeak twice', async () => {
+    it('does not let a user dislike a squeak twice', async () => {
       // assert it reverts when barbie dislikes it again
       await expect(
         contract
@@ -56,7 +59,10 @@ describe('Interactions', () => {
 
   describe('one liked squeak', () => {
     beforeEach(
-      'Deploy contracts & create accounts for Ahmed & Barbie, and Ahmed posts a squeak which Barbie likes',
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie.
+        Ahmed posts a squeak.
+        Barbie likes Ahmed's squeak`,
       async () => {
         [contract, tokenId] = await waffle.loadFixture(
           twoAccountsOneLikedSqueak
@@ -65,7 +71,7 @@ describe('Interactions', () => {
       }
     );
 
-    it('does not let a user "like" a squeak twice', async () => {
+    it('does not let a user like a squeak twice', async () => {
       // assert it reverts when barbie likes it again
       await expect(
         contract.connect(barbie).likeSqueak(tokenId, { value: PLATFORM_FEE })
