@@ -109,12 +109,12 @@ interface ICritter is
     /**
      * @dev Likes a squeak at `tokenId`, and pays platformFee to squeak
      * owner. It emits a {SqueakLiked} event.
-     * @param tokenId ID of the token (squeak) to like.
+     * @param tokenId ID of the squeak to like.
      *
      * @notice Requirements:
      *  - The caller must already have an account.
      *  - The transaction has enough funds to cover the platformFee.
-     *  - The tokenId must exist.
+     *  - The squeak at `tokenId` must exist.
      */
     function likeSqueak(uint256 tokenId) external payable;
 
@@ -126,7 +126,7 @@ interface ICritter is
      * @notice Requirements:
      *  - The caller must already have an account.
      *  - The transaction has enough funds to cover the platformFee.
-     *  - The tokenId must exist.
+     *  - The squeak at `tokenId` must exist.
      */
     function resqueak(uint256 tokenId) external payable;
 
@@ -142,6 +142,18 @@ interface ICritter is
      *
      */
     function updateUsername(string memory username) external;
+
+    /**
+     * @dev Undoes the liking of a squeak at `tokenId`.
+     * @param tokenId ID of the squeak which was liked.
+     *
+     * @notice Requirements:
+     *  - The caller must already have an account.
+     *  - The transaction has enough funds to cover the platformFee.
+     *  - The squeak at `tokenId` must exist.
+     *  - The caller must have liked the squeak at `tokenId`.
+     */
+    function undoLike(uint256 tokenId) external payable;
 
     /**
      * @dev Pauses all token transfers. See {ERC721PausableUpgradeable} and

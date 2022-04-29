@@ -168,3 +168,25 @@ task(
     return await tx.wait();
   }
 );
+
+task(
+  'undoLike',
+  'Create & confirm a signed undoLike transaction',
+  async ({
+    contract,
+    signer,
+    tokenId,
+  }: {
+    contract: Contract;
+    signer: SignerWithAddress;
+    tokenId: number;
+  }): Promise<TransactionReceipt> => {
+    // update username tx
+    const tx: ContractTransaction = await contract
+      .connect(signer)
+      .undoLike(tokenId);
+
+    // wait for a confirmation
+    return await tx.wait();
+  }
+);

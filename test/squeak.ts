@@ -1,7 +1,11 @@
 // libraries
 import { expect } from 'chai';
 import { ethers, network, run, waffle } from 'hardhat';
-import { twoAccounts, twoAccountsOneSqueak } from './fixtures';
+import {
+  twoAccounts,
+  twoAccountsOneSqueak,
+  twoAccountsOneLikedSqueak,
+} from './fixtures';
 import {
   BASE_TOKEN_URI,
   BLOCK_CONFIRMATION_THRESHOLD,
@@ -508,6 +512,74 @@ describe('Squeaks', () => {
       squeak = await contract.squeaks(tokenId);
       expect(await contract.ownerOf(tokenId)).to.equal(ahmed.address);
       expect(squeak.owner).to.equal(ahmed.address);
+    });
+  });
+
+  describe('undo like', () => {
+    beforeEach(
+      ` Deploy contracts.
+        Create accounts for Ahmed & Barbie.
+        Ahmed posts a squeak.
+        Barbie likes Ahmed's squeak`,
+      async () => {
+        [contract, tokenId] = await waffle.loadFixture(
+          twoAccountsOneLikedSqueak
+        );
+        [, ahmed, barbie, carlos] = await ethers.getSigners(); // ignore owner account
+      }
+    );
+
+    it('lets a user to unlike a squeak', async () => {
+      const treasuryStartingBalance = await contract.treasury();
+
+      // assert squeak has 1 like
+      expect(await contract.getLikeCount(tokenId)).to.equal(1);
+
+      // barbie dislikes ahmeds squeak
+      const tx = await contract
+        .connect(barbie)
+        .undoLike(tokenId, { value: PLATFORM_FEE });
+      await tx.wait();
+      const treasuryEndBalance = treasuryStartingBalance.add(PLATFORM_FEE);
+
+      // assert events
+      await expect(tx)
+        .to.emit(contract, 'SqueakUnliked')
+        .withArgs(barbie.address, tokenId)
+        .and.to.emit(contract, 'FeeDeposited')
+        .withArgs(PLATFORM_FEE);
+
+      // assert squeak has been unliked, and treasury received funds from barbie
+      expect(await contract.getLikeCount(tokenId)).to.equal(0);
+      expect(await contract.treasury()).to.equal(treasuryEndBalance);
+    });
+
+    it('reverts if a user has not initially liked the squeak', async () => {
+      await expect(
+        contract.connect(ahmed).undoLike(tokenId, { value: PLATFORM_FEE })
+      ).to.be.revertedWith(
+        'Critter: cannot unlike a squeak that is not liked'
+      );
+    });
+
+    it('reverts if a user does not have an account', async () => {
+      await expect(
+        contract.connect(carlos).undoLike(tokenId, { value: PLATFORM_FEE })
+      ).to.be.revertedWith('Critter: address does not have an account');
+    });
+
+    it('reverts if a user does not have enough funds', async () => {
+      await expect(
+        contract.connect(barbie).undoLike(tokenId, { value: 1 })
+      ).to.be.revertedWith('Critter: not enough funds to perform action');
+    });
+
+    it('reverts if a user tries to dislike a nonexistent squeak ', async () => {
+      await expect(
+        contract.connect(barbie).undoLike(420, { value: PLATFORM_FEE })
+      ).to.be.revertedWith(
+        'Critter: cannot perform action on a nonexistent token'
+      );
     });
   });
 });

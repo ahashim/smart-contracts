@@ -335,6 +335,22 @@ contract Critter is
         _updateUsername(username);
     }
 
+    /**
+     * @dev See {ICritter-undoLike}.
+     */
+    function undoLike(uint256 tokenId)
+        public
+        payable
+        override(ICritter)
+        whenNotPaused
+        hasAccount(msg.sender)
+        hasEnoughFunds(msg.value, platformFee)
+        squeakExists(tokenId)
+        nonReentrant
+    {
+        _undoLike(tokenId);
+    }
+
     /* solhint-disable no-empty-blocks */
     /**
      * @dev Function that should revert when `msg.sender` is not authorized to
