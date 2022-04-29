@@ -7,7 +7,7 @@ import type { Contract } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { oneAccount } from '../fixtures';
 
-describe('Update Account', () => {
+describe('Update account', () => {
   let contract: Contract;
   let ahmed: SignerWithAddress;
   let barbie: SignerWithAddress;
@@ -18,7 +18,7 @@ describe('Update Account', () => {
 
   beforeEach(
     ` Deploy contracts.
-        Create accounts for Ahmed & Barbie`,
+      Create accounts for Ahmed & Barbie`,
     async () => {
       contract = await waffle.loadFixture(oneAccount);
       [, ahmed, barbie] = await ethers.getSigners();

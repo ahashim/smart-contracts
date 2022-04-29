@@ -7,7 +7,7 @@ import type { Contract } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { freshDeploy } from '../fixtures';
 
-describe('Create Account', () => {
+describe('Create account', () => {
   let contract: Contract;
   let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
