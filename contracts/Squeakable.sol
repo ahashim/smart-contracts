@@ -269,7 +269,7 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
      * and deposits the platformFee into the treasury.
      * @param tokenId ID of the squeak to undo the like of.
      */
-    function _undoLike(uint256 tokenId) internal {
+    function _undoLikeSqueak(uint256 tokenId) internal {
         EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
 
         // ensure sender has already liked the squeak

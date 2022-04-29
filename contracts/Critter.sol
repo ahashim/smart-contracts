@@ -338,7 +338,7 @@ contract Critter is
     /**
      * @dev See {ICritter-undoLike}.
      */
-    function undoLike(uint256 tokenId)
+    function undoLikeSqueak(uint256 tokenId)
         public
         payable
         override(ICritter)
@@ -348,7 +348,7 @@ contract Critter is
         squeakExists(tokenId)
         nonReentrant
     {
-        _undoLike(tokenId);
+        _undoLikeSqueak(tokenId);
     }
 
     /* solhint-disable no-empty-blocks */

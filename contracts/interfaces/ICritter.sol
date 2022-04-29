@@ -153,7 +153,7 @@ interface ICritter is
      *  - The squeak at `tokenId` must exist.
      *  - The caller must have liked the squeak at `tokenId`.
      */
-    function undoLike(uint256 tokenId) external payable;
+    function undoLikeSqueak(uint256 tokenId) external payable;
 
     /**
      * @dev Pauses all token transfers. See {ERC721PausableUpgradeable} and

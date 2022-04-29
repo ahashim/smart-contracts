@@ -171,7 +171,7 @@ task(
 
 task(
   'undoLike',
-  'Create & confirm a signed undoLike transaction',
+  'Create & confirm a signed undoLikeSqueak transaction',
   async ({
     contract,
     signer,
@@ -184,7 +184,7 @@ task(
     // undo like tx
     const tx: ContractTransaction = await contract
       .connect(signer)
-      .undoLike(tokenId);
+      .undoLikeSqueak(tokenId);
 
     // wait for a confirmation
     return await tx.wait();
