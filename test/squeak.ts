@@ -1,12 +1,7 @@
 // libraries
 import { expect } from 'chai';
 import { ethers, network, run, waffle } from 'hardhat';
-import {
-  twoAccounts,
-  twoAccountsOneSqueak,
-  twoAccountsOneDislikedSqueak,
-  twoAccountsOneLikedSqueak,
-} from './fixtures';
+import { twoAccounts, twoAccountsOneSqueak } from './fixtures';
 import {
   BASE_TOKEN_URI,
   BLOCK_CONFIRMATION_THRESHOLD,
@@ -502,82 +497,6 @@ describe('Squeaks', () => {
       squeak = await contract.squeaks(tokenId);
       expect(await contract.ownerOf(tokenId)).to.equal(ahmed.address);
       expect(squeak.owner).to.equal(ahmed.address);
-    });
-  });
-
-  describe('interactions', () => {
-    describe('Initially disliked', () => {
-      beforeEach(
-        'Deploy contracts & create accounts for Ahmed & Barbie, and Ahmed posts a squeak which Barbie dislikes',
-        async () => {
-          [contract, tokenId] = await waffle.loadFixture(
-            twoAccountsOneDislikedSqueak
-          );
-          [, ahmed, barbie] = await ethers.getSigners(); // ignore owner account
-        }
-      );
-
-      it('does not let a user "dislike" a squeak twice', async () => {
-        // assert it reverts when barbie dislikes it again
-        await expect(
-          contract
-            .connect(barbie)
-            .dislikeSqueak(tokenId, { value: PLATFORM_FEE })
-        ).to.be.revertedWith('Critter: cannot dislike a squeak twice');
-      });
-
-      it('removes a previous dislike when liking a squeak', async () => {
-        // assert sentiment: 1 dislikes, 0 likes
-        expect(await contract.getDislikeCount(tokenId)).to.equal(1);
-        expect(await contract.getLikeCount(tokenId)).to.equal(0);
-
-        // barbie changes her mind and likes the squeak instead
-        await run('likeSqueak', {
-          contract,
-          signer: barbie,
-          tokenId,
-        });
-
-        // assert sentiment: 0 dislikes, 1 likes
-        expect(await contract.getDislikeCount(tokenId)).to.equal(0);
-        expect(await contract.getLikeCount(tokenId)).to.equal(1);
-      });
-    });
-
-    describe('Initially liked', () => {
-      beforeEach(
-        'Deploy contracts & create accounts for Ahmed & Barbie, and Ahmed posts a squeak which Barbie likes',
-        async () => {
-          [contract, tokenId] = await waffle.loadFixture(
-            twoAccountsOneLikedSqueak
-          );
-          [, ahmed, barbie] = await ethers.getSigners(); // ignore owner account
-        }
-      );
-
-      it('does not let a user "like" a squeak twice', async () => {
-        // assert it reverts when barbie likes it again
-        await expect(
-          contract.connect(barbie).likeSqueak(tokenId, { value: PLATFORM_FEE })
-        ).to.be.revertedWith('Critter: cannot like a squeak twice');
-      });
-
-      it('removes a previous like when disliking a squeak', async () => {
-        // assert sentiment: 1 dislikes, 0 likes
-        expect(await contract.getDislikeCount(tokenId)).to.equal(0);
-        expect(await contract.getLikeCount(tokenId)).to.equal(1);
-
-        // she then changes her mind and dislikes the squeak instead
-        await run('dislikeSqueak', {
-          contract,
-          signer: barbie,
-          tokenId,
-        });
-
-        // assert sentiment: 0 dislikes, 1 likes
-        expect(await contract.getDislikeCount(tokenId)).to.equal(1);
-        expect(await contract.getLikeCount(tokenId)).to.equal(0);
-      });
     });
   });
 });
