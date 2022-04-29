@@ -181,7 +181,7 @@ task(
     signer: SignerWithAddress;
     tokenId: number;
   }): Promise<TransactionReceipt> => {
-    // update username tx
+    // undo like tx
     const tx: ContractTransaction = await contract
       .connect(signer)
       .undoLike(tokenId);
