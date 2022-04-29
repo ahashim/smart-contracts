@@ -160,7 +160,7 @@ describe('Accounts', () => {
           contract,
           signer: ahmed,
           username:
-            'has-anyone-really-been-far-even-as-decided-to-use-even-go-want-to-do-look-more-like?',
+            'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?',
         })
       ).to.be.revertedWith('Critter: username is too long');
     });
