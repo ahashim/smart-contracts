@@ -7,6 +7,8 @@ import type { Contract } from 'ethers';
  * Freshly deployed contract without any Critter accounts
  * @accounts: []
  * @squeaks: []
+ * @dislikes: []
+ * @likes: []
  */
 export const freshDeploy = async () => await run('deployContract');
 
@@ -14,6 +16,8 @@ export const freshDeploy = async () => await run('deployContract');
  * Freshly deployed contract with a single Critter account.
  * @accounts: ['ahmed']
  * @squeaks: []
+ * @dislikes: []
+ * @likes: []
  */
 export const oneAccount = async () => {
   const contract = await freshDeploy();
@@ -33,6 +37,8 @@ export const oneAccount = async () => {
  * Freshly deployed contract with a two Critter accounts.
  * @accounts: ['ahmed', 'barbie']
  * @squeaks: []
+ * @dislikes: []
+ * @likes: []
  */
 export const twoAccounts = async () => {
   const contract = await freshDeploy();
@@ -60,6 +66,8 @@ export const twoAccounts = async () => {
  * ahmed.
  * @accounts: ['ahmed', 'barbie']
  * @squeaks: [1]
+ * @dislikes: []
+ * @likes: []
  */
 export const twoAccountsOneSqueak = async () => {
   const contract = await twoAccounts();
@@ -78,9 +86,11 @@ export const twoAccountsOneSqueak = async () => {
 
 /**
  * Freshly deployed contract with a two Critter accounts, and one squeak from
- * ahmed.
+ * ahmed, and barbie disliked it
  * @accounts: ['ahmed', 'barbie']
  * @squeaks: [1]
+ * @dislikes: [1 => [barbie]]
+ * @likes: []
  */
 export const twoAccountsOneDislikedSqueak = async () => {
   const [contract, tokenId] = await twoAccountsOneSqueak();
@@ -98,9 +108,11 @@ export const twoAccountsOneDislikedSqueak = async () => {
 
 /**
  * Freshly deployed contract with a two Critter accounts, and one squeak from
- * ahmed.
+ * ahmed, and barbie liked it
  * @accounts: ['ahmed', 'barbie']
  * @squeaks: [1]
+ * @dislikes: []
+ * @likes: [1 => [barbie]]
  */
 export const twoAccountsOneLikedSqueak = async () => {
   const [contract, tokenId] = await twoAccountsOneSqueak();
@@ -110,6 +122,50 @@ export const twoAccountsOneLikedSqueak = async () => {
   await run('likeSqueak', {
     contract,
     signer: barbie,
+    tokenId,
+  });
+
+  return [contract, tokenId];
+};
+
+/**
+ * Freshly deployed contract with a three Critter accounts, and one squeak from
+ * ahmed, which barbie liked and carlos disliked
+ * @accounts: ['ahmed', 'barbie', 'carlos']
+ * @squeaks: [1]
+ * @dislikes: [1 => [barbie]]
+ * @likes: [1 => [carlos]]
+ */
+export const threeAccountsOneSqueakLikedAndDisliked = async () => {
+  const contract = await twoAccounts();
+  const [, ahmed, barbie, carlos] = await ethers.getSigners();
+
+  // carlos creates an account
+  await run('createAccount', {
+    contract,
+    signer: carlos,
+    username: 'carlos',
+  });
+
+  // ahmed creates a squeak
+  const event = await run('createSqueak', {
+    contract,
+    signer: ahmed,
+    content: 'hello there!',
+  });
+  const { tokenId } = event.args;
+
+  // barbie likes it
+  await run('likeSqueak', {
+    contract,
+    signer: barbie,
+    tokenId,
+  });
+
+  // carlos likes it
+  await run('dislikeSqueak', {
+    contract,
+    signer: carlos,
     tokenId,
   });
 
