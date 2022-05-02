@@ -18,9 +18,6 @@
 */
 pragma solidity ^0.8.4;
 
-// libraries
-import './libraries/StringTheory.sol';
-
 // contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
@@ -116,7 +113,7 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
      *  - is over 256 bytes.
      * @param content String of the content of the squeak.
      */
-    error SqueakContentInvalid(string content);
+    error SqueakContentInvalidLength(string content);
 
     /**
      * @dev Raised when squeak at `tokenId` does not exist.
@@ -149,25 +146,18 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
      * Emits a {SqueakCreated} event.
      * @param content Text content of the squeak.
      * @return tokenId Numerical ID of the newly created squeak.
-     * @return tokenUri Text hash of the newly created token ID to be used for
      * its URI (in conjunction with {_baseURI} prefix).
      * @notice Requirements:
      *  - Squeak `content` must be between 0 and 256 bytes in length.
      */
-    function _createSqueak(string memory content)
-        internal
-        returns (uint256, string memory)
-    {
+    function _createSqueak(string memory content) internal returns (uint256) {
         // check invariants
         if (bytes(content).length == 0 || bytes(content).length > 256) {
-            revert SqueakContentInvalid({content: content});
+            revert SqueakContentInvalidLength({content: content});
         }
 
         // get current tokenID
         uint256 tokenId = _currentIndex;
-
-        // generate the URI of the squeak based on its token ID
-        string memory tokenUri = _generateUri(tokenId);
 
         // build squeak & save it to storage
         Squeak storage squeak = squeaks[tokenId];
@@ -184,7 +174,7 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
             squeak.content
         );
 
-        return (tokenId, tokenUri);
+        return (tokenId);
     }
 
     /**
@@ -358,22 +348,5 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
         _deposit(msg.value);
 
         emit SqueakUnliked(msg.sender, tokenId);
-    }
-
-    /**
-     * @dev Generate a token URI based on a hash of the chain ID & token ID. it
-     * uses library functions from {StringTheory} under the hood.
-     * @param tokenId Numerical token ID to generate a URI for.
-     * @notice This is not a pure function due to the usage of `block.chainid`.
-     */
-    function _generateUri(uint256 tokenId)
-        private
-        view
-        returns (string memory)
-    {
-        // get the hash of the token based on its chain ID & token ID
-        bytes32 hashedUri = keccak256(abi.encode(block.chainid, tokenId));
-
-        return StringTheory.lower(StringTheory.toHexString(hashedUri));
     }
 }
