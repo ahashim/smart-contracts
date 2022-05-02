@@ -63,7 +63,7 @@ describe('Create squeak', () => {
     await expect(
       // carlos, who never created an account, trying to create a squeak
       contract.connect(carlos).createSqueak('hello blockchain!')
-    ).to.be.revertedWith('Critter: address does not have an account');
+    ).to.be.reverted;
   });
 
   it('reverts when the squeak has no content', async () => {

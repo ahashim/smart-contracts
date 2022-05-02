@@ -91,8 +91,7 @@ describe('Delete squeak', () => {
   });
 
   it('reverts when the user does have an account', async () => {
-    await expect(
-      contract.connect(carlos).deleteSqueak(tokenId)
-    ).to.be.revertedWith('Critter: address does not have an account');
+    await expect(contract.connect(carlos).deleteSqueak(tokenId)).to.be
+      .reverted;
   });
 });

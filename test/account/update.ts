@@ -65,7 +65,7 @@ describe('Update account', () => {
         signer: barbie,
         newUsername,
       })
-    ).to.be.revertedWith('Critter: address does not have an account');
+    ).to.be.reverted;
   });
 
   it('reverts when updating username & new the username is already taken', async () => {
@@ -76,7 +76,7 @@ describe('Update account', () => {
         signer: barbie,
         username,
       })
-    ).to.be.revertedWith('Critter: username taken');
+    ).to.be.reverted;
   });
 
   it('reverts when updating the username & the new username is empty', async () => {
@@ -86,7 +86,7 @@ describe('Update account', () => {
         signer: ahmed,
         username: '',
       })
-    ).to.be.revertedWith('Critter: username cannot be empty');
+    ).to.be.reverted;
   });
 
   it('reverts when updating the username & the new username is longer than 256 bytes', async () => {
@@ -97,6 +97,6 @@ describe('Update account', () => {
         username:
           'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?',
       })
-    ).to.be.revertedWith('Critter: username is too long');
+    ).to.be.reverted;
   });
 });

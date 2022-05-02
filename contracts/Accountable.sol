@@ -50,14 +50,33 @@ contract Accountable is Initializable, AccessControlUpgradeable, Storeable {
     );
 
     /**
+     * @dev Raised when `address` does not have an account.
+     * @param account Address of account
+     */
+    error AccountNotCreated(address account);
+
+    /**
+     * @dev Raised when `username` fails any of the following validation:
+     *  - Greater than 0 bytes (cannot be empty).
+     *  - Less than 32 bytes (upper bound for storage slot optimization).
+     * @param username String of username to validate
+     */
+    error UsernameInvalid(string username);
+
+    /**
+     * @dev Raised when `username` is already in use.
+     * @param username String of username to validate
+     */
+    error UsernameUnavailable(string username);
+
+    /**
      * @dev Ensures that `_address` has a Critter account.
      * @param _address Address of the account to verify existence of.
      */
     modifier hasAccount(address _address) {
-        require(
-            bytes(usernames[_address]).length > 0,
-            'Critter: address does not have an account'
-        );
+        if (bytes(usernames[_address]).length == 0) {
+            revert AccountNotCreated({account: _address});
+        }
         _;
     }
 
@@ -69,12 +88,17 @@ contract Accountable is Initializable, AccessControlUpgradeable, Storeable {
      * @param username Text of the username to be validated.
      */
     modifier isValidUsername(string memory username) {
-        require(
-            bytes(username).length > 0,
-            'Critter: username cannot be empty'
-        );
-        require(bytes(username).length <= 32, 'Critter: username is too long');
-        require(addresses[username] == address(0), 'Critter: username taken');
+        uint256 usernameLength = bytes(username).length;
+
+        // validate length
+        if (usernameLength == 0 || usernameLength > 32) {
+            revert UsernameInvalid({username: username});
+        }
+
+        // validate existence
+        if (addresses[username] != address(0)) {
+            revert UsernameUnavailable({username: username});
+        }
         _;
     }
 

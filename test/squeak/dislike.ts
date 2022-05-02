@@ -49,7 +49,7 @@ describe('Dislike a squeak', () => {
   it('reverts if a user does not have an account', async () => {
     await expect(
       contract.connect(carlos).dislikeSqueak(tokenId, { value: PLATFORM_FEE })
-    ).to.be.revertedWith('Critter: address does not have an account');
+    ).to.be.reverted;
   });
 
   it('reverts if a user does not have enough funds', async () => {
