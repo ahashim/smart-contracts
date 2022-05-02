@@ -130,7 +130,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IERC721MetadataUpgradeable-tokenURI}.
+     * @dev See {IERC721A-tokenURI}.
      */
     function tokenURI(uint256 tokenId)
         public
