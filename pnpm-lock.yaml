@@ -1,4 +1,4 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
   '@ethersproject/abi': ^5.6.1
@@ -18,6 +18,7 @@ specifiers:
   chai: ^4.3.6
   chalk: 4.x
   dotenv: ^16.0.0
+  erc721a-upgradeable: ^3.2.0
   eslint: ^8.14.0
   eslint-config-prettier: ^8.5.0
   eslint-config-standard: ^17.0.0
@@ -47,26 +48,27 @@ devDependencies:
   '@ethersproject/bytes': 5.6.1
   '@ethersproject/providers': 5.6.4
   '@nomiclabs/hardhat-ethers': 2.0.5_ethers@5.6.4+hardhat@2.9.3
-  '@nomiclabs/hardhat-waffle': 2.0.3_1065b7944e68fffed89b61072fa1592e
+  '@nomiclabs/hardhat-waffle': 2.0.3_cbs3pfcond775we3meds7ikzfy
   '@openzeppelin/contracts-upgradeable': 4.5.2
-  '@openzeppelin/hardhat-upgrades': 1.17.0_c098a2b15f43a1bfbce68b3c88a804e8
-  '@typechain/ethers-v5': 10.0.0_60874ad16d104daac915a187280dc22e
-  '@typechain/hardhat': 6.0.0_ed447a861c5329f47137363311f606c6
+  '@openzeppelin/hardhat-upgrades': 1.17.0_ycmkfmk7ioq37phgrm6irkae5a
+  '@typechain/ethers-v5': 10.0.0_mcduvulncbg2vsivugdsqdocfy
+  '@typechain/hardhat': 6.0.0_5vchvbq4kmu7i4jxgyzrd5qgyy
   '@types/chai': 4.3.1
   '@types/mocha': 9.1.1
   '@types/node': 17.0.27
-  '@typescript-eslint/eslint-plugin': 5.20.0_81f0d1a74f014d44d273bd1612c85fd9
-  '@typescript-eslint/parser': 5.20.0_eslint@8.14.0+typescript@4.6.3
+  '@typescript-eslint/eslint-plugin': 5.20.0_qhyndj2pafgujuttxulbfsc73e
+  '@typescript-eslint/parser': 5.20.0_5wsz2tb7zzudmaqxfve53vbauu
   chai: 4.3.6
   chalk: 4.1.2
   dotenv: 16.0.0
+  erc721a-upgradeable: 3.2.0
   eslint: 8.14.0
   eslint-config-prettier: 8.5.0_eslint@8.14.0
-  eslint-config-standard: 17.0.0_14af0798efd537ecbc8732fe6f15829c
+  eslint-config-standard: 17.0.0_csxqpghp2u36zpehgl7g6fmctq
   eslint-plugin-import: 2.26.0_eslint@8.14.0
   eslint-plugin-n: 15.2.0_eslint@8.14.0
   eslint-plugin-node: 11.1.0_eslint@8.14.0
-  eslint-plugin-prettier: 4.0.0_665eb419c9d7860ca0c224f7f6dcdace
+  eslint-plugin-prettier: 4.0.0_mzpligoj26dazigcet37nxg2zy
   eslint-plugin-promise: 6.0.0_eslint@8.14.0
   ethereum-waffle: 3.4.4_typescript@4.6.3
   ethers: 5.6.4
@@ -78,9 +80,9 @@ devDependencies:
   prettier: 2.6.2
   prettier-plugin-solidity: 1.0.0-beta.19_prettier@2.6.2
   solhint: 3.3.7
-  solhint-plugin-prettier: 0.0.5_81672bd23abdbeeadd07e6ce4f479f75
+  solhint-plugin-prettier: 0.0.5_qftsxur2xw7ovxih43he6r47ou
   solidity-coverage: 0.7.21
-  ts-node: 10.7.0_237e4226c9260fe57b2f293b24795fca
+  ts-node: 10.7.0_en7eejwjeyh6k6zpfe5si6k7zi
   typechain: 8.0.0_typescript@4.6.3
   typescript: 4.6.3
 
@@ -687,7 +689,7 @@ packages:
       hardhat: 2.9.3
     dev: true
 
-  /@nomiclabs/hardhat-waffle/2.0.3_1065b7944e68fffed89b61072fa1592e:
+  /@nomiclabs/hardhat-waffle/2.0.3_cbs3pfcond775we3meds7ikzfy:
     resolution: {integrity: sha512-049PHSnI1CZq6+XTbrMbMv5NaL7cednTfPenx02k3cEh8wBMLa6ys++dBETJa6JjfwgA9nBhhHQ173LJv6k2Pg==}
     peerDependencies:
       '@nomiclabs/hardhat-ethers': ^2.0.0
@@ -707,7 +709,7 @@ packages:
     resolution: {integrity: sha512-xgWZYaPlrEOQo3cBj97Ufiuv79SPd8Brh4GcFYhPgb6WvAq4ppz8dWKL6h+jLAK01rUqMRp/TS9AdXgAeNvCLA==}
     dev: true
 
-  /@openzeppelin/hardhat-upgrades/1.17.0_c098a2b15f43a1bfbce68b3c88a804e8:
+  /@openzeppelin/hardhat-upgrades/1.17.0_ycmkfmk7ioq37phgrm6irkae5a:
     resolution: {integrity: sha512-GNxR3/3fCKQsFpBi/r+5ib6U81UM9KCypmcOQxuCkVp9JKJ80/3hQdg1R+AQku/dlnhutPsfkCokH2LZFc5mNA==}
     hasBin: true
     peerDependencies:
@@ -895,7 +897,7 @@ packages:
     resolution: {integrity: sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==}
     dev: true
 
-  /@typechain/ethers-v5/10.0.0_60874ad16d104daac915a187280dc22e:
+  /@typechain/ethers-v5/10.0.0_mcduvulncbg2vsivugdsqdocfy:
     resolution: {integrity: sha512-Kot7fwAqnH96ZbI8xrRgj5Kpv9yCEdjo7mxRqrH7bYpEgijT5MmuOo8IVsdhOu7Uog4ONg7k/d5UdbAtTKUgsA==}
     peerDependencies:
       '@ethersproject/abi': ^5.0.0
@@ -927,7 +929,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@typechain/hardhat/6.0.0_ed447a861c5329f47137363311f606c6:
+  /@typechain/hardhat/6.0.0_5vchvbq4kmu7i4jxgyzrd5qgyy:
     resolution: {integrity: sha512-AnhwODKHxx3+st5uc1j2NQh79Lv2OuvDQe4dKn8ZxhqYsAsTPnHTLBeI8KPZ+mfdE7v13D2QYssRTIkkGhK35A==}
     peerDependencies:
       '@ethersproject/abi': ^5.4.7
@@ -939,7 +941,7 @@ packages:
     dependencies:
       '@ethersproject/abi': 5.6.1
       '@ethersproject/providers': 5.6.4
-      '@typechain/ethers-v5': 10.0.0_60874ad16d104daac915a187280dc22e
+      '@typechain/ethers-v5': 10.0.0_mcduvulncbg2vsivugdsqdocfy
       ethers: 5.6.4
       fs-extra: 9.1.0
       hardhat: 2.9.3
@@ -1101,7 +1103,7 @@ packages:
       '@types/underscore': 1.11.4
     dev: true
 
-  /@typescript-eslint/eslint-plugin/5.20.0_81f0d1a74f014d44d273bd1612c85fd9:
+  /@typescript-eslint/eslint-plugin/5.20.0_qhyndj2pafgujuttxulbfsc73e:
     resolution: {integrity: sha512-fapGzoxilCn3sBtC6NtXZX6+P/Hef7VDbyfGqTTpzYydwhlkevB+0vE0EnmHPVTVSy68GUncyJ/2PcrFBeCo5Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1112,10 +1114,10 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.20.0_eslint@8.14.0+typescript@4.6.3
+      '@typescript-eslint/parser': 5.20.0_5wsz2tb7zzudmaqxfve53vbauu
       '@typescript-eslint/scope-manager': 5.20.0
-      '@typescript-eslint/type-utils': 5.20.0_eslint@8.14.0+typescript@4.6.3
-      '@typescript-eslint/utils': 5.20.0_eslint@8.14.0+typescript@4.6.3
+      '@typescript-eslint/type-utils': 5.20.0_5wsz2tb7zzudmaqxfve53vbauu
+      '@typescript-eslint/utils': 5.20.0_5wsz2tb7zzudmaqxfve53vbauu
       debug: 4.3.4
       eslint: 8.14.0
       functional-red-black-tree: 1.0.1
@@ -1128,7 +1130,7 @@ packages:
       - supports-color
     dev: true
 
-  /@typescript-eslint/parser/5.20.0_eslint@8.14.0+typescript@4.6.3:
+  /@typescript-eslint/parser/5.20.0_5wsz2tb7zzudmaqxfve53vbauu:
     resolution: {integrity: sha512-UWKibrCZQCYvobmu3/N8TWbEeo/EPQbS41Ux1F9XqPzGuV7pfg6n50ZrFo6hryynD8qOTTfLHtHjjdQtxJ0h/w==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1156,7 +1158,7 @@ packages:
       '@typescript-eslint/visitor-keys': 5.20.0
     dev: true
 
-  /@typescript-eslint/type-utils/5.20.0_eslint@8.14.0+typescript@4.6.3:
+  /@typescript-eslint/type-utils/5.20.0_5wsz2tb7zzudmaqxfve53vbauu:
     resolution: {integrity: sha512-WxNrCwYB3N/m8ceyoGCgbLmuZwupvzN0rE8NBuwnl7APgjv24ZJIjkNzoFBXPRCGzLNkoU/WfanW0exvp/+3Iw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1166,7 +1168,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@typescript-eslint/utils': 5.20.0_eslint@8.14.0+typescript@4.6.3
+      '@typescript-eslint/utils': 5.20.0_5wsz2tb7zzudmaqxfve53vbauu
       debug: 4.3.4
       eslint: 8.14.0
       tsutils: 3.21.0_typescript@4.6.3
@@ -1201,7 +1203,7 @@ packages:
       - supports-color
     dev: true
 
-  /@typescript-eslint/utils/5.20.0_eslint@8.14.0+typescript@4.6.3:
+  /@typescript-eslint/utils/5.20.0_5wsz2tb7zzudmaqxfve53vbauu:
     resolution: {integrity: sha512-lHONGJL1LIO12Ujyx8L8xKbwWSkoUKFSO+0wDAqGXiudWB2EO7WEUT+YZLtVbmOmSllAjLb9tpoIPwpRe5Tn6w==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -3342,6 +3344,12 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
+  /erc721a-upgradeable/3.2.0:
+    resolution: {integrity: sha512-5qrRsa0rLKsUjXcNTlVog0F7I1oFOsCjY6KS59JeIB6DBEGRBGihYBhL9q/i/UII5tOIVc7ZcpCvBnLg75OY9A==}
+    dependencies:
+      '@openzeppelin/contracts-upgradeable': 4.5.2
+    dev: true
+
   /errno/0.1.8:
     resolution: {integrity: sha512-dJ6oBr5SQ1VSd9qkk7ByRgb/1SH4JZjCHSW/mr63/QcXO9zLVxvJ6Oy13nio03rxpSnVDDjFor75SjVeZWPW/A==}
     hasBin: true
@@ -3456,7 +3464,7 @@ packages:
       eslint: 8.14.0
     dev: true
 
-  /eslint-config-standard/17.0.0_14af0798efd537ecbc8732fe6f15829c:
+  /eslint-config-standard/17.0.0_csxqpghp2u36zpehgl7g6fmctq:
     resolution: {integrity: sha512-/2ks1GKyqSOkH7JFvXJicu0iMpoojkwB+f5Du/1SC0PtBL+s8v30k9njRZ21pm2drKYm2342jFnGWzttxPmZVg==}
     peerDependencies:
       eslint: ^8.0.1
@@ -3561,7 +3569,7 @@ packages:
       semver: 6.3.0
     dev: true
 
-  /eslint-plugin-prettier/4.0.0_665eb419c9d7860ca0c224f7f6dcdace:
+  /eslint-plugin-prettier/4.0.0_mzpligoj26dazigcet37nxg2zy:
     resolution: {integrity: sha512-98MqmCJ7vJodoQK359bqQWaxOE0CS8paAz/GgjaZLyex4TTk3g9HugoO89EqWCrFiOqn9EVvcoo7gZzONCWVwQ==}
     engines: {node: '>=6.0.0'}
     peerDependencies:
@@ -8456,7 +8464,7 @@ packages:
       - debug
     dev: true
 
-  /solhint-plugin-prettier/0.0.5_81672bd23abdbeeadd07e6ce4f479f75:
+  /solhint-plugin-prettier/0.0.5_qftsxur2xw7ovxih43he6r47ou:
     resolution: {integrity: sha512-7jmWcnVshIrO2FFinIvDQmhQpfpS2rRRn3RejiYgnjIE68xO2bvrYvjqVNfrio4xH9ghOqn83tKuTzLjEbmGIA==}
     peerDependencies:
       prettier: ^1.15.0 || ^2.0.0
@@ -9111,7 +9119,7 @@ packages:
       ts-essentials: 1.0.4
     dev: true
 
-  /ts-node/10.7.0_237e4226c9260fe57b2f293b24795fca:
+  /ts-node/10.7.0_en7eejwjeyh6k6zpfe5si6k7zi:
     resolution: {integrity: sha512-TbIGS4xgJoX2i3do417KSaep1uRAW/Lu+WAL2doDHC0D6ummjirVOXU5/7aiZotbQ5p1Zp9tP7U6cYhA0O7M8A==}
     hasBin: true
     peerDependencies:

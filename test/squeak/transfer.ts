@@ -59,7 +59,7 @@ describe('Transfer a squeak', () => {
       contract
         .connect(barbie)
         .transferFrom(ahmed.address, barbie.address, tokenId)
-    ).to.be.revertedWith('ERC721: transfer caller is not owner nor approved');
+    ).to.be.reverted;
 
     // assert ahmed still owns the token
     squeak = await contract.squeaks(tokenId);

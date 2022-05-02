@@ -23,9 +23,9 @@ import './libraries/StringTheory.sol';
 
 // contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
+import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './Bankable.sol';
 import './storage/Storeable.sol';
 
@@ -33,7 +33,7 @@ import './storage/Storeable.sol';
  * @title Squeakable
  * @dev A contract dealing with actions performed on a Squeak.
  */
-contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
+contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
@@ -141,7 +141,7 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     // solhint-disable-next-line func-name-mixedcase
     function __Squeakable_init() internal onlyInitializing {
         // set initial token ID to 1
-        tokenIdCounter.increment();
+        _currentIndex++;
     }
 
     /**
@@ -163,9 +163,8 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
             revert SqueakContentInvalid({content: content});
         }
 
-        // get current tokenID & update counter
-        uint256 tokenId = tokenIdCounter.current();
-        tokenIdCounter.increment();
+        // get current tokenID
+        uint256 tokenId = _currentIndex;
 
         // generate the URI of the squeak based on its token ID
         string memory tokenUri = _generateUri(tokenId);

@@ -36,12 +36,6 @@ describe('Create squeak', () => {
     const { tokenId } = event.args;
     const squeak = await contract.squeaks(tokenId.toNumber());
     const tokenURI = await contract.tokenURI(tokenId);
-    const hexURI = keccak256(
-      defaultAbiCoder.encode(
-        ['uint256', 'uint256'],
-        [network.config.chainId, tokenId]
-      )
-    ).slice(2); // removing 0x prefix
 
     // assert correct event info
     await expect(tx)
@@ -55,7 +49,7 @@ describe('Create squeak', () => {
     expect(squeak.content).to.equal(content);
 
     // assert correct tokenURI
-    expect(tokenURI).to.equal(BASE_TOKEN_URI + hexURI);
+    expect(tokenURI).to.equal(BASE_TOKEN_URI + '1');
   });
 
   it('reverts when a user tries to post without an account', async () => {

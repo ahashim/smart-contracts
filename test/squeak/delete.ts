@@ -49,9 +49,7 @@ describe('Delete squeak', () => {
 
     // assert it no longer exists
     expect(await contract.balanceOf(ahmed.address)).to.equal(0);
-    await expect(contract.ownerOf(tokenId)).to.be.revertedWith(
-      'ERC721: owner query for nonexistent token'
-    );
+    await expect(contract.ownerOf(tokenId)).to.be.reverted;
   });
 
   it('deposits fees for a deleted squeak into the treasury', async () => {

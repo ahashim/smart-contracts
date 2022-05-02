@@ -27,7 +27,7 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
+import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 
 // Critter contracts
@@ -58,7 +58,7 @@ import './storage/Typeable.sol';
  */
 contract Critter is
     Initializable,
-    ERC721URIStorageUpgradeable,
+    ERC721AUpgradeable,
     PausableUpgradeable,
     ReentrancyGuardUpgradeable,
     AccessControlUpgradeable,
@@ -97,8 +97,7 @@ contract Critter is
         uint256 feePercent
     ) public initializer {
         // Open Zeppelin contracts
-        __ERC721_init(name, symbol);
-        __ERC721URIStorage_init();
+        __ERC721A_init(name, symbol);
         __Pausable_init();
         __ReentrancyGuard_init();
         __AccessControl_init();
@@ -121,7 +120,7 @@ contract Critter is
         public
         view
         override(
-            ERC721Upgradeable,
+            ERC721AUpgradeable,
             IERC165Upgradeable,
             AccessControlUpgradeable
         )
@@ -138,7 +137,7 @@ contract Critter is
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
+        override(ERC721AUpgradeable)
         returns (string memory)
     {
         return super.tokenURI(tokenId);
@@ -180,11 +179,8 @@ contract Critter is
         hasAccount(msg.sender)
         onlyRole(MINTER_ROLE)
     {
-        // validate & save content to storage, then generate token ID & URI
-        (uint256 tokenId, string memory tokenUri) = _createSqueak(content);
-
-        _mint(msg.sender, tokenId);
-        _setTokenURI(tokenId, tokenUri);
+        _createSqueak(content);
+        _safeMint(msg.sender, 1);
     }
 
     /**
@@ -198,7 +194,9 @@ contract Critter is
         hasAccount(msg.sender)
         nonReentrant
     {
-        if (!_isApprovedOrOwner(msg.sender, tokenId)) {
+        address owner = ownerOf(tokenId);
+
+        if (msg.sender != owner && !isApprovedForAll(owner, _msgSender())) {
             revert NotApprovedOrOwner({sender: msg.sender});
         }
 
@@ -377,7 +375,7 @@ contract Critter is
     function _baseURI()
         internal
         view
-        override(ERC721Upgradeable)
+        override(ERC721AUpgradeable)
         returns (string memory)
     {
         return baseTokenURI;
@@ -389,13 +387,11 @@ contract Critter is
      * @notice Requirements:
      *  - The caller must own `tokenId` or be an approved operator.
      */
-    function _burn(uint256 tokenId)
-        internal
-        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
-    {
+    function _burn(uint256 tokenId) internal override(ERC721AUpgradeable) {
         super._burn(tokenId);
     }
 
+    /* solhint-disable no-unused-vars */
     /**
      * @dev Hook that is called before any token transfer. This includes minting
      * and burning. Calling conditions:
@@ -404,17 +400,21 @@ contract Critter is
      *  - When `from` is zero, `tokenId` will be minted for `to`.
      *  - When `to` is zero, ``from``'s `tokenId` will be burned.
      *  - `from` and `to` are never both zero.
+     *
      * @param from Address of the account that is relinquishing ownership of the
      * token.
      * @param to Address of the account that is gaining ownership of the token.
-     * @param tokenId ID of the token to transfer.
+     * @param startTokenId The first token id to be transferred.
+     * @param quantity The amount to be transferred.
      */
-    function _beforeTokenTransfer(
+    function _afterTokenTransfers(
         address from,
         address to,
-        uint256 tokenId
-    ) internal override(ERC721Upgradeable) whenNotPaused {
-        super._beforeTokenTransfer(from, to, tokenId);
-        _transferSqueakOwnership(to, tokenId);
+        uint256 startTokenId,
+        uint256 quantity
+    ) internal override(ERC721AUpgradeable) whenNotPaused {
+        _transferSqueakOwnership(to, startTokenId);
     }
+
+    /* solhint-enable-no-unused-vars */
 }

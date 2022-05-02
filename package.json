@@ -41,6 +41,7 @@
     "chai": "^4.3.6",
     "chalk": "4.x",
     "dotenv": "^16.0.0",
+    "erc721a-upgradeable": "^3.2.0",
     "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard": "^17.0.0",
