@@ -25,9 +25,9 @@ import './interfaces/ICritter.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
+import 'erc721a-upgradeable/contracts/extensions/ERC721APausableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 
 // Critter contracts
@@ -58,8 +58,7 @@ import './storage/Typeable.sol';
  */
 contract Critter is
     Initializable,
-    ERC721AUpgradeable,
-    PausableUpgradeable,
+    ERC721APausableUpgradeable,
     ReentrancyGuardUpgradeable,
     AccessControlUpgradeable,
     UUPSUpgradeable,
@@ -98,7 +97,7 @@ contract Critter is
     ) public initializer {
         // Open Zeppelin contracts
         __ERC721A_init(name, symbol);
-        __Pausable_init();
+        __ERC721APausable_init();
         __ReentrancyGuard_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -407,12 +406,16 @@ contract Critter is
      * @param startTokenId The first token id to be transferred.
      * @param quantity The amount to be transferred.
      */
-    function _afterTokenTransfers(
+    function _beforeTokenTransfers(
         address from,
         address to,
         uint256 startTokenId,
         uint256 quantity
-    ) internal override(ERC721AUpgradeable) whenNotPaused {
+    )
+        internal
+        override(ERC721AUpgradeable, ERC721APausableUpgradeable)
+        whenNotPaused
+    {
         _transferSqueakOwnership(to, startTokenId);
     }
 
