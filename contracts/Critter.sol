@@ -167,12 +167,6 @@ contract Critter is
         whenNotPaused
         isValidUsername(username)
     {
-        // ensure address is not registered
-        require(
-            bytes(usernames[msg.sender]).length == 0,
-            'Critter: account already exists'
-        );
-
         _createAccount(username);
     }
 
@@ -204,17 +198,18 @@ contract Critter is
         hasAccount(msg.sender)
         nonReentrant
     {
-        require(
-            _isApprovedOrOwner(msg.sender, tokenId),
-            'Critter: not approved to delete squeak'
-        );
+        if (!_isApprovedOrOwner(msg.sender, tokenId)) {
+            revert NotApprovedOrOwner({sender: msg.sender});
+        }
 
         uint256 currentBlockDeleteFee = getDeleteFee(tokenId, 0);
 
-        require(
-            msg.value >= currentBlockDeleteFee,
-            'Critter: not enough funds to perform action'
-        );
+        if (msg.value < currentBlockDeleteFee) {
+            revert InsufficientFunds({
+                available: msg.value,
+                required: currentBlockDeleteFee
+            });
+        }
 
         // burn the token
         _burn(tokenId);

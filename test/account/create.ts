@@ -58,6 +58,6 @@ describe('Create account', () => {
         signer: ahmed,
         username: 'a-rock',
       })
-    ).to.be.revertedWith('Critter: account already exists');
+    ).to.be.reverted;
   });
 });

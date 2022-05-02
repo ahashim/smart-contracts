@@ -81,13 +81,12 @@ describe('Delete squeak', () => {
       contract.connect(ahmed).deleteSqueak(tokenId, {
         value: 1, // one wei
       })
-    ).to.be.revertedWith('Critter: not enough funds to perform action');
+    ).to.be.reverted;
   });
 
   it('reverts when a user tries to delete a squeak they do not own', async () => {
-    await expect(
-      contract.connect(barbie).deleteSqueak(tokenId)
-    ).to.be.revertedWith('Critter: not approved to delete squeak');
+    await expect(contract.connect(barbie).deleteSqueak(tokenId)).to.be
+      .reverted;
   });
 
   it('reverts when the user does have an account', async () => {

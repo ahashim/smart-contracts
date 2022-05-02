@@ -50,10 +50,23 @@ contract Accountable is Initializable, AccessControlUpgradeable, Storeable {
     );
 
     /**
+     * @dev Raised when `address` has an account, and tries to create another.
+     * @param account Address of account
+     */
+    error AccountAlreadyCreated(address account);
+
+    /**
      * @dev Raised when `address` does not have an account.
      * @param account Address of account
      */
     error AccountNotCreated(address account);
+
+    /**
+     * @dev Raised when `sender` performs an action on a squeak they are not
+     * approved to perform, or they are not the owner of.
+     * @param sender String of username to validate
+     */
+    error NotApprovedOrOwner(address sender);
 
     /**
      * @dev Raised when `username` fails any of the following validation:
@@ -121,6 +134,11 @@ contract Accountable is Initializable, AccessControlUpgradeable, Storeable {
      * @param username The username text for the account to save.
      */
     function _createAccount(string memory username) internal {
+        // ensure address has not already created an account
+        if (bytes(usernames[msg.sender]).length > 0) {
+            revert AccountAlreadyCreated({account: msg.sender});
+        }
+
         // set our address & username mappings
         addresses[username] = msg.sender;
         usernames[msg.sender] = username;
