@@ -75,8 +75,6 @@ describe('Resqueak', () => {
   it('reverts if a user tries to like a nonexistent squeak ', async () => {
     await expect(
       contract.connect(barbie).resqueak(420, { value: PLATFORM_FEE })
-    ).to.be.revertedWith(
-      'Critter: cannot perform action on a nonexistent token'
-    );
+    ).to.be.reverted;
   });
 });

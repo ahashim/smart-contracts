@@ -56,7 +56,7 @@ describe.skip('Undo like', () => {
   it('reverts if a user has not initially liked the squeak', async () => {
     await expect(
       contract.connect(ahmed).undoLikeSqueak(tokenId, { value: PLATFORM_FEE })
-    ).to.be.revertedWith('Critter: cannot unlike a squeak that is not liked');
+    ).to.be.reverted;
   });
 
   it('reverts if a user does not have an account', async () => {
@@ -74,8 +74,6 @@ describe.skip('Undo like', () => {
   it('reverts if a user tries to unlike a nonexistent squeak ', async () => {
     await expect(
       contract.connect(barbie).undoLikeSqueak(420, { value: PLATFORM_FEE })
-    ).to.be.revertedWith(
-      'Critter: cannot perform action on a nonexistent token'
-    );
+    ).to.be.reverted;
   });
 });

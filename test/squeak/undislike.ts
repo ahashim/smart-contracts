@@ -58,9 +58,7 @@ describe('Undo dislike', () => {
       contract
         .connect(ahmed)
         .undoDislikeSqueak(tokenId, { value: PLATFORM_FEE })
-    ).to.be.revertedWith(
-      'Critter: cannot undislike a squeak that is not disliked'
-    );
+    ).to.be.reverted;
   });
 
   it('reverts if a user does not have an account', async () => {
@@ -80,8 +78,6 @@ describe('Undo dislike', () => {
   it('reverts if a user tries to undislike a nonexistent squeak ', async () => {
     await expect(
       contract.connect(barbie).undoDislikeSqueak(420, { value: PLATFORM_FEE })
-    ).to.be.revertedWith(
-      'Critter: cannot perform action on a nonexistent token'
-    );
+    ).to.be.reverted;
   });
 });

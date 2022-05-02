@@ -95,14 +95,43 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
     event SqueakUnliked(address indexed sender, uint256 tokenId);
 
     /**
+     * @dev Raised on the following invalid interactions:
+     *  - DOUBLE_DISLIKE
+     *  - DOUBLE_LIKE
+     *  - UNDO_LIKE
+     *  - UNDO_DISLIKE
+     * @param account Address of account.
+     * @param tokenId ID of the squeak.
+     * @param interaction string code of the invalid interaction.
+     */
+    error InteractionInvalid(
+        address account,
+        uint256 tokenId,
+        string interaction
+    );
+
+    /**
+     * @dev Raised when the content of a squeak fails validation:
+     *  - is less than 0 bytes.
+     *  - is over 256 bytes.
+     * @param content String of the content of the squeak.
+     */
+    error SqueakContentInvalid(string content);
+
+    /**
+     * @dev Raised when squeak at `tokenId` does not exist.
+     * @param tokenId Address of account
+     */
+    error SqueakDoesNotExist(uint256 tokenId);
+
+    /**
      * @dev Ensure squeak exists at `tokenId`.
      * @param tokenId Numerical ID of the squeak
      */
     modifier squeakExists(uint256 tokenId) {
-        require(
-            _exists(tokenId),
-            'Critter: cannot perform action on a nonexistent token'
-        );
+        if (!_exists(tokenId)) {
+            revert SqueakDoesNotExist({tokenId: tokenId});
+        }
         _;
     }
 
@@ -130,8 +159,9 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         returns (uint256, string memory)
     {
         // check invariants
-        require(bytes(content).length > 0, 'Critter: squeak cannot be empty');
-        require(bytes(content).length <= 256, 'Critter: squeak is too long');
+        if (bytes(content).length == 0 || bytes(content).length > 256) {
+            revert SqueakContentInvalid({content: content});
+        }
 
         // get current tokenID & update counter
         uint256 tokenId = tokenIdCounter.current();
@@ -190,10 +220,13 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         ];
 
         // ensure account has not already disliked the squeak
-        require(
-            !dislikers.contains(msg.sender),
-            'Critter: cannot dislike a squeak twice'
-        );
+        if (dislikers.contains(msg.sender)) {
+            revert InteractionInvalid({
+                account: msg.sender,
+                tokenId: tokenId,
+                interaction: 'DOUBLE_DISLIKE'
+            });
+        }
 
         // first remove them from likers set if they're in there
         if (likers.contains(msg.sender)) {
@@ -224,10 +257,13 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         ];
 
         // ensure account has not already liked the squeak
-        require(
-            !likers.contains(msg.sender),
-            'Critter: cannot like a squeak twice'
-        );
+        if (likers.contains(msg.sender)) {
+            revert InteractionInvalid({
+                account: msg.sender,
+                tokenId: tokenId,
+                interaction: 'DOUBLE_LIKE'
+            });
+        }
 
         // first remove them from dislikers set if they're in there
         if (dislikers.contains(msg.sender)) {
@@ -282,10 +318,13 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         ];
 
         // ensure sender has already disliked the squeak
-        require(
-            dislikers.contains(msg.sender),
-            'Critter: cannot undislike a squeak that is not disliked'
-        );
+        if (!dislikers.contains(msg.sender)) {
+            revert InteractionInvalid({
+                account: msg.sender,
+                tokenId: tokenId,
+                interaction: 'UNDO_DISLIKE'
+            });
+        }
 
         // remove the caller from the dislikers set of the squeak
         dislikers.remove(msg.sender);
@@ -305,10 +344,13 @@ contract Squeakable is Initializable, ERC721Upgradeable, Storeable, Bankable {
         EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
 
         // ensure sender has already liked the squeak
-        require(
-            likers.contains(msg.sender),
-            'Critter: cannot unlike a squeak that is not liked'
-        );
+        if (!likers.contains(msg.sender)) {
+            revert InteractionInvalid({
+                account: msg.sender,
+                tokenId: tokenId,
+                interaction: 'UNDO_LIKE'
+            });
+        }
 
         // remove the caller from the likers set of the squeak
         likers.remove(msg.sender);

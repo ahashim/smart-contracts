@@ -68,9 +68,7 @@ describe('Create squeak', () => {
 
   it('reverts when the squeak has no content', async () => {
     // assertions
-    await expect(contract.connect(ahmed).createSqueak('')).to.be.revertedWith(
-      'Critter: squeak cannot be empty'
-    );
+    await expect(contract.connect(ahmed).createSqueak('')).to.be.reverted;
   });
 
   it('reverts when a squeak is too long', async () => {
@@ -81,8 +79,7 @@ describe('Create squeak', () => {
       life...`;
 
     // assertions
-    await expect(
-      contract.connect(ahmed).createSqueak(longSqueak)
-    ).to.be.revertedWith('Critter: squeak is too long');
+    await expect(contract.connect(ahmed).createSqueak(longSqueak)).to.be
+      .reverted;
   });
 });

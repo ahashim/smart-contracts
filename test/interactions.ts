@@ -36,7 +36,7 @@ describe('Interactions', () => {
         contract
           .connect(barbie)
           .dislikeSqueak(tokenId, { value: PLATFORM_FEE })
-      ).to.be.revertedWith('Critter: cannot dislike a squeak twice');
+      ).to.be.reverted;
     });
 
     it('removes a previous dislike when liking a squeak', async () => {
@@ -75,7 +75,7 @@ describe('Interactions', () => {
       // assert it reverts when barbie likes it again
       await expect(
         contract.connect(barbie).likeSqueak(tokenId, { value: PLATFORM_FEE })
-      ).to.be.revertedWith('Critter: cannot like a squeak twice');
+      ).to.be.reverted;
     });
 
     it('removes a previous like when disliking a squeak', async () => {
