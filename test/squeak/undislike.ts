@@ -74,7 +74,7 @@ describe('Undo dislike', () => {
   it('reverts if a user does not have enough funds', async () => {
     await expect(
       contract.connect(barbie).undoDislikeSqueak(tokenId, { value: 1 })
-    ).to.be.revertedWith('Critter: not enough funds to perform action');
+    ).to.be.reverted;
   });
 
   it('reverts if a user tries to undislike a nonexistent squeak ', async () => {

@@ -41,12 +41,31 @@ contract Bankable is Initializable, Storeable {
     event FundsTransferred(address indexed to, uint256 amount);
 
     /**
+     * @dev Raised in a transaction that requires fees when `available` is less
+     * than `required`.
+     * @param available Amount in wei that is required for a sucessful
+     * transaction.
+     * @param required Amount in wei that is required for a sucessful
+     * transaction.
+     */
+    error InsufficientFunds(uint256 available, uint256 required);
+
+    /**
+     * @dev Raised when a transfer of funds between 2 accounts fails.
+     * @param to Address of receiver.
+     * @param amount Amount in wei that was sent.
+     */
+    error TransferFailed(address to, uint256 amount);
+
+    /**
      * @dev Ensures that `_address` has a Critter account.
      * @param amount Amount in wei sent by the user.
      * @param fee The required fee the `amount` is compared to.
      */
     modifier hasEnoughFunds(uint256 amount, uint256 fee) {
-        require(amount >= fee, 'Critter: not enough funds to perform action');
+        if (amount < fee) {
+            revert InsufficientFunds({available: amount, required: fee});
+        }
         _;
     }
 
@@ -132,7 +151,10 @@ contract Bankable is Initializable, Storeable {
     function _transferFunds(address to, uint256 amount) internal {
         // solhint-disable-next-line avoid-low-level-calls
         (bool sent, ) = to.call{value: amount}('');
-        require(sent, 'Critter: failed to transfer funds');
+
+        if (!sent) {
+            revert TransferFailed({to: to, amount: amount});
+        }
 
         emit FundsTransferred(to, amount);
     }

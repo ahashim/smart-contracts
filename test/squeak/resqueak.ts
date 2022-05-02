@@ -68,9 +68,8 @@ describe('Resqueak', () => {
   });
 
   it('reverts if a user does not have enough funds', async () => {
-    await expect(
-      contract.connect(barbie).resqueak(tokenId, { value: 1 })
-    ).to.be.revertedWith('Critter: not enough funds to perform action');
+    await expect(contract.connect(barbie).resqueak(tokenId, { value: 1 })).to
+      .be.reverted;
   });
 
   it('reverts if a user tries to like a nonexistent squeak ', async () => {
