@@ -22,6 +22,9 @@ pragma solidity ^0.8.4;
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './storage/Storeable.sol';
 
+// errors
+error NegativeDeleteFee();
+
 /**
  * @dev Bankable
  * @dev A contract to handle user payments & interact with the treasury.
@@ -116,6 +119,10 @@ contract Bankable is Initializable, Storeable {
         view
         returns (uint256)
     {
+        if (blockConfirmationThreshold < 0) {
+            revert NegativeDeleteFee();
+        }
+
         Squeak memory squeak = squeaks[tokenId];
         uint256 latestBlockThreshold = block.number +
             blockConfirmationThreshold;

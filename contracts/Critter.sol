@@ -95,7 +95,6 @@ contract Critter is
         uint256 fee,
         uint256 feePercent
     ) public initializer {
-        // Open Zeppelin contracts
         __ERC721A_init(name, symbol);
         __ERC721APausable_init();
         __ReentrancyGuard_init();
@@ -191,6 +190,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
+        squeakExists(tokenId)
         nonReentrant
     {
         address owner = ownerOf(tokenId);

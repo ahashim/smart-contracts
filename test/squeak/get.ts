@@ -88,23 +88,20 @@ describe('Get squeak information', () => {
     expect(await contract.getLikeCount(tokenId)).to.equal(1);
   });
 
-  xit('reverts when getting delete fees for a nonexistent squeak', async () => {
-    await expect(
-      contract.getDeleteFee(420, BLOCK_CONFIRMATION_THRESHOLD)
-    ).to.be.revertedWith(
-      'Critter: cannot perform action on a nonexistent token'
-    );
+  it('reverts when getting delete fees for a nonexistent squeak', async () => {
+    await expect(contract.getDeleteFee(420, BLOCK_CONFIRMATION_THRESHOLD)).to
+      .be.reverted;
   });
 
-  xit('reverts when getting the dislike count of a nonexistent squeak', async () => {
-    await expect(contract.getDislikeCount(420)).to.be.revertedWith(
-      'Critter: cannot perform action on a nonexistent token'
-    );
+  it('reverts when getting delete fees with a negative block confirmation threshold', async () => {
+    await expect(contract.getDeleteFee(420, -7)).to.be.reverted;
   });
 
-  xit('reverts when getting the like count of a nonexistent squeak', async () => {
-    await expect(contract.getLikeCount(420)).to.be.revertedWith(
-      'Critter: cannot perform action on a nonexistent token'
-    );
+  it('reverts when getting the dislike count of a nonexistent squeak', async () => {
+    await expect(contract.getDislikeCount(420)).to.be.reverted;
+  });
+
+  it('reverts when getting the like count of a nonexistent squeak', async () => {
+    await expect(contract.getLikeCount(420)).to.be.reverted;
   });
 });
