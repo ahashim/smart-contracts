@@ -32,8 +32,7 @@ describe('Contract state', () => {
     [minterRole, pauserRole, treasurerRole, upgraderRole].forEach(
       async (role) => {
         // assert owner has all roles associated with their account
-        expect(await contract.getRoleMemberCount(role)).to.equal(1);
-        expect(await contract.getRoleMember(role, 0)).to.equal(owner.address);
+        expect(await contract.hasRole(role, owner.address)).to.eq(true);
       }
     );
   });

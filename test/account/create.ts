@@ -9,7 +9,6 @@ import { freshDeploy } from '../fixtures';
 
 describe('Create account', () => {
   let contract: Contract;
-  let owner: SignerWithAddress;
   let ahmed: SignerWithAddress;
 
   // account variables
@@ -17,7 +16,7 @@ describe('Create account', () => {
 
   beforeEach('Deploy contracts.', async () => {
     contract = await waffle.loadFixture(freshDeploy);
-    [owner, ahmed] = await ethers.getSigners();
+    [, ahmed] = await ethers.getSigners();
   });
 
   it('creates an account with the senders address', async () => {
@@ -33,9 +32,7 @@ describe('Create account', () => {
     expect(await contract.addresses(username)).to.equal(ahmed.address);
   });
 
-  it('grants a new account the role of MINTER', async () => {
-    const signers = [owner, ahmed];
-
+  it('grants a new account the MINTER_ROLE', async () => {
     // create a single account
     await run('createAccount', {
       contract,
@@ -43,18 +40,7 @@ describe('Create account', () => {
       username: 'ahmed',
     });
 
-    // assert 2 accounts have the MINTER_ROLE (because the owner is
-    // automatically granted the role upon contract deployment)
-    expect(await contract.getRoleMemberCount(MINTER_ROLE)).to.equal(
-      signers.length
-    );
-
-    // assert the index of each role belongs to the accounts created
-    for (let i = 0; i < signers.length; i++) {
-      expect(await contract.getRoleMember(MINTER_ROLE, i)).to.equal(
-        signers[i].address
-      );
-    }
+    expect(await contract.hasRole(MINTER_ROLE, ahmed.address)).to.eq(true);
   });
 
   it('reverts when the users address already has an account', async () => {

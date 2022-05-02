@@ -22,13 +22,11 @@ pragma solidity ^0.8.4;
 import './interfaces/ICritter.sol';
 
 // Open Zeppelin contracts
-import '@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 
@@ -60,12 +58,10 @@ import './storage/Typeable.sol';
  */
 contract Critter is
     Initializable,
-    ERC721Upgradeable,
-    ERC721EnumerableUpgradeable,
     ERC721URIStorageUpgradeable,
     PausableUpgradeable,
     ReentrancyGuardUpgradeable,
-    AccessControlEnumerableUpgradeable,
+    AccessControlUpgradeable,
     UUPSUpgradeable,
     ICritter,
     Typeable,
@@ -102,7 +98,6 @@ contract Critter is
     ) public initializer {
         // Open Zeppelin contracts
         __ERC721_init(name, symbol);
-        __ERC721Enumerable_init();
         __ERC721URIStorage_init();
         __Pausable_init();
         __ReentrancyGuard_init();
@@ -127,9 +122,8 @@ contract Critter is
         view
         override(
             ERC721Upgradeable,
-            ERC721EnumerableUpgradeable,
             IERC165Upgradeable,
-            AccessControlEnumerableUpgradeable
+            AccessControlUpgradeable
         )
         returns (bool)
     {
@@ -424,11 +418,7 @@ contract Critter is
         address from,
         address to,
         uint256 tokenId
-    )
-        internal
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable)
-        whenNotPaused
-    {
+    ) internal override(ERC721Upgradeable) whenNotPaused {
         super._beforeTokenTransfer(from, to, tokenId);
         _transferSqueakOwnership(to, tokenId);
     }

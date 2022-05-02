@@ -23,8 +23,4 @@ describe('Contract interfaces', () => {
   it('supports the ERC721Metadata interface', async () => {
     expect(await contract.supportsInterface('0x5b5e139f')).to.equal(true);
   });
-
-  it('supports the ERC721Enumerable interface', async () => {
-    expect(await contract.supportsInterface('0x780e9d63')).to.equal(true);
-  });
 });
