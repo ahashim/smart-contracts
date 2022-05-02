@@ -183,7 +183,7 @@ contract Critter is
         // validate & save content to storage, then generate token ID & URI
         (uint256 tokenId, string memory tokenUri) = _createSqueak(content);
 
-        _safeMint(msg.sender, tokenId);
+        _mint(msg.sender, tokenId);
         _setTokenURI(tokenId, tokenUri);
     }
 
