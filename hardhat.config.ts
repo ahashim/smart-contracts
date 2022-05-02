@@ -17,11 +17,6 @@ import './tasks/contract';
 import './tasks/network';
 import './tasks/project';
 
-// test harness
-import chai from 'chai';
-import { solidity } from 'ethereum-waffle';
-chai.use(solidity);
-
 const config: HardhatUserConfig = {
   contractSizer: {
     strict: true,
