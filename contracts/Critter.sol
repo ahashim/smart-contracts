@@ -210,9 +210,6 @@ contract Critter is
 
         // burn the token
         _burn(tokenId);
-
-        // delete the squeak from storage
-        _deleteSqueak(tokenId);
     }
 
     /**
@@ -379,16 +376,18 @@ contract Critter is
     }
 
     /**
-     * @dev Burns `tokenId`. See {ERC721Upgradeable-_burn}.
+     * @dev Burns `tokenId`. See {ERC721AUpgradeable-_burn}.
      *
      * @notice Requirements:
      *  - The caller must own `tokenId` or be an approved operator.
      */
     function _burn(uint256 tokenId) internal override(ERC721AUpgradeable) {
         super._burn(tokenId);
+
+        // delete the squeak from storage
+        _deleteSqueak(tokenId);
     }
 
-    /* solhint-disable no-unused-vars, no-empty-blocks */
     /**
      * @dev Hook that is called before any token transfer. This includes minting
      * and burning. Calling conditions:
@@ -409,7 +408,9 @@ contract Critter is
         address to,
         uint256 startTokenId,
         uint256 quantity
-    ) internal pure override(ERC721AUpgradeable, ERC721APausableUpgradeable) {}
+    ) internal override(ERC721AUpgradeable, ERC721APausableUpgradeable) {
+        super._beforeTokenTransfers(from, to, startTokenId, quantity);
+    }
 
     /**
      * @dev Hook that is called after a set of serially-ordered token ids have
@@ -432,7 +433,7 @@ contract Critter is
         uint256 startTokenId,
         uint256 quantity
     ) internal override(ERC721AUpgradeable) {
+        super._afterTokenTransfers(from, to, startTokenId, quantity);
         _transferSqueakOwnership(to, startTokenId);
     }
-    /* solhint-enable-no-unused-vars */
 }
