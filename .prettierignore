@@ -1,5 +1,6 @@
-node_modules
 artifacts
 cache
 coverage*
+dist
 gasReporterOutput.json
+node_modules

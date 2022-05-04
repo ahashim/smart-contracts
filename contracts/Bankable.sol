@@ -119,10 +119,6 @@ contract Bankable is Initializable, Storeable {
         view
         returns (uint256)
     {
-        if (blockConfirmationThreshold < 0) {
-            revert NegativeDeleteFee();
-        }
-
         Squeak memory squeak = squeaks[tokenId];
         uint256 latestBlockThreshold = block.number +
             blockConfirmationThreshold;

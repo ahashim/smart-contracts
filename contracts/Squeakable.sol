@@ -135,11 +135,8 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
     /**
      * @dev Initializer function
      */
-    // solhint-disable-next-line func-name-mixedcase
-    function __Squeakable_init() internal onlyInitializing {
-        // set initial token ID to 1
-        _currentIndex++;
-    }
+    // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
+    function __Squeakable_init() internal view onlyInitializing {}
 
     /**
      * @dev Creates a squeak consisting of `content` and saves it to storage.
@@ -198,7 +195,6 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
     /**
      * @dev Dislikes a squeak at `tokenId` by depositing the platformFee
      * into the treasury. Emits a {SqueakDisliked} event.
-     * event.
      * @param tokenId Numerical ID of the squeak to dislike.
      */
     function _dislikeSqueak(uint256 tokenId) internal {
@@ -234,7 +230,7 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
 
     /**
      * @dev transfers platformFee from msg.sender to `tokenId` squeak owner.
-     * Also adds fee to treasury from platformFee.
+     * Also adds fee to treasury from platformFee.Emits a {SqueakLiked} event.
      * @param tokenId ID of the squeak to "like".
      */
     function _likeSqueak(uint256 tokenId) internal {

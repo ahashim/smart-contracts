@@ -118,9 +118,9 @@ contract Critter is
         public
         view
         override(
+            AccessControlUpgradeable,
             ERC721AUpgradeable,
-            IERC165Upgradeable,
-            AccessControlUpgradeable
+            IERC165Upgradeable
         )
         returns (bool)
     {
@@ -195,7 +195,7 @@ contract Critter is
     {
         address owner = ownerOf(tokenId);
 
-        if (msg.sender != owner && !isApprovedForAll(owner, _msgSender())) {
+        if (msg.sender != owner && !isApprovedForAll(owner, msg.sender)) {
             revert NotApprovedOrOwner({sender: msg.sender});
         }
 
@@ -224,8 +224,8 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
-        hasEnoughFunds(msg.value, platformFee)
         squeakExists(tokenId)
+        hasEnoughFunds(msg.value, platformFee)
         nonReentrant
     {
         _dislikeSqueak(tokenId);
@@ -251,7 +251,6 @@ contract Critter is
         external
         view
         override(ICritter)
-        squeakExists(tokenId)
         returns (uint256)
     {
         EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
@@ -266,7 +265,6 @@ contract Critter is
         external
         view
         override(ICritter)
-        squeakExists(tokenId)
         returns (uint256)
     {
         EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
@@ -390,7 +388,7 @@ contract Critter is
         super._burn(tokenId);
     }
 
-    /* solhint-disable no-unused-vars */
+    /* solhint-disable no-unused-vars, no-empty-blocks */
     /**
      * @dev Hook that is called before any token transfer. This includes minting
      * and burning. Calling conditions:
@@ -411,13 +409,30 @@ contract Critter is
         address to,
         uint256 startTokenId,
         uint256 quantity
-    )
-        internal
-        override(ERC721AUpgradeable, ERC721APausableUpgradeable)
-        whenNotPaused
-    {
+    ) internal pure override(ERC721AUpgradeable, ERC721APausableUpgradeable) {}
+
+    /**
+     * @dev Hook that is called after a set of serially-ordered token ids have
+     * been transferred. This includes minting. And also called after one token
+     * has been burned. Calling conditions:
+     *  - When `from` and `to` are both non-zero, `from`'s `tokenId` has been
+     *  transferred to `to`.
+     *  - When `from` is zero, `tokenId` has been minted for `to`.
+     *  - When `to` is zero, `tokenId` has been burned by `from`.
+     *  - `from` and `to` are never both zero.
+     * @param from Address of the account that is relinquishing ownership of the
+     * token.
+     * @param to Address of the account that is gaining ownership of the token.
+     * @param startTokenId The first token id to be transferred.
+     * @param quantity The amount to be transferred.
+     */
+    function _afterTokenTransfers(
+        address from,
+        address to,
+        uint256 startTokenId,
+        uint256 quantity
+    ) internal override(ERC721AUpgradeable) {
         _transferSqueakOwnership(to, startTokenId);
     }
-
     /* solhint-enable-no-unused-vars */
 }

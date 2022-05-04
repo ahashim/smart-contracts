@@ -20,7 +20,6 @@ pragma solidity ^0.8.4;
 
 // Contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import './Immutable.sol';
 import './Mappable.sol';
 import './Typeable.sol';
@@ -50,13 +49,6 @@ contract Storeable is Initializable, Typeable, Immutable, Mappable {
         platformFee = fee;
         platformFeePercent = feePercent;
     }
-
-    /**
-     * @dev A counter keeps track of token ID's.
-     * @notice Cannot simply increment {ERC721-balanceOf} value due to the
-     * ability to burn tokens.
-     */
-    CountersUpgradeable.Counter public tokenIdCounter;
 
     /**
      * @dev Global token URL prefix used when autogenerating token URI's.

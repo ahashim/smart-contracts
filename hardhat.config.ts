@@ -30,6 +30,9 @@ const config: HardhatUserConfig = {
     timeout: 0,
   },
   networks: {},
+  paths: {
+    tests: './tests',
+  },
   solidity: {
     version: '0.8.4',
     settings: {
@@ -44,7 +47,8 @@ const config: HardhatUserConfig = {
       files: [
         './constants.ts',
         'contracts/**/*.sol',
-        'test/**/*.ts',
+        // 'test/**/*.ts',
+        'tests/**/*.ts',
         'tasks/**/*.ts',
       ],
       tasks: ['test'],

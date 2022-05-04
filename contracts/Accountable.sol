@@ -101,14 +101,12 @@ contract Accountable is Initializable, AccessControlUpgradeable, Storeable {
      * @param username Text of the username to be validated.
      */
     modifier isValidUsername(string memory username) {
-        uint256 usernameLength = bytes(username).length;
-
         // validate length
-        if (usernameLength == 0 || usernameLength > 32) {
+        if (bytes(username).length == 0 || bytes(username).length > 32) {
             revert UsernameInvalid({username: username});
         }
 
-        // validate existence
+        // validate availability
         if (addresses[username] != address(0)) {
             revert UsernameUnavailable({username: username});
         }
