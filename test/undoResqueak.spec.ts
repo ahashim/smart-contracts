@@ -27,7 +27,7 @@ describe('undoResqueak', () => {
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
+    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
   });
 
   const undoResqueakFixture = async () => {
