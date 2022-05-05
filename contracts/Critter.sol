@@ -21,7 +21,7 @@ pragma solidity ^0.8.4;
 // interfaces
 import './interfaces/ICritter.sol';
 
-// Open Zeppelin contracts
+// 3rd party contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 
