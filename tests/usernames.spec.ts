@@ -42,7 +42,7 @@ describe('usernames', () => {
     expect(await critter.usernames(ahmed.address)).to.eq(username);
   });
 
-  it('reverts when looking up non-existent a username', async () => {
+  it('reverts when looking up a non-existent username', async () => {
     await expect(critter.usernames('nonexistent-user')).to.be.reverted;
   });
 });
