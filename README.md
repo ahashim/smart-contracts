@@ -113,9 +113,9 @@ npm run size
 - [x] Upgradeable contracts via [UUPS proxy pattern](https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable).
 - [x] `CRTTR` console for local contract interaction.
 - [x] Platform Fees + P2P payments.
-- [x] Liking a squeak.
-- [x] Disliking a squeak.
-- [x] Resqueaking.
+- [x] Liking a squeak & undoing a like.
+- [x] Disliking a squeak & undoing a dislike.
+- [x] Resqueaking & undoing a resqueak.
 - [ ] Adding `TREASURER_ROLE` functions to update platform fees & safely withdraw funds.
 - [ ] Lurker incentives: early interactors of a squeak (`scouts`) will receive dividends from future likes.
   - Limit to `100` to mitigate the concentration of platform interactions around any specific set of users.
