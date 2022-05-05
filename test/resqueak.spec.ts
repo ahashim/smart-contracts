@@ -19,12 +19,13 @@ import type { Result } from '@ethersproject/abi';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('resqueak', () => {
-  let ahmedStartingBalance: BigNumber, ahmedEndingBalance: BigNumber;
+  let barbieStartingBalance: BigNumber;
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet;
+  let resqueakTx: ContractTransaction;
   let squeakId: BigNumber;
-  let treasuryStartingBalance: BigNumber, treasuryEndingBalance: BigNumber;
+  let treasuryStartingBalance: BigNumber;
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie] = await (ethers as any).getSigners();
@@ -37,35 +38,44 @@ describe('resqueak', () => {
       await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
     ).connect(ahmed) as Critter;
 
-    // creates accounts
-    await critter.createAccount('ahmed');
+    // barbie creates an account & posts a squeak
     await critter.connect(barbie).createAccount('barbie');
-
-    // ahmed posts a squeak
-    const tx = (await critter.createSqueak(
-      'hello blockchain!'
-    )) as ContractTransaction;
+    const tx = (await critter
+      .connect(barbie)
+      .createSqueak('hello blockchain!')) as ContractTransaction;
     const receipt = (await tx.wait()) as ContractReceipt;
     const event = receipt.events!.find(
       (event: Event) => event.event === 'SqueakCreated'
     );
     ({ tokenId: squeakId } = event!.args as Result);
-    const ahmedStartingBalance = await ahmed.getBalance();
+    const barbieStartingBalance = await barbie.getBalance();
     const treasuryStartingBalance = await critter.treasury();
 
+    // ahmed creates an account resqueaks it
+    await critter.createAccount('ahmed');
+    const resqueakTx = (await critter.resqueak(squeakId, {
+      value: PLATFORM_FEE,
+    })) as ContractTransaction;
+
     return {
-      ahmedStartingBalance,
+      barbieStartingBalance,
       critter,
+      resqueakTx,
       squeakId,
       treasuryStartingBalance,
     };
   };
 
   beforeEach(
-    'deploy test contract, ahmed creates an account & posts a squeak',
+    'deploy test contract, barbie creates an account & posts a squeak which ahmed resqueaks',
     async () => {
-      ({ ahmedStartingBalance, critter, squeakId, treasuryStartingBalance } =
-        await loadFixture(resqueakFixture));
+      ({
+        barbieStartingBalance,
+        critter,
+        resqueakTx,
+        squeakId,
+        treasuryStartingBalance,
+      } = await loadFixture(resqueakFixture));
     }
   );
 
@@ -75,30 +85,29 @@ describe('resqueak', () => {
     .div(ethers.BigNumber.from(100));
   const transferAmount = ethers.BigNumber.from(PLATFORM_FEE).sub(treasuryFee);
 
-  it('lets a user resqueak someone for a fee', async () => {
-    await critter.connect(barbie).resqueak(squeakId, { value: PLATFORM_FEE });
-  });
+  xit('lets a user resqueak someone for a fee', async () => {});
 
   it('deposits a portion of the resqueak fee into the treasury', async () => {
-    await critter.connect(barbie).resqueak(squeakId, { value: PLATFORM_FEE });
-    treasuryEndingBalance = await critter.treasury();
-    expect(treasuryEndingBalance.sub(treasuryStartingBalance)).to.eq(
+    expect((await critter.treasury()).sub(treasuryStartingBalance)).to.eq(
       treasuryFee
     );
   });
 
   it('transfers the remaining fee to the squeak owner', async () => {
-    await critter.connect(barbie).resqueak(squeakId, { value: PLATFORM_FEE });
-    ahmedEndingBalance = await ahmed.getBalance();
-    expect(ahmedEndingBalance.sub(ahmedStartingBalance)).to.eq(transferAmount);
+    expect((await barbie.getBalance()).sub(barbieStartingBalance)).to.eq(
+      transferAmount
+    );
   });
 
   it('emits a Resqueaked event', async () => {
-    await expect(
-      critter.connect(barbie).resqueak(squeakId, { value: PLATFORM_FEE })
-    )
+    await expect(resqueakTx)
       .to.emit(critter, 'Resqueaked')
-      .withArgs(barbie.address, squeakId);
+      .withArgs(ahmed.address, squeakId);
+  });
+
+  it('reverts if the user has already resqueaked the squeak', async () => {
+    await expect(critter.resqueak(squeakId, { value: PLATFORM_FEE })).to.be
+      .reverted;
   });
 
   it('reverts when the like fee is not sufficient', async () => {

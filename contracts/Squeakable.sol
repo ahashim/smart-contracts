@@ -92,6 +92,13 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
     event SqueakUnliked(address indexed sender, uint256 tokenId);
 
     /**
+     * @dev Emitted when the `sender` address undoes a resqueak of `tokenID`.
+     * @param sender Address of the account that undid the resqueak.
+     * @param tokenId Numerical ID of the undone resqueak.
+     */
+    event SqueakUnresqueaked(address indexed sender, uint256 tokenId);
+
+    /**
      * @dev Raised on the following invalid interactions:
      *  - DOUBLE_DISLIKE
      *  - DOUBLE_LIKE
@@ -272,13 +279,28 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
      * @param tokenId ID of the squeak to "resqueak".
      */
     function _resqueak(uint256 tokenId) internal {
-        // look up squeak
-        Squeak memory squeak = squeaks[tokenId];
+        // look up resqueaks
+        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
+            tokenId
+        ];
+
+        // revert if the account has already resqueaked it
+        if (resqueakers.contains(msg.sender)) {
+            revert InteractionInvalid({
+                account: msg.sender,
+                tokenId: tokenId,
+                interaction: 'DOUBLE_RESQUEAK'
+            });
+        }
+
+        // add them to the resqueakers
+        resqueakers.add(msg.sender);
 
         // split & transfer fees to treasury & squeak owner
+        Squeak memory squeak = squeaks[tokenId];
         _feeSplitAndTransfer(squeak.owner, msg.value);
 
-        // log liked squeak
+        // log resqueak
         emit Resqueaked(msg.sender, tokenId);
     }
 
@@ -307,7 +329,7 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
             revert InteractionInvalid({
                 account: msg.sender,
                 tokenId: tokenId,
-                interaction: 'UNDO_DISLIKE'
+                interaction: 'INVALID_UNDO_LIKE'
             });
         }
 
@@ -333,7 +355,7 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
             revert InteractionInvalid({
                 account: msg.sender,
                 tokenId: tokenId,
-                interaction: 'UNDO_LIKE'
+                interaction: 'INVALID_UNDO_LIKE'
             });
         }
 
@@ -344,5 +366,33 @@ contract Squeakable is Initializable, ERC721AUpgradeable, Storeable, Bankable {
         _deposit(msg.value);
 
         emit SqueakUnliked(msg.sender, tokenId);
+    }
+
+    /**
+     * @dev Deposits the platformFee into the treasury.
+     * @param tokenId ID of the squeak to undo the reqsqueak of.
+     */
+    function _undoResqueak(uint256 tokenId) internal {
+        // look up resqueaks
+        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
+            tokenId
+        ];
+
+        // revert if the account hasn't already resqueaked it
+        if (!resqueakers.contains(msg.sender)) {
+            revert InteractionInvalid({
+                account: msg.sender,
+                tokenId: tokenId,
+                interaction: 'INVALID_UNDO_RESQUEAK'
+            });
+        }
+
+        resqueakers.remove(msg.sender);
+
+        // deposit fee
+        _deposit(msg.value);
+
+        // log liked squeak
+        emit SqueakUnresqueaked(msg.sender, tokenId);
     }
 }

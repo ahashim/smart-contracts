@@ -348,6 +348,22 @@ contract Critter is
         _undoLikeSqueak(tokenId);
     }
 
+    /**
+     * @dev See {ICritter-undoResqueak}.
+     */
+    function undoResqueak(uint256 tokenId)
+        public
+        payable
+        override(ICritter)
+        whenNotPaused
+        hasAccount(msg.sender)
+        hasEnoughFunds(msg.value, platformFee)
+        squeakExists(tokenId)
+        nonReentrant
+    {
+        _undoResqueak(tokenId);
+    }
+
     /* solhint-disable no-empty-blocks */
     /**
      * @dev Function that should revert when `msg.sender` is not authorized to

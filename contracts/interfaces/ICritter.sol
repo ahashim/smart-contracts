@@ -163,6 +163,18 @@ interface ICritter is IERC165Upgradeable, IERC721Upgradeable {
     function undoLikeSqueak(uint256 tokenId) external payable;
 
     /**
+     * @dev Undoes a resqueak of `tokenId`.
+     * @param tokenId ID of the squeak which was resqueaked.
+     *
+     * @notice Requirements:
+     *  - The caller must have resqueaked the squeak at `tokenId`.
+     *  - The transaction has enough funds to cover the platformFee.
+     *  - The caller must already have an account.
+     *  - The squeak at `tokenId` must exist.
+     */
+    function undoResqueak(uint256 tokenId) external payable;
+
+    /**
      * @dev Pauses all token transfers. See {ERC721PausableUpgradeable} and
      * {PausableUpgradeable-_pause}.
      *
