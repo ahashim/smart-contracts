@@ -20,14 +20,13 @@ pragma solidity ^0.8.4;
 
 // contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './storage/Storeable.sol';
 
 /**
  * @title Accountable
  * @dev A contract to handle account management.
  */
-contract Accountable is Initializable, AccessControlUpgradeable, Storeable {
+contract Accountable is AccessControlUpgradeable, Storeable {
     /**
      * @dev Emitted when the `account` address creates a Critter account with
      * `username`.

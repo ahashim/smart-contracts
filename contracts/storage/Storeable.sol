@@ -19,7 +19,6 @@
 pragma solidity ^0.8.4;
 
 // Contracts
-import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './Immutable.sol';
 import './Mappable.sol';
 import './Typeable.sol';
@@ -32,7 +31,7 @@ import './Typeable.sol';
  * added.
  * @notice EVM storage collisions & upgradeability: https://tinyurl.com/d424mcpx
  */
-contract Storeable is Initializable, Typeable, Immutable, Mappable {
+contract Storeable is Typeable, Immutable, Mappable {
     /**
      * @dev Initializer function
      */

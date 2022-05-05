@@ -22,22 +22,12 @@ pragma solidity ^0.8.4;
 import './interfaces/ICritter.sol';
 
 // Open Zeppelin contracts
-import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
-import 'erc721a-upgradeable/contracts/extensions/ERC721APausableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 
 // Critter contracts
 import './Accountable.sol';
-import './Bankable.sol';
 import './Squeakable.sol';
-import './storage/Immutable.sol';
-import './storage/Mappable.sol';
-import './storage/Storeable.sol';
-import './storage/Typeable.sol';
 
 /**
  * @title Critter: a microblogging platform where each post is an ERC721 token.
@@ -57,18 +47,10 @@ import './storage/Typeable.sol';
  *  - Deleting a squeak costs a fee of `blocks elapsed x deletion fee`.
  */
 contract Critter is
-    Initializable,
-    ERC721APausableUpgradeable,
     ReentrancyGuardUpgradeable,
-    AccessControlUpgradeable,
     UUPSUpgradeable,
     ICritter,
-    Typeable,
-    Immutable,
-    Mappable,
-    Storeable,
     Accountable,
-    Bankable,
     Squeakable
 {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -95,17 +77,20 @@ contract Critter is
         uint256 fee,
         uint256 feePercent
     ) public initializer {
+        // 3rd party contracts
         __ERC721A_init(name, symbol);
         __ERC721APausable_init();
         __ReentrancyGuard_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
-        // Critter contracts
+        // Storage contracts
         __Typeable_init();
         __Immutable_init();
         __Mappable_init();
         __Storeable_init(baseURI, fee, feePercent);
+
+        // Logic contracts
         __Accountable_init();
         __Bankable_init();
         __Squeakable_init();
@@ -440,7 +425,7 @@ contract Critter is
         address to,
         uint256 startTokenId,
         uint256 quantity
-    ) internal override(ERC721AUpgradeable, ERC721APausableUpgradeable) {
+    ) internal override(ERC721APausableUpgradeable) {
         super._beforeTokenTransfers(from, to, startTokenId, quantity);
     }
 
