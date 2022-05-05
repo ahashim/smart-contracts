@@ -22,6 +22,14 @@ pragma solidity ^0.8.4;
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import './storage/Storeable.sol';
 
+// error codes
+error ExistingAccount(address account);
+error NonExistentAccount(address account);
+error NotApprovedOrOwner(address sender);
+error UsernameEmpty(string username);
+error UsernameTooLong(string username);
+error UsernameUnavailable(string username);
+
 /**
  * @title Accountable
  * @dev A contract to handle account management.
@@ -49,45 +57,12 @@ contract Accountable is AccessControlUpgradeable, Storeable {
     );
 
     /**
-     * @dev Raised when `address` has an account, and tries to create another.
-     * @param account Address of account
-     */
-    error AccountAlreadyCreated(address account);
-
-    /**
-     * @dev Raised when `address` does not have an account.
-     * @param account Address of account
-     */
-    error AccountNotCreated(address account);
-
-    /**
-     * @dev Raised when `sender` performs an action on a squeak they are not
-     * approved to perform, or they are not the owner of.
-     * @param sender String of username to validate
-     */
-    error NotApprovedOrOwner(address sender);
-
-    /**
-     * @dev Raised when `username` fails any of the following validation:
-     *  - Greater than 0 bytes (cannot be empty).
-     *  - Less than 32 bytes (upper bound for storage slot optimization).
-     * @param username String of username to validate
-     */
-    error UsernameInvalid(string username);
-
-    /**
-     * @dev Raised when `username` is already in use.
-     * @param username String of username to validate
-     */
-    error UsernameUnavailable(string username);
-
-    /**
      * @dev Ensures that `_address` has a Critter account.
      * @param _address Address of the account to verify existence of.
      */
     modifier hasAccount(address _address) {
         if (bytes(usernames[_address]).length == 0) {
-            revert AccountNotCreated({account: _address});
+            revert NonExistentAccount({account: _address});
         }
         _;
     }
@@ -100,11 +75,14 @@ contract Accountable is AccessControlUpgradeable, Storeable {
      * @param username Text of the username to be validated.
      */
     modifier isValidUsername(string memory username) {
-        // validate length
-        if (bytes(username).length == 0 || bytes(username).length > 32) {
-            revert UsernameInvalid({username: username});
+        // validate existence
+        if (bytes(username).length == 0) {
+            revert UsernameEmpty({username: username});
         }
-
+        // validate length
+        if (bytes(username).length > 32) {
+            revert UsernameTooLong({username: username});
+        }
         // validate availability
         if (addresses[username] != address(0)) {
             revert UsernameUnavailable({username: username});
@@ -133,7 +111,7 @@ contract Accountable is AccessControlUpgradeable, Storeable {
     function _createAccount(string memory username) internal {
         // ensure address has not already created an account
         if (bytes(usernames[msg.sender]).length > 0) {
-            revert AccountAlreadyCreated({account: msg.sender});
+            revert ExistingAccount({account: msg.sender});
         }
 
         // set our address & username mappings

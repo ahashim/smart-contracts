@@ -24,6 +24,17 @@ import 'erc721a-upgradeable/contracts/extensions/ERC721APausableUpgradeable.sol'
 import './Bankable.sol';
 import './storage/Storeable.sol';
 
+// error codes
+error AlreadyDisliked(address account, uint256 tokenId);
+error AlreadyLiked(address account, uint256 tokenId);
+error AlreadyResqueaked(address account, uint256 tokenId);
+error NotResqueakedYet(address account, uint256 tokenId);
+error NotDislikedYet(address account, uint256 tokenId);
+error NotLikedYet(address account, uint256 tokenId);
+error SqueakIsEmpty(string content);
+error SqueakIsTooLong(string content);
+error SqueakDoesNotExist(uint256 tokenId);
+
 /**
  * @title Squeakable
  * @dev A contract dealing with actions performed on a Squeak.
@@ -96,36 +107,6 @@ contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
     event SqueakUnresqueaked(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Raised on the following invalid interactions:
-     *  - DOUBLE_DISLIKE
-     *  - DOUBLE_LIKE
-     *  - UNDO_LIKE
-     *  - UNDO_DISLIKE
-     * @param account Address of account.
-     * @param tokenId ID of the squeak.
-     * @param interaction string code of the invalid interaction.
-     */
-    error InteractionInvalid(
-        address account,
-        uint256 tokenId,
-        string interaction
-    );
-
-    /**
-     * @dev Raised when the content of a squeak fails validation:
-     *  - is less than 0 bytes.
-     *  - is over 256 bytes.
-     * @param content String of the content of the squeak.
-     */
-    error SqueakContentInvalidLength(string content);
-
-    /**
-     * @dev Raised when squeak at `tokenId` does not exist.
-     * @param tokenId Address of account
-     */
-    error SqueakDoesNotExist(uint256 tokenId);
-
-    /**
      * @dev Ensure squeak exists at `tokenId`.
      * @param tokenId Numerical ID of the squeak
      */
@@ -152,9 +133,13 @@ contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
      *  - Squeak `content` must be between 0 and 256 bytes in length.
      */
     function _createSqueak(string memory content) internal returns (uint256) {
-        // check invariants
-        if (bytes(content).length == 0 || bytes(content).length > 256) {
-            revert SqueakContentInvalidLength({content: content});
+        // validate existence
+        if (bytes(content).length == 0) {
+            revert SqueakIsEmpty({content: content});
+        }
+        // validate length
+        if (bytes(content).length > 256) {
+            revert SqueakIsTooLong({content: content});
         }
 
         // get current tokenID
@@ -210,11 +195,7 @@ contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
 
         // ensure account has not already disliked the squeak
         if (dislikers.contains(msg.sender)) {
-            revert InteractionInvalid({
-                account: msg.sender,
-                tokenId: tokenId,
-                interaction: 'DOUBLE_DISLIKE'
-            });
+            revert AlreadyDisliked({account: msg.sender, tokenId: tokenId});
         }
 
         // first remove them from likers set if they're in there
@@ -247,11 +228,7 @@ contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
 
         // ensure account has not already liked the squeak
         if (likers.contains(msg.sender)) {
-            revert InteractionInvalid({
-                account: msg.sender,
-                tokenId: tokenId,
-                interaction: 'DOUBLE_LIKE'
-            });
+            revert AlreadyLiked({account: msg.sender, tokenId: tokenId});
         }
 
         // first remove them from dislikers set if they're in there
@@ -283,11 +260,7 @@ contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
 
         // revert if the account has already resqueaked it
         if (resqueakers.contains(msg.sender)) {
-            revert InteractionInvalid({
-                account: msg.sender,
-                tokenId: tokenId,
-                interaction: 'DOUBLE_RESQUEAK'
-            });
+            revert AlreadyResqueaked({account: msg.sender, tokenId: tokenId});
         }
 
         // add them to the resqueakers
@@ -323,11 +296,7 @@ contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
 
         // ensure sender has already disliked the squeak
         if (!dislikers.contains(msg.sender)) {
-            revert InteractionInvalid({
-                account: msg.sender,
-                tokenId: tokenId,
-                interaction: 'INVALID_UNDO_LIKE'
-            });
+            revert NotDislikedYet({account: msg.sender, tokenId: tokenId});
         }
 
         // remove the caller from the dislikers set of the squeak
@@ -349,11 +318,7 @@ contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
 
         // ensure sender has already liked the squeak
         if (!likers.contains(msg.sender)) {
-            revert InteractionInvalid({
-                account: msg.sender,
-                tokenId: tokenId,
-                interaction: 'INVALID_UNDO_LIKE'
-            });
+            revert NotLikedYet({account: msg.sender, tokenId: tokenId});
         }
 
         // remove the caller from the likers set of the squeak
@@ -377,11 +342,7 @@ contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
 
         // revert if the account hasn't already resqueaked it
         if (!resqueakers.contains(msg.sender)) {
-            revert InteractionInvalid({
-                account: msg.sender,
-                tokenId: tokenId,
-                interaction: 'INVALID_UNDO_RESQUEAK'
-            });
+            revert NotResqueakedYet({account: msg.sender, tokenId: tokenId});
         }
 
         resqueakers.remove(msg.sender);

@@ -22,6 +22,10 @@ pragma solidity ^0.8.4;
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './storage/Storeable.sol';
 
+// error codes
+error InsufficientFunds(uint256 available, uint256 required);
+error TransferFailed(address to, uint256 amount);
+
 /**
  * @dev Bankable
  * @dev A contract to handle user payments & interact with the treasury.
@@ -39,23 +43,6 @@ contract Bankable is Initializable, Storeable {
      * @param amount Amount in wei of funds that were transferred.
      */
     event FundsTransferred(address indexed to, uint256 amount);
-
-    /**
-     * @dev Raised in a transaction that requires fees when `available` is less
-     * than `required`.
-     * @param available Amount in wei that is required for a sucessful
-     * transaction.
-     * @param required Amount in wei that is required for a sucessful
-     * transaction.
-     */
-    error InsufficientFunds(uint256 available, uint256 required);
-
-    /**
-     * @dev Raised when a transfer of funds between 2 accounts fails.
-     * @param to Address of receiver.
-     * @param amount Amount in wei that was sent.
-     */
-    error TransferFailed(address to, uint256 amount);
 
     /**
      * @dev Ensures that `_address` has a Critter account.
