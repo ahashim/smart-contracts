@@ -178,7 +178,7 @@ contract Critter is
         onlyRole(MINTER_ROLE)
     {
         _createSqueak(content);
-        _safeMint(msg.sender, 1);
+        _mint(msg.sender, 1, '', true);
     }
 
     /**
@@ -208,7 +208,7 @@ contract Critter is
             });
         }
 
-        // burn the token
+        // burn the squeak
         _burn(tokenId);
     }
 
