@@ -108,11 +108,13 @@ npm run size
 ## Project Roadmap
 
 - [x] ERC721 interface compatability.
-- [x] Account creation/update & validation.
-- [x] Sqeak creation/deletion & validation.
+- [x] Create account.
+- [x] Update username.
+- [x] Post squeak.
+- [x] Delete squeak.
 - [x] Upgradeable contracts via [UUPS proxy pattern](https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable).
 - [x] `CRTTR` console for local contract interaction.
-- [x] Platform Fees + P2P payments.
+- [x] Platform Fees + P2P user payments.
 - [x] Liking a squeak & undoing a like.
 - [x] Disliking a squeak & undoing a dislike.
 - [x] Resqueaking & undoing a resqueak.
