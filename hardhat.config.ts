@@ -30,9 +30,6 @@ const config: HardhatUserConfig = {
     timeout: 0,
   },
   networks: {},
-  paths: {
-    tests: './tests',
-  },
   solidity: {
     version: '0.8.4',
     settings: {
