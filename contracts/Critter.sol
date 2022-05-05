@@ -242,6 +242,22 @@ contract Critter is
     }
 
     /**
+     * @dev See {ICritter-getDislikeCount}.
+     */
+    function getDislikeCount(uint256 tokenId)
+        external
+        view
+        override(ICritter)
+        returns (uint256)
+    {
+        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
+            tokenId
+        ];
+
+        return dislikers.length();
+    }
+
+    /**
      * @dev See {ICritter-getLikeCount}.
      */
     function getLikeCount(uint256 tokenId)
@@ -258,17 +274,17 @@ contract Critter is
     /**
      * @dev See {ICritter-getDislikeCount}.
      */
-    function getDislikeCount(uint256 tokenId)
+    function getResqueakCount(uint256 tokenId)
         external
         view
         override(ICritter)
         returns (uint256)
     {
-        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
+        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
             tokenId
         ];
 
-        return dislikers.length();
+        return resqueakers.length();
     }
 
     /**

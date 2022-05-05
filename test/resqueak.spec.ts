@@ -85,7 +85,9 @@ describe('resqueak', () => {
     .div(ethers.BigNumber.from(100));
   const transferAmount = ethers.BigNumber.from(PLATFORM_FEE).sub(treasuryFee);
 
-  xit('lets a user resqueak someone for a fee', async () => {});
+  it('lets a user resqueak someone for a fee', async () => {
+    expect(await critter.getResqueakCount(squeakId)).to.eq(1);
+  });
 
   it('deposits a portion of the resqueak fee into the treasury', async () => {
     expect((await critter.treasury()).sub(treasuryStartingBalance)).to.eq(

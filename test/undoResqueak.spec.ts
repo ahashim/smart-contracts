@@ -70,7 +70,9 @@ describe('undoResqueak', () => {
     }
   );
 
-  xit('lets a user undo a resqueak for a fee', async () => {});
+  it('lets a user undo a resqueak for a fee', async () => {
+    expect(await critter.getResqueakCount(squeakId)).to.eq(0);
+  });
 
   it('deposits the undo resqueak fee into the treasury', async () => {
     expect((await critter.treasury()).sub(treasuryStartingBalance)).to.eq(

@@ -102,6 +102,14 @@ interface ICritter is IERC165Upgradeable, IERC721Upgradeable {
     function getDislikeCount(uint256 tokenId) external view returns (uint256);
 
     /**
+     * @dev Returns the number of resqueaks for `tokenId`.
+     * @param tokenId ID of the squeak to get the resqueak count of.
+     * @notice Requirements:
+     *  - The token must exist.
+     */
+    function getResqueakCount(uint256 tokenId) external view returns (uint256);
+
+    /**
      * @dev Likes a squeak at `tokenId`, and pays platformFee to squeak
      * owner. It emits a {SqueakLiked} event.
      * @param tokenId ID of the squeak to like.

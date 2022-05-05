@@ -14,23 +14,23 @@ import type {
   Event,
   Wallet,
 } from 'ethers';
-import { Result } from '@ethersproject/abi';
+import type { Result } from '@ethersproject/abi';
 import type { Critter } from '../typechain-types/contracts';
 
-describe('getLikeCount', () => {
+describe('getResqueakCount', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
+  let owner: Wallet, ahmed: Wallet, barbie: Wallet;
   let receipt: ContractReceipt;
   let squeakId: BigNumber;
   let tx: ContractTransaction;
 
   before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
+    [owner, ahmed, barbie] = await (ethers as any).getSigners();
+    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
   });
 
-  const getLikeCountFixture = async () => {
+  const getResqueakCountFixture = async () => {
     const factory = await ethers.getContractFactory(CONTRACT_NAME);
     const critter = (
       await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
@@ -45,31 +45,33 @@ describe('getLikeCount', () => {
     );
     ({ tokenId: squeakId } = event!.args as Result);
 
-    // ahmed likes it
-    await critter.likeSqueak(squeakId, { value: PLATFORM_FEE });
+    // barbie creates & an account then resqueaks it
+    await critter.connect(barbie).createAccount('barbie');
+    await critter.connect(barbie).resqueak(squeakId, { value: PLATFORM_FEE });
+
     return { critter, squeakId };
   };
 
   beforeEach(
-    'deploy test contract, ahmed creates an account & posts a squeak then dislikes it',
+    'deploy test contract, ahmed & barbie create accounts, ahmed posts a squeak & barbie resqueaks it',
     async () => {
-      ({ critter, squeakId } = await loadFixture(getLikeCountFixture));
+      ({ critter, squeakId } = await loadFixture(getResqueakCountFixture));
     }
   );
 
   // test variables
   const overflow = ethers.constants.MaxUint256.add(ethers.BigNumber.from(1));
 
-  it('gets the dislike count of a squeak', async () => {
-    expect(await critter.getLikeCount(squeakId)).to.equal(1);
+  it('gets the resqueak count of a squeak', async () => {
+    expect(await critter.getResqueakCount(squeakId)).to.equal(1);
   });
 
   it('returns zero when querying for a nonexistent squeak', async () => {
-    expect(await critter.getLikeCount(420)).to.equal(0);
+    expect(await critter.getResqueakCount(420)).to.equal(0);
   });
 
   it('reverts if the squeakId is out of bounds', async () => {
-    await expect(critter.getLikeCount(-1)).to.be.reverted;
-    await expect(critter.getLikeCount(overflow)).to.be.reverted;
+    await expect(critter.getResqueakCount(-1)).to.be.reverted;
+    await expect(critter.getResqueakCount(overflow)).to.be.reverted;
   });
 });

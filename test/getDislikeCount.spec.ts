@@ -57,6 +57,9 @@ describe('getDislikeCount', () => {
     }
   );
 
+  // test variables
+  const overflow = ethers.constants.MaxUint256.add(ethers.BigNumber.from(1));
+
   it('gets the dislike count of a squeak', async () => {
     expect(await critter.getDislikeCount(squeakId)).to.equal(1);
   });
@@ -66,7 +69,6 @@ describe('getDislikeCount', () => {
   });
 
   it('reverts if the squeakId is out of bounds', async () => {
-    const overflow = ethers.constants.MaxUint256.add(ethers.BigNumber.from(1));
     await expect(critter.getDislikeCount(-1)).to.be.reverted;
     await expect(critter.getDislikeCount(overflow)).to.be.reverted;
   });
