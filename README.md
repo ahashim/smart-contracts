@@ -118,7 +118,8 @@ npm run size
 - [x] Liking a squeak & undoing a like.
 - [x] Disliking a squeak & undoing a dislike.
 - [x] Resqueaking & undoing a resqueak.
-- [ ] Adding `TREASURER_ROLE` functions to update platform fees & safely withdraw funds.
+- [x] Adding a `withdraw` function to transfer funds out from the treasury.
+- [ ] Adding functions to update platform fees.
 - [ ] Lurker incentives: early interactors of a squeak (`scouts`) will receive dividends from future likes.
   - Limit to `100` to mitigate the concentration of platform interactions around any specific set of users.
 - [ ] Account funding via ERC-20 compatible tokens.

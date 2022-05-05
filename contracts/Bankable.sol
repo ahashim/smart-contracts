@@ -25,6 +25,7 @@ import './storage/Storeable.sol';
 // error codes
 error InsufficientFunds(uint256 available, uint256 required);
 error TransferFailed(address to, uint256 amount);
+error InvalidWithdrawlAmount(uint256 amount);
 
 /**
  * @dev Bankable
@@ -35,7 +36,7 @@ contract Bankable is Initializable, Storeable {
      * @dev Emitted when funds of `amount` are deposited into the treasury.
      * @param amount Amount in wei of funds that were deposited.
      */
-    event FeeDeposited(uint256 amount);
+    event FundsDeposited(uint256 amount);
 
     /**
      * @dev Emitted when funds of `amount` are transferred to the `to` address.
@@ -43,6 +44,14 @@ contract Bankable is Initializable, Storeable {
      * @param amount Amount in wei of funds that were transferred.
      */
     event FundsTransferred(address indexed to, uint256 amount);
+
+    /**
+     * @dev Emitted when funds of `amount` are withdrawn from the treasury and
+     * sent to the `to` address.
+     * @param to Address of the account that funds were transferred to.
+     * @param amount Amount in wei of funds that were transferred.
+     */
+    event FundsWithdrawn(address indexed to, uint256 amount);
 
     /**
      * @dev Ensures that `_address` has a Critter account.
@@ -86,7 +95,7 @@ contract Bankable is Initializable, Storeable {
      */
     function _deposit(uint256 amount) internal {
         treasury += amount;
-        emit FeeDeposited(amount);
+        emit FundsDeposited(amount);
     }
 
     /**
@@ -144,5 +153,24 @@ contract Bankable is Initializable, Storeable {
         }
 
         emit FundsTransferred(to, amount);
+    }
+
+    /**
+     * @dev Withdraws funds in `amount` from the treasury, and transfers to the
+     * `to` address.
+     * @param to Address of account to withdraw to.
+     * @param amount Amount in wei to withdraw.
+     */
+    function _withdraw(address to, uint256 amount) internal {
+        // ensure amount is correct
+        if (amount > treasury) {
+            revert InvalidWithdrawlAmount({amount: amount});
+        }
+
+        // subtract from treasury and transfer out
+        treasury -= amount;
+        _transferFunds(to, amount);
+
+        emit FundsWithdrawn(to, amount);
     }
 }

@@ -365,6 +365,18 @@ contract Critter is
         _undoResqueak(tokenId);
     }
 
+    /**
+     * @dev See {ICritter-withdraw}.
+     */
+    function withdraw(address to, uint256 amount)
+        external
+        payable
+        override(ICritter)
+        onlyRole(TREASURER_ROLE)
+    {
+        _withdraw(to, amount);
+    }
+
     /* solhint-disable no-empty-blocks */
     /**
      * @dev Function that should revert when `msg.sender` is not authorized to

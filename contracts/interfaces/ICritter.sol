@@ -199,4 +199,16 @@ interface ICritter is IERC165Upgradeable, IERC721Upgradeable {
      *  - The caller must have the `PAUSER_ROLE`.
      */
     function unpause() external;
+
+    /**
+     * @dev Withdraws funds in `amount` from the treasury, and transfers to the
+     * `to` address.
+     * @param to Address of account to withdraw to.
+     * @param amount Amount in wei to withdraw.
+     *
+     * @notice Requirements:
+     *  - The caller must have the `TREASURER_ROLE`.
+     *  - Treasury value must be greater than or equal to `amount`.
+     */
+    function withdraw(address to, uint256 amount) external payable;
 }
