@@ -160,7 +160,7 @@ contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
             squeak.content
         );
 
-        return (tokenId);
+        return tokenId;
     }
 
     /**
