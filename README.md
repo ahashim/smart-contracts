@@ -81,7 +81,7 @@ Available commands are:
 npm run test
 ```
 
-You can also run the tests in watch mode which will rerun all unit-tests & generate a contract-size report whenever a file is changed within the `contracts` or `test` directories.
+You can also run the tests in watch mode which will rerun all unit-tests whenever a file is changed within the `contracts` or `test` directories.
 
 ```bash
 npm run watch
