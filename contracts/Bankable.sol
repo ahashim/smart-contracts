@@ -54,12 +54,14 @@ contract Bankable is Initializable, Storeable {
     event FundsWithdrawn(address indexed to, uint256 amount);
 
     /**
-     * @dev Ensures that `_address` has a Critter account.
-     * @param fee The required fee the `amount` is compared to.
+     * @dev Ensures that msg.sender has enough funds for the interaction fee.
      */
-    modifier hasEnoughFunds(uint256 fee) {
-        if (msg.value < fee) {
-            revert InsufficientFunds({available: msg.value, required: fee});
+    modifier hasEnoughFunds() {
+        if (msg.value < platformFee) {
+            revert InsufficientFunds({
+                available: msg.value,
+                required: platformFee
+            });
         }
         _;
     }
