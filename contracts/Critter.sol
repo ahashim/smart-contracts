@@ -132,14 +132,14 @@ contract Critter is
     /**
      * @dev See {ICritter-pause}.
      */
-    function pause() public override(ICritter) onlyRole(PAUSER_ROLE) {
+    function pause() external override(ICritter) onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
     /**
      * @dev See {ICritter-unpause}.
      */
-    function unpause() public override(ICritter) onlyRole(PAUSER_ROLE) {
+    function unpause() external override(ICritter) onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
@@ -147,7 +147,7 @@ contract Critter is
      * @dev See {ICritter-createAccount}.
      */
     function createAccount(string memory username)
-        public
+        external
         override(ICritter)
         whenNotPaused
         isValidUsername(username)
@@ -159,7 +159,7 @@ contract Critter is
      * @dev See {ICritter-createSqueak}.
      */
     function createSqueak(string memory content)
-        public
+        external
         override(ICritter)
         whenNotPaused
         hasAccount
@@ -173,7 +173,7 @@ contract Critter is
      * @dev See {ICritter-deleteSqueak}.
      */
     function deleteSqueak(uint256 tokenId)
-        public
+        external
         payable
         override(ICritter)
         whenNotPaused
@@ -204,7 +204,7 @@ contract Critter is
      * @dev See {ICritter-dislikeSqueak}.
      */
     function dislikeSqueak(uint256 tokenId)
-        public
+        external
         payable
         override(ICritter)
         whenNotPaused
@@ -279,7 +279,7 @@ contract Critter is
      * @dev See {ICritter-likeSqueak}.
      */
     function likeSqueak(uint256 tokenId)
-        public
+        external
         payable
         override(ICritter)
         whenNotPaused
@@ -295,7 +295,7 @@ contract Critter is
      * @dev See {ICritter-resqueak}.
      */
     function resqueak(uint256 tokenId)
-        public
+        external
         payable
         override(ICritter)
         whenNotPaused
@@ -310,8 +310,8 @@ contract Critter is
     /**
      * @dev See {ICritter-updateUsername}.
      */
-    function updateUsername(string memory username)
-        public
+    function updateUsername(string calldata username)
+        external
         override(ICritter)
         whenNotPaused
         hasAccount
@@ -324,7 +324,7 @@ contract Critter is
      * @dev See {ICritter-undoDislikeSqueak}.
      */
     function undoDislikeSqueak(uint256 tokenId)
-        public
+        external
         payable
         override(ICritter)
         whenNotPaused
@@ -340,7 +340,7 @@ contract Critter is
      * @dev See {ICritter-undoLikeSqueak}.
      */
     function undoLikeSqueak(uint256 tokenId)
-        public
+        external
         payable
         override(ICritter)
         whenNotPaused
@@ -356,7 +356,7 @@ contract Critter is
      * @dev See {ICritter-undoResqueak}.
      */
     function undoResqueak(uint256 tokenId)
-        public
+        external
         payable
         override(ICritter)
         whenNotPaused
