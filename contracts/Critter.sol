@@ -210,7 +210,7 @@ contract Critter is
         whenNotPaused
         hasAccount(msg.sender)
         squeakExists(tokenId)
-        hasEnoughFunds(msg.value, platformFee)
+        hasEnoughFunds(platformFee)
         nonReentrant
     {
         _dislikeSqueak(tokenId);
@@ -284,7 +284,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
-        hasEnoughFunds(msg.value, platformFee)
+        hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
     {
@@ -300,7 +300,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
-        hasEnoughFunds(msg.value, platformFee)
+        hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
     {
@@ -329,7 +329,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
-        hasEnoughFunds(msg.value, platformFee)
+        hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
     {
@@ -345,7 +345,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
-        hasEnoughFunds(msg.value, platformFee)
+        hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
     {
@@ -361,7 +361,7 @@ contract Critter is
         override(ICritter)
         whenNotPaused
         hasAccount(msg.sender)
-        hasEnoughFunds(msg.value, platformFee)
+        hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
     {

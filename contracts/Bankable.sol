@@ -55,12 +55,11 @@ contract Bankable is Initializable, Storeable {
 
     /**
      * @dev Ensures that `_address` has a Critter account.
-     * @param amount Amount in wei sent by the user.
      * @param fee The required fee the `amount` is compared to.
      */
-    modifier hasEnoughFunds(uint256 amount, uint256 fee) {
-        if (amount < fee) {
-            revert InsufficientFunds({available: amount, required: fee});
+    modifier hasEnoughFunds(uint256 fee) {
+        if (msg.value < fee) {
+            revert InsufficientFunds({available: msg.value, required: fee});
         }
         _;
     }
