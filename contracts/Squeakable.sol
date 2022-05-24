@@ -20,7 +20,7 @@ pragma solidity ^0.8.4;
 
 // contracts
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
-import 'erc721a-upgradeable/contracts/extensions/ERC721APausableUpgradeable.sol';
+import 'erc721a-upgradeable/contracts/extensions/ERC721ABurnableUpgradeable.sol';
 import './Bankable.sol';
 import './storage/Storeable.sol';
 
@@ -39,7 +39,7 @@ error SqueakDoesNotExist(uint256 tokenId);
  * @title Squeakable
  * @dev A contract dealing with actions performed on a Squeak.
  */
-contract Squeakable is ERC721APausableUpgradeable, Storeable, Bankable {
+contract Squeakable is ERC721ABurnableUpgradeable, Storeable, Bankable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     /**

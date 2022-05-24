@@ -23,6 +23,7 @@ import './interfaces/ICritter.sol';
 
 // 3rd party contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 
 // Critter contracts
@@ -47,6 +48,7 @@ import './Squeakable.sol';
  *  - Deleting a squeak costs a fee of `blocks elapsed x deletion fee`.
  */
 contract Critter is
+    PausableUpgradeable,
     ReentrancyGuardUpgradeable,
     UUPSUpgradeable,
     ICritter,
@@ -79,7 +81,8 @@ contract Critter is
     ) public initializer {
         // 3rd party contracts
         __ERC721A_init(name, symbol);
-        __ERC721APausable_init();
+        __ERC721ABurnable_init();
+        __Pausable_init();
         __ReentrancyGuard_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -163,7 +166,7 @@ contract Critter is
         onlyRole(MINTER_ROLE)
     {
         _createSqueak(content);
-        _mint(msg.sender, 1, '', true);
+        _mint(msg.sender, 1);
     }
 
     /**
@@ -437,7 +440,7 @@ contract Critter is
         address to,
         uint256 startTokenId,
         uint256 quantity
-    ) internal override(ERC721APausableUpgradeable) {
+    ) internal override(ERC721AUpgradeable) {
         super._beforeTokenTransfers(from, to, startTokenId, quantity);
     }
 
