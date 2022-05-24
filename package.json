@@ -64,8 +64,5 @@
     "ts-node": "^10.8.0",
     "typechain": "^8.0.0",
     "typescript": "^4.6.4"
-  },
-  "dependencies": {
-    "chalk": "4.x"
   }
 }
