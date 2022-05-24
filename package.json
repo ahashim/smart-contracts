@@ -9,7 +9,7 @@
     "deploy": "npx hardhat run scripts/deploy.ts",
     "format": "prettier --write \"{,!(node_modules|.openzeppelin|typechain*)/**/}*.{js,md,sol,ts}\"",
     "lint": "solhint 'contracts/**/*.sol'",
-    "prepare": "TS_NODE_TRANSPILE_ONLY=1 npm run format && npm run lint && npx hardhat prepare",
+    "prepare": "npm run format && npm run lint && npx hardhat compile && npx hardhat prepare",
     "size": "npx hardhat size-contracts",
     "test": "REPORT_GAS=1 TS_NODE_TRANSPILE_ONLY=1 npx hardhat test",
     "watch": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat watch ci"
