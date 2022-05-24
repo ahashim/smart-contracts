@@ -58,11 +58,10 @@ contract Accountable is AccessControlUpgradeable, Storeable {
 
     /**
      * @dev Ensures that `_address` has a Critter account.
-     * @param _address Address of the account to verify existence of.
      */
-    modifier hasAccount(address _address) {
-        if (bytes(usernames[_address]).length == 0) {
-            revert NonExistentAccount({account: _address});
+    modifier hasAccount() {
+        if (bytes(usernames[msg.sender]).length == 0) {
+            revert NonExistentAccount({account: msg.sender});
         }
         _;
     }

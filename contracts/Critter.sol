@@ -162,7 +162,7 @@ contract Critter is
         public
         override(ICritter)
         whenNotPaused
-        hasAccount(msg.sender)
+        hasAccount
         onlyRole(MINTER_ROLE)
     {
         _createSqueak(content);
@@ -177,7 +177,7 @@ contract Critter is
         payable
         override(ICritter)
         whenNotPaused
-        hasAccount(msg.sender)
+        hasAccount
         squeakExists(tokenId)
         nonReentrant
     {
@@ -208,7 +208,7 @@ contract Critter is
         payable
         override(ICritter)
         whenNotPaused
-        hasAccount(msg.sender)
+        hasAccount
         squeakExists(tokenId)
         hasEnoughFunds(platformFee)
         nonReentrant
@@ -283,7 +283,7 @@ contract Critter is
         payable
         override(ICritter)
         whenNotPaused
-        hasAccount(msg.sender)
+        hasAccount
         hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
@@ -299,7 +299,7 @@ contract Critter is
         payable
         override(ICritter)
         whenNotPaused
-        hasAccount(msg.sender)
+        hasAccount
         hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
@@ -314,7 +314,7 @@ contract Critter is
         public
         override(ICritter)
         whenNotPaused
-        hasAccount(msg.sender)
+        hasAccount
         isValidUsername(username)
     {
         _updateUsername(username);
@@ -328,7 +328,7 @@ contract Critter is
         payable
         override(ICritter)
         whenNotPaused
-        hasAccount(msg.sender)
+        hasAccount
         hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
@@ -344,7 +344,7 @@ contract Critter is
         payable
         override(ICritter)
         whenNotPaused
-        hasAccount(msg.sender)
+        hasAccount
         hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
@@ -360,7 +360,7 @@ contract Critter is
         payable
         override(ICritter)
         whenNotPaused
-        hasAccount(msg.sender)
+        hasAccount
         hasEnoughFunds(platformFee)
         squeakExists(tokenId)
         nonReentrant
