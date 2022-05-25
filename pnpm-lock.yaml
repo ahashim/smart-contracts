@@ -31,7 +31,6 @@ specifiers:
   hardhat: ^2.9.6
   hardhat-contract-sizer: ^2.5.1
   hardhat-gas-reporter: ^1.0.8
-  hardhat-tracer: ^1.1.0-rc.6
   hardhat-watcher: ^2.3.0
   prettier: ^2.6.2
   prettier-plugin-solidity: 1.0.0-beta.19
@@ -73,7 +72,6 @@ devDependencies:
   hardhat: 2.9.6_chai@4.3.6
   hardhat-contract-sizer: 2.5.1_hardhat@2.9.6
   hardhat-gas-reporter: 1.0.8_hardhat@2.9.6
-  hardhat-tracer: 1.1.0-rc.6_hardhat@2.9.6
   hardhat-watcher: 2.3.0_hardhat@2.9.6
   prettier: 2.6.2
   prettier-plugin-solidity: 1.0.0-beta.19_prettier@2.6.2
@@ -5327,19 +5325,6 @@ packages:
       sha1: 1.1.1
     transitivePeerDependencies:
       - '@codechecks/client'
-    dev: true
-
-  /hardhat-tracer/1.1.0-rc.6_hardhat@2.9.6:
-    resolution: {integrity: sha512-u1d8YpyYBCj/7xVMPDxsx+H1gBaothk/XNLeTYuEmxC6WmVMEwVjpdnmTYZiRQ2ntUfwSIjwKhDkLOqewBqaQA==}
-    peerDependencies:
-      chalk: 4.x
-      hardhat: 2.x
-    dependencies:
-      ethers: 5.6.7
-      hardhat: 2.9.6_chai@4.3.6
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
     dev: true
 
   /hardhat-watcher/2.3.0_hardhat@2.9.6:
