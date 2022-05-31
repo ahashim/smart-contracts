@@ -17,6 +17,7 @@
 
 */
 pragma solidity ^0.8.4;
+import 'hardhat/console.sol';
 
 // interfaces
 import './interfaces/ICritter.sol';
@@ -233,7 +234,7 @@ contract Critter is
      * @dev See {ICritter-getDislikeCount}.
      */
     function getDislikeCount(uint256 tokenId)
-        external
+        public
         view
         override(ICritter)
         returns (uint256)
@@ -249,7 +250,7 @@ contract Critter is
      * @dev See {ICritter-getLikeCount}.
      */
     function getLikeCount(uint256 tokenId)
-        external
+        public
         view
         override(ICritter)
         returns (uint256)
@@ -263,7 +264,7 @@ contract Critter is
      * @dev See {ICritter-getDislikeCount}.
      */
     function getResqueakCount(uint256 tokenId)
-        external
+        public
         view
         override(ICritter)
         returns (uint256)
@@ -273,6 +274,37 @@ contract Critter is
         ];
 
         return resqueakers.length();
+    }
+
+    /**
+     * @dev See {ICritter-getViralityScore}.
+     */
+    function getViralityScore(uint256 tokenId)
+        public
+        view
+        squeakExists(tokenId)
+        returns (uint64)
+    {
+        /**
+         * Minimum Virality Requirements:
+         *
+         * blockDelta > 0: No virality for squeaks published within the same
+         * block as they where authored.
+         * likes > 0: Squeak must have at least one like for it to be considered
+         * viral.
+         * resqueaks > 0: Squeak must have at least one resqueak for it to be
+         * considered viral.
+         */
+        uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
+        uint256 dislikes = getDislikeCount(tokenId);
+        uint256 likes = getLikeCount(tokenId);
+        uint256 resqueaks = getResqueakCount(tokenId);
+
+        if (blockDelta > 0 && likes > 0 && resqueaks > 0) {
+            return _getViralityScore(blockDelta, dislikes, likes, resqueaks);
+        } else {
+            return 0;
+        }
     }
 
     /**

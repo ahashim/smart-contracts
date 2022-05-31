@@ -60,7 +60,7 @@ describe('getLikeCount', () => {
   // test variables
   const overflow = ethers.constants.MaxUint256.add(ethers.BigNumber.from(1));
 
-  it('gets the dislike count of a squeak', async () => {
+  it('gets the like count of a squeak', async () => {
     expect(await critter.getLikeCount(squeakId)).to.equal(1);
   });
 

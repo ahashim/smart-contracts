@@ -20,6 +20,7 @@ pragma solidity ^0.8.4;
 
 // contracts
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
+import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 import 'erc721a-upgradeable/contracts/extensions/ERC721ABurnableUpgradeable.sol';
 import './Bankable.sol';
 import './storage/Storeable.sol';
@@ -40,6 +41,7 @@ error SqueakDoesNotExist(uint256 tokenId);
  * @dev A contract dealing with actions performed on a Squeak.
  */
 contract Squeakable is ERC721ABurnableUpgradeable, Storeable, Bankable {
+    using ABDKMath64x64 for *;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     /**
@@ -211,6 +213,54 @@ contract Squeakable is ERC721ABurnableUpgradeable, Storeable, Bankable {
 
         // log disliked squeak
         emit SqueakDisliked(msg.sender, tokenId);
+    }
+
+    /**
+     * @dev Gets the rate of virality percent at the current block for a
+     * particular squeak.
+     * @param blockDelta Number of blocks elapse since the squeak was authored.
+     * @param dislikes Number of dislikes of a particular squeak.
+     * @param likes Number of likes of a particular squeak.
+     * @param resqueaks Number of resqueaks of a particular squeak.
+     * @return score Number of blocks elapse since the squeak was authored.
+     */
+    function _getViralityScore(
+        uint256 blockDelta,
+        uint256 dislikes,
+        uint256 likes,
+        uint256 resqueaks
+    ) internal pure returns (uint64) {
+        // ensure no division by zero when taking the ratio of likes:dislikes
+        if (dislikes == 0) dislikes = 1;
+
+        // convert values to signed int128 for 64.64 fixed point calculations
+        int128 signedLikes = likes.fromUInt();
+        int128 signedDislikes = dislikes.fromUInt();
+        int128 signedResqueaks = resqueaks.fromUInt();
+        int128 signedBlockDelta = blockDelta.fromUInt();
+
+        // calculate each virality component
+        int128 ratio = signedLikes.div(signedDislikes).sqrt();
+        int128 total = signedLikes.add(signedDislikes).ln();
+        int128 amplifier = signedResqueaks.ln().div(signedResqueaks);
+
+        // multiply all components to get the order
+        int128 order = ratio.mul(total).mul(amplifier);
+
+        // determine coefficient based on the order
+        int128 coefficient = order != 0
+            ? 1.fromUInt().div(order)
+            : 0.fromUInt();
+
+        // calculate final virality score
+        int128 numerator = 1000.fromUInt();
+        int128 denominator = signedBlockDelta.add(coefficient).add(
+            10.fromUInt()
+        );
+        int128 score = numerator.div(denominator);
+
+        // convert back to uint64
+        return score.toUInt();
     }
 
     /**
