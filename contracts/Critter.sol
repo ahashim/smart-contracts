@@ -289,8 +289,6 @@ contract Critter is
         /**
          * Minimum Virality Requirements:
          *
-         * blockDelta > 0: No virality for squeaks published within the same
-         * block as they where authored.
          * likes > 0: Squeak must have at least one like for it to be considered
          * viral.
          * resqueaks > 0: Squeak must have at least one resqueak for it to be
@@ -301,7 +299,7 @@ contract Critter is
         uint256 likes = getLikeCount(tokenId);
         uint256 resqueaks = getResqueakCount(tokenId);
 
-        if (blockDelta > 0 && likes > 0 && resqueaks > 0) {
+        if (likes > 0 && resqueaks > 0) {
             return _getViralityScore(blockDelta, dislikes, likes, resqueaks);
         } else {
             return 0;
