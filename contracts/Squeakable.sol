@@ -224,7 +224,7 @@ contract Squeakable is ERC721ABurnableUpgradeable, Storeable, Bankable {
      * @param dislikes Number of dislikes of a particular squeak.
      * @param likes Number of likes of a particular squeak.
      * @param resqueaks Number of resqueaks of a particular squeak.
-     * @return score Number of blocks elapse since the squeak was authored.
+     * @return A value between 0-100 representing the virality of the squeak.
      */
     function _getViralityScore(
         uint256 blockDelta,
