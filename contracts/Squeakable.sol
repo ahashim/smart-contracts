@@ -19,7 +19,7 @@
 pragma solidity ^0.8.4;
 
 // contracts
-import 'erc721a-upgradeable/contracts/extensions/ERC721ABurnableUpgradeable.sol';
+import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './Bankable.sol';
 import './storage/Storeable.sol';
 
@@ -42,7 +42,7 @@ error SqueakDoesNotExist(uint256 tokenId);
  * @title Squeakable
  * @dev A contract dealing with actions performed on a Squeak.
  */
-contract Squeakable is ERC721ABurnableUpgradeable, Storeable, Bankable {
+contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     using ABDKMath64x64 for *;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
@@ -147,7 +147,7 @@ contract Squeakable is ERC721ABurnableUpgradeable, Storeable, Bankable {
         }
 
         // get current tokenID
-        uint256 tokenId = _currentIndex;
+        uint256 tokenId = _nextTokenId();
 
         // build squeak & save it to storage
         Squeak storage squeak = squeaks[tokenId];

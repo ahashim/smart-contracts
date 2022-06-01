@@ -19,13 +19,12 @@
 pragma solidity ^0.8.4;
 
 // Interfaces
-import '@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/interfaces/IERC721Upgradeable.sol';
+import 'erc721a-upgradeable/contracts/interfaces/IERC721AUpgradeable.sol';
 
 /**
  * @dev Interface for `Critter` contract.
  */
-interface ICritter is IERC165Upgradeable, IERC721Upgradeable {
+interface ICritter is IERC721AUpgradeable {
     /**
      * @dev Create a Critter account. Emits an {AccountCreated} event.
      * @param username The username to register for the account

@@ -17,7 +17,6 @@
 
 */
 pragma solidity ^0.8.4;
-import 'hardhat/console.sol';
 
 // interfaces
 import './interfaces/ICritter.sol';
@@ -79,10 +78,9 @@ contract Critter is
         string memory baseURI,
         uint256 fee,
         uint256 feePercent
-    ) public initializer {
+    ) public initializerERC721A initializer {
         // 3rd party contracts
         __ERC721A_init(name, symbol);
-        __ERC721ABurnable_init();
         __Pausable_init();
         __ReentrancyGuard_init();
         __AccessControl_init();
@@ -109,12 +107,13 @@ contract Critter is
         override(
             AccessControlUpgradeable,
             ERC721AUpgradeable,
-            IERC165Upgradeable
+            IERC721AUpgradeable
         )
         returns (bool)
     {
         return
             interfaceId == type(ICritter).interfaceId ||
+            ERC721AUpgradeable.supportsInterface(interfaceId) ||
             super.supportsInterface(interfaceId);
     }
 
@@ -124,7 +123,7 @@ contract Critter is
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721AUpgradeable)
+        override(ERC721AUpgradeable, IERC721AUpgradeable)
         returns (string memory)
     {
         return super.tokenURI(tokenId);
