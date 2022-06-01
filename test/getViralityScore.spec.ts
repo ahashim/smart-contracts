@@ -20,10 +20,10 @@ import type { Critter } from '../typechain-types/contracts';
 describe('getViralityScore', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let blockDelta: number, likes: number, dislikes: number, resqueaks: number;
+  let likes: number, dislikes: number, resqueaks: number;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
   let receipt: ContractReceipt;
-  let squeakId: BigNumber;
+  let nonViralSqueakId: BigNumber, viralSqueakId: BigNumber;
   let tx: ContractTransaction;
 
   before('create fixture loader', async () => {
@@ -45,45 +45,51 @@ describe('getViralityScore', () => {
     // ahmed creates an account & posts a squeak
     tx = await critter.createSqueak('hello blockchain!');
     receipt = await tx.wait();
-    const event = receipt.events!.find(
+    const viralSqueakEvent = receipt.events!.find(
       (event: Event) => event.event === 'SqueakCreated'
     );
-    ({ tokenId: squeakId } = event!.args as Result);
+    ({ tokenId: viralSqueakId } = viralSqueakEvent!.args as Result);
 
     // everybody likes it
-    await critter.likeSqueak(squeakId, { value: PLATFORM_FEE });
+    await critter.likeSqueak(viralSqueakId, { value: PLATFORM_FEE });
     await critter
       .connect(barbie)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .likeSqueak(viralSqueakId, { value: PLATFORM_FEE });
     await critter
       .connect(carlos)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .likeSqueak(viralSqueakId, { value: PLATFORM_FEE });
 
     // everybody resqueaks it
-    await critter.resqueak(squeakId, { value: PLATFORM_FEE });
-    await critter.connect(barbie).resqueak(squeakId, { value: PLATFORM_FEE });
-    await critter.connect(carlos).resqueak(squeakId, { value: PLATFORM_FEE });
+    await critter.resqueak(viralSqueakId, { value: PLATFORM_FEE });
+    await critter
+      .connect(barbie)
+      .resqueak(viralSqueakId, { value: PLATFORM_FEE });
+    await critter
+      .connect(carlos)
+      .resqueak(viralSqueakId, { value: PLATFORM_FEE });
 
-    // calculate blockDelta
-    const latestBlock = (await ethers.provider.getBlock('latest')).number;
-    const publishedBlock = (
-      await critter.squeaks(squeakId)
-    ).blockNumber.toNumber();
+    // barbie posts a squeak that nobody interacts with
+    tx = await critter.createSqueak('hello blockchain!');
+    receipt = await tx.wait();
+    const nonViralSqueakEvent = receipt.events!.find(
+      (event: Event) => event.event === 'SqueakCreated'
+    );
+    ({ tokenId: nonViralSqueakId } = nonViralSqueakEvent!.args as Result);
 
     return {
-      blockDelta: latestBlock - publishedBlock,
       critter,
-      squeakId,
-      likes: (await critter.getLikeCount(squeakId)).toNumber(),
-      dislikes: (await critter.getDislikeCount(squeakId)).toNumber(),
-      resqueaks: (await critter.getResqueakCount(squeakId)).toNumber(),
+      dislikes: (await critter.getDislikeCount(viralSqueakId)).toNumber(),
+      likes: (await critter.getLikeCount(viralSqueakId)).toNumber(),
+      nonViralSqueakId,
+      resqueaks: (await critter.getResqueakCount(viralSqueakId)).toNumber(),
+      viralSqueakId,
     };
   };
 
   beforeEach(
     'deploy test contract, ahmed creates a squeak that everybody likes',
     async () => {
-      ({ blockDelta, critter, dislikes, likes, resqueaks, squeakId } =
+      ({ critter, dislikes, likes, resqueaks, viralSqueakId } =
         await loadFixture(getViralityScoreFixture));
     }
   );
@@ -92,21 +98,35 @@ describe('getViralityScore', () => {
   const overflow = ethers.constants.MaxUint256.add(ethers.BigNumber.from(1));
 
   it('gets the virality score of a squeak', async () => {
+    // calculate blockDelta for the viral squeak
+    const latestBlock = (await ethers.provider.getBlock('latest')).number;
+    const publishedBlock = (
+      await critter.squeaks(viralSqueakId)
+    ).blockNumber.toNumber();
+    const blockDelta = latestBlock - publishedBlock;
+
     // ensure no division by zero when taking the ratio of likes:dislikes
     dislikes = dislikes === 0 ? 1 : dislikes;
 
-    // calculate expected virality score based on likes, dislikes, and resqueaks
+    // calculate expected virality score based on likes, dislikes, resqueaks,
+    // and blockDelta
     const ratio = Math.sqrt(likes / dislikes);
     const total = Math.log(likes + dislikes);
     const amplifier = Math.log(resqueaks) / resqueaks;
     const order = ratio * total * amplifier;
     const coefficient = order !== 0 ? 1 / order : 0;
     const expectedScore = 1000 / (blockDelta + coefficient + 10);
-    const delta = 0.4;
+    const delta = 0.15;
 
     expect(
-      (await critter.getViralityScore(squeakId)).toNumber()
+      (await critter.getViralityScore(viralSqueakId)).toNumber()
     ).to.be.closeTo(expectedScore, delta);
+  });
+
+  it('returns a score of zero when the squeak does not meet the minimum virality requirement', async () => {
+    expect(
+      (await critter.getViralityScore(nonViralSqueakId)).toNumber()
+    ).to.equal(0);
   });
 
   it('reverts when querying for a nonexistent squeak', async () => {
