@@ -9,7 +9,7 @@ import {
 // types
 import type { Critter } from '../typechain-types/contracts';
 
-describe('platformFeePercent', () => {
+describe('platformTakeRate', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
 
@@ -18,7 +18,7 @@ describe('platformFeePercent', () => {
     async () => (loadFixture = waffle.createFixtureLoader())
   );
 
-  const platformFeePercentFixture = async () => {
+  const platformTakeRateFixture = async () => {
     const factory = await ethers.getContractFactory(CONTRACT_NAME);
     return (await upgrades.deployProxy(
       factory,
@@ -27,10 +27,10 @@ describe('platformFeePercent', () => {
   };
 
   beforeEach('deploy test contract', async () => {
-    critter = await loadFixture(platformFeePercentFixture);
+    critter = await loadFixture(platformTakeRateFixture);
   });
 
   it('returns the contract platform fee percent', async () => {
-    expect(await critter.platformFeePercent()).to.eq(PLATFORM_FEE_PERCENT);
+    expect(await critter.platformTakeRate()).to.eq(PLATFORM_FEE_PERCENT);
   });
 });

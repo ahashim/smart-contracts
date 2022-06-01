@@ -69,7 +69,7 @@ contract Critter is
      * @param symbol Contract symbol (CRTTR).
      * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
      * @param fee Fee amount in wei to charge per interaction.
-     * @param feePercent Fee in percent of `fee` deposited into treasury.
+     * @param takeRate Percentage of `fee` deposited into treasury.
      * the treasury.
      */
     function initialize(
@@ -77,7 +77,7 @@ contract Critter is
         string memory symbol,
         string memory baseURI,
         uint256 fee,
-        uint256 feePercent
+        uint256 takeRate
     ) public initializerERC721A initializer {
         // 3rd party contracts
         __ERC721A_init(name, symbol);
@@ -90,7 +90,7 @@ contract Critter is
         __Typeable_init();
         __Immutable_init();
         __Mappable_init();
-        __Storeable_init(baseURI, fee, feePercent);
+        __Storeable_init(baseURI, fee, takeRate);
 
         // Logic contracts
         __Accountable_init();

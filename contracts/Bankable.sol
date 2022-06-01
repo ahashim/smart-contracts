@@ -134,7 +134,7 @@ contract Bankable is Initializable, Storeable {
         view
         returns (uint256, uint256)
     {
-        uint256 fee = (amount * platformFeePercent) / 100;
+        uint256 fee = (amount * platformTakeRate) / 100;
         uint256 transferAmount = amount - fee;
 
         return (fee, transferAmount);
