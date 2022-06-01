@@ -110,6 +110,15 @@ interface ICritter is IERC165Upgradeable, IERC721Upgradeable {
     function getResqueakCount(uint256 tokenId) external view returns (uint256);
 
     /**
+     * @dev Returns the virality score for `tokenId`.
+     * @param tokenId ID of the squeak to get the virality score of.
+     * @return A value between 0-100 representing the virality of the squeak.
+     * @notice Requirements:
+     *  - The token must exist.
+     */
+    function getViralityScore(uint256 tokenId) external view returns (uint64);
+
+    /**
      * @dev Likes a squeak at `tokenId`, and pays platformFee to squeak
      * owner. It emits a {SqueakLiked} event.
      * @param tokenId ID of the squeak to like.

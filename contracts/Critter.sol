@@ -282,6 +282,7 @@ contract Critter is
     function getViralityScore(uint256 tokenId)
         public
         view
+        override(ICritter)
         squeakExists(tokenId)
         returns (uint64)
     {

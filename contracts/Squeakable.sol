@@ -19,11 +19,13 @@
 pragma solidity ^0.8.4;
 
 // contracts
-import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
-import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 import 'erc721a-upgradeable/contracts/extensions/ERC721ABurnableUpgradeable.sol';
 import './Bankable.sol';
 import './storage/Storeable.sol';
+
+// libraries
+import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
+import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 
 // error codes
 error AlreadyDisliked(address account, uint256 tokenId);
