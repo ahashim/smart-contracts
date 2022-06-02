@@ -69,30 +69,32 @@ contract Critter is
      * @param symbol Contract symbol (CRTTR).
      * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
      * @param fee Fee amount in wei to charge per interaction.
-     * @param takeRate Percentage of `fee` deposited into treasury.
-     * the treasury.
+     * @param takeRate Percentage of `fee` deposited into the treasury.
+     * @param threshold Minimum score that a squeak must have for it to be
+     * considered viral.
      */
     function initialize(
         string memory name,
         string memory symbol,
         string memory baseURI,
         uint256 fee,
-        uint256 takeRate
+        uint256 takeRate,
+        uint8 threshold
     ) public initializerERC721A initializer {
-        // 3rd party contracts
+        // 3rd party
         __ERC721A_init(name, symbol);
         __Pausable_init();
         __ReentrancyGuard_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
-        // Storage contracts
+        // Storage
         __Typeable_init();
         __Immutable_init();
         __Mappable_init();
-        __Storeable_init(baseURI, fee, takeRate);
+        __Storeable_init(baseURI, fee, takeRate, threshold);
 
-        // Logic contracts
+        // Logic
         __Accountable_init();
         __Bankable_init();
         __Squeakable_init();
@@ -285,19 +287,12 @@ contract Critter is
         squeakExists(tokenId)
         returns (uint64)
     {
-        /**
-         * Minimum Virality Requirements:
-         *
-         * likes > 0: Squeak must have at least one like for it to be considered
-         * viral.
-         * resqueaks > 0: Squeak must have at least one resqueak for it to be
-         * considered viral.
-         */
         uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
         uint256 dislikes = getDislikeCount(tokenId);
         uint256 likes = getLikeCount(tokenId);
         uint256 resqueaks = getResqueakCount(tokenId);
 
+        // minimum virality consideration
         if (likes > 0 && resqueaks > 0) {
             return _getViralityScore(blockDelta, dislikes, likes, resqueaks);
         } else {

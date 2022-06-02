@@ -39,7 +39,8 @@ contract Storeable is Typeable, Immutable, Mappable {
     function __Storeable_init(
         string memory baseURI,
         uint256 fee,
-        uint256 takeRate
+        uint256 takeRate,
+        uint8 threshold
     ) internal onlyInitializing {
         // set base token URI
         baseTokenURI = baseURI;
@@ -47,6 +48,7 @@ contract Storeable is Typeable, Immutable, Mappable {
         // set fees
         platformFee = fee;
         platformTakeRate = takeRate;
+        viralityThreshold = threshold;
     }
 
     /**
@@ -70,4 +72,9 @@ contract Storeable is Typeable, Immutable, Mappable {
      * transaction on the platform.
      */
     uint256 public platformTakeRate;
+
+    /**
+     * @dev Minimum score that a squeak must have for it to be considered viral.
+     */
+    uint8 public viralityThreshold;
 }

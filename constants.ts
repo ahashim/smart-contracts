@@ -16,6 +16,9 @@ export const UPGRADER_ROLE = 'UPGRADER_ROLE';
 export const PLATFORM_FEE = 33_927_831_361_389; // ~10 cents USD
 export const PLATFORM_FEE_PERCENT = 20; // "my 2 ¢…"
 
+// virality
+export const VIRALITY_THRESHOLD = 95;
+
 // init
 export const CONTRACT_INITIALIZER = [
   CONTRACT_NAME,
@@ -23,4 +26,5 @@ export const CONTRACT_INITIALIZER = [
   BASE_TOKEN_URI,
   PLATFORM_FEE,
   PLATFORM_FEE_PERCENT,
+  VIRALITY_THRESHOLD,
 ];
