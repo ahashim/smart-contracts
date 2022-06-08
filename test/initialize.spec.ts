@@ -5,7 +5,8 @@ import {
   CONTRACT_NAME,
   CONTRACT_SYMBOL,
   PLATFORM_FEE,
-  PLATFORM_FEE_PERCENT,
+  PLATFORM_TAKE_RATE,
+  SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
 
@@ -33,7 +34,8 @@ describe('initialize', () => {
       CONTRACT_SYMBOL,
       BASE_TOKEN_URI,
       PLATFORM_FEE,
-      PLATFORM_FEE_PERCENT,
+      PLATFORM_TAKE_RATE,
+      SCOUT_POOL_THRESHOLD,
       VIRALITY_THRESHOLD,
     ])) as Critter;
   };
@@ -49,7 +51,8 @@ describe('initialize', () => {
         CONTRACT_SYMBOL,
         BASE_TOKEN_URI,
         PLATFORM_FEE,
-        PLATFORM_FEE_PERCENT,
+        PLATFORM_TAKE_RATE,
+        SCOUT_POOL_THRESHOLD,
         VIRALITY_THRESHOLD
       )
     ).to.be.reverted;

@@ -90,7 +90,7 @@ interface ICritter is IERC721AUpgradeable {
      * @notice Requirements:
      *  - The token must exist.
      */
-    function getLikeCount(uint256 tokenId) external view returns (uint256);
+    // function getLikeCount(uint256 tokenId) external view returns (uint256);
 
     /**
      * @dev Returns the number of dislikes for `tokenId`.
@@ -98,7 +98,7 @@ interface ICritter is IERC721AUpgradeable {
      * @notice Requirements:
      *  - The token must exist.
      */
-    function getDislikeCount(uint256 tokenId) external view returns (uint256);
+    // function getDislikeCount(uint256 tokenId) external view returns (uint256);
 
     /**
      * @dev Returns the number of resqueaks for `tokenId`.
@@ -106,7 +106,7 @@ interface ICritter is IERC721AUpgradeable {
      * @notice Requirements:
      *  - The token must exist.
      */
-    function getResqueakCount(uint256 tokenId) external view returns (uint256);
+    // function getResqueakCount(uint256 tokenId) external view returns (uint256);
 
     /**
      * @dev Returns the virality score for `tokenId`.
@@ -115,7 +115,7 @@ interface ICritter is IERC721AUpgradeable {
      * @notice Requirements:
      *  - The token must exist.
      */
-    function getViralityScore(uint256 tokenId) external view returns (uint64);
+    // function getViralityScore(uint256 tokenId) external view returns (uint64);
 
     /**
      * @dev Likes a squeak at `tokenId`, and pays platformFee to squeak

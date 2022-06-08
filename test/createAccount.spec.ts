@@ -37,7 +37,7 @@ describe('createAccount', () => {
 
   it('lets a user create an account with a valid username', async () => {
     await critter.createAccount(username);
-    expect(await critter.usernames(ahmed.address)).to.eq(username);
+    expect((await critter.users(ahmed.address)).username).to.eq(username);
     expect(await critter.addresses(username)).to.eq(ahmed.address);
   });
 

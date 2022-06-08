@@ -4,7 +4,7 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
-  PLATFORM_FEE_PERCENT,
+  PLATFORM_TAKE_RATE,
 } from '../constants';
 
 // types
@@ -69,7 +69,7 @@ describe('likeSqueak', () => {
 
   // test variables
   const treasuryFee = ethers.BigNumber.from(PLATFORM_FEE)
-    .mul(PLATFORM_FEE_PERCENT)
+    .mul(PLATFORM_TAKE_RATE)
     .div(ethers.BigNumber.from(100));
   const transferAmount = ethers.BigNumber.from(PLATFORM_FEE).sub(treasuryFee);
 

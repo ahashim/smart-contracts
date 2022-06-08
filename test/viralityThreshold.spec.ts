@@ -30,7 +30,7 @@ describe('viralityThreshold', () => {
     critter = await loadFixture(viralityThresholdFixture);
   });
 
-  it('returns the contract platform fee', async () => {
+  it('returns the contract virality threshold', async () => {
     expect(await critter.viralityThreshold()).to.eq(VIRALITY_THRESHOLD);
   });
 });

@@ -55,8 +55,6 @@ contract Critter is
     Accountable,
     Squeakable
 {
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
-
     /* solhint-disable func-name-mixedcase, no-empty-blocks */
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -70,8 +68,8 @@ contract Critter is
      * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
      * @param fee Fee amount in wei to charge per interaction.
      * @param takeRate Percentage of `fee` deposited into the treasury.
-     * @param threshold Minimum score that a squeak must have for it to be
-     * considered viral.
+     * @param poolThresh Minimum amount of wei required to pay out a scout pool.
+     * @param viralityThresh Minimum score that a squeak must have for virality.
      */
     function initialize(
         string memory name,
@@ -79,7 +77,8 @@ contract Critter is
         string memory baseURI,
         uint256 fee,
         uint256 takeRate,
-        uint8 threshold
+        uint256 poolThresh,
+        uint8 viralityThresh
     ) public initializerERC721A initializer {
         // 3rd party
         __ERC721A_init(name, symbol);
@@ -92,7 +91,7 @@ contract Critter is
         __Typeable_init();
         __Immutable_init();
         __Mappable_init();
-        __Storeable_init(baseURI, fee, takeRate, threshold);
+        __Storeable_init(baseURI, fee, takeRate, poolThresh, viralityThresh);
 
         // Logic
         __Accountable_init();
@@ -229,75 +228,6 @@ contract Critter is
         returns (uint256)
     {
         return _getDeleteFee(tokenId, blockConfirmationThreshold);
-    }
-
-    /**
-     * @dev See {ICritter-getDislikeCount}.
-     */
-    function getDislikeCount(uint256 tokenId)
-        public
-        view
-        override(ICritter)
-        returns (uint256)
-    {
-        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
-            tokenId
-        ];
-
-        return dislikers.length();
-    }
-
-    /**
-     * @dev See {ICritter-getLikeCount}.
-     */
-    function getLikeCount(uint256 tokenId)
-        public
-        view
-        override(ICritter)
-        returns (uint256)
-    {
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
-
-        return likers.length();
-    }
-
-    /**
-     * @dev See {ICritter-getDislikeCount}.
-     */
-    function getResqueakCount(uint256 tokenId)
-        public
-        view
-        override(ICritter)
-        returns (uint256)
-    {
-        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
-            tokenId
-        ];
-
-        return resqueakers.length();
-    }
-
-    /**
-     * @dev See {ICritter-getViralityScore}.
-     */
-    function getViralityScore(uint256 tokenId)
-        public
-        view
-        override(ICritter)
-        squeakExists(tokenId)
-        returns (uint64)
-    {
-        uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
-        uint256 dislikes = getDislikeCount(tokenId);
-        uint256 likes = getLikeCount(tokenId);
-        uint256 resqueaks = getResqueakCount(tokenId);
-
-        // minimum virality consideration
-        if (likes > 0 && resqueaks > 0) {
-            return _getViralityScore(blockDelta, dislikes, likes, resqueaks);
-        } else {
-            return 0;
-        }
     }
 
     /**
@@ -491,6 +421,6 @@ contract Critter is
         uint256 quantity
     ) internal override(ERC721AUpgradeable) {
         super._afterTokenTransfers(from, to, startTokenId, quantity);
-        _transferSqueakOwnership(to, startTokenId);
+        squeaks[startTokenId].owner = to;
     }
 }

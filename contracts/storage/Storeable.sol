@@ -19,6 +19,7 @@
 pragma solidity ^0.8.4;
 
 // Contracts
+import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 import './Immutable.sol';
 import './Mappable.sol';
 import './Typeable.sol';
@@ -32,6 +33,20 @@ import './Typeable.sol';
  * @notice EVM storage collisions & upgradeability: https://tinyurl.com/d424mcpx
  */
 contract Storeable is Typeable, Immutable, Mappable {
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+
+    /**
+     * @dev Set of interactions
+     */
+    enum Interaction {
+        Dislike,
+        Like,
+        Resqueak,
+        UndoDislike,
+        UndoLike,
+        UndoResqueak
+    }
+
     /**
      * @dev Initializer function
      */
@@ -40,7 +55,8 @@ contract Storeable is Typeable, Immutable, Mappable {
         string memory baseURI,
         uint256 fee,
         uint256 takeRate,
-        uint8 threshold
+        uint256 poolThresh,
+        uint8 viralityThresh
     ) internal onlyInitializing {
         // set base token URI
         baseTokenURI = baseURI;
@@ -48,7 +64,8 @@ contract Storeable is Typeable, Immutable, Mappable {
         // set fees
         platformFee = fee;
         platformTakeRate = takeRate;
-        viralityThreshold = threshold;
+        poolThreshold = poolThresh;
+        viralityThreshold = viralityThresh;
     }
 
     /**
@@ -76,5 +93,15 @@ contract Storeable is Typeable, Immutable, Mappable {
     /**
      * @dev Minimum score that a squeak must have for it to be considered viral.
      */
+    uint256 public poolThreshold;
+
+    /**
+     * @dev Minimum score that a squeak must have for it to be considered viral.
+     */
     uint8 public viralityThreshold;
+
+    /**
+     * @dev Set of squeak ID's that have gone viral.
+     */
+    EnumerableSetUpgradeable.UintSet internal viralSqueaks;
 }

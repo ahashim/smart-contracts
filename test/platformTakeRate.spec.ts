@@ -3,7 +3,7 @@ import { ethers, upgrades, waffle } from 'hardhat';
 import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
-  PLATFORM_FEE_PERCENT,
+  PLATFORM_TAKE_RATE,
 } from '../constants';
 
 // types
@@ -31,6 +31,6 @@ describe('platformTakeRate', () => {
   });
 
   it('returns the contract platform fee percent', async () => {
-    expect(await critter.platformTakeRate()).to.eq(PLATFORM_FEE_PERCENT);
+    expect(await critter.platformTakeRate()).to.eq(PLATFORM_TAKE_RATE);
   });
 });

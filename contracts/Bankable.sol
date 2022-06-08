@@ -32,6 +32,9 @@ error InvalidWithdrawlAmount(uint256 amount);
  * @dev A contract to handle user payments & interact with the treasury.
  */
 contract Bankable is Initializable, Storeable {
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+
     /**
      * @dev Emitted when funds of `amount` are deposited into the treasury.
      * @param amount Amount in wei of funds that were deposited.
@@ -54,6 +57,14 @@ contract Bankable is Initializable, Storeable {
     event FundsWithdrawn(address indexed to, uint256 amount);
 
     /**
+     * @dev Emitted when funds of `amount` for viral squeak at `tokenId` are to
+     * the scoutPool mapping.
+     * @param tokenId ID of the viral squeak.
+     * @param amount Amount in wei of funds that were added.
+     */
+    event FundsAddedToScoutPool(uint256 tokenId, uint256 amount);
+
+    /**
      * @dev Ensures that msg.sender has enough funds for the interaction fee.
      */
     modifier hasEnoughFunds() {
@@ -71,24 +82,6 @@ contract Bankable is Initializable, Storeable {
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Bankable_init() internal view onlyInitializing {}
-
-    /**
-     * @dev Calculates the interaction amount based on platformFee and
-     * platformFeePercent. It then deposits transaction fee from `amount` into
-     * the treasury, and forwards the remaining funds to the address at `to`.
-     * @param to Address of the user to transfer remaining funds to.
-     * @param amount Amount in wei of funds to split.
-     */
-    function _feeSplitAndTransfer(address to, uint256 amount) internal {
-        // calculate amounts to deposit & transfer
-        (uint256 fee, uint256 transferAmount) = _getInteractionAmounts(amount);
-
-        // deposit fee into treasury
-        _deposit(fee);
-
-        // transfer remaining funds to user
-        _transferFunds(to, transferAmount);
-    }
 
     /**
      * @dev deposit `value` amount of wei into the treasury.
@@ -121,39 +114,82 @@ contract Bankable is Initializable, Storeable {
     }
 
     /**
-     * @dev Calculate both the fee to add to treasury based on a percentage
-     * of the `amount` sent for the interaction, as well as the amount to
-     * transfer to the user based as a remaining percentage of `amount` without
-     * using floating point math (thanks Obama!)
-     * @param amount Amount in wei to base calculations off.
-     * @return fee Amount to deposit into treasury.
-     * @return transferAmount Amount to transfer to the user.
+     * @dev Returns the unit price of a viral squeaks pool to split amongst its
+     * scouts.
+     * @param tokenId ID of the viral squeak to determine unit price.
+     * @return amount of each pool unit in wei.
      */
-    function _getInteractionAmounts(uint256 amount)
-        internal
-        view
-        returns (uint256, uint256)
-    {
-        uint256 fee = (amount * platformTakeRate) / 100;
-        uint256 transferAmount = amount - fee;
-
-        return (fee, transferAmount);
+    function _getPoolUnit(uint256 tokenId) internal view returns (uint256) {
+        return scoutPools[tokenId].amount / scoutPools[tokenId].levelTotal;
     }
 
     /**
-     * @dev Transfers msg.value amount of wei into `to`'s account.
-     * @param to Address of the account to transfer eth into
-     * @param amount Amount in wei of eth to transfer
+     * @dev Makes a payment for the squeak at `tokenId` depending on its
+     * virality + interaction.
+     * @param tokenId ID of the squeak to pay out for.
+     * @param interaction Value from the Interaction enum.
      */
-    function _transferFunds(address to, uint256 amount) internal {
-        // solhint-disable-next-line avoid-low-level-calls
-        (bool sent, ) = to.call{value: amount}('');
+    function _makePayment(uint256 tokenId, Interaction interaction) internal {
+        if (
+            // positive interactions
+            interaction == Interaction.Like ||
+            interaction == Interaction.Resqueak ||
+            interaction == Interaction.UndoDislike
+        ) {
+            // calculate amounts to deposit & transfer
+            (uint256 fee, uint256 remainder) = _getInteractionAmounts(
+                msg.value
+            );
 
-        if (!sent) {
-            revert TransferFailed({to: to, amount: amount});
+            // deposit fee into treasury
+            _deposit(fee);
+
+            if (viralSqueaks.contains(tokenId)) {
+                // split remainder amongst scouts & the squeak owner
+                uint256 scoutFunds = remainder / 2;
+
+                _addScoutFunds(tokenId, scoutFunds);
+                _transferFunds(squeaks[tokenId].owner, remainder - scoutFunds);
+            } else {
+                // transfer remaining funds to the squeak owner
+                _transferFunds(squeaks[tokenId].owner, remainder);
+            }
+        } else if (
+            // negative interactions
+            interaction == Interaction.Dislike ||
+            interaction == Interaction.UndoLike ||
+            interaction == Interaction.UndoResqueak
+        ) {
+            // treasury takes all
+            _deposit(msg.value);
+        }
+    }
+
+    /**
+     * @dev Pays `amount` of wei to each scout of `tokenId` multiplied by their
+     * scout level.
+     * @param tokenId ID of viral squeak that has scouts.
+     * @param poolUnit Base amount in wei to multiply scout level by.
+     */
+    function _makeScoutPayments(uint256 tokenId, uint256 poolUnit) internal {
+        // read pool details into memory for cheaper operations
+        ScoutPool memory pool = scoutPools[tokenId];
+
+        // TODO: move this unbounded loop off-chain
+        for (uint256 index = 0; index < scouts[tokenId].length(); index++) {
+            // calculate payout based on the users scout level & pool unit
+            uint256 payout = users[scouts[tokenId].at(index)].scoutLevel *
+                poolUnit;
+
+            // remove the amount from the pool
+            pool.amount -= payout;
+
+            // pay out to scout
+            _transferFunds(scouts[tokenId].at(index), payout);
         }
 
-        emit FundsTransferred(to, amount);
+        // save updated pool details back to storage
+        scoutPools[tokenId] = pool;
     }
 
     /**
@@ -173,5 +209,60 @@ contract Bankable is Initializable, Storeable {
         _transferFunds(to, amount);
 
         emit FundsWithdrawn(to, amount);
+    }
+
+    /**
+     * @dev Transfers msg.value amount of wei into `to`'s account.
+     * @param tokenId ID of the squeak to add funds for.
+     * @param _amount Amount in wei of eth to transfer.
+     */
+    function _addScoutFunds(uint256 tokenId, uint256 _amount) private {
+        // add funds to the pool
+        scoutPools[tokenId].amount += _amount;
+
+        // determine if we need to payout
+        uint256 poolUnit = _getPoolUnit(tokenId);
+
+        if (poolUnit >= poolThreshold) {
+            // pay scouts
+            _makeScoutPayments(tokenId, poolUnit);
+        }
+
+        emit FundsAddedToScoutPool(tokenId, _amount);
+    }
+
+    /**
+     * @dev Calculate both the fee to add to treasury based on a percentage
+     * of the `amount` sent for the interaction, as well as the amount to
+     * transfer to the user based as a remaining percentage of `amount`.
+     * @param amount Amount in wei to base calculations off.
+     * @return fee Amount to deposit into treasury.
+     * @return transferAmount Amount to transfer to the user.
+     */
+    function _getInteractionAmounts(uint256 amount)
+        private
+        view
+        returns (uint256, uint256)
+    {
+        uint256 fee = (amount * platformTakeRate) / 100;
+        uint256 remainder = amount - fee;
+
+        return (fee, remainder);
+    }
+
+    /**
+     * @dev Transfers msg.value amount of wei into `to`'s account.
+     * @param to Address of the account to transfer eth into.
+     * @param amount Amount in wei of eth to transfer.
+     */
+    function _transferFunds(address to, uint256 amount) private {
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool sent, ) = to.call{value: amount}('');
+
+        if (!sent) {
+            revert TransferFailed({to: to, amount: amount});
+        }
+
+        emit FundsTransferred(to, amount);
     }
 }

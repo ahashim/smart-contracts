@@ -1,3 +1,5 @@
+import { utils } from 'ethers';
+
 // network
 export const BLOCK_CONFIRMATION_THRESHOLD = 6;
 
@@ -14,7 +16,10 @@ export const UPGRADER_ROLE = 'UPGRADER_ROLE';
 
 // fees (in wei)
 export const PLATFORM_FEE = 33_927_831_361_389; // ~10 cents USD
-export const PLATFORM_FEE_PERCENT = 20; // "my 2 ¢…"
+export const PLATFORM_TAKE_RATE = 20; // "my 2 ¢…"
+
+// scout pools
+export const SCOUT_POOL_THRESHOLD = utils.parseEther('0.1');
 
 // virality
 export const VIRALITY_THRESHOLD = 95;
@@ -25,6 +30,7 @@ export const CONTRACT_INITIALIZER = [
   CONTRACT_SYMBOL,
   BASE_TOKEN_URI,
   PLATFORM_FEE,
-  PLATFORM_FEE_PERCENT,
+  PLATFORM_TAKE_RATE,
+  SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 ];

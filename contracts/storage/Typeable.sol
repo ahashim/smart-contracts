@@ -33,6 +33,16 @@ contract Typeable is Initializable {
     function __Typeable_init() internal view onlyInitializing {}
 
     /**
+     * @dev ScoutPool tracks fund information for scouts of a particular squeak.
+     * @param amount Total amount of wei in the .
+     * @param levelTotal Sum of the number of levels of each scout in the pool.
+     */
+    struct ScoutPool {
+        uint256 amount;
+        uint256 levelTotal;
+    }
+
+    /**
      * @dev Squeak is the primary Critter message.
      * @param blockNumber Block in which the squeak was created.
      * @param author Address of the original author of the squeak.
@@ -44,5 +54,18 @@ contract Typeable is Initializable {
         address author;
         address owner;
         string content;
+    }
+
+    /**
+     * @dev User is a registered Critter account.
+     * @param account Address of the user in the network.
+     * @param scoutLevel Level of "scout" user has achieved based on squeak and
+     * interaction history.
+     * @param username Users public username on Critter
+     */
+    struct User {
+        address account;
+        uint256 scoutLevel;
+        string username;
     }
 }

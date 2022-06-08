@@ -6,3 +6,9 @@ export type Squeak = {
   owner: string;
   content: string;
 };
+
+export type User = {
+  account: string;
+  scoutLevel: BigNumber;
+  username: string;
+};

@@ -23,8 +23,10 @@ import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './Bankable.sol';
 import './storage/Storeable.sol';
 
-// libraries
+// data structures
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
+
+// libraries
 import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 
 // error codes
@@ -45,6 +47,7 @@ error SqueakDoesNotExist(uint256 tokenId);
 contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     using ABDKMath64x64 for *;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
      * @dev Emitted when the `sender` address reposts a squeak at `tokenID`.
@@ -128,6 +131,48 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     function __Squeakable_init() internal view onlyInitializing {}
 
     /**
+     * @dev See {ISqueakable-getDislikeCount}.
+     */
+    function getDislikeCount(uint256 tokenId) public view returns (uint256) {
+        return dislikes[tokenId].length();
+    }
+
+    /**
+     * @dev See {ISqueakable-getLikeCount}.
+     */
+    function getLikeCount(uint256 tokenId) public view returns (uint256) {
+        return likes[tokenId].length();
+    }
+
+    /**
+     * @dev See {ISqueakable-getDislikeCount}.
+     */
+    function getResqueakCount(uint256 tokenId) public view returns (uint256) {
+        return resqueaks[tokenId].length();
+    }
+
+    /**
+     * @dev See {ISqueakable-getViralityScore}.
+     */
+    function getViralityScore(uint256 tokenId)
+        public
+        view
+        squeakExists(tokenId)
+        returns (uint64)
+    {
+        uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
+        uint256 dislikes = getDislikeCount(tokenId);
+        uint256 likes = getLikeCount(tokenId);
+        uint256 resqueaks = getResqueakCount(tokenId);
+
+        // minimum virality consideration
+        return
+            likes > 0 && resqueaks > 0
+                ? _getViralityScore(blockDelta, dislikes, likes, resqueaks)
+                : 0;
+    }
+
+    /**
      * @dev Creates a squeak consisting of `content` and saves it to storage.
      * Emits a {SqueakCreated} event.
      * @param content Text content of the squeak.
@@ -146,25 +191,17 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
             revert SqueakIsTooLong({content: content});
         }
 
-        // get current tokenID
-        uint256 tokenId = _nextTokenId();
-
-        // build squeak & save it to storage
-        Squeak storage squeak = squeaks[tokenId];
-        squeak.blockNumber = block.number;
-        squeak.author = msg.sender;
-        squeak.owner = msg.sender;
-        squeak.content = content;
-
-        // log the token ID & content
-        emit SqueakCreated(
+        // create & save the squeak to storage
+        squeaks[_nextTokenId()] = Squeak(
+            block.number,
             msg.sender,
-            tokenId,
-            squeak.blockNumber,
-            squeak.content
+            msg.sender,
+            content
         );
 
-        return tokenId;
+        emit SqueakCreated(msg.sender, _nextTokenId(), block.number, content);
+
+        return _nextTokenId();
     }
 
     /**
@@ -173,15 +210,31 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @param tokenId Numerical ID of the squeak to delete.
      */
     function _deleteSqueak(uint256 tokenId) internal {
-        // delete squeak & associated sentiment from storage
+        // delete squeak
         delete squeaks[tokenId];
+
+        // delete associated sentiment
         delete likes[tokenId];
         delete dislikes[tokenId];
+        delete resqueaks[tokenId];
+
+        if (viralSqueaks.contains(tokenId)) {
+            // remove from viralSqueaks set
+            viralSqueaks.remove(tokenId);
+
+            // delete associated scout info
+            delete scouts[tokenId];
+            delete scoutPools[tokenId];
+
+            // pay all scouts any remaining funds
+            if (scoutPools[tokenId].amount > 0) {
+                _makeScoutPayments(tokenId, _getPoolUnit(tokenId));
+            }
+        }
 
         // recieve payment
         _deposit(msg.value);
 
-        // log squeak deleted
         emit SqueakDeleted(msg.sender, tokenId);
     }
 
@@ -191,29 +244,22 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @param tokenId Numerical ID of the squeak to dislike.
      */
     function _dislikeSqueak(uint256 tokenId) internal {
-        // get liker/disklers of the squeak
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
-        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
-            tokenId
-        ];
-
         // ensure account has not already disliked the squeak
-        if (dislikers.contains(msg.sender)) {
+        if (dislikes[tokenId].contains(msg.sender)) {
             revert AlreadyDisliked({account: msg.sender, tokenId: tokenId});
         }
 
         // first remove them from likers set if they're in there
-        if (likers.contains(msg.sender)) {
-            likers.remove(msg.sender);
+        if (likes[tokenId].contains(msg.sender)) {
+            likes[tokenId].remove(msg.sender);
         }
 
         // then add them to the likers set
-        dislikers.add(msg.sender);
+        dislikes[tokenId].add(msg.sender);
 
         // deposit fee into the treasury
         _deposit(msg.value);
 
-        // log disliked squeak
         emit SqueakDisliked(msg.sender, tokenId);
     }
 
@@ -271,30 +317,22 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @param tokenId ID of the squeak to "like".
      */
     function _likeSqueak(uint256 tokenId) internal {
-        // get squeak details
-        Squeak memory squeak = squeaks[tokenId];
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
-        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
-            tokenId
-        ];
-
         // ensure account has not already liked the squeak
-        if (likers.contains(msg.sender)) {
+        if (likes[tokenId].contains(msg.sender)) {
             revert AlreadyLiked({account: msg.sender, tokenId: tokenId});
         }
 
         // first remove them from dislikers set if they're in there
-        if (dislikers.contains(msg.sender)) {
-            dislikers.remove(msg.sender);
+        if (dislikes[tokenId].contains(msg.sender)) {
+            dislikes[tokenId].remove(msg.sender);
         }
 
         // then add them to the likers set
-        likers.add(msg.sender);
+        likes[tokenId].add(msg.sender);
 
-        // split & transfer fees to treasury & squeak owner
-        _feeSplitAndTransfer(squeak.owner, msg.value);
+        _checkVirality(tokenId);
+        _makePayment(tokenId, Interaction.Like);
 
-        // log liked squeak
         emit SqueakLiked(msg.sender, tokenId);
     }
 
@@ -305,35 +343,18 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @param tokenId ID of the squeak to "resqueak".
      */
     function _resqueak(uint256 tokenId) internal {
-        // look up resqueaks
-        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
-            tokenId
-        ];
-
         // revert if the account has already resqueaked it
-        if (resqueakers.contains(msg.sender)) {
+        if (resqueaks[tokenId].contains(msg.sender)) {
             revert AlreadyResqueaked({account: msg.sender, tokenId: tokenId});
         }
 
         // add them to the resqueakers
-        resqueakers.add(msg.sender);
+        resqueaks[tokenId].add(msg.sender);
 
-        // split & transfer fees to treasury & squeak owner
-        Squeak memory squeak = squeaks[tokenId];
-        _feeSplitAndTransfer(squeak.owner, msg.value);
+        _checkVirality(tokenId);
+        _makePayment(tokenId, Interaction.Resqueak);
 
-        // log resqueak
         emit Resqueaked(msg.sender, tokenId);
-    }
-
-    /**
-     * @dev Reassigns the owner of the squeak at `tokenId` to the `to` address.
-     * @param to Address of the new owner of the squeak.
-     * @param tokenId ID of the squeak to transfer ownership of.
-     */
-    function _transferSqueakOwnership(address to, uint256 tokenId) internal {
-        Squeak storage squeak = squeaks[tokenId];
-        squeak.owner = to;
     }
 
     /**
@@ -342,20 +363,16 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @param tokenId ID of the squeak to undo the dislike of.
      */
     function _undoDislikeSqueak(uint256 tokenId) internal {
-        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
-            tokenId
-        ];
-
         // ensure sender has already disliked the squeak
-        if (!dislikers.contains(msg.sender)) {
+        if (!dislikes[tokenId].contains(msg.sender)) {
             revert NotDislikedYet({account: msg.sender, tokenId: tokenId});
         }
 
         // remove the caller from the dislikers set of the squeak
-        dislikers.remove(msg.sender);
+        dislikes[tokenId].remove(msg.sender);
 
-        // deposit fee into the treasury
-        _deposit(msg.value);
+        _checkVirality(tokenId);
+        _makePayment(tokenId, Interaction.UndoDislike);
 
         emit SqueakUndisliked(msg.sender, tokenId);
     }
@@ -366,18 +383,16 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @param tokenId ID of the squeak to undo the like of.
      */
     function _undoLikeSqueak(uint256 tokenId) internal {
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
-
         // ensure sender has already liked the squeak
-        if (!likers.contains(msg.sender)) {
+        if (!likes[tokenId].contains(msg.sender)) {
             revert NotLikedYet({account: msg.sender, tokenId: tokenId});
         }
 
         // remove the caller from the likers set of the squeak
-        likers.remove(msg.sender);
+        likes[tokenId].remove(msg.sender);
 
-        // deposit fee into the treasury
-        _deposit(msg.value);
+        _checkVirality(tokenId);
+        _makePayment(tokenId, Interaction.UndoLike);
 
         emit SqueakUnliked(msg.sender, tokenId);
     }
@@ -387,22 +402,92 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @param tokenId ID of the squeak to undo the reqsqueak of.
      */
     function _undoResqueak(uint256 tokenId) internal {
-        // look up resqueaks
-        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
-            tokenId
-        ];
-
         // revert if the account hasn't already resqueaked it
-        if (!resqueakers.contains(msg.sender)) {
+        if (!resqueaks[tokenId].contains(msg.sender)) {
             revert NotResqueakedYet({account: msg.sender, tokenId: tokenId});
         }
 
-        resqueakers.remove(msg.sender);
+        resqueaks[tokenId].remove(msg.sender);
 
-        // deposit fee
-        _deposit(msg.value);
+        _checkVirality(tokenId);
+        _makePayment(tokenId, Interaction.UndoResqueak);
 
-        // log liked squeak
         emit SqueakUnresqueaked(msg.sender, tokenId);
+    }
+
+    /**
+     * @dev Updates the scout level for an account and adds them to the scouts
+     * list for a particular token.
+     * @param _address Account to add to scouts list for tokenId.
+     * @param tokenId ID of the squeak to add the user to the scouts list of.
+     */
+    function _addScout(address _address, uint256 tokenId) private {
+        // upgrade their scout level
+        users[_address].scoutLevel++;
+
+        // add them to the scouts list for the squeak
+        scouts[tokenId].add(_address);
+    }
+
+    /**
+     * @dev Checks if a squeak is viral. If it is not, and the current virlality
+     * score brings it past the threshold, it marks it as such.
+     * @param tokenId ID of the squeak to check virality of.
+     */
+    function _checkVirality(uint256 tokenId) private {
+        if (
+            !viralSqueaks.contains(tokenId) &&
+            getViralityScore(tokenId) >= viralityThreshold
+        ) {
+            _markViral(tokenId);
+        }
+    }
+
+    /**
+     * @dev Adds a squeak to the list of viral squeaks, and all of its positive
+     * interactors to a list of scouts while upgrading their scout levels. This
+     * called when the squeaks virality crosses the threshold.
+     * @param tokenId ID of the squeak to add the list of viral squeaks.
+     */
+    function _markViral(uint256 tokenId) private {
+        // add squeak to list of viral squeaks
+        viralSqueaks.add(tokenId);
+
+        // give the user who pushed the squeak into virality a bonus upgrade of
+        // their scout level
+        users[msg.sender].scoutLevel += 4;
+
+        // initialize a scout pool in memory
+        ScoutPool memory pool;
+
+        // get the upper bound of the larger set of positive interactions
+        uint256 likesCount = likes[tokenId].length();
+        uint256 resqueaksCount = resqueaks[tokenId].length();
+        uint256 upperBound = likesCount > resqueaksCount
+            ? likesCount
+            : resqueaksCount;
+
+        // iterate over both sets & add all unique addresses to the scouts list
+        // TODO: move this unbounded loop off-chain
+        for (uint256 index = 0; index < upperBound; index++) {
+            // add all likers to the list of scouts list
+            if (index < likesCount) {
+                _addScout(likes[tokenId].at(index), tokenId);
+                pool.levelTotal += users[likes[tokenId].at(index)].scoutLevel;
+            }
+
+            // add all resqueakers to the list of scouts who aren't likers
+            if (
+                index < resqueaksCount &&
+                !scouts[tokenId].contains(resqueaks[tokenId].at(index))
+            ) {
+                _addScout(resqueaks[tokenId].at(index), tokenId);
+                pool.levelTotal += users[resqueaks[tokenId].at(index)]
+                    .scoutLevel;
+            }
+        }
+
+        // save scout pool to storage
+        scoutPools[tokenId] = pool;
     }
 }

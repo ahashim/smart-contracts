@@ -4,7 +4,7 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
-  PLATFORM_FEE_PERCENT,
+  PLATFORM_TAKE_RATE,
 } from '../constants';
 
 // types
@@ -92,7 +92,7 @@ describe('withdraw', () => {
 
   // test variables
   const treasuryFee = ethers.BigNumber.from(PLATFORM_FEE)
-    .mul(PLATFORM_FEE_PERCENT)
+    .mul(PLATFORM_TAKE_RATE)
     .div(ethers.BigNumber.from(100));
 
   it('lets an account with TREASURER_ROLE withdraw treasury funds to an address', async () => {

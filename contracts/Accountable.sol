@@ -60,7 +60,7 @@ contract Accountable is AccessControlUpgradeable, Storeable {
      * @dev Ensures that `_address` has a Critter account.
      */
     modifier hasAccount() {
-        if (bytes(usernames[msg.sender]).length == 0) {
+        if (bytes(users[msg.sender].username).length == 0) {
             revert NonExistentAccount({account: msg.sender});
         }
         _;
@@ -109,16 +109,17 @@ contract Accountable is AccessControlUpgradeable, Storeable {
      */
     function _createAccount(string memory username) internal {
         // ensure address has not already created an account
-        if (bytes(usernames[msg.sender]).length > 0) {
+        if (bytes(users[msg.sender].username).length > 0) {
             revert ExistingAccount({account: msg.sender});
         }
 
-        // set our address & username mappings
-        addresses[username] = msg.sender;
-        usernames[msg.sender] = username;
+        // create a User account for the address
+        users[msg.sender] = User(msg.sender, 1, username);
 
-        // bypassing the admin-check to grant roles in order to automatically
-        // initialize users when they create an account.
+        // set username <-> address mapping
+        addresses[username] = msg.sender;
+
+        // bypassing the admin-check on grantRole so each user can mint squeaks
         _grantRole(MINTER_ROLE, msg.sender);
 
         // log account creation
@@ -133,12 +134,12 @@ contract Accountable is AccessControlUpgradeable, Storeable {
      */
     function _updateUsername(string memory newUsername) internal {
         // clear current username from the addresses mapping
-        string memory oldUsername = usernames[msg.sender];
+        string memory oldUsername = users[msg.sender].username;
         delete addresses[oldUsername];
 
         // set new usernames & address mappings
+        users[msg.sender].username = newUsername;
         addresses[newUsername] = msg.sender;
-        usernames[msg.sender] = newUsername;
 
         // log the change
         emit UsernameUpdated(msg.sender, oldUsername, newUsername);

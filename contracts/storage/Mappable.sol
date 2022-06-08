@@ -42,19 +42,19 @@ contract Mappable is Initializable, Typeable {
     function __Mappable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Mapping of usernames => account addresses.
+     * @dev Mapping of username => account address.
      */
     mapping(string => address) public addresses;
 
     /**
-     * @dev Mapping of tokenId's => Squeaks.
+     * @dev Mapping of tokenId => Squeak.
      */
     mapping(uint256 => Squeak) public squeaks;
 
     /**
-     * @dev Mapping of account addresses => usernames.
+     * @dev Mapping of account address => User.
      */
-    mapping(address => string) public usernames;
+    mapping(address => User) public users;
 
     /**
      * @dev Mapping of tokenId's => AddressSet of accounts which disliked the
@@ -73,4 +73,16 @@ contract Mappable is Initializable, Typeable {
      * squeak.
      */
     mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal resqueaks;
+
+    /**
+     * @dev Mapping of tokenId's => AddressSet of accounts that are scouts after
+     * a squeak goes viral.
+     */
+    mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal scouts;
+
+    /**
+     * @dev Mapping of tokenId's => wei to track funds for scouts of squeaks
+     * that have gone viral.
+     */
+    mapping(uint256 => ScoutPool) internal scoutPools;
 }

@@ -39,14 +39,14 @@ describe('updateUsername', () => {
 
   it('lets a user create an account with a valid username', async () => {
     await critter.updateUsername(newUsername);
-    expect(await critter.usernames(ahmed.address)).to.eq(newUsername);
+    expect((await critter.users(ahmed.address)).username).to.eq(newUsername);
     expect(await critter.addresses(newUsername)).to.eq(ahmed.address);
   });
 
   it('makes the old username available when updating to a new one', async () => {
     await critter.updateUsername(newUsername);
     await critter.connect(owner).createAccount(oldUsername);
-    expect(await critter.usernames(owner.address)).to.eq(oldUsername);
+    expect((await critter.users(owner.address)).username).to.eq(oldUsername);
     expect(await critter.addresses(oldUsername)).to.eq(owner.address);
   });
 

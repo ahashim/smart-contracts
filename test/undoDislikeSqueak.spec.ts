@@ -4,6 +4,7 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
+  PLATFORM_TAKE_RATE,
 } from '../constants';
 
 // types
@@ -22,7 +23,7 @@ describe('undoDislikeSqueak', () => {
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet;
   let squeakId: BigNumber;
-  let treasuryStartingBalance: BigNumber, treasuryEndingBalance: BigNumber;
+  let ahmedStartingBalance: BigNumber, treasuryStartingBalance: BigNumber;
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie] = await (ethers as any).getSigners();
@@ -63,6 +64,11 @@ describe('undoDislikeSqueak', () => {
       ({ critter, squeakId } = await loadFixture(undoDislikeSqueakFixture));
     }
   );
+  // test variables
+  const treasuryFee = ethers.BigNumber.from(PLATFORM_FEE)
+    .mul(PLATFORM_TAKE_RATE)
+    .div(ethers.BigNumber.from(100));
+  const transferAmount = ethers.BigNumber.from(PLATFORM_FEE).sub(treasuryFee);
 
   it('lets a user undo a dislike for a fee', async () => {
     await critter
@@ -71,14 +77,23 @@ describe('undoDislikeSqueak', () => {
     expect(await critter.getDislikeCount(squeakId)).to.eq(0);
   });
 
-  it('deposits the undo dislike fee into the treasury', async () => {
+  it('deposits a portion of the undo like fee into the treasury', async () => {
     treasuryStartingBalance = await critter.treasury();
     await critter
       .connect(barbie)
       .undoDislikeSqueak(squeakId, { value: PLATFORM_FEE });
-    treasuryEndingBalance = await critter.treasury();
-    expect(treasuryEndingBalance.sub(treasuryStartingBalance)).to.eq(
-      PLATFORM_FEE
+    expect((await critter.treasury()).sub(treasuryStartingBalance)).to.eq(
+      treasuryFee
+    );
+  });
+
+  it('transfers the remaining fee to the squeak owner', async () => {
+    ahmedStartingBalance = await ahmed.getBalance();
+    await critter
+      .connect(barbie)
+      .undoDislikeSqueak(squeakId, { value: PLATFORM_FEE });
+    expect((await ahmed.getBalance()).sub(ahmedStartingBalance)).to.eq(
+      transferAmount
     );
   });
 
