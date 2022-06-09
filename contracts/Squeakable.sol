@@ -183,10 +183,9 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     /**
      * @dev Creates a squeak.
      * @param content Text content of the squeak.
-     * @return ID of the squeak.
      * @notice Content must be between 0 and 256 bytes in length.
      */
-    function _createSqueak(string memory content) internal returns (uint256) {
+    function _createSqueak(string memory content) internal {
         // validate existence
         if (bytes(content).length == 0) {
             revert SqueakIsEmpty({content: content});
@@ -207,8 +206,6 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
         );
 
         emit SqueakCreated(msg.sender, tokenId, block.number, content);
-
-        return _nextTokenId();
     }
 
     /**

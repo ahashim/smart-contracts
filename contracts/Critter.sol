@@ -18,9 +18,6 @@
 */
 pragma solidity ^0.8.4;
 
-// interfaces
-import './interfaces/ICritter.sol';
-
 // 3rd party contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
@@ -54,7 +51,6 @@ contract Critter is
     PausableUpgradeable,
     ReentrancyGuardUpgradeable,
     UUPSUpgradeable,
-    ICritter,
     Accountable,
     Squeakable
 {
@@ -103,56 +99,51 @@ contract Critter is
     }
 
     /**
-     * @dev See {IERC165Upgradeable-supportsInterface}.
+     * @dev See {IERC721AUpgradeable-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(
-            AccessControlUpgradeable,
-            ERC721AUpgradeable,
-            IERC721AUpgradeable
-        )
+        override(AccessControlUpgradeable, ERC721AUpgradeable)
         returns (bool)
     {
         return
-            interfaceId == type(ICritter).interfaceId ||
             ERC721AUpgradeable.supportsInterface(interfaceId) ||
             super.supportsInterface(interfaceId);
     }
 
     /**
-     * @dev See {IERC721A-tokenURI}.
+     * @dev See {IERC721AUpgradeable-tokenURI}.
      */
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721AUpgradeable, IERC721AUpgradeable)
+        override(ERC721AUpgradeable)
         returns (string memory)
     {
         return super.tokenURI(tokenId);
     }
 
     /**
-     * @dev See {ICritter-pause}.
+     * @dev Pauses the contract.
      */
-    function pause() external override(ICritter) onlyRole(PAUSER_ROLE) {
+    function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
     /**
-     * @dev See {ICritter-unpause}.
+     * @dev Unpauses the contract.
      */
-    function unpause() external override(ICritter) onlyRole(PAUSER_ROLE) {
+    function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
     /**
-     * @dev See {ICritter-createAccount}.
+     * @dev Creates a Critter account.
+     * @param username Username for the account.
      */
     function createAccount(string memory username)
         external
-        override(ICritter)
         whenNotPaused
         isValidUsername(username)
     {
@@ -160,11 +151,12 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-createSqueak}.
+     * @dev Creates a squeak.
+     * @param content Text content of the squeak.
+     * @notice Content must be between 0 and 256 bytes in length.
      */
     function createSqueak(string memory content)
         external
-        override(ICritter)
         whenNotPaused
         hasAccount
         onlyRole(MINTER_ROLE)
@@ -174,12 +166,12 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-deleteSqueak}.
+     * @dev Deletes a squeak & its associated information.
+     * @param tokenId ID of the squeak.
      */
     function deleteSqueak(uint256 tokenId)
         external
         payable
-        override(ICritter)
         whenNotPaused
         hasAccount
         squeakExists(tokenId)
@@ -204,12 +196,12 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-dislikeSqueak}.
+     * @dev Dislikes a squeak.
+     * @param tokenId ID of the squeak.
      */
     function dislikeSqueak(uint256 tokenId)
         external
         payable
-        override(ICritter)
         whenNotPaused
         hasAccount
         squeakExists(tokenId)
@@ -220,25 +212,30 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-getDeleteFee}.
+     * @dev Gets the price of deleting a squeak based on its age.
+     * @param tokenId ID of the squeak to delete.
+     * @param confirmationThreshold The number of future blocks that the delete
+     *      will potentially occur in. Required to give a mostly correct
+     *      price estimate assuming the transaction will get mined within that
+     *      range. 6 blocks is connsidered a good default.
+     * @return Price of deleting the squeak in wei.
      */
-    function getDeleteFee(uint256 tokenId, uint256 blockConfirmationThreshold)
+    function getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
         public
         view
-        override(ICritter)
         squeakExists(tokenId)
         returns (uint256)
     {
-        return _getDeleteFee(tokenId, blockConfirmationThreshold);
+        return _getDeleteFee(tokenId, confirmationThreshold);
     }
 
     /**
-     * @dev See {ICritter-likeSqueak}.
+     * @dev Likes a squeak.
+     * @param tokenId ID of the squeak.
      */
     function likeSqueak(uint256 tokenId)
         external
         payable
-        override(ICritter)
         whenNotPaused
         hasAccount
         hasEnoughFunds
@@ -249,12 +246,12 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-resqueak}.
+     * @dev Resqueaks a squeak.
+     * @param tokenId ID of the squeak.
      */
     function resqueak(uint256 tokenId)
         external
         payable
-        override(ICritter)
         whenNotPaused
         hasAccount
         hasEnoughFunds
@@ -265,25 +262,25 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-updateUsername}.
+     * @dev Updates an accounts username.
+     * @param newUsername The text of the new username.
      */
-    function updateUsername(string calldata username)
+    function updateUsername(string calldata newUsername)
         external
-        override(ICritter)
         whenNotPaused
         hasAccount
-        isValidUsername(username)
+        isValidUsername(newUsername)
     {
-        _updateUsername(username);
+        _updateUsername(newUsername);
     }
 
     /**
-     * @dev See {ICritter-undoDislikeSqueak}.
+     * @dev Undislikes a squeak.
+     * @param tokenId ID of the squeak.
      */
     function undoDislikeSqueak(uint256 tokenId)
         external
         payable
-        override(ICritter)
         whenNotPaused
         hasAccount
         hasEnoughFunds
@@ -294,12 +291,12 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-undoLikeSqueak}.
+     * @dev Unlikes a squeak.
+     * @param tokenId ID of the squeak.
      */
     function undoLikeSqueak(uint256 tokenId)
         external
         payable
-        override(ICritter)
         whenNotPaused
         hasAccount
         hasEnoughFunds
@@ -310,12 +307,12 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-undoResqueak}.
+     * @dev Undoes a resqueak.
+     * @param tokenId ID of the squeak.
      */
     function undoResqueak(uint256 tokenId)
         external
         payable
-        override(ICritter)
         whenNotPaused
         hasAccount
         hasEnoughFunds
@@ -326,12 +323,13 @@ contract Critter is
     }
 
     /**
-     * @dev See {ICritter-withdraw}.
+     * @dev Transfers out funds from the treasury.
+     * @param to Address of the account where the funds will go.
+     * @param amount Amount to withdraw in wei.
      */
     function withdraw(address to, uint256 amount)
         external
         payable
-        override(ICritter)
         onlyRole(TREASURER_ROLE)
     {
         _withdraw(to, amount);
@@ -352,7 +350,7 @@ contract Critter is
     /* solhint-enable no-empty-blocks */
 
     /**
-     * @dev See {IERC721Upgradeable-_baseURI}.
+     * @dev See {IERC721AUpgradeable-_baseURI}.
      */
     function _baseURI()
         internal
@@ -364,7 +362,7 @@ contract Critter is
     }
 
     /**
-     * @dev Burns `tokenId`. See {ERC721AUpgradeable-_burn}.
+     * @dev Burns `tokenId`. See {IERC721AUpgradeable-_burn}.
      * @notice The caller must own `tokenId` or be an approved operator.
      */
     function _burn(uint256 tokenId) internal override(ERC721AUpgradeable) {
