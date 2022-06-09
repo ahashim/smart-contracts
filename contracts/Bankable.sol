@@ -88,6 +88,7 @@ contract Bankable is Initializable, Storeable {
      */
     function _deposit(uint256 amount) internal {
         treasury += amount;
+
         emit FundsDeposited(amount);
     }
 
@@ -118,7 +119,9 @@ contract Bankable is Initializable, Storeable {
      * @return amount of each pool unit in wei.
      */
     function _getPoolUnit(uint256 tokenId) internal view returns (uint256) {
-        return scoutPools[tokenId].amount / scoutPools[tokenId].levelTotal;
+        ScoutPool storage pool = scoutPools[tokenId];
+
+        return pool.amount / pool.levelTotal;
     }
 
     /**
@@ -129,6 +132,7 @@ contract Bankable is Initializable, Storeable {
      */
     function _makePayment(uint256 tokenId, Interaction interaction) internal {
         if (
+            // positive interaction
             interaction == Interaction.Like ||
             interaction == Interaction.Resqueak ||
             interaction == Interaction.UndoDislike
@@ -151,6 +155,7 @@ contract Bankable is Initializable, Storeable {
                 _transferFunds(squeaks[tokenId].owner, remainder);
             }
         } else if (
+            // negative interaction
             interaction == Interaction.Dislike ||
             interaction == Interaction.UndoLike ||
             interaction == Interaction.UndoResqueak

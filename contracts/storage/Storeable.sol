@@ -52,7 +52,7 @@ contract Storeable is Typeable, Immutable, Mappable {
      */
     // solhint-disable-next-line func-name-mixedcase
     function __Storeable_init(
-        string memory baseURI,
+        string calldata baseURI,
         uint256 fee,
         uint256 takeRate,
         uint256 poolThresh,

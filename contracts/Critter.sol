@@ -71,9 +71,9 @@ contract Critter is
      * @param viralityThresh Minimum score that a squeak must have for virality.
      */
     function initialize(
-        string memory name,
-        string memory symbol,
-        string memory baseURI,
+        string calldata name,
+        string calldata symbol,
+        string calldata baseURI,
         uint256 fee,
         uint256 takeRate,
         uint256 poolThresh,
@@ -142,7 +142,7 @@ contract Critter is
      * @dev Creates a Critter account.
      * @param username Username for the account.
      */
-    function createAccount(string memory username)
+    function createAccount(string calldata username)
         external
         whenNotPaused
         isValidUsername(username)
@@ -155,7 +155,7 @@ contract Critter is
      * @param content Text content of the squeak.
      * @notice Content must be between 0 and 256 bytes in length.
      */
-    function createSqueak(string memory content)
+    function createSqueak(string calldata content)
         external
         whenNotPaused
         hasAccount

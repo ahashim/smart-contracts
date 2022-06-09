@@ -68,7 +68,7 @@ contract Accountable is AccessControlUpgradeable, Storeable {
      * @dev Ensures a username isn't empty or too long, and is available.
      * @param username Text of the username.
      */
-    modifier isValidUsername(string memory username) {
+    modifier isValidUsername(string calldata username) {
         // validate existence
         if (bytes(username).length == 0) {
             revert UsernameEmpty({username: username});
@@ -101,7 +101,7 @@ contract Accountable is AccessControlUpgradeable, Storeable {
      * @dev Creates a Critter account.
      * @param username Username for the account.
      */
-    function _createAccount(string memory username) internal {
+    function _createAccount(string calldata username) internal {
         // ensure address has not already created an account
         if (bytes(users[msg.sender].username).length > 0) {
             revert ExistingAccount({account: msg.sender});
@@ -123,13 +123,14 @@ contract Accountable is AccessControlUpgradeable, Storeable {
      * @dev Updates an accounts username.
      * @param newUsername The text of the new username.
      */
-    function _updateUsername(string memory newUsername) internal {
+    function _updateUsername(string calldata newUsername) internal {
         // clear the current username
-        string memory oldUsername = users[msg.sender].username;
+        User storage user = users[msg.sender];
+        string memory oldUsername = user.username;
         delete addresses[oldUsername];
 
         // set the new username
-        users[msg.sender].username = newUsername;
+        user.username = newUsername;
         addresses[newUsername] = msg.sender;
 
         emit UsernameUpdated(msg.sender, oldUsername, newUsername);
