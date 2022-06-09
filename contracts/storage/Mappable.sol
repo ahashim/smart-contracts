@@ -25,64 +25,58 @@ import './Typeable.sol';
 
 /**
  * @title Mappable
- * @dev A contract that only holds data mappings. Mappings do not fill storage
- * slots in a linear fashion, rather a hash of the key/value inserted. This
- * makes "good enough" collision avoidance gaurantee, and thus can be appended
- * to with newer mappings in increasing contract versions.
- * @notice This contract inherits from `Typeable` in order to use custom Critter
- * data-structures such as a `Squeak`.
+ * @dev A contract that only handles data mappings.
+ * @notice Mappings do not fill storage slots in a linear fashion, but instead
+ *      they store data in a location based on a hash of its key/value. This is
+ *      a "good enough" collision avoidance gaurantee, and thus this contract
+ *      can be appended to with newer mappings in later versions.
  */
 contract Mappable is Initializable, Typeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     /**
-     * @dev Initializer function
+     * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Mappable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Mapping of username => account address.
+     * @dev Mapping of username <=> account address.
      */
     mapping(string => address) public addresses;
 
     /**
-     * @dev Mapping of tokenId => Squeak.
+     * @dev Mapping of tokenId <=> Squeak.
      */
     mapping(uint256 => Squeak) public squeaks;
 
     /**
-     * @dev Mapping of account address => User.
+     * @dev Mapping of account address <=> User.
      */
     mapping(address => User) public users;
 
     /**
-     * @dev Mapping of tokenId's => AddressSet of accounts which disliked the
-     * squeak.
+     * @dev Mapping of tokenId <=> AddressSet of dislikers.
      */
     mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal dislikes;
 
     /**
-     * @dev Mapping of tokenId's => AddressSet of accounts which liked the
-     * squeak.
+     * @dev Mapping of tokenId <=> AddressSet of likers.
      */
     mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal likes;
 
     /**
-     * @dev Mapping of tokenId's => AddressSet of accounts which resqueaked the
-     * squeak.
+     * @dev Mapping of tokenId <=> AddressSet of resqueakers.
      */
     mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal resqueaks;
 
     /**
-     * @dev Mapping of tokenId's => AddressSet of accounts that are scouts after
-     * a squeak goes viral.
+     * @dev Mapping of tokenId <=> AddressSet of scouts.
      */
     mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal scouts;
 
     /**
-     * @dev Mapping of tokenId's => wei to track funds for scouts of squeaks
-     * that have gone viral.
+     * @dev Mapping of tokenId <=> ScoutPool.
      */
     mapping(uint256 => ScoutPool) internal scoutPools;
 }

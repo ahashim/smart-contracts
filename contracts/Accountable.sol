@@ -36,19 +36,17 @@ error UsernameUnavailable(string username);
  */
 contract Accountable is AccessControlUpgradeable, Storeable {
     /**
-     * @dev Emitted when the `account` address creates a Critter account with
-     * `username`.
-     * @param account Address of the newly created account.
-     * @param username Text of the username for the newly created account.
+     * @dev Emitted after creating an account.
+     * @param account Address of the account.
+     * @param username Username of the account.
      */
     event AccountCreated(address indexed account, string username);
 
     /**
-     * @dev Emitted when the `account` address updates their account and changes
-     * an `oldUsername` to a `newUsername`.
-     * @param account Address of the account that updated their username.
-     * @param oldUsername The old username that was deleted from the account.
-     * @param newUsername The new username that was addded to the account.
+     * @dev Emitted after updating an accounts username.
+     * @param account Address of the account.
+     * @param oldUsername Previous username.
+     * @param newUsername Next username.
      */
     event UsernameUpdated(
         address indexed account,
@@ -57,7 +55,7 @@ contract Accountable is AccessControlUpgradeable, Storeable {
     );
 
     /**
-     * @dev Ensures that `_address` has a Critter account.
+     * @dev Ensures the sender has a Critter account.
      */
     modifier hasAccount() {
         if (bytes(users[msg.sender].username).length == 0) {
@@ -67,11 +65,8 @@ contract Accountable is AccessControlUpgradeable, Storeable {
     }
 
     /**
-     * @dev Ensures that `username` satisfies the following requirements:
-     *  - Greater than 0 bytes (cannot be empty).
-     *  - Less than 32 bytes (upper bound for storage slot optimization).
-     *  - Is not already in use.
-     * @param username Text of the username to be validated.
+     * @dev Ensures a username isn't empty or too long, and is available.
+     * @param username Text of the username.
      */
     modifier isValidUsername(string memory username) {
         // validate existence
@@ -90,7 +85,7 @@ contract Accountable is AccessControlUpgradeable, Storeable {
     }
 
     /**
-     * @dev Initializer function.
+     * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase
     function __Accountable_init() internal onlyInitializing {
@@ -103,9 +98,8 @@ contract Accountable is AccessControlUpgradeable, Storeable {
     }
 
     /**
-     * @dev Saves the `username` & address of the sender to storage, and grants
-     * them the `MINTER_ROLE`. Emits an {AccountCreated} event.
-     * @param username The username text for the account to save.
+     * @dev Creates a Critter account.
+     * @param username Username for the account.
      */
     function _createAccount(string memory username) internal {
         // ensure address has not already created an account
@@ -113,7 +107,7 @@ contract Accountable is AccessControlUpgradeable, Storeable {
             revert ExistingAccount({account: msg.sender});
         }
 
-        // create a User account for the address
+        // create a User for the address
         users[msg.sender] = User(msg.sender, 1, username);
 
         // set username <-> address mapping
@@ -122,26 +116,22 @@ contract Accountable is AccessControlUpgradeable, Storeable {
         // bypassing the admin-check on grantRole so each user can mint squeaks
         _grantRole(MINTER_ROLE, msg.sender);
 
-        // log account creation
         emit AccountCreated(msg.sender, username);
     }
 
     /**
-     * @dev Updates the username in storage for the sender's account. Emits a
-     * {UsernameUpdated} event.
-     * @param newUsername The text of the new username that the account is
-     * updating to.
+     * @dev Updates an accounts username.
+     * @param newUsername The text of the new username.
      */
     function _updateUsername(string memory newUsername) internal {
-        // clear current username from the addresses mapping
+        // clear the current username
         string memory oldUsername = users[msg.sender].username;
         delete addresses[oldUsername];
 
-        // set new usernames & address mappings
+        // set the new username
         users[msg.sender].username = newUsername;
         addresses[newUsername] = msg.sender;
 
-        // log the change
         emit UsernameUpdated(msg.sender, oldUsername, newUsername);
     }
 }

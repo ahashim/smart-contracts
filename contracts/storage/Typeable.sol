@@ -23,18 +23,18 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 /**
  * @title Typeable
- * @dev A contract holding all Critter data structure types.
+ * @dev A contract that only handles custom data structures (types).
  */
 contract Typeable is Initializable {
     /**
-     * @dev Initializer function
+     * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Typeable_init() internal view onlyInitializing {}
 
     /**
-     * @dev ScoutPool tracks fund information for scouts of a particular squeak.
-     * @param amount Total amount of wei in the .
+     * @dev ScoutPool tracks fund information for scouts of a viral squeak.
+     * @param amount Total pool funds in wei.
      * @param levelTotal Sum of the number of levels of each scout in the pool.
      */
     struct ScoutPool {
@@ -58,10 +58,10 @@ contract Typeable is Initializable {
 
     /**
      * @dev User is a registered Critter account.
-     * @param account Address of the user in the network.
-     * @param scoutLevel Level of "scout" user has achieved based on squeak and
-     * interaction history.
-     * @param username Users public username on Critter
+     * @param account Address of the account.
+     * @param scoutLevel Level of "scout" the user has achieved based on their
+            squeak and interaction history.
+     * @param username The accounts username.
      */
     struct User {
         address account;

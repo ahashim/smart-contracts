@@ -33,20 +33,23 @@ import './Squeakable.sol';
 /**
  * @title Critter: a microblogging platform where each post is an ERC721 token.
  * @author Ahmed Hashim <ahashim@users.noreply.github.com>
- *
  * @dev Core concepts:
- *
- *  - Every address is a unique username.
- *  - Every post, called a "Squeak" is an NFT.
- *  - Actions, such as "favorite" & "resqueak", cost a fee.
- *  - Fees are paid out to the owner of said squeak (not necessarily the
- *    original author).
- *  - Squeaks can be bought & sold via a bidding price discovery mechanism.
- *  - Once an author sells their squeak, the ownership is transferred to a
- *    new user.
- *  - Only owners can delete squeaks.
- *  - Deleting a squeak costs a fee of `blocks elapsed x deletion fee`.
+ *      - Every address is a unique username.
+ *      - Every post, called a "Squeak" is an NFT.
+ *      - Actions, such as "favorite" & "resqueak", cost a fee.
+ *      - Fees are paid out to the owner of said squeak (not necessarily the
+ *        original author).
+ *      - Squeaks can be bought & sold via a bidding price discovery mechanism.
+ *      - Once an author sells their squeak, the ownership is transferred to a
+ *        new user.
+ *      - Only owners can delete squeaks.
+ *      - Deleting a squeak costs a fee of `blocks elapsed x deletion fee`.
+ *      - Every squeak has a "virality" coefficient that is tracked on-chain.
+ *      - When a squeak goes "viral", future profits from that point on are
+ *        split among the owner and those who helped it go viral (likers &
+ *        resqueakers).
  */
+
 contract Critter is
     PausableUpgradeable,
     ReentrancyGuardUpgradeable,
@@ -197,7 +200,6 @@ contract Critter is
             });
         }
 
-        // burn the squeak
         _burn(tokenId);
     }
 
@@ -337,8 +339,7 @@ contract Critter is
 
     /* solhint-disable no-empty-blocks */
     /**
-     * @dev Function that should revert when `msg.sender` is not authorized to
-     * upgrade the contract.
+     * @dev Reverts when `msg.sender` is not authorized to upgrade the contract.
      * @param newImplementation Address of the new implementation contract.
      */
     function _authorizeUpgrade(address newImplementation)
@@ -364,9 +365,7 @@ contract Critter is
 
     /**
      * @dev Burns `tokenId`. See {ERC721AUpgradeable-_burn}.
-     *
-     * @notice Requirements:
-     *  - The caller must own `tokenId` or be an approved operator.
+     * @notice The caller must own `tokenId` or be an approved operator.
      */
     function _burn(uint256 tokenId) internal override(ERC721AUpgradeable) {
         super._burn(tokenId);
@@ -377,13 +376,12 @@ contract Critter is
 
     /**
      * @dev Hook that is called before any token transfer. This includes minting
-     * and burning. Calling conditions:
-     *  - When `from` and `to` are both non-zero, ``from``'s `tokenId` will
-     *  be transferred to `to`.
-     *  - When `from` is zero, `tokenId` will be minted for `to`.
-     *  - When `to` is zero, ``from``'s `tokenId` will be burned.
-     *  - `from` and `to` are never both zero.
-     *
+     *      and burning. Calling conditions:
+     *      - When `from` and `to` are both non-zero, ``from``'s `tokenId` will
+     *      be transferred to `to`.
+     *      - When `from` is zero, `tokenId` will be minted for `to`.
+     *      - When `to` is zero, ``from``'s `tokenId` will be burned.
+     *      - `from` and `to` are never both zero.
      * @param from Address of the account that is relinquishing ownership of the
      * token.
      * @param to Address of the account that is gaining ownership of the token.
@@ -401,15 +399,15 @@ contract Critter is
 
     /**
      * @dev Hook that is called after a set of serially-ordered token ids have
-     * been transferred. This includes minting. And also called after one token
-     * has been burned. Calling conditions:
-     *  - When `from` and `to` are both non-zero, `from`'s `tokenId` has been
-     *  transferred to `to`.
-     *  - When `from` is zero, `tokenId` has been minted for `to`.
-     *  - When `to` is zero, `tokenId` has been burned by `from`.
-     *  - `from` and `to` are never both zero.
+     *      been transferred. This includes minting. And also called after one
+     *      token has been burned. Calling conditions:
+     *      - When `from` and `to` are both non-zero, `from`'s `tokenId` has
+     *        been transferred to `to`.
+     *      - When `from` is zero, `tokenId` has been minted for `to`.
+     *      - When `to` is zero, `tokenId` has been burned by `from`.
+     *      - `from` and `to` are never both zero.
      * @param from Address of the account that is relinquishing ownership of the
-     * token.
+     *      token.
      * @param to Address of the account that is gaining ownership of the token.
      * @param startTokenId The first token id to be transferred.
      * @param quantity The amount to be transferred.

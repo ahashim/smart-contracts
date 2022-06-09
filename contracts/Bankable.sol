@@ -28,44 +28,43 @@ error TransferFailed(address to, uint256 amount);
 error InvalidWithdrawlAmount(uint256 amount);
 
 /**
- * @dev Bankable
- * @dev A contract to handle user payments & interact with the treasury.
+ * @title Bankable
+ * @dev A contract to handle interaction payments, scouts + pools, and
+ *      transacting with the treasury.
  */
 contract Bankable is Initializable, Storeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     /**
-     * @dev Emitted when funds of `amount` are deposited into the treasury.
-     * @param amount Amount in wei of funds that were deposited.
+     * @dev Emitted when funds are deposited into the treasury.
+     * @param amount Amount of the funds in wei.
      */
     event FundsDeposited(uint256 amount);
 
     /**
-     * @dev Emitted when funds of `amount` are transferred to the `to` address.
-     * @param to Address of the account that funds were transferred to.
-     * @param amount Amount in wei of funds that were transferred.
+     * @dev Emitted when funds are transferred to an account.
+     * @param to Address of the account.
+     * @param amount Amount of the funds in wei.
      */
     event FundsTransferred(address indexed to, uint256 amount);
 
     /**
-     * @dev Emitted when funds of `amount` are withdrawn from the treasury and
-     * sent to the `to` address.
-     * @param to Address of the account that funds were transferred to.
-     * @param amount Amount in wei of funds that were transferred.
+     * @dev Emitted when funds are withdrawn from the treasury.
+     * @param to Address of the account.
+     * @param amount Amount of the funds in wei.
      */
     event FundsWithdrawn(address indexed to, uint256 amount);
 
     /**
-     * @dev Emitted when funds of `amount` for viral squeak at `tokenId` are to
-     * the scoutPool mapping.
+     * @dev Emitted when fees for a viral squeak are added to its scout pool.
      * @param tokenId ID of the viral squeak.
-     * @param amount Amount in wei of funds that were added.
+     * @param amount Amount of the funds in wei.
      */
     event FundsAddedToScoutPool(uint256 tokenId, uint256 amount);
 
     /**
-     * @dev Ensures that msg.sender has enough funds for the interaction fee.
+     * @dev Ensures that the sender has enough to cover the interaction fee.
      */
     modifier hasEnoughFunds() {
         if (msg.value < platformFee) {
@@ -78,14 +77,14 @@ contract Bankable is Initializable, Storeable {
     }
 
     /**
-     * @dev Initializer function
+     * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Bankable_init() internal view onlyInitializing {}
 
     /**
-     * @dev deposit `value` amount of wei into the treasury.
-     * @param amount The amount of wei to deposit.
+     * @dev Deposits funds into the treasury.
+     * @param amount Amount of the funds in wei.
      */
     function _deposit(uint256 amount) internal {
         treasury += amount;
@@ -93,30 +92,29 @@ contract Bankable is Initializable, Storeable {
     }
 
     /**
-     * @dev Returns the fee amount in wei to delete a squeak at `tokenId`.
+     * @dev Gets the price of deleting a squeak based on its age.
      * @param tokenId ID of the squeak to delete.
-     * @param blockConfirmationThreshold The amount of blocks to pad the fee
-     * calculation with in order to correctly estimate a price for the block in
-     * which the actual delete transaction occurs.
-     * @notice This gets multiplied by `platformFee` * squeak.blockNumber
-     * to calculate the full fee amount.
+     * @param confirmationThreshold The number of future blocks that the delete
+     *      will potentially occur in. Required to give a mostly correct
+     *      price estimate assuming the transaction will get mined within that
+     *      range. 6 blocks is connsidered a good default.
+     * @return Price of deleting the squeak in wei.
      */
-    function _getDeleteFee(uint256 tokenId, uint256 blockConfirmationThreshold)
+    function _getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
         internal
         view
         returns (uint256)
     {
-        Squeak memory squeak = squeaks[tokenId];
-        uint256 latestBlockThreshold = block.number +
-            blockConfirmationThreshold;
-
-        return (latestBlockThreshold - squeak.blockNumber) * platformFee;
+        return
+            ((block.number + confirmationThreshold) -
+                squeaks[tokenId].blockNumber) * platformFee;
     }
 
     /**
-     * @dev Returns the unit price of a viral squeaks pool to split amongst its
-     * scouts.
-     * @param tokenId ID of the viral squeak to determine unit price.
+     * @dev Gets the price of a single "unit" of funds in a squeaks scout pool.
+     *      The unit gets multiplied by every scouts level, and distributed
+     *      among scouts in the pool.
+     * @param tokenId ID of the viral squeak.
      * @return amount of each pool unit in wei.
      */
     function _getPoolUnit(uint256 tokenId) internal view returns (uint256) {
@@ -124,23 +122,26 @@ contract Bankable is Initializable, Storeable {
     }
 
     /**
-     * @dev Makes a payment for the squeak at `tokenId` depending on its
-     * virality + interaction.
-     * @param tokenId ID of the squeak to pay out for.
-     * @param interaction Value from the Interaction enum.
+     * @dev Makes a payment for a squeak based on its interaction polarity &
+     *      virality.
+     * @param tokenId ID of the squeak.
+     * @param interaction A value from the Interaction enum.
      */
     function _makePayment(uint256 tokenId, Interaction interaction) internal {
-        if (_isPositiveInteraction(interaction)) {
+        if (
+            interaction == Interaction.Like ||
+            interaction == Interaction.Resqueak ||
+            interaction == Interaction.UndoDislike
+        ) {
             // calculate amounts to deposit & transfer
-            (uint256 fee, uint256 remainder) = _getInteractionAmounts(
-                msg.value
-            );
+            uint256 interactionFee = (msg.value * platformTakeRate) / 100;
+            uint256 remainder = msg.value - interactionFee;
 
             // deposit fee into treasury
-            _deposit(fee);
+            _deposit(interactionFee);
 
             if (viralSqueaks.contains(tokenId)) {
-                // split remainder amongst scouts & the squeak owner
+                // split remainder between scouts & the squeak owner
                 uint256 scoutFunds = remainder / 2;
 
                 _addScoutFunds(tokenId, scoutFunds);
@@ -149,17 +150,20 @@ contract Bankable is Initializable, Storeable {
                 // transfer remaining funds to the squeak owner
                 _transferFunds(squeaks[tokenId].owner, remainder);
             }
-        } else if (_isNegativeInteraction(interaction)) {
+        } else if (
+            interaction == Interaction.Dislike ||
+            interaction == Interaction.UndoLike ||
+            interaction == Interaction.UndoResqueak
+        ) {
             // treasury takes all
             _deposit(msg.value);
         }
     }
 
     /**
-     * @dev Pays `amount` of wei to each scout of `tokenId` multiplied by their
-     * scout level.
+     * @dev Pays out scout pool funds to its members.
      * @param tokenId ID of viral squeak that has scouts.
-     * @param poolUnit Base amount in wei to multiply scout level by.
+     * @param poolUnit Base amount to multiply scout level by in wei.
      */
     function _makeScoutPayments(uint256 tokenId, uint256 poolUnit) internal {
         // read pool details into memory for cheaper operations
@@ -183,18 +187,17 @@ contract Bankable is Initializable, Storeable {
     }
 
     /**
-     * @dev Withdraws funds in `amount` from the treasury, and transfers to the
-     * `to` address.
-     * @param to Address of account to withdraw to.
-     * @param amount Amount in wei to withdraw.
+     * @dev Transfers out funds from the treasury.
+     * @param to Address of the account where the funds will go.
+     * @param amount Amount to withdraw in wei.
      */
     function _withdraw(address to, uint256 amount) internal {
-        // ensure amount is correct
+        // validate the amount
         if (amount > treasury) {
             revert InvalidWithdrawlAmount({amount: amount});
         }
 
-        // subtract from treasury and transfer out
+        // transfer out from the treasury
         treasury -= amount;
         _transferFunds(to, amount);
 
@@ -202,80 +205,29 @@ contract Bankable is Initializable, Storeable {
     }
 
     /**
-     * @dev Transfers msg.value amount of wei into `to`'s account.
-     * @param tokenId ID of the squeak to add funds for.
-     * @param _amount Amount in wei of eth to transfer.
+     * @dev Add funds to the scout pool of a viral squeak. It may possibly pay
+     *      out to its members.
+     * @param tokenId ID of the squeak.
+     * @param amount Amount to add in wei.
      */
-    function _addScoutFunds(uint256 tokenId, uint256 _amount) private {
+    function _addScoutFunds(uint256 tokenId, uint256 amount) private {
         // add funds to the pool
-        scoutPools[tokenId].amount += _amount;
+        scoutPools[tokenId].amount += amount;
 
         // determine if we need to payout
         uint256 poolUnit = _getPoolUnit(tokenId);
 
         if (poolUnit >= poolThreshold) {
-            // pay scouts
             _makeScoutPayments(tokenId, poolUnit);
         }
 
-        emit FundsAddedToScoutPool(tokenId, _amount);
+        emit FundsAddedToScoutPool(tokenId, amount);
     }
 
     /**
-     * @dev Calculate both the fee to add to treasury based on a percentage
-     * of the `amount` sent for the interaction, as well as the amount to
-     * transfer to the user based as a remaining percentage of `amount`.
-     * @param amount Amount in wei to base calculations off.
-     * @return fee Amount to deposit into treasury.
-     * @return transferAmount Amount to transfer to the user.
-     */
-    function _getInteractionAmounts(uint256 amount)
-        private
-        view
-        returns (uint256, uint256)
-    {
-        uint256 fee = (amount * platformTakeRate) / 100;
-        uint256 remainder = amount - fee;
-
-        return (fee, remainder);
-    }
-
-    /**
-     * @dev Checks if the interaction has a positive polarity.
-     * @param interaction  Value from the Interaction enum.
-     * @return Boolean value representing polarity
-     */
-    function _isNegativeInteraction(Interaction interaction)
-        private
-        view
-        returns (bool)
-    {
-        return
-            interaction == Interaction.Dislike ||
-            interaction == Interaction.UndoLike ||
-            interaction == Interaction.UndoResqueak;
-    }
-
-    /**
-     * @dev Checks if the interaction has a positive polarity.
-     * @param interaction  Value from the Interaction enum.
-     * @return Boolean value representing polarity
-     */
-    function _isPositiveInteraction(Interaction interaction)
-        private
-        view
-        returns (bool)
-    {
-        return
-            interaction == Interaction.Like ||
-            interaction == Interaction.Resqueak ||
-            interaction == Interaction.UndoDislike;
-    }
-
-    /**
-     * @dev Transfers msg.value amount of wei into `to`'s account.
-     * @param to Address of the account to transfer eth into.
-     * @param amount Amount in wei of eth to transfer.
+     * @dev Sends funds to an account.
+     * @param to Address of the account.
+     * @param amount Amount to transfer in wei.
      */
     function _transferFunds(address to, uint256 amount) private {
         // solhint-disable-next-line avoid-low-level-calls

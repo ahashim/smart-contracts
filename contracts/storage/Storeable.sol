@@ -26,11 +26,11 @@ import './Typeable.sol';
 
 /**
  * @title Storeable
- * @dev A contract holding all Critter storage variables. This is upgradeable
- * by means of appending new variables below the existing ones in future
- * versions. This will maintain storage mappings in the EVM as new features are
- * added.
- * @notice EVM storage collisions & upgradeability: https://tinyurl.com/d424mcpx
+ * @dev A contract to handle Critter storage variables.
+ * @notice This is upgradeable by means of appending new variables below the
+ *      existing ones in future contract versions. This will maintain storage
+ *      mappings in the EVM as new features are added. More info on EVM storage
+ *      collisions & upgradeability: https://tinyurl.com/d424mcpx
  */
 contract Storeable is Typeable, Immutable, Mappable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
@@ -48,7 +48,7 @@ contract Storeable is Typeable, Immutable, Mappable {
     }
 
     /**
-     * @dev Initializer function
+     * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase
     function __Storeable_init(
@@ -58,10 +58,7 @@ contract Storeable is Typeable, Immutable, Mappable {
         uint256 poolThresh,
         uint8 viralityThresh
     ) internal onlyInitializing {
-        // set base token URI
         baseTokenURI = baseURI;
-
-        // set fees
         platformFee = fee;
         platformTakeRate = takeRate;
         poolThreshold = poolThresh;
@@ -69,29 +66,28 @@ contract Storeable is Typeable, Immutable, Mappable {
     }
 
     /**
-     * @dev Global token URL prefix used when autogenerating token URI's.
+     * @dev Token URL prefix used by squeaks.
      */
     string public baseTokenURI;
 
     /**
-     * @dev Contract funds (can only be withdrawn by TREASURER_ROLE).
+     * @dev Contract funds.
+     * @notice Can only be withdrawn by TREASURER_ROLE.
      */
     uint256 public treasury;
 
     /**
-     * @dev Fee amount in wei used across Critter transactions across the
-     * platform such as like, resqueak, delete, etc...
+     * @dev Fee amount in wei used for interactions on Critter.
      */
     uint256 public platformFee;
 
     /**
-     * @dev Percentage amount to add to the treasury from each chargable
-     * transaction on the platform.
+     * @dev A percentage to take from each interaction.
      */
     uint256 public platformTakeRate;
 
     /**
-     * @dev Minimum score that a squeak must have for it to be considered viral.
+     * @dev Minimum amount required in wei for a scout pool to pay its members.
      */
     uint256 public poolThreshold;
 

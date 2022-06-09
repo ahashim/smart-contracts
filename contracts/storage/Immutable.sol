@@ -23,14 +23,14 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 /**
  * @title Immutable
- * @dev A contract that only holds constant state variables. These variables
- * do not take up storage slots upon deployment because they are constant. As a
- * result, one can append more constant variables below the existing ones in
- * increasing contract versions.
+ * @dev A contract that only holds constant state variables.
+ * @notice These variables do not take up storage slots because they are
+ *      constant. This allows one to append more constant variables below the
+ *      existing ones in increasing contract versions.
  */
 contract Immutable is Initializable {
     /**
-     * @dev Initializer function
+     * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Immutable_init() internal view onlyInitializing {}
@@ -46,7 +46,7 @@ contract Immutable is Initializable {
     bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
 
     /**
-     * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
+     * @dev TREASURER_ROLE has priviledges to withdraw funds and update fees.
      */
     bytes32 public constant TREASURER_ROLE = keccak256('TREASURER_ROLE');
 

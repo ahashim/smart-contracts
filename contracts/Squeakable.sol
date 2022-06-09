@@ -42,7 +42,7 @@ error SqueakDoesNotExist(uint256 tokenId);
 
 /**
  * @title Squeakable
- * @dev A contract dealing with actions performed on a Squeak.
+ * @dev A contract to handle actions performed on a Squeak.
  */
 contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     using ABDKMath64x64 for *;
@@ -50,19 +50,18 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
-     * @dev Emitted when the `sender` address reposts a squeak at `tokenID`.
-     * @param sender Address of the account that reposted the squeak.
-     * @param tokenId Numerical ID of the reposted queak.
+     * @dev Emitted after resqueaking.
+     * @param sender Account that resqueaked.
+     * @param tokenId ID of the squeak.
      */
     event Resqueaked(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Emitted when the `sender` address creates a squeak with `content`
-     * and is assigned a `tokenID`.
-     * @param author Address of the account that created the squeak.
-     * @param tokenId Numerical ID of the newly minted squeak.
-     * @param blockNumber Number of the block in which the squeak was authored.
-     * @param content Text content of the newly minted squeak.
+     * @dev Emitted after creating a squeak.
+     * @param author Account that created the squeak.
+     * @param tokenId ID of the squeak.
+     * @param blockNumber Block in which the squeak was created.
+     * @param content Content of the squeak.
      */
     event SqueakCreated(
         address indexed author,
@@ -72,50 +71,50 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     );
 
     /**
-     * @dev Emitted when the `sender` address deletes a squeak of `tokenID`.
-     * @param sender Address of the account that deleted the squeak.
-     * @param tokenId Numerical ID of the deleted squeak.
+     * @dev Emitted after deleting a squeak.
+     * @param sender Account that deleted the squeak.
+     * @param tokenId ID of the squeak.
      */
     event SqueakDeleted(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Emitted when the `sender` address dislikes a squeak of `tokenID`.
-     * @param sender Address of the account that disliked the squeak.
-     * @param tokenId Numerical ID of the disliked squeak.
+     * @dev Emitted after disliking a squeak.
+     * @param sender Account that disliked the squeak.
+     * @param tokenId ID of the squeak.
      */
     event SqueakDisliked(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Emitted when the `sender` address likes a squeak of `tokenID`.
-     * @param sender Address of the account that liked the squeak.
-     * @param tokenId Numerical ID of the liked squeak.
+     * @dev Emitted after liking a squeak.
+     * @param sender Account that liked the squeak.
+     * @param tokenId ID of the squeak.
      */
     event SqueakLiked(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Emitted when the `sender` address undislikes a squeak of `tokenID`.
-     * @param sender Address of the account that undisliked the squeak.
-     * @param tokenId Numerical ID of the undisliked squeak.
+     * @dev Emitted after undisliking a squeak.
+     * @param sender Account that undisliked the squeak.
+     * @param tokenId ID of the squeak.
      */
     event SqueakUndisliked(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Emitted when the `sender` address unlikes a squeak of `tokenID`.
-     * @param sender Address of the account that unliked the squeak.
-     * @param tokenId Numerical ID of the unliked squeak.
+     * @dev Emitted after unliking a squeak.
+     * @param sender Account that unliked the squeak.
+     * @param tokenId ID of the squeak.
      */
     event SqueakUnliked(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Emitted when the `sender` address undoes a resqueak of `tokenID`.
-     * @param sender Address of the account that undid the resqueak.
-     * @param tokenId Numerical ID of the undone resqueak.
+     * @dev Emitted after unresqueaking.
+     * @param sender Account that unresqueaked.
+     * @param tokenId ID of the squeak.
      */
     event SqueakUnresqueaked(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Ensure squeak exists at `tokenId`.
-     * @param tokenId Numerical ID of the squeak
+     * @dev Ensure squeak exists.
+     * @param tokenId ID of the squeak.
      */
     modifier squeakExists(uint256 tokenId) {
         if (!_exists(tokenId)) {
@@ -125,34 +124,43 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Initializer function
+     * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Squeakable_init() internal view onlyInitializing {}
 
     /**
-     * @dev See {ISqueakable-getDislikeCount}.
+     * @dev Gets the number of dislikes for a squeak.
+     * @param tokenId ID of the squeak.
+     * @notice The token must exist.
      */
     function getDislikeCount(uint256 tokenId) public view returns (uint256) {
         return dislikes[tokenId].length();
     }
 
     /**
-     * @dev See {ISqueakable-getLikeCount}.
+     * @dev Gets the number of likes for a squeak.
+     * @param tokenId ID of the squeak.
+     * @notice The token must exist.
      */
     function getLikeCount(uint256 tokenId) public view returns (uint256) {
         return likes[tokenId].length();
     }
 
     /**
-     * @dev See {ISqueakable-getDislikeCount}.
+     * @dev Gets the number of resqueaks for a squeak.
+     * @param tokenId ID of the squeak.
+     * @notice The token must exist.
      */
     function getResqueakCount(uint256 tokenId) public view returns (uint256) {
         return resqueaks[tokenId].length();
     }
 
     /**
-     * @dev See {ISqueakable-getViralityScore}.
+     * @dev Gets the virality score of a squeak.
+     * @param tokenId ID of the squeak.
+     * @return A value between 0-100 representing the virality of the squeak.
+     * @notice The token must exist.
      */
     function getViralityScore(uint256 tokenId)
         public
@@ -165,7 +173,7 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
         uint256 likes = getLikeCount(tokenId);
         uint256 resqueaks = getResqueakCount(tokenId);
 
-        // minimum virality consideration
+        // squeak needs to have at least 1 like and 1 resqueak to be considered
         return
             likes > 0 && resqueaks > 0
                 ? _getViralityScore(blockDelta, dislikes, likes, resqueaks)
@@ -173,13 +181,10 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Creates a squeak consisting of `content` and saves it to storage.
-     * Emits a {SqueakCreated} event.
+     * @dev Creates a squeak.
      * @param content Text content of the squeak.
-     * @return tokenId Numerical ID of the newly created squeak.
-     * its URI (in conjunction with {_baseURI} prefix).
-     * @notice Requirements:
-     *  - Squeak `content` must be between 0 and 256 bytes in length.
+     * @return ID of the squeak.
+     * @notice Content must be between 0 and 256 bytes in length.
      */
     function _createSqueak(string memory content) internal returns (uint256) {
         // validate existence
@@ -191,23 +196,24 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
             revert SqueakIsTooLong({content: content});
         }
 
+        uint256 tokenId = _nextTokenId();
+
         // create & save the squeak to storage
-        squeaks[_nextTokenId()] = Squeak(
+        squeaks[tokenId] = Squeak(
             block.number,
             msg.sender,
             msg.sender,
             content
         );
 
-        emit SqueakCreated(msg.sender, _nextTokenId(), block.number, content);
+        emit SqueakCreated(msg.sender, tokenId, block.number, content);
 
         return _nextTokenId();
     }
 
     /**
-     * @dev Deletes a squeak at `tokenId` from storage. Emits a {SqueakDeleted}
-     * event.
-     * @param tokenId Numerical ID of the squeak to delete.
+     * @dev Deletes a squeak & its associated information.
+     * @param tokenId ID of the squeak.
      */
     function _deleteSqueak(uint256 tokenId) internal {
         // delete squeak
@@ -219,17 +225,17 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
         delete resqueaks[tokenId];
 
         if (viralSqueaks.contains(tokenId)) {
-            // remove from viralSqueaks set
-            viralSqueaks.remove(tokenId);
+            // pay all scouts any remaining funds
+            if (scoutPools[tokenId].amount > 0) {
+                _makeScoutPayments(tokenId, _getPoolUnit(tokenId));
+            }
 
             // delete associated scout info
             delete scouts[tokenId];
             delete scoutPools[tokenId];
 
-            // pay all scouts any remaining funds
-            if (scoutPools[tokenId].amount > 0) {
-                _makeScoutPayments(tokenId, _getPoolUnit(tokenId));
-            }
+            // remove from viralSqueaks set
+            viralSqueaks.remove(tokenId);
         }
 
         // recieve payment
@@ -239,9 +245,8 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Dislikes a squeak at `tokenId` by depositing the platformFee
-     * into the treasury. Emits a {SqueakDisliked} event.
-     * @param tokenId Numerical ID of the squeak to dislike.
+     * @dev Dislikes a squeak.
+     * @param tokenId ID of the squeak.
      */
     function _dislikeSqueak(uint256 tokenId) internal {
         // ensure account has not already disliked the squeak
@@ -254,22 +259,21 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
             likes[tokenId].remove(msg.sender);
         }
 
-        // then add them to the likers set
+        // then add them to the dislikers set
         dislikes[tokenId].add(msg.sender);
 
-        // deposit fee into the treasury
-        _deposit(msg.value);
+        _checkVirality(tokenId);
+        _makePayment(tokenId, Interaction.Dislike);
 
         emit SqueakDisliked(msg.sender, tokenId);
     }
 
     /**
-     * @dev Gets the rate of virality percent at the current block for a
-     * particular squeak.
-     * @param blockDelta Number of blocks elapse since the squeak was authored.
-     * @param dislikes Number of dislikes of a particular squeak.
-     * @param likes Number of likes of a particular squeak.
-     * @param resqueaks Number of resqueaks of a particular squeak.
+     * @dev Gets the virality score of a squeak.
+     * @param blockDelta Number of blocks elapsed since the squeak was created.
+     * @param dislikes Number of dislikes.
+     * @param likes Number of likes.
+     * @param resqueaks Number of resqueaks.
      * @return A value between 0-100 representing the virality of the squeak.
      */
     function _getViralityScore(
@@ -312,9 +316,8 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev transfers platformFee from msg.sender to `tokenId` squeak owner.
-     * Also adds fee to treasury from platformFee.Emits a {SqueakLiked} event.
-     * @param tokenId ID of the squeak to "like".
+     * @dev Likes a squeak.
+     * @param tokenId ID of the squeak.
      */
     function _likeSqueak(uint256 tokenId) internal {
         // ensure account has not already liked the squeak
@@ -337,10 +340,8 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev transfers platformFee from msg.sender to `tokenId` squeak owner.
-     * Also adds fee to treasury from platformFee. Emits a {Resqueaked}
-     * event.
-     * @param tokenId ID of the squeak to "resqueak".
+     * @dev Resqueaks a squeak.
+     * @param tokenId ID of the squeak.
      */
     function _resqueak(uint256 tokenId) internal {
         // revert if the account has already resqueaked it
@@ -358,17 +359,16 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Removes the sender from the dislikes set of the squeak at `tokenId`,
-     * and deposits the platformFee into the treasury.
-     * @param tokenId ID of the squeak to undo the dislike of.
+     * @dev Undislikes a squeak.
+     * @param tokenId ID of the squeak.
      */
     function _undoDislikeSqueak(uint256 tokenId) internal {
-        // ensure sender has already disliked the squeak
+        // ensure the user has disliked the squeak
         if (!dislikes[tokenId].contains(msg.sender)) {
             revert NotDislikedYet({account: msg.sender, tokenId: tokenId});
         }
 
-        // remove the caller from the dislikers set of the squeak
+        // remove them from dislikers
         dislikes[tokenId].remove(msg.sender);
 
         _checkVirality(tokenId);
@@ -378,17 +378,16 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Removes the sender from the likes set of the squeak at `tokenId`,
-     * and deposits the platformFee into the treasury.
-     * @param tokenId ID of the squeak to undo the like of.
+     * @dev Unlikes a squeak.
+     * @param tokenId ID of the squeak.
      */
     function _undoLikeSqueak(uint256 tokenId) internal {
-        // ensure sender has already liked the squeak
+        // ensure the user has liked the squeak
         if (!likes[tokenId].contains(msg.sender)) {
             revert NotLikedYet({account: msg.sender, tokenId: tokenId});
         }
 
-        // remove the caller from the likers set of the squeak
+        // remove them from the likers
         likes[tokenId].remove(msg.sender);
 
         _checkVirality(tokenId);
@@ -398,15 +397,16 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Deposits the platformFee into the treasury.
-     * @param tokenId ID of the squeak to undo the reqsqueak of.
+     * @dev Undoes a resqueak.
+     * @param tokenId ID of the squeak.
      */
     function _undoResqueak(uint256 tokenId) internal {
-        // revert if the account hasn't already resqueaked it
+        // ensure the user has resqueaked the squeak
         if (!resqueaks[tokenId].contains(msg.sender)) {
             revert NotResqueakedYet({account: msg.sender, tokenId: tokenId});
         }
 
+        // remove them from the resqueakers
         resqueaks[tokenId].remove(msg.sender);
 
         _checkVirality(tokenId);
@@ -416,23 +416,23 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Updates the scout level for an account and adds them to the scouts
-     * list for a particular token.
-     * @param _address Account to add to scouts list for tokenId.
-     * @param tokenId ID of the squeak to add the user to the scouts list of.
+     * @dev Updates the scout level for an account, and adds them to the scout
+     *      pool of a viral squeak.
+     * @param account Account to add to scouts list for tokenId.
+     * @param tokenId ID of the viral squeak.
      */
-    function _addScout(address _address, uint256 tokenId) private {
+    function _addScout(address account, uint256 tokenId) private {
         // upgrade their scout level
-        users[_address].scoutLevel++;
+        users[account].scoutLevel++;
 
-        // add them to the scouts list for the squeak
-        scouts[tokenId].add(_address);
+        // add them to the scout pool for the squeak
+        scouts[tokenId].add(account);
     }
 
     /**
      * @dev Checks if a squeak is viral. If it is not, and the current virlality
-     * score brings it past the threshold, it marks it as such.
-     * @param tokenId ID of the squeak to check virality of.
+     *      score brings it past the threshold, it marks it as such.
+     * @param tokenId ID of the squeak.
      */
     function _checkVirality(uint256 tokenId) private {
         if (
@@ -445,19 +445,19 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
 
     /**
      * @dev Adds a squeak to the list of viral squeaks, and all of its positive
-     * interactors to a list of scouts while upgrading their scout levels. This
-     * called when the squeaks virality crosses the threshold.
-     * @param tokenId ID of the squeak to add the list of viral squeaks.
+     *      interactors to a scout pool while upgrading their scout levels.
+     * @param tokenId ID of the squeak.
      */
     function _markViral(uint256 tokenId) private {
-        // add squeak to list of viral squeaks
+        // add squeak to the list of viral squeaks
         viralSqueaks.add(tokenId);
 
-        // give the user who pushed the squeak into virality a bonus upgrade of
-        // their scout level
+        // give the user who pushed the squeak into virality & the squeak owner
+        // a bonus upgrade to their scout level.
         users[msg.sender].scoutLevel += 4;
+        users[squeaks[tokenId].owner].scoutLevel += 4;
 
-        // initialize a scout pool in memory
+        // initialize a scout pool
         ScoutPool memory pool;
 
         // get the upper bound of the larger set of positive interactions
@@ -487,7 +487,7 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
             }
         }
 
-        // save scout pool to storage
+        // save the pool to storage
         scoutPools[tokenId] = pool;
     }
 }
