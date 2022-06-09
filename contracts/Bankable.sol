@@ -130,12 +130,7 @@ contract Bankable is Initializable, Storeable {
      * @param interaction Value from the Interaction enum.
      */
     function _makePayment(uint256 tokenId, Interaction interaction) internal {
-        if (
-            // positive interactions
-            interaction == Interaction.Like ||
-            interaction == Interaction.Resqueak ||
-            interaction == Interaction.UndoDislike
-        ) {
+        if (_isPositiveInteraction(interaction)) {
             // calculate amounts to deposit & transfer
             (uint256 fee, uint256 remainder) = _getInteractionAmounts(
                 msg.value
@@ -154,12 +149,7 @@ contract Bankable is Initializable, Storeable {
                 // transfer remaining funds to the squeak owner
                 _transferFunds(squeaks[tokenId].owner, remainder);
             }
-        } else if (
-            // negative interactions
-            interaction == Interaction.Dislike ||
-            interaction == Interaction.UndoLike ||
-            interaction == Interaction.UndoResqueak
-        ) {
+        } else if (_isNegativeInteraction(interaction)) {
             // treasury takes all
             _deposit(msg.value);
         }
@@ -248,6 +238,38 @@ contract Bankable is Initializable, Storeable {
         uint256 remainder = amount - fee;
 
         return (fee, remainder);
+    }
+
+    /**
+     * @dev Checks if the interaction has a positive polarity.
+     * @param interaction  Value from the Interaction enum.
+     * @return Boolean value representing polarity
+     */
+    function _isNegativeInteraction(Interaction interaction)
+        private
+        view
+        returns (bool)
+    {
+        return
+            interaction == Interaction.Dislike ||
+            interaction == Interaction.UndoLike ||
+            interaction == Interaction.UndoResqueak;
+    }
+
+    /**
+     * @dev Checks if the interaction has a positive polarity.
+     * @param interaction  Value from the Interaction enum.
+     * @return Boolean value representing polarity
+     */
+    function _isPositiveInteraction(Interaction interaction)
+        private
+        view
+        returns (bool)
+    {
+        return
+            interaction == Interaction.Like ||
+            interaction == Interaction.Resqueak ||
+            interaction == Interaction.UndoDislike;
     }
 
     /**
