@@ -115,7 +115,7 @@ contract Squeakable is
      * @param sender Account that unresqueaked.
      * @param tokenId ID of the squeak.
      */
-    event SqueakUnresqueaked(address indexed sender, uint256 tokenId);
+    event Unresqueaked(address indexed sender, uint256 tokenId);
 
     /**
      * @dev Upgradeable constructor
@@ -411,6 +411,6 @@ contract Squeakable is
         // remove them from the resqueakers
         resqueakers.remove(msg.sender);
 
-        emit SqueakUnresqueaked(msg.sender, tokenId);
+        emit Unresqueaked(msg.sender, tokenId);
     }
 }
