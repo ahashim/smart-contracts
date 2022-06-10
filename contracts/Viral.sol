@@ -37,6 +37,12 @@ contract Viral is Validateable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
+     * @dev Upgradeable constructor
+     */
+    // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
+    function __Viral_init() internal view onlyInitializing {}
+
+    /**
      * @dev Gets the virality score of a squeak.
      * @param tokenId ID of the squeak.
      * @return A value between 0-100 representing the virality of the squeak.
