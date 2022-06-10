@@ -4,6 +4,7 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
+  INTERACTION,
 } from '../constants';
 
 // types
@@ -51,22 +52,30 @@ describe('getViralityScore', () => {
     ({ tokenId: viralSqueakId } = viralSqueakEvent!.args as Result);
 
     // everybody likes it
-    await critter.likeSqueak(viralSqueakId, { value: PLATFORM_FEE });
+    await critter.interact(viralSqueakId, INTERACTION.Like, {
+      value: PLATFORM_FEE,
+    });
     await critter
       .connect(barbie)
-      .likeSqueak(viralSqueakId, { value: PLATFORM_FEE });
+      .interact(viralSqueakId, INTERACTION.Like, { value: PLATFORM_FEE });
     await critter
       .connect(carlos)
-      .likeSqueak(viralSqueakId, { value: PLATFORM_FEE });
+      .interact(viralSqueakId, INTERACTION.Like, { value: PLATFORM_FEE });
 
     // everybody resqueaks it
-    await critter.resqueak(viralSqueakId, { value: PLATFORM_FEE });
+    await critter.interact(viralSqueakId, INTERACTION.Resqueak, {
+      value: PLATFORM_FEE,
+    });
     await critter
       .connect(barbie)
-      .resqueak(viralSqueakId, { value: PLATFORM_FEE });
+      .interact(viralSqueakId, INTERACTION.Resqueak, {
+        value: PLATFORM_FEE,
+      });
     await critter
       .connect(carlos)
-      .resqueak(viralSqueakId, { value: PLATFORM_FEE });
+      .interact(viralSqueakId, INTERACTION.Resqueak, {
+        value: PLATFORM_FEE,
+      });
 
     // barbie posts a squeak that nobody interacts with
     tx = await critter.createSqueak('hello blockchain!');

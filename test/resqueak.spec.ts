@@ -3,6 +3,7 @@ import { ethers, upgrades, waffle } from 'hardhat';
 import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
+  INTERACTION,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
 } from '../constants';
@@ -53,9 +54,11 @@ describe('resqueak', () => {
 
     // ahmed creates an account resqueaks it
     await critter.createAccount('ahmed');
-    const resqueakTx = (await critter.resqueak(squeakId, {
-      value: PLATFORM_FEE,
-    })) as ContractTransaction;
+    const resqueakTx = (await critter.interact(
+      squeakId,
+      INTERACTION.Resqueak,
+      { value: PLATFORM_FEE }
+    )) as ContractTransaction;
 
     return {
       barbieStartingBalance,
@@ -108,31 +111,43 @@ describe('resqueak', () => {
   });
 
   it('reverts if the user has already resqueaked the squeak', async () => {
-    await expect(critter.resqueak(squeakId, { value: PLATFORM_FEE })).to.be
-      .reverted;
+    await expect(
+      critter.interact(squeakId, INTERACTION.Resqueak, {
+        value: PLATFORM_FEE,
+      })
+    ).to.be.reverted;
   });
 
   it('reverts when the like fee is not sufficient', async () => {
-    await expect(critter.connect(barbie).resqueak(squeakId, { value: 1 })).to
-      .be.reverted;
+    await expect(
+      critter
+        .connect(barbie)
+        .interact(squeakId, INTERACTION.Resqueak, { value: 1 })
+    ).to.be.reverted;
   });
 
   it('reverts when the squeak does not exist', async () => {
     await expect(
-      critter.connect(barbie).resqueak(420, { value: PLATFORM_FEE })
+      critter
+        .connect(barbie)
+        .interact(420, INTERACTION.Resqueak, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 
   it('reverts when the user does not have an account', async () => {
     await expect(
-      critter.connect(owner).resqueak(squeakId, { value: PLATFORM_FEE })
+      critter
+        .connect(owner)
+        .interact(squeakId, INTERACTION.Resqueak, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 
   it('reverts when the contract is paused', async () => {
     await critter.connect(owner).pause();
     await expect(
-      critter.connect(barbie).resqueak(squeakId, { value: PLATFORM_FEE })
+      critter
+        .connect(barbie)
+        .interact(squeakId, INTERACTION.Resqueak, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 });

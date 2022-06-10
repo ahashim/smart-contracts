@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers, waffle, upgrades } from 'hardhat';
 import {
-  BLOCK_CONFIRMATION_THRESHOLD,
+  CONFIRMATION_THRESHOLD,
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
 } from '../constants';
@@ -43,7 +43,7 @@ describe('totalSupply', () => {
     const tokenId = 0;
     const deleteFee = (await critter.getDeleteFee(
       tokenId,
-      BLOCK_CONFIRMATION_THRESHOLD
+      CONFIRMATION_THRESHOLD
     )) as BigNumber;
     await critter.deleteSqueak(tokenId, { value: deleteFee });
 

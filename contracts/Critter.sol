@@ -20,10 +20,8 @@ pragma solidity ^0.8.4;
 
 // 3rd party contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 
-// Critter contracts
+// critter contracts
 import './Accountable.sol';
 import './Squeakable.sol';
 
@@ -47,13 +45,7 @@ import './Squeakable.sol';
  *        resqueakers).
  */
 
-contract Critter is
-    PausableUpgradeable,
-    ReentrancyGuardUpgradeable,
-    UUPSUpgradeable,
-    Accountable,
-    Squeakable
-{
+contract Critter is UUPSUpgradeable, Accountable, Squeakable {
     /* solhint-disable func-name-mixedcase, no-empty-blocks */
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -80,48 +72,23 @@ contract Critter is
         uint8 viralityThresh
     ) public initializerERC721A initializer {
         // 3rd party
+        __AccessControl_init();
         __ERC721A_init(name, symbol);
         __Pausable_init();
         __ReentrancyGuard_init();
-        __AccessControl_init();
         __UUPSUpgradeable_init();
 
         // Storage
-        __Typeable_init();
         __Immutable_init();
         __Mappable_init();
         __Storeable_init(baseURI, fee, takeRate, poolThresh, viralityThresh);
+        __Typeable_init();
 
         // Logic
         __Accountable_init();
         __Bankable_init();
         __Squeakable_init();
-    }
-
-    /**
-     * @dev See {IERC721AUpgradeable-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(AccessControlUpgradeable, ERC721AUpgradeable)
-        returns (bool)
-    {
-        return
-            ERC721AUpgradeable.supportsInterface(interfaceId) ||
-            super.supportsInterface(interfaceId);
-    }
-
-    /**
-     * @dev See {IERC721AUpgradeable-tokenURI}.
-     */
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721AUpgradeable)
-        returns (string memory)
-    {
-        return super.tokenURI(tokenId);
+        __Validateable_init();
     }
 
     /**
@@ -138,209 +105,11 @@ contract Critter is
         _unpause();
     }
 
-    /**
-     * @dev Creates a Critter account.
-     * @param username Username for the account.
-     */
-    function createAccount(string calldata username)
-        external
-        whenNotPaused
-        isValidUsername(username)
-    {
-        _createAccount(username);
-    }
-
-    /**
-     * @dev Creates a squeak.
-     * @param content Text content of the squeak.
-     * @notice Content must be between 0 and 256 bytes in length.
-     */
-    function createSqueak(string calldata content)
-        external
-        whenNotPaused
-        hasAccount
-        onlyRole(MINTER_ROLE)
-    {
-        _createSqueak(content);
-        _mint(msg.sender, 1);
-    }
-
-    /**
-     * @dev Deletes a squeak & its associated information.
-     * @param tokenId ID of the squeak.
-     */
-    function deleteSqueak(uint256 tokenId)
-        external
-        payable
-        whenNotPaused
-        hasAccount
-        squeakExists(tokenId)
-        nonReentrant
-    {
-        address owner = ownerOf(tokenId);
-
-        if (msg.sender != owner && !isApprovedForAll(owner, msg.sender)) {
-            revert NotApprovedOrOwner({sender: msg.sender});
-        }
-
-        uint256 currentBlockDeleteFee = getDeleteFee(tokenId, 0);
-
-        if (msg.value < currentBlockDeleteFee) {
-            revert InsufficientFunds({
-                available: msg.value,
-                required: currentBlockDeleteFee
-            });
-        }
-
-        _burn(tokenId);
-    }
-
-    /**
-     * @dev Dislikes a squeak.
-     * @param tokenId ID of the squeak.
-     */
-    function dislikeSqueak(uint256 tokenId)
-        external
-        payable
-        whenNotPaused
-        hasAccount
-        squeakExists(tokenId)
-        hasEnoughFunds
-        nonReentrant
-    {
-        _dislikeSqueak(tokenId);
-    }
-
-    /**
-     * @dev Gets the price of deleting a squeak based on its age.
-     * @param tokenId ID of the squeak to delete.
-     * @param confirmationThreshold The number of future blocks that the delete
-     *      will potentially occur in. Required to give a mostly correct
-     *      price estimate assuming the transaction will get mined within that
-     *      range. 6 blocks is connsidered a good default.
-     * @return Price of deleting the squeak in wei.
-     */
-    function getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
-        public
-        view
-        squeakExists(tokenId)
-        returns (uint256)
-    {
-        return _getDeleteFee(tokenId, confirmationThreshold);
-    }
-
-    /**
-     * @dev Likes a squeak.
-     * @param tokenId ID of the squeak.
-     */
-    function likeSqueak(uint256 tokenId)
-        external
-        payable
-        whenNotPaused
-        hasAccount
-        hasEnoughFunds
-        squeakExists(tokenId)
-        nonReentrant
-    {
-        _likeSqueak(tokenId);
-    }
-
-    /**
-     * @dev Resqueaks a squeak.
-     * @param tokenId ID of the squeak.
-     */
-    function resqueak(uint256 tokenId)
-        external
-        payable
-        whenNotPaused
-        hasAccount
-        hasEnoughFunds
-        squeakExists(tokenId)
-        nonReentrant
-    {
-        _resqueak(tokenId);
-    }
-
-    /**
-     * @dev Updates an accounts username.
-     * @param newUsername The text of the new username.
-     */
-    function updateUsername(string calldata newUsername)
-        external
-        whenNotPaused
-        hasAccount
-        isValidUsername(newUsername)
-    {
-        _updateUsername(newUsername);
-    }
-
-    /**
-     * @dev Undislikes a squeak.
-     * @param tokenId ID of the squeak.
-     */
-    function undoDislikeSqueak(uint256 tokenId)
-        external
-        payable
-        whenNotPaused
-        hasAccount
-        hasEnoughFunds
-        squeakExists(tokenId)
-        nonReentrant
-    {
-        _undoDislikeSqueak(tokenId);
-    }
-
-    /**
-     * @dev Unlikes a squeak.
-     * @param tokenId ID of the squeak.
-     */
-    function undoLikeSqueak(uint256 tokenId)
-        external
-        payable
-        whenNotPaused
-        hasAccount
-        hasEnoughFunds
-        squeakExists(tokenId)
-        nonReentrant
-    {
-        _undoLikeSqueak(tokenId);
-    }
-
-    /**
-     * @dev Undoes a resqueak.
-     * @param tokenId ID of the squeak.
-     */
-    function undoResqueak(uint256 tokenId)
-        external
-        payable
-        whenNotPaused
-        hasAccount
-        hasEnoughFunds
-        squeakExists(tokenId)
-        nonReentrant
-    {
-        _undoResqueak(tokenId);
-    }
-
-    /**
-     * @dev Transfers out funds from the treasury.
-     * @param to Address of the account where the funds will go.
-     * @param amount Amount to withdraw in wei.
-     */
-    function withdraw(address to, uint256 amount)
-        external
-        payable
-        onlyRole(TREASURER_ROLE)
-    {
-        _withdraw(to, amount);
-    }
-
     /* solhint-disable no-empty-blocks */
     /**
-     * @dev Reverts when `msg.sender` is not authorized to upgrade the contract.
-     * @param newImplementation Address of the new implementation contract.
+     * @dev Reverts when caller isn't authorized to upgrade the contract.
      */
-    function _authorizeUpgrade(address newImplementation)
+    function _authorizeUpgrade(address)
         internal
         view
         override
@@ -359,40 +128,6 @@ contract Critter is
         returns (string memory)
     {
         return baseTokenURI;
-    }
-
-    /**
-     * @dev Burns `tokenId`. See {IERC721AUpgradeable-_burn}.
-     * @notice The caller must own `tokenId` or be an approved operator.
-     */
-    function _burn(uint256 tokenId) internal override(ERC721AUpgradeable) {
-        super._burn(tokenId);
-
-        // delete the squeak from storage
-        _deleteSqueak(tokenId);
-    }
-
-    /**
-     * @dev Hook that is called before any token transfer. This includes minting
-     *      and burning. Calling conditions:
-     *      - When `from` and `to` are both non-zero, ``from``'s `tokenId` will
-     *      be transferred to `to`.
-     *      - When `from` is zero, `tokenId` will be minted for `to`.
-     *      - When `to` is zero, ``from``'s `tokenId` will be burned.
-     *      - `from` and `to` are never both zero.
-     * @param from Address of the account that is relinquishing ownership of the
-     * token.
-     * @param to Address of the account that is gaining ownership of the token.
-     * @param startTokenId The first token id to be transferred.
-     * @param quantity The amount to be transferred.
-     */
-    function _beforeTokenTransfers(
-        address from,
-        address to,
-        uint256 startTokenId,
-        uint256 quantity
-    ) internal override(ERC721AUpgradeable) {
-        super._beforeTokenTransfers(from, to, startTokenId, quantity);
     }
 
     /**
@@ -418,5 +153,28 @@ contract Critter is
     ) internal override(ERC721AUpgradeable) {
         super._afterTokenTransfers(from, to, startTokenId, quantity);
         squeaks[startTokenId].owner = to;
+    }
+
+    /**
+     * @dev Hook that is called before any token transfer. This includes minting
+     *      and burning. Calling conditions:
+     *      - When `from` and `to` are both non-zero, ``from``'s `tokenId` will
+     *      be transferred to `to`.
+     *      - When `from` is zero, `tokenId` will be minted for `to`.
+     *      - When `to` is zero, ``from``'s `tokenId` will be burned.
+     *      - `from` and `to` are never both zero.
+     * @param from Address of the account that is relinquishing ownership of the
+     * token.
+     * @param to Address of the account that is gaining ownership of the token.
+     * @param startTokenId The first token id to be transferred.
+     * @param quantity The amount to be transferred.
+     */
+    function _beforeTokenTransfers(
+        address from,
+        address to,
+        uint256 startTokenId,
+        uint256 quantity
+    ) internal override(ERC721AUpgradeable) {
+        super._beforeTokenTransfers(from, to, startTokenId, quantity);
     }
 }

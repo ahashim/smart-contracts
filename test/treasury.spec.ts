@@ -4,6 +4,7 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
+  INTERACTION,
 } from '../constants';
 
 // types
@@ -51,7 +52,7 @@ describe('treasury', () => {
     // barbie dislikes it
     await critter
       .connect(barbie)
-      .dislikeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE });
 
     return critter;
   };

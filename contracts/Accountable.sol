@@ -18,23 +18,22 @@
 */
 pragma solidity ^0.8.4;
 
-// contracts
+// 3rd-party contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
+
+// critter contracts
+import './Validateable.sol';
 import './storage/Storeable.sol';
 
 // error codes
-error ExistingAccount(address account);
-error NonExistentAccount(address account);
-error NotApprovedOrOwner(address sender);
-error UsernameEmpty(string username);
-error UsernameTooLong(string username);
-error UsernameUnavailable(string username);
+error AccountAlreadyExists(address account);
 
 /**
  * @title Accountable
  * @dev A contract to handle account management.
  */
-contract Accountable is AccessControlUpgradeable, Storeable {
+contract Accountable is PausableUpgradeable, Validateable {
     /**
      * @dev Emitted after creating an account.
      * @param account Address of the account.
@@ -55,36 +54,6 @@ contract Accountable is AccessControlUpgradeable, Storeable {
     );
 
     /**
-     * @dev Ensures the sender has a Critter account.
-     */
-    modifier hasAccount() {
-        if (bytes(users[msg.sender].username).length == 0) {
-            revert NonExistentAccount({account: msg.sender});
-        }
-        _;
-    }
-
-    /**
-     * @dev Ensures a username isn't empty or too long, and is available.
-     * @param username Text of the username.
-     */
-    modifier isValidUsername(string calldata username) {
-        // validate existence
-        if (bytes(username).length == 0) {
-            revert UsernameEmpty({username: username});
-        }
-        // validate length
-        if (bytes(username).length > 32) {
-            revert UsernameTooLong({username: username});
-        }
-        // validate availability
-        if (addresses[username] != address(0)) {
-            revert UsernameUnavailable({username: username});
-        }
-        _;
-    }
-
-    /**
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase
@@ -101,10 +70,14 @@ contract Accountable is AccessControlUpgradeable, Storeable {
      * @dev Creates a Critter account.
      * @param username Username for the account.
      */
-    function _createAccount(string calldata username) internal {
+    function createAccount(string calldata username)
+        external
+        whenNotPaused
+        isValidUsername(username)
+    {
         // ensure address has not already created an account
         if (bytes(users[msg.sender].username).length > 0) {
-            revert ExistingAccount({account: msg.sender});
+            revert AccountAlreadyExists({account: msg.sender});
         }
 
         // create a User for the address
@@ -123,7 +96,12 @@ contract Accountable is AccessControlUpgradeable, Storeable {
      * @dev Updates an accounts username.
      * @param newUsername The text of the new username.
      */
-    function _updateUsername(string calldata newUsername) internal {
+    function updateUsername(string calldata newUsername)
+        external
+        whenNotPaused
+        hasAccount
+        isValidUsername(newUsername)
+    {
         // clear the current username
         User storage user = users[msg.sender];
         string memory oldUsername = user.username;

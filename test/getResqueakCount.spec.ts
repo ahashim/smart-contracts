@@ -4,6 +4,7 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
+  INTERACTION,
 } from '../constants';
 
 // types
@@ -47,7 +48,9 @@ describe('getResqueakCount', () => {
 
     // barbie creates & an account then resqueaks it
     await critter.connect(barbie).createAccount('barbie');
-    await critter.connect(barbie).resqueak(squeakId, { value: PLATFORM_FEE });
+    await critter
+      .connect(barbie)
+      .interact(squeakId, INTERACTION.Resqueak, { value: PLATFORM_FEE });
 
     return { critter, squeakId };
   };

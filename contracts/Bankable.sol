@@ -20,10 +20,9 @@ pragma solidity ^0.8.4;
 
 // contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import './storage/Storeable.sol';
+import './Validateable.sol';
 
 // error codes
-error InsufficientFunds(uint256 available, uint256 required);
 error TransferFailed(address to, uint256 amount);
 error InvalidWithdrawlAmount(uint256 amount);
 
@@ -32,7 +31,7 @@ error InvalidWithdrawlAmount(uint256 amount);
  * @dev A contract to handle interaction payments, scouts + pools, and
  *      transacting with the treasury.
  */
-contract Bankable is Initializable, Storeable {
+contract Bankable is Initializable, Validateable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
@@ -64,33 +63,10 @@ contract Bankable is Initializable, Storeable {
     event FundsAddedToScoutPool(uint256 tokenId, uint256 amount);
 
     /**
-     * @dev Ensures that the sender has enough to cover the interaction fee.
-     */
-    modifier hasEnoughFunds() {
-        if (msg.value < platformFee) {
-            revert InsufficientFunds({
-                available: msg.value,
-                required: platformFee
-            });
-        }
-        _;
-    }
-
-    /**
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Bankable_init() internal view onlyInitializing {}
-
-    /**
-     * @dev Deposits funds into the treasury.
-     * @param amount Amount of the funds in wei.
-     */
-    function _deposit(uint256 amount) internal {
-        treasury += amount;
-
-        emit FundsDeposited(amount);
-    }
 
     /**
      * @dev Gets the price of deleting a squeak based on its age.
@@ -101,14 +77,47 @@ contract Bankable is Initializable, Storeable {
      *      range. 6 blocks is connsidered a good default.
      * @return Price of deleting the squeak in wei.
      */
-    function _getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
-        internal
+    function getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
+        public
         view
+        squeakExists(tokenId)
         returns (uint256)
     {
         return
             ((block.number + confirmationThreshold) -
                 squeaks[tokenId].blockNumber) * platformFee;
+    }
+
+    /**
+     * @dev Transfers out funds from the treasury.
+     * @param to Address of the account where the funds will go.
+     * @param amount Amount to withdraw in wei.
+     */
+    function withdraw(address to, uint256 amount)
+        external
+        payable
+        onlyRole(TREASURER_ROLE)
+    {
+        // validate the amount
+        if (amount > treasury) {
+            revert InvalidWithdrawlAmount({amount: amount});
+        }
+
+        // transfer out from the treasury
+        treasury -= amount;
+        _transferFunds(to, amount);
+
+        emit FundsWithdrawn(to, amount);
+    }
+
+    /**
+     * @dev Deposits funds into the treasury.
+     * @param amount Amount of the funds in wei.
+     */
+    function _deposit(uint256 amount) internal {
+        treasury += amount;
+
+        emit FundsDeposited(amount);
     }
 
     /**
@@ -189,24 +198,6 @@ contract Bankable is Initializable, Storeable {
 
         // save updated pool details back to storage
         scoutPools[tokenId] = pool;
-    }
-
-    /**
-     * @dev Transfers out funds from the treasury.
-     * @param to Address of the account where the funds will go.
-     * @param amount Amount to withdraw in wei.
-     */
-    function _withdraw(address to, uint256 amount) internal {
-        // validate the amount
-        if (amount > treasury) {
-            revert InvalidWithdrawlAmount({amount: amount});
-        }
-
-        // transfer out from the treasury
-        treasury -= amount;
-        _transferFunds(to, amount);
-
-        emit FundsWithdrawn(to, amount);
     }
 
     /**

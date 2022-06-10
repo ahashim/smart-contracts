@@ -5,6 +5,7 @@ import {
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
+  INTERACTION,
 } from '../constants';
 
 // types
@@ -56,7 +57,9 @@ describe('withdraw', () => {
 
     // ahmed creates an account likes it
     await critter.connect(ahmed).createAccount('ahmed');
-    await critter.connect(ahmed).likeSqueak(squeakId, { value: PLATFORM_FEE });
+    await critter
+      .connect(ahmed)
+      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
 
     // snapshot balances
     const coldStorageBalance = (await coldStorage.getBalance()) as BigNumber;
@@ -71,7 +74,7 @@ describe('withdraw', () => {
     // barbie likes the squeak to refill treasury with a single fee amount
     await critter
       .connect(barbie)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
 
     return {
       critter,

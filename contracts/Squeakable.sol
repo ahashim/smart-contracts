@@ -18,34 +18,39 @@
 */
 pragma solidity ^0.8.4;
 
-// contracts
+// 3rd-party contracts
+import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
+
+// critter contracts
 import './Bankable.sol';
-import './storage/Storeable.sol';
-
-// data structures
-import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
-
-// libraries
-import 'abdk-libraries-solidity/ABDKMath64x64.sol';
+import './Validateable.sol';
+import './Viral.sol';
 
 // error codes
 error AlreadyDisliked(address account, uint256 tokenId);
 error AlreadyLiked(address account, uint256 tokenId);
 error AlreadyResqueaked(address account, uint256 tokenId);
-error NotResqueakedYet(address account, uint256 tokenId);
+error InvalidInteraction(uint256 tokenId);
+error NotApprovedOrOwner(address sender);
 error NotDislikedYet(address account, uint256 tokenId);
 error NotLikedYet(address account, uint256 tokenId);
+error NotResqueakedYet(address account, uint256 tokenId);
 error SqueakIsEmpty(string content);
 error SqueakIsTooLong(string content);
-error SqueakDoesNotExist(uint256 tokenId);
 
 /**
  * @title Squeakable
  * @dev A contract to handle actions performed on a Squeak.
  */
-contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
-    using ABDKMath64x64 for *;
+contract Squeakable is
+    ReentrancyGuardUpgradeable,
+    PausableUpgradeable,
+    Validateable,
+    Bankable,
+    Viral
+{
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
@@ -113,21 +118,108 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     event SqueakUnresqueaked(address indexed sender, uint256 tokenId);
 
     /**
-     * @dev Ensure squeak exists.
-     * @param tokenId ID of the squeak.
-     */
-    modifier squeakExists(uint256 tokenId) {
-        if (!_exists(tokenId)) {
-            revert SqueakDoesNotExist({tokenId: tokenId});
-        }
-        _;
-    }
-
-    /**
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Squeakable_init() internal view onlyInitializing {}
+
+    /**
+     * @dev Creates a squeak.
+     * @param content Text content of the squeak.
+     * @notice Content must be between 0 and 256 bytes in length.
+     */
+    function createSqueak(string calldata content)
+        external
+        whenNotPaused
+        hasAccount
+        onlyRole(MINTER_ROLE)
+    {
+        bytes memory rawContent = bytes(content);
+
+        // validate existence
+        if (rawContent.length == 0) {
+            revert SqueakIsEmpty({content: content});
+        }
+        // validate length
+        if (rawContent.length > 256) {
+            revert SqueakIsTooLong({content: content});
+        }
+
+        uint256 tokenId = _nextTokenId();
+
+        // create & save the squeak to storage
+        squeaks[tokenId] = Squeak(
+            block.number,
+            msg.sender,
+            msg.sender,
+            content
+        );
+
+        _mint(msg.sender, 1);
+
+        emit SqueakCreated(msg.sender, tokenId, block.number, content);
+    }
+
+    /**
+     * @dev Deletes a squeak & its associated information.
+     * @param tokenId ID of the squeak.
+     */
+    function deleteSqueak(uint256 tokenId)
+        external
+        payable
+        whenNotPaused
+        hasAccount
+        squeakExists(tokenId)
+        nonReentrant
+    {
+        address owner = ownerOf(tokenId);
+
+        // ensure the caller has priviledges to delete
+        if (msg.sender != owner && !isApprovedForAll(owner, msg.sender)) {
+            revert NotApprovedOrOwner({sender: msg.sender});
+        }
+
+        // validate delete fee
+        uint256 currentBlockDeleteFee = getDeleteFee(tokenId, 0);
+
+        if (msg.value < currentBlockDeleteFee) {
+            revert InsufficientFunds({
+                available: msg.value,
+                required: currentBlockDeleteFee
+            });
+        }
+
+        // recieve payment
+        _deposit(msg.value);
+
+        // burn the token
+        _burn(tokenId);
+
+        // delete squeak
+        delete squeaks[tokenId];
+
+        // delete interactions
+        delete likes[tokenId];
+        delete dislikes[tokenId];
+        delete resqueaks[tokenId];
+
+        // handle virality
+        if (viralSqueaks.contains(tokenId)) {
+            if (scoutPools[tokenId].amount > 0) {
+                // pay out the remaining pool funds to its members
+                _makeScoutPayments(tokenId, _getPoolUnit(tokenId));
+            }
+
+            // delete associated scout pool & its members
+            delete scouts[tokenId];
+            delete scoutPools[tokenId];
+
+            // remove from viralSqueaks set
+            viralSqueaks.remove(tokenId);
+        }
+
+        emit SqueakDeleted(msg.sender, tokenId);
+    }
 
     /**
      * @dev Gets the number of dislikes for a squeak.
@@ -157,97 +249,46 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
     }
 
     /**
-     * @dev Gets the virality score of a squeak.
+     * @dev Interacts with a squeak.
      * @param tokenId ID of the squeak.
-     * @return A value between 0-100 representing the virality of the squeak.
-     * @notice The token must exist.
+     * @param interaction A value from the Interaction enum.
      */
-    function getViralityScore(uint256 tokenId)
-        public
-        view
+    function interact(uint256 tokenId, Interaction interaction)
+        external
+        payable
+        whenNotPaused
+        hasAccount
+        hasEnoughFunds
         squeakExists(tokenId)
-        returns (uint64)
+        nonReentrant
     {
-        uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
-        uint256 dislikes = getDislikeCount(tokenId);
-        uint256 likes = getLikeCount(tokenId);
-        uint256 resqueaks = getResqueakCount(tokenId);
+        // determine interaction & update state
+        if (interaction == Interaction.Dislike) _dislikeSqueak(tokenId);
+        else if (interaction == Interaction.Like) _likeSqueak(tokenId);
+        else if (interaction == Interaction.Resqueak) _resqueak(tokenId);
+        else if (interaction == Interaction.UndoDislike)
+            _undoDislikeSqueak(tokenId);
+        else if (interaction == Interaction.UndoLike) _undoLikeSqueak(tokenId);
+        else if (interaction == Interaction.UndoResqueak)
+            _undoResqueak(tokenId);
+        else revert InvalidInteraction({tokenId: tokenId});
 
-        // squeak needs to have at least 1 like and 1 resqueak to be considered
-        return
-            likes > 0 && resqueaks > 0
-                ? _getViralityScore(blockDelta, dislikes, likes, resqueaks)
-                : 0;
-    }
-
-    /**
-     * @dev Creates a squeak.
-     * @param content Text content of the squeak.
-     * @notice Content must be between 0 and 256 bytes in length.
-     */
-    function _createSqueak(string calldata content) internal {
-        bytes calldata rawContent = bytes(content);
-
-        // validate existence
-        if (rawContent.length == 0) {
-            revert SqueakIsEmpty({content: content});
-        }
-        // validate length
-        if (rawContent.length > 256) {
-            revert SqueakIsTooLong({content: content});
+        // check squeak virality
+        if (
+            !viralSqueaks.contains(tokenId) &&
+            getViralityScore(tokenId) >= viralityThreshold
+        ) {
+            _markViral(tokenId);
         }
 
-        uint256 tokenId = _nextTokenId();
-
-        // create & save the squeak to storage
-        squeaks[tokenId] = Squeak(
-            block.number,
-            msg.sender,
-            msg.sender,
-            content
-        );
-
-        emit SqueakCreated(msg.sender, tokenId, block.number, content);
-    }
-
-    /**
-     * @dev Deletes a squeak & its associated information.
-     * @param tokenId ID of the squeak.
-     */
-    function _deleteSqueak(uint256 tokenId) internal {
-        // delete squeak
-        delete squeaks[tokenId];
-
-        // delete associated sentiment
-        delete likes[tokenId];
-        delete dislikes[tokenId];
-        delete resqueaks[tokenId];
-
-        if (viralSqueaks.contains(tokenId)) {
-            // pay all scouts any remaining funds
-            if (scoutPools[tokenId].amount > 0) {
-                _makeScoutPayments(tokenId, _getPoolUnit(tokenId));
-            }
-
-            // delete associated scout info
-            delete scouts[tokenId];
-            delete scoutPools[tokenId];
-
-            // remove from viralSqueaks set
-            viralSqueaks.remove(tokenId);
-        }
-
-        // recieve payment
-        _deposit(msg.value);
-
-        emit SqueakDeleted(msg.sender, tokenId);
+        _makePayment(tokenId, interaction);
     }
 
     /**
      * @dev Dislikes a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _dislikeSqueak(uint256 tokenId) internal {
+    function _dislikeSqueak(uint256 tokenId) private {
         EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
             tokenId
         ];
@@ -266,71 +307,14 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
         // then add them to the dislikers set
         dislikers.add(msg.sender);
 
-        // check virality
-        if (
-            !viralSqueaks.contains(tokenId) &&
-            getViralityScore(tokenId) >= viralityThreshold
-        ) {
-            _markViral(tokenId);
-        }
-
-        _makePayment(tokenId, Interaction.Dislike);
-
         emit SqueakDisliked(msg.sender, tokenId);
-    }
-
-    /**
-     * @dev Gets the virality score of a squeak.
-     * @param blockDelta Number of blocks elapsed since the squeak was created.
-     * @param dislikes Number of dislikes.
-     * @param likes Number of likes.
-     * @param resqueaks Number of resqueaks.
-     * @return A value between 0-100 representing the virality of the squeak.
-     */
-    function _getViralityScore(
-        uint256 blockDelta,
-        uint256 dislikes,
-        uint256 likes,
-        uint256 resqueaks
-    ) internal pure returns (uint64) {
-        // ensure no division by zero when taking the ratio of likes:dislikes
-        if (dislikes == 0) dislikes = 1;
-
-        // convert values to signed int128 for 64.64 fixed point calculations
-        int128 signedLikes = likes.fromUInt();
-        int128 signedDislikes = dislikes.fromUInt();
-        int128 signedResqueaks = resqueaks.fromUInt();
-        int128 signedBlockDelta = blockDelta.fromUInt();
-
-        // calculate each virality component
-        int128 ratio = signedLikes.div(signedDislikes).sqrt();
-        int128 total = signedLikes.add(signedDislikes).ln();
-        int128 amplifier = signedResqueaks.ln().div(signedResqueaks);
-
-        // multiply all components to get the order
-        int128 order = ratio.mul(total).mul(amplifier);
-
-        // determine coefficient based on the order
-        int128 coefficient = order != 0
-            ? 1.fromUInt().div(order)
-            : 0.fromUInt();
-
-        // calculate final virality score
-        int128 numerator = 1000.fromUInt();
-        int128 denominator = signedBlockDelta.add(coefficient).add(
-            10.fromUInt()
-        );
-        int128 score = numerator.div(denominator);
-
-        // convert back to uint64
-        return score.toUInt();
     }
 
     /**
      * @dev Likes a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _likeSqueak(uint256 tokenId) internal {
+    function _likeSqueak(uint256 tokenId) private {
         EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
             tokenId
         ];
@@ -349,16 +333,6 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
         // then add them to the likers set
         likers.add(msg.sender);
 
-        // check virality
-        if (
-            !viralSqueaks.contains(tokenId) &&
-            getViralityScore(tokenId) >= viralityThreshold
-        ) {
-            _markViral(tokenId);
-        }
-
-        _makePayment(tokenId, Interaction.Like);
-
         emit SqueakLiked(msg.sender, tokenId);
     }
 
@@ -366,7 +340,7 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @dev Resqueaks a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _resqueak(uint256 tokenId) internal {
+    function _resqueak(uint256 tokenId) private {
         EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
             tokenId
         ];
@@ -379,16 +353,6 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
         // add them to the resqueakers
         resqueakers.add(msg.sender);
 
-        // check virality
-        if (
-            !viralSqueaks.contains(tokenId) &&
-            getViralityScore(tokenId) >= viralityThreshold
-        ) {
-            _markViral(tokenId);
-        }
-
-        _makePayment(tokenId, Interaction.Resqueak);
-
         emit Resqueaked(msg.sender, tokenId);
     }
 
@@ -396,7 +360,7 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @dev Undislikes a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _undoDislikeSqueak(uint256 tokenId) internal {
+    function _undoDislikeSqueak(uint256 tokenId) private {
         EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
             tokenId
         ];
@@ -409,16 +373,6 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
         // remove them from dislikers
         dislikers.remove(msg.sender);
 
-        // check virality
-        if (
-            !viralSqueaks.contains(tokenId) &&
-            getViralityScore(tokenId) >= viralityThreshold
-        ) {
-            _markViral(tokenId);
-        }
-
-        _makePayment(tokenId, Interaction.UndoDislike);
-
         emit SqueakUndisliked(msg.sender, tokenId);
     }
 
@@ -426,7 +380,7 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @dev Unlikes a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _undoLikeSqueak(uint256 tokenId) internal {
+    function _undoLikeSqueak(uint256 tokenId) private {
         EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
 
         // ensure the user has liked the squeak
@@ -437,16 +391,6 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
         // remove them from the likers
         likers.remove(msg.sender);
 
-        // check virality
-        if (
-            !viralSqueaks.contains(tokenId) &&
-            getViralityScore(tokenId) >= viralityThreshold
-        ) {
-            _markViral(tokenId);
-        }
-
-        _makePayment(tokenId, Interaction.UndoLike);
-
         emit SqueakUnliked(msg.sender, tokenId);
     }
 
@@ -454,7 +398,7 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
      * @dev Undoes a resqueak.
      * @param tokenId ID of the squeak.
      */
-    function _undoResqueak(uint256 tokenId) internal {
+    function _undoResqueak(uint256 tokenId) private {
         EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
             tokenId
         ];
@@ -467,81 +411,6 @@ contract Squeakable is ERC721AUpgradeable, Storeable, Bankable {
         // remove them from the resqueakers
         resqueakers.remove(msg.sender);
 
-        // check virality
-        if (
-            !viralSqueaks.contains(tokenId) &&
-            getViralityScore(tokenId) >= viralityThreshold
-        ) {
-            _markViral(tokenId);
-        }
-
-        _makePayment(tokenId, Interaction.UndoResqueak);
-
         emit SqueakUnresqueaked(msg.sender, tokenId);
-    }
-
-    /**
-     * @dev Updates the scout level for an account, and adds them to the scout
-     *      pool of a viral squeak.
-     * @param account Account to add to scouts list for tokenId.
-     * @param tokenId ID of the viral squeak.
-     */
-    function _addScout(address account, uint256 tokenId) private {
-        // upgrade their scout level
-        users[account].scoutLevel++;
-
-        // add them to the scout pool for the squeak
-        scouts[tokenId].add(account);
-    }
-
-    /**
-     * @dev Adds a squeak to the list of viral squeaks, and all of its positive
-     *      interactors to a scout pool while upgrading their scout levels.
-     * @param tokenId ID of the squeak.
-     */
-    function _markViral(uint256 tokenId) private {
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
-        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
-            tokenId
-        ];
-
-        // add squeak to the list of viral squeaks
-        viralSqueaks.add(tokenId);
-
-        // give the user who pushed the squeak into virality a bonus upgrade to
-        // their scout level.
-        users[msg.sender].scoutLevel += 4;
-
-        // initialize a scout pool
-        ScoutPool memory pool;
-
-        // get the upper bound of the larger set of positive interactions
-        uint256 likesCount = likers.length();
-        uint256 resqueaksCount = resqueakers.length();
-        uint256 upperBound = likesCount > resqueaksCount
-            ? likesCount
-            : resqueaksCount;
-
-        // iterate over both sets & add all unique addresses to the scouts list
-        // TODO: move this unbounded loop off-chain
-        for (uint256 index = 0; index < upperBound; index++) {
-            // add all likers to the list of scouts list
-            if (index < likesCount) {
-                _addScout(likers.at(index), tokenId);
-                pool.levelTotal += users[likers.at(index)].scoutLevel;
-            }
-
-            // add all resqueakers to the list of scouts who aren't likers
-            if (
-                index < resqueaksCount &&
-                !scouts[tokenId].contains(resqueakers.at(index))
-            ) {
-                _addScout(resqueakers.at(index), tokenId);
-                pool.levelTotal += users[resqueakers.at(index)].scoutLevel;
-            }
-        }
-
-        // save the pool to storage
-        scoutPools[tokenId] = pool;
     }
 }

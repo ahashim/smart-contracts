@@ -10,7 +10,7 @@
     "declaration": true
   },
   "include": [
-    "./constants.ts",
+    "./constants",
     "./scripts",
     "./tasks/",
     "./test",

@@ -4,6 +4,7 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
+  INTERACTION,
 } from '../constants';
 
 // types
@@ -46,7 +47,9 @@ describe('getLikeCount', () => {
     ({ tokenId: squeakId } = event!.args as Result);
 
     // ahmed likes it
-    await critter.likeSqueak(squeakId, { value: PLATFORM_FEE });
+    await critter.interact(squeakId, INTERACTION.Like, {
+      value: PLATFORM_FEE,
+    });
     return { critter, squeakId };
   };
 

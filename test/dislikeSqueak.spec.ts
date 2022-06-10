@@ -4,6 +4,7 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
+  INTERACTION,
 } from '../constants';
 
 // types
@@ -52,7 +53,7 @@ describe('dislikeSqueak', () => {
     // barbie likes it
     await critter
       .connect(barbie)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
 
     return { critter, squeakId };
   };
@@ -65,14 +66,16 @@ describe('dislikeSqueak', () => {
   );
 
   it('lets a user dislike a squeak for a fee', async () => {
-    await critter.dislikeSqueak(squeakId, { value: PLATFORM_FEE });
+    await critter.interact(squeakId, INTERACTION.Dislike, {
+      value: PLATFORM_FEE,
+    });
     expect(await critter.getDislikeCount(squeakId)).to.eq(1);
   });
 
   it('removes a users previous "like" when disliking a squeak', async () => {
     await critter
       .connect(barbie)
-      .dislikeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE });
     expect(await critter.getLikeCount(squeakId)).to.eq(0);
     expect(await critter.getDislikeCount(squeakId)).to.eq(1);
   });
@@ -81,7 +84,7 @@ describe('dislikeSqueak', () => {
     treasuryStartingBalance = await critter.treasury();
     await critter
       .connect(barbie)
-      .dislikeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE });
     treasuryEndingBalance = await critter.treasury();
     expect(treasuryEndingBalance.sub(treasuryStartingBalance)).to.eq(
       PLATFORM_FEE
@@ -90,38 +93,55 @@ describe('dislikeSqueak', () => {
 
   it('emits a SqueakDisliked event', async () => {
     await expect(
-      critter.connect(barbie).dislikeSqueak(squeakId, { value: PLATFORM_FEE })
+      critter
+        .connect(barbie)
+        .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE })
     )
       .to.emit(critter, 'SqueakDisliked')
       .withArgs(barbie.address, squeakId);
   });
 
   it('reverts if the user has already disliked the squeak', async () => {
-    await critter.dislikeSqueak(squeakId, { value: PLATFORM_FEE });
-    await expect(critter.dislikeSqueak(squeakId, { value: PLATFORM_FEE })).to
-      .be.reverted;
+    await critter.interact(squeakId, INTERACTION.Dislike, {
+      value: PLATFORM_FEE,
+    });
+    await expect(
+      critter.interact(squeakId, INTERACTION.Dislike, {
+        value: PLATFORM_FEE,
+      })
+    ).to.be.reverted;
   });
 
   it('reverts when the dislike fee is not sufficient', async () => {
-    await expect(critter.connect(barbie).dislikeSqueak(squeakId, { value: 1 }))
-      .to.be.reverted;
+    await expect(
+      critter
+        .connect(barbie)
+        .interact(squeakId, INTERACTION.Dislike, { value: 1 })
+    ).to.be.reverted;
   });
 
   it('reverts when the squeak does not exist', async () => {
     await expect(
-      critter.connect(barbie).dislikeSqueak(420, { value: PLATFORM_FEE })
+      critter
+        .connect(barbie)
+        .interact(420, INTERACTION.Dislike, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 
   it('reverts when the user does not have an account', async () => {
     await expect(
-      critter.connect(owner).dislikeSqueak(squeakId, { value: PLATFORM_FEE })
+      critter
+        .connect(owner)
+        .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 
   it('reverts when the contract is paused', async () => {
     await critter.connect(owner).pause();
-    await expect(critter.dislikeSqueak(squeakId, { value: PLATFORM_FEE })).to
-      .be.reverted;
+    await expect(
+      critter.interact(squeakId, INTERACTION.Dislike, {
+        value: PLATFORM_FEE,
+      })
+    ).to.be.reverted;
   });
 });

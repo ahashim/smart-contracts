@@ -5,6 +5,7 @@ import {
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
+  INTERACTION,
 } from '../constants';
 
 // types
@@ -55,7 +56,7 @@ describe('likeSqueak', () => {
     // carlos dislikes it
     await critter
       .connect(carlos)
-      .dislikeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE });
 
     return { critter, squeakId };
   };
@@ -76,14 +77,14 @@ describe('likeSqueak', () => {
   it('lets a user like a squeak for a fee', async () => {
     await critter
       .connect(barbie)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
     expect(await critter.getLikeCount(squeakId)).to.eq(1);
   });
 
   it('removes a users previous "dislike" when liking a squeak', async () => {
     await critter
       .connect(carlos)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
     expect(await critter.getDislikeCount(squeakId)).to.eq(0);
     expect(await critter.getLikeCount(squeakId)).to.eq(1);
   });
@@ -92,7 +93,7 @@ describe('likeSqueak', () => {
     treasuryStartingBalance = await critter.treasury();
     await critter
       .connect(barbie)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
     treasuryEndingBalance = await critter.treasury();
     expect(treasuryEndingBalance.sub(treasuryStartingBalance)).to.eq(
       treasuryFee
@@ -103,14 +104,16 @@ describe('likeSqueak', () => {
     ahmedStartingBalance = await ahmed.getBalance();
     await critter
       .connect(barbie)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
     ahmedEndingBalance = await ahmed.getBalance();
     expect(ahmedEndingBalance.sub(ahmedStartingBalance)).to.eq(transferAmount);
   });
 
   it('emits a SqueakLiked event', async () => {
     await expect(
-      critter.connect(barbie).likeSqueak(squeakId, { value: PLATFORM_FEE })
+      critter
+        .connect(barbie)
+        .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE })
     )
       .to.emit(critter, 'SqueakLiked')
       .withArgs(barbie.address, squeakId);
@@ -119,33 +122,44 @@ describe('likeSqueak', () => {
   it('reverts if the user has already liked the squeak', async () => {
     await critter
       .connect(barbie)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
     await expect(
-      critter.connect(barbie).likeSqueak(squeakId, { value: PLATFORM_FEE })
+      critter
+        .connect(barbie)
+        .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 
   it('reverts when the like fee is not sufficient', async () => {
-    await expect(critter.connect(barbie).likeSqueak(squeakId, { value: 1 })).to
-      .be.reverted;
+    await expect(
+      critter
+        .connect(barbie)
+        .interact(squeakId, INTERACTION.Like, { value: 1 })
+    ).to.be.reverted;
   });
 
   it('reverts when the squeak does not exist', async () => {
     await expect(
-      critter.connect(barbie).likeSqueak(420, { value: PLATFORM_FEE })
+      critter
+        .connect(barbie)
+        .interact(420, INTERACTION.Like, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 
   it('reverts when the user does not have an account', async () => {
     await expect(
-      critter.connect(owner).likeSqueak(squeakId, { value: PLATFORM_FEE })
+      critter
+        .connect(owner)
+        .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 
   it('reverts when the contract is paused', async () => {
     await critter.connect(owner).pause();
     await expect(
-      critter.connect(barbie).likeSqueak(squeakId, { value: PLATFORM_FEE })
+      critter
+        .connect(barbie)
+        .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 });

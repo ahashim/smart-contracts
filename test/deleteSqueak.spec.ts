@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
 import {
-  BLOCK_CONFIRMATION_THRESHOLD,
+  CONFIRMATION_THRESHOLD,
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
+  INTERACTION,
   PLATFORM_FEE,
 } from '../constants';
 
@@ -54,19 +55,16 @@ describe('deleteSqueak', () => {
     await critter.connect(barbie).createAccount('barbie');
     await critter
       .connect(barbie)
-      .likeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
 
     // carlos creates an account & dislikes the squeak
     await critter.connect(carlos).createAccount('carlos');
     await critter
       .connect(carlos)
-      .dislikeSqueak(squeakId, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE });
 
     // get the delete fee
-    deleteFee = await critter.getDeleteFee(
-      squeakId,
-      BLOCK_CONFIRMATION_THRESHOLD
-    );
+    deleteFee = await critter.getDeleteFee(squeakId, CONFIRMATION_THRESHOLD);
 
     return { critter, deleteFee, squeakId };
   };

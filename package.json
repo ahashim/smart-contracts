@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "crypto twitter",
   "scripts": {
-    "clear": "rm -rf .openzeppelin artifacts cache coverage* typechain* node_modules",
+    "reset": "rm -rf .openzeppelin artifacts cache coverage* typechain* node_modules",
     "compile": "npx hardhat compile",
     "console": "NODE_OPTIONS=--experimental-repl-await npx hardhat run scripts/console.ts",
     "coverage": "npx hardhat coverage",

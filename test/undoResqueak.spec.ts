@@ -3,6 +3,7 @@ import { ethers, upgrades, waffle } from 'hardhat';
 import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
+  INTERACTION,
   PLATFORM_FEE,
 } from '../constants';
 
@@ -49,15 +50,19 @@ describe('undoResqueak', () => {
 
     // ahmed creates an account & resqueaks barbie
     await critter.createAccount('ahmed');
-    await critter.resqueak(squeakId, { value: PLATFORM_FEE });
+    await critter.interact(squeakId, INTERACTION.Resqueak, {
+      value: PLATFORM_FEE,
+    });
 
     // get current treasury balance
     const treasuryStartingBalance = await critter.treasury();
 
     // ahmed undoes the resqueak
-    const undoResqueakTx = (await critter.undoResqueak(squeakId, {
-      value: PLATFORM_FEE,
-    })) as ContractTransaction;
+    const undoResqueakTx = (await critter.interact(
+      squeakId,
+      INTERACTION.UndoResqueak,
+      { value: PLATFORM_FEE }
+    )) as ContractTransaction;
 
     return { critter, squeakId, treasuryStartingBalance, undoResqueakTx };
   };
@@ -88,28 +93,40 @@ describe('undoResqueak', () => {
 
   it('reverts if the user has not resqueaked the squeak', async () => {
     await expect(
-      critter.connect(barbie).undoResqueak(squeakId, { value: PLATFORM_FEE })
+      critter.connect(barbie).interact(squeakId, INTERACTION.UndoResqueak, {
+        value: PLATFORM_FEE,
+      })
     ).to.be.reverted;
   });
 
   it('reverts when the undo resqueak fee is not sufficient', async () => {
-    await expect(critter.undoResqueak(squeakId, { value: 1 })).to.be.reverted;
+    await expect(
+      critter.interact(squeakId, INTERACTION.UndoResqueak, { value: 1 })
+    ).to.be.reverted;
   });
 
   it('reverts when the squeak does not exist', async () => {
-    await expect(critter.undoResqueak(420, { value: PLATFORM_FEE })).to.be
-      .reverted;
+    await expect(
+      critter.interact(420, INTERACTION.UndoResqueak, {
+        value: PLATFORM_FEE,
+      })
+    ).to.be.reverted;
   });
 
   it('reverts when the user does not have an account', async () => {
     await expect(
-      critter.connect(owner).undoResqueak(squeakId, { value: PLATFORM_FEE })
+      critter.connect(owner).interact(squeakId, INTERACTION.UndoResqueak, {
+        value: PLATFORM_FEE,
+      })
     ).to.be.reverted;
   });
 
   it('reverts when the contract is paused', async () => {
     await critter.connect(owner).pause();
-    await expect(critter.undoResqueak(squeakId, { value: PLATFORM_FEE })).to.be
-      .reverted;
+    await expect(
+      critter.interact(squeakId, INTERACTION.UndoResqueak, {
+        value: PLATFORM_FEE,
+      })
+    ).to.be.reverted;
   });
 });

@@ -1,8 +1,5 @@
 import { utils } from 'ethers';
 
-// network
-export const BLOCK_CONFIRMATION_THRESHOLD = 6;
-
 // contract
 export const BASE_TOKEN_URI = 'https://critter.fyi/token/';
 export const CONTRACT_NAME = 'Critter';
@@ -18,13 +15,22 @@ export const UPGRADER_ROLE = 'UPGRADER_ROLE';
 export const PLATFORM_FEE = 33_927_831_361_389; // ~10 cents USD
 export const PLATFORM_TAKE_RATE = 20; // "my 2 ¢…"
 
-// scout pools
+// thresholds
+export const CONFIRMATION_THRESHOLD = 6;
 export const SCOUT_POOL_THRESHOLD = utils.parseEther('0.1');
-
-// virality
 export const VIRALITY_THRESHOLD = 95;
 
-// init
+// interactions
+export enum INTERACTION {
+  Dislike,
+  Like,
+  Resqueak,
+  UndoDislike,
+  UndoLike,
+  UndoResqueak,
+}
+
+// initializer
 export const CONTRACT_INITIALIZER = [
   CONTRACT_NAME,
   CONTRACT_SYMBOL,
