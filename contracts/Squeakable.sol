@@ -226,7 +226,7 @@ contract Squeakable is
      * @param tokenId ID of the squeak.
      * @notice The token must exist.
      */
-    function getDislikeCount(uint256 tokenId) public view returns (uint256) {
+    function getDislikeCount(uint256 tokenId) external view returns (uint256) {
         return dislikes[tokenId].length();
     }
 
@@ -235,7 +235,7 @@ contract Squeakable is
      * @param tokenId ID of the squeak.
      * @notice The token must exist.
      */
-    function getLikeCount(uint256 tokenId) public view returns (uint256) {
+    function getLikeCount(uint256 tokenId) external view returns (uint256) {
         return likes[tokenId].length();
     }
 
@@ -244,7 +244,7 @@ contract Squeakable is
      * @param tokenId ID of the squeak.
      * @notice The token must exist.
      */
-    function getResqueakCount(uint256 tokenId) public view returns (uint256) {
+    function getResqueakCount(uint256 tokenId) external view returns (uint256) {
         return resqueaks[tokenId].length();
     }
 
