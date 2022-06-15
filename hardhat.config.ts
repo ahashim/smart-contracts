@@ -30,13 +30,18 @@ const config: HardhatUserConfig = {
   },
   networks: {},
   solidity: {
-    version: '0.8.4',
     settings: {
       optimizer: {
         enabled: true,
         runs: 200,
       },
+      outputSelection: {
+        '*': {
+          '*': ['storageLayout'],
+        },
+      },
     },
+    version: '0.8.4',
   },
   watcher: {
     ci: {

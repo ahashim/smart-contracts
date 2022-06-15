@@ -17,6 +17,7 @@
 
 */
 pragma solidity ^0.8.4;
+import 'hardhat/console.sol';
 
 // 3rd-party contracts
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
@@ -244,7 +245,11 @@ contract Squeakable is
      * @param tokenId ID of the squeak.
      * @notice The token must exist.
      */
-    function getResqueakCount(uint256 tokenId) external view returns (uint256) {
+    function getResqueakCount(uint256 tokenId)
+        external
+        view
+        returns (uint256)
+    {
         return resqueaks[tokenId].length();
     }
 

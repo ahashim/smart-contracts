@@ -43,6 +43,36 @@ contract Viral is Validateable {
     function __Viral_init() internal view onlyInitializing {}
 
     /**
+     * @dev Gets the details of a scout pool.
+     * @param tokenId ID of the viral squeak.
+     * @return a ScoutPool.
+     * @notice The token must exist.
+     */
+    function getScoutPool(uint256 tokenId)
+        external
+        view
+        squeakExists(tokenId)
+        returns (ScoutPool memory)
+    {
+        return scoutPools[tokenId];
+    }
+
+    /**
+     * @dev Gets a list of scouts for a viral squeak.
+     * @param tokenId ID of the viral squeak.
+     * @return a list of account addresses representing scouts.
+     * @notice The token must exist.
+     */
+    function getScouts(uint256 tokenId)
+        external
+        view
+        squeakExists(tokenId)
+        returns (address[] memory)
+    {
+        return scouts[tokenId].values();
+    }
+
+    /**
      * @dev Gets the virality score of a squeak.
      * @param tokenId ID of the squeak.
      * @return A value between 0-100 representing the virality of the squeak.
@@ -67,6 +97,21 @@ contract Viral is Validateable {
     }
 
     /**
+     * @dev Looks up if a squeak is viral or not.
+     * @param tokenId ID of the squeak.
+     * @return boolean statings if the squeak is viral.
+     * @notice The token must exist.
+     */
+    function isViral(uint256 tokenId)
+        external
+        view
+        squeakExists(tokenId)
+        returns (bool)
+    {
+        return viralSqueaks.contains(tokenId);
+    }
+
+    /**
      * @dev Adds a squeak to the list of viral squeaks, and all of its positive
      *      interactors to a scout pool while upgrading their scout levels.
      * @param tokenId ID of the squeak.
@@ -83,7 +128,7 @@ contract Viral is Validateable {
 
         // give the user who pushed the squeak into virality a bonus upgrade to
         // their scout level.
-        users[msg.sender].scoutLevel += 4;
+        users[msg.sender].scoutLevel += scoutViralityBonus;
 
         // get the upper bound of the larger set of positive interactions
         uint256 likesCount = likers.length();

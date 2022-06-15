@@ -56,13 +56,15 @@ contract Storeable is Typeable, Immutable, Mappable {
         uint256 fee,
         uint256 takeRate,
         uint256 poolThresh,
-        uint8 viralityThresh
+        uint8 viralityThresh,
+        uint8 scoutBonus
     ) internal onlyInitializing {
         baseTokenURI = baseURI;
         platformFee = fee;
         platformTakeRate = takeRate;
         poolThreshold = poolThresh;
         viralityThreshold = viralityThresh;
+        scoutViralityBonus = scoutBonus;
     }
 
     /**
@@ -95,6 +97,12 @@ contract Storeable is Typeable, Immutable, Mappable {
      * @dev Minimum score that a squeak must have for it to be considered viral.
      */
     uint8 public viralityThreshold;
+
+    /**
+     * @dev Bonus number of levels added to the scout level of the user that
+     *      propels a squeak into virality.
+     */
+    uint256 public scoutViralityBonus;
 
     /**
      * @dev Set of squeak ID's that have gone viral.

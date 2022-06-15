@@ -15,13 +15,16 @@ export const UPGRADER_ROLE = 'UPGRADER_ROLE';
 export const PLATFORM_FEE = 33_927_831_361_389; // ~10 cents USD
 export const PLATFORM_TAKE_RATE = 20; // "my 2 ¢…"
 
+// scouts
+export const SCOUT_BONUS = 3;
+
 // thresholds
 export const CONFIRMATION_THRESHOLD = 6;
 export const SCOUT_POOL_THRESHOLD = utils.parseEther('0.1');
 export const VIRALITY_THRESHOLD = 95;
 
 // interactions
-export enum INTERACTION {
+export const enum INTERACTION {
   Dislike,
   Like,
   Resqueak,
@@ -39,4 +42,5 @@ export const CONTRACT_INITIALIZER = [
   PLATFORM_TAKE_RATE,
   SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
+  SCOUT_BONUS,
 ];
