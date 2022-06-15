@@ -156,8 +156,8 @@ describe('interact viral', () => {
   });
 
   it('sums the scout levels of all positive interactors as the pool level total', async () => {
-    // 3 scouts at level 2 + 1 scout at level 4
-    const expectedLevelTotal = 2 * 3 + 4;
+    // 3 scouts at level 2 + 1 scout at level 5
+    const expectedLevelTotal = 2 * 3 + 5;
 
     expect((await critter.getScoutPool(squeakId)).levelTotal).to.eq(
       expectedLevelTotal
