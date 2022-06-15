@@ -22,7 +22,7 @@ import {
 import type { Result } from '@ethersproject/abi';
 import type { Critter } from '../typechain-types/contracts';
 
-describe.only('interact viral', () => {
+describe('interact viral', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet,

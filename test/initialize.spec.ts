@@ -8,6 +8,7 @@ import {
   PLATFORM_TAKE_RATE,
   SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
+  SCOUT_BONUS,
 } from '../constants';
 
 // types
@@ -37,6 +38,7 @@ describe('initialize', () => {
       PLATFORM_TAKE_RATE,
       SCOUT_POOL_THRESHOLD,
       VIRALITY_THRESHOLD,
+      SCOUT_BONUS,
     ])) as Critter;
   };
 
@@ -53,7 +55,8 @@ describe('initialize', () => {
         PLATFORM_FEE,
         PLATFORM_TAKE_RATE,
         SCOUT_POOL_THRESHOLD,
-        VIRALITY_THRESHOLD
+        VIRALITY_THRESHOLD,
+        SCOUT_BONUS
       )
     ).to.be.reverted;
   });
