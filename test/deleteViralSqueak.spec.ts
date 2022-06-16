@@ -25,7 +25,9 @@ import type { Critter } from '../typechain-types/contracts';
 
 describe('deleteViralSqueak', () => {
   let critter: Critter;
-  let carlosBalance: BigNumber,
+  let barbieBalance: BigNumber,
+    carlosBalance: BigNumber,
+    daphneBalance: BigNumber,
     deleteFee: BigNumber,
     likes: BigNumber,
     dislikes: BigNumber,
@@ -108,8 +110,10 @@ describe('deleteViralSqueak', () => {
       .connect(daphne)
       .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
 
-    // take a snapshot of a scouts balance
+    // take a snapshot of scouts balance
+    barbieBalance = await barbie.getBalance();
     carlosBalance = await carlos.getBalance();
+    daphneBalance = await daphne.getBalance();
     treasuryBalance = await critter.treasury();
 
     // get pool unit
@@ -121,7 +125,9 @@ describe('deleteViralSqueak', () => {
     await critter.deleteSqueak(squeakId, { value: deleteFee });
 
     return {
+      barbieBalance,
       carlosBalance,
+      daphneBalance,
       critter,
       likes: await critter.getLikeCount(squeakId),
       dislikes: await critter.getDislikeCount(squeakId),
@@ -139,7 +145,9 @@ describe('deleteViralSqueak', () => {
     'deploy test contract, ahmed creates viral squeak and then deletes it',
     async () => {
       ({
+        barbieBalance,
         carlosBalance,
+        daphneBalance,
         critter,
         likes,
         dislikes,
@@ -173,14 +181,18 @@ describe('deleteViralSqueak', () => {
   });
 
   it('pays out to pool members before deletion', async () => {
-    // tested more thouroughly in {interactViral.spec.ts}
+    expect((await barbie.getBalance()).sub(barbieBalance)).to.eq(
+      poolUnit.mul((await critter.users(barbie.address)).scoutLevel)
+    );
     expect((await carlos.getBalance()).sub(carlosBalance)).to.eq(
       poolUnit.mul((await critter.users(carlos.address)).scoutLevel)
+    );
+    expect((await daphne.getBalance()).sub(daphneBalance)).to.eq(
+      poolUnit.mul((await critter.users(daphne.address)).scoutLevel)
     );
   });
 
   it('deposits the remaining dust into the treasury', async () => {
-    // tested more thouroughly in {interactViral.spec.ts}
     expect(
       (await critter.treasury()).sub(treasuryBalance.add(deleteFee))
     ).to.eq(4);
