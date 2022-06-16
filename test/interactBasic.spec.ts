@@ -380,6 +380,12 @@ describe('interact basic', () => {
     });
   });
 
+  describe('Virality', () => {
+    it('returns a virality of zero when interactions do not meet criteria', async () => {
+      expect(await critter.getViralityScore(squeakId)).to.eq(0);
+    });
+  });
+
   describe('Reverted', async () => {
     it('reverts when the interaction ID is invalid', async () => {
       await expect(

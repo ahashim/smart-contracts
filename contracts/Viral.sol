@@ -46,12 +46,10 @@ contract Viral is Validateable {
      * @dev Gets the details of a scout pool.
      * @param tokenId ID of the viral squeak.
      * @return a ScoutPool.
-     * @notice The token must exist.
      */
     function getScoutPool(uint256 tokenId)
         external
         view
-        squeakExists(tokenId)
         returns (ScoutPool memory)
     {
         return scoutPools[tokenId];
@@ -61,12 +59,10 @@ contract Viral is Validateable {
      * @dev Gets a list of scouts for a viral squeak.
      * @param tokenId ID of the viral squeak.
      * @return a list of account addresses representing scouts.
-     * @notice The token must exist.
      */
     function getScouts(uint256 tokenId)
         external
         view
-        squeakExists(tokenId)
         returns (address[] memory)
     {
         return scouts[tokenId].values();

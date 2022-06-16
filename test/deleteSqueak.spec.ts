@@ -22,13 +22,14 @@ import type { Critter } from '../typechain-types/contracts';
 
 describe('deleteSqueak', () => {
   let critter: Critter;
-  let deleteFee: BigNumber;
+  let deleteFee: BigNumber,
+    squeakId: BigNumber,
+    treasuryStartingBalance: BigNumber,
+    treasuryEndingBalance: BigNumber;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
   let receipt: ContractReceipt;
   let squeak: Squeak;
-  let squeakId: BigNumber;
-  let treasuryStartingBalance: BigNumber, treasuryEndingBalance: BigNumber;
   let tx: ContractTransaction;
 
   before('create fixture loader', async () => {
@@ -94,11 +95,12 @@ describe('deleteSqueak', () => {
     expect(squeak.content).to.eq('');
   });
 
-  it('removes all associated likes & dislikes for the squeak', async () => {
+  it('removes all associated sentiment for the squeak', async () => {
     await critter.deleteSqueak(squeakId, { value: deleteFee });
 
     expect(await critter.getLikeCount(squeakId)).to.eq(0);
     expect(await critter.getDislikeCount(squeakId)).to.eq(0);
+    expect(await critter.getResqueakCount(squeakId)).to.eq(0);
   });
 
   it('deposits the delete fee into the treasury', async () => {
