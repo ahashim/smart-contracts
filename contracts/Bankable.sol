@@ -63,6 +63,12 @@ contract Bankable is Initializable, Validateable {
     event FundsAddedToScoutPool(uint256 tokenId, uint256 amount);
 
     /**
+     * @dev Emitted when funds in a scout pool are paid out its members.
+     * @param tokenId ID of the viral squeak.
+     */
+    event ScoutPoolPayout(uint256 tokenId);
+
+    /**
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
@@ -128,7 +134,7 @@ contract Bankable is Initializable, Validateable {
      * @return amount of each pool unit in wei.
      */
     function _getPoolUnit(uint256 tokenId) internal view returns (uint256) {
-        ScoutPool storage pool = scoutPools[tokenId];
+        ScoutPool memory pool = scoutPools[tokenId];
 
         return pool.amount / pool.levelTotal;
     }
@@ -155,10 +161,10 @@ contract Bankable is Initializable, Validateable {
 
             if (viralSqueaks.contains(tokenId)) {
                 // split remainder between scouts & the squeak owner
-                uint256 scoutFunds = remainder / 2;
+                uint256 half = remainder / 2;
 
-                _addScoutFunds(tokenId, scoutFunds);
-                _transferFunds(squeaks[tokenId].owner, remainder - scoutFunds);
+                _addScoutFunds(tokenId, remainder - half);
+                _transferFunds(squeaks[tokenId].owner, remainder - half);
             } else {
                 // transfer remaining funds to the squeak owner
                 _transferFunds(squeaks[tokenId].owner, remainder);
@@ -182,22 +188,32 @@ contract Bankable is Initializable, Validateable {
     function _makeScoutPayments(uint256 tokenId, uint256 poolUnit) internal {
         // read pool details into memory for cheaper operations
         ScoutPool memory pool = scoutPools[tokenId];
+        uint256 memberCount = scouts[tokenId].length();
 
         // TODO: move this unbounded loop off-chain
-        for (uint256 index = 0; index < scouts[tokenId].length(); index++) {
+        for (uint256 index = 0; index < memberCount; index++) {
             // calculate payout based on the users scout level & pool unit
-            uint256 payout = users[scouts[tokenId].at(index)].scoutLevel *
-                poolUnit;
+            address scout = scouts[tokenId].at(index);
+            uint256 payout = users[scout].scoutLevel * poolUnit;
 
-            // remove the amount from the pool
+            // subtract from pool funds
             pool.amount -= payout;
 
-            // pay out to scout
-            _transferFunds(scouts[tokenId].at(index), payout);
+            // if there is any dust remaining on the last iteration
+            if (index == memberCount - 1 && pool.amount > 0) {
+                // deposit it into the treasury, and reset the pool amount
+                _deposit(pool.amount);
+                pool.amount = 0;
+            }
+
+            // pay out to the scout
+            _transferFunds(scout, payout);
         }
 
         // save updated pool details back to storage
         scoutPools[tokenId] = pool;
+
+        emit ScoutPoolPayout(tokenId);
     }
 
     /**
@@ -210,14 +226,14 @@ contract Bankable is Initializable, Validateable {
         // add funds to the pool
         scoutPools[tokenId].amount += amount;
 
+        emit FundsAddedToScoutPool(tokenId, amount);
+
         // determine if we need to payout
         uint256 poolUnit = _getPoolUnit(tokenId);
 
         if (poolUnit >= poolThreshold) {
             _makeScoutPayments(tokenId, poolUnit);
         }
-
-        emit FundsAddedToScoutPool(tokenId, amount);
     }
 
     /**

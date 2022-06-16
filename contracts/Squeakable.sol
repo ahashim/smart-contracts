@@ -17,7 +17,6 @@
 
 */
 pragma solidity ^0.8.4;
-import 'hardhat/console.sol';
 
 // 3rd-party contracts
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
