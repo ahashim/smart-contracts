@@ -161,14 +161,13 @@ contract Bankable is Initializable, Validateable {
 
             if (viralSqueaks.contains(tokenId)) {
                 // split remainder between scouts & the squeak owner
-                uint256 half = remainder / 2;
-
-                _addScoutFunds(tokenId, remainder - half);
-                _transferFunds(squeaks[tokenId].owner, remainder - half);
-            } else {
-                // transfer remaining funds to the squeak owner
-                _transferFunds(squeaks[tokenId].owner, remainder);
+                _addScoutFunds(tokenId, (remainder / 2));
+                // ensure any dust from odd division goes to the owner
+                remainder -= (remainder / 2);
             }
+
+            // transfer remaining funds to the squeak owner
+            _transferFunds(squeaks[tokenId].owner, remainder);
         } else if (
             // negative interaction
             interaction == Interaction.Dislike ||
