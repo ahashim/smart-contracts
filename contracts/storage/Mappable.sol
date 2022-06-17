@@ -19,7 +19,6 @@
 pragma solidity ^0.8.4;
 
 // contracts
-import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 import './Typeable.sol';
 

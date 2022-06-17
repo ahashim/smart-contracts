@@ -21,9 +21,6 @@ pragma solidity ^0.8.4;
 // critter contracts
 import './Scoutable.sol';
 
-// data structures
-import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
-
 // libraries
 import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 

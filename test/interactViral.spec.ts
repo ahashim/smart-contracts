@@ -198,7 +198,7 @@ describe('interact viral', () => {
 
     // get pool unit for expected amount after the interaction
     const pool = await critter.getScoutPool(squeakId);
-    const poolUnit = pool.amount.add(transferAmount).div(pool.shares);
+    const sharePrice = pool.amount.add(transferAmount).div(pool.shares);
 
     // barbie likes the viral squeak bringing the pool unit past its threshold
     await critter.connect(barbie).interact(squeakId, INTERACTION.Like, {
@@ -212,15 +212,15 @@ describe('interact viral', () => {
 
     // pool members are paid based on their scout level
     expect((await carlos.getBalance()).sub(carlosBalance)).to.eq(
-      poolUnit.mul((await critter.users(carlos.address)).scoutLevel)
+      sharePrice.mul((await critter.users(carlos.address)).scoutLevel)
     );
     expect((await daphne.getBalance()).sub(daphneBalance)).to.eq(
-      poolUnit.mul((await critter.users(daphne.address)).scoutLevel)
+      sharePrice.mul((await critter.users(daphne.address)).scoutLevel)
     );
 
     // squeak owner gets transferAmount in addition to pool payout
     expect((await ahmed.getBalance()).sub(ahmedBalance)).to.eq(
-      poolUnit
+      sharePrice
         .mul((await critter.users(ahmed.address)).scoutLevel)
         .add(transferAmount)
     );

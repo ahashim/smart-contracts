@@ -31,7 +31,7 @@ describe('deleteViralSqueak', () => {
     deleteFee: BigNumber,
     likes: BigNumber,
     dislikes: BigNumber,
-    poolUnit: BigNumber,
+    sharePrice: BigNumber,
     resqueaks: BigNumber,
     squeakId: BigNumber,
     treasuryBalance: BigNumber;
@@ -118,7 +118,7 @@ describe('deleteViralSqueak', () => {
 
     // get pool unit
     const pool = await critter.getScoutPool(squeakId);
-    poolUnit = pool.amount.div(pool.shares);
+    sharePrice = pool.amount.div(pool.shares);
 
     // ahmed delets the viral squeak
     deleteFee = await critter.getDeleteFee(squeakId, CONFIRMATION_THRESHOLD);
@@ -131,7 +131,7 @@ describe('deleteViralSqueak', () => {
       critter,
       likes: await critter.getLikeCount(squeakId),
       dislikes: await critter.getDislikeCount(squeakId),
-      poolUnit,
+      sharePrice,
       resqueaks: await critter.getResqueakCount(squeakId),
       scouts: await critter.getScouts(squeakId),
       scoutPool: await critter.getScoutPool(squeakId),
@@ -151,7 +151,7 @@ describe('deleteViralSqueak', () => {
         critter,
         likes,
         dislikes,
-        poolUnit,
+        sharePrice,
         resqueaks,
         scouts,
         scoutPool,
@@ -182,13 +182,13 @@ describe('deleteViralSqueak', () => {
 
   it('pays out to pool members before deletion', async () => {
     expect((await barbie.getBalance()).sub(barbieBalance)).to.eq(
-      poolUnit.mul((await critter.users(barbie.address)).scoutLevel)
+      sharePrice.mul((await critter.users(barbie.address)).scoutLevel)
     );
     expect((await carlos.getBalance()).sub(carlosBalance)).to.eq(
-      poolUnit.mul((await critter.users(carlos.address)).scoutLevel)
+      sharePrice.mul((await critter.users(carlos.address)).scoutLevel)
     );
     expect((await daphne.getBalance()).sub(daphneBalance)).to.eq(
-      poolUnit.mul((await critter.users(daphne.address)).scoutLevel)
+      sharePrice.mul((await critter.users(daphne.address)).scoutLevel)
     );
   });
 

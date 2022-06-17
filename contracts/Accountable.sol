@@ -19,12 +19,10 @@
 pragma solidity ^0.8.4;
 
 // 3rd-party contracts
-import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 
 // critter contracts
 import './Validateable.sol';
-import './storage/Storeable.sol';
 
 // error codes
 error AccountAlreadyExists(address account);
