@@ -25,7 +25,6 @@ import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 
 // critter contracts
 import './Bankable.sol';
-import './Validateable.sol';
 import './Viral.sol';
 
 // error codes
@@ -47,7 +46,6 @@ error SqueakIsTooLong(string content);
 contract Squeakable is
     ReentrancyGuardUpgradeable,
     PausableUpgradeable,
-    Validateable,
     Bankable,
     Viral
 {

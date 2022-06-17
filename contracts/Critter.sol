@@ -97,6 +97,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
         __Accountable_init();
         __Bankable_init();
         __Squeakable_init();
+        __Scoutable_init();
         __Validateable_init();
         __Viral_init();
     }

@@ -19,7 +19,6 @@
 pragma solidity ^0.8.4;
 
 // contracts
-import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './Validateable.sol';
 
 // error codes
@@ -31,7 +30,7 @@ error InvalidWithdrawlAmount(uint256 amount);
  * @dev A contract to handle interaction payments, scouts + pools, and
  *      transacting with the treasury.
  */
-contract Bankable is Initializable, Validateable {
+contract Bankable is Validateable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 

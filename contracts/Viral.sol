@@ -19,7 +19,7 @@
 pragma solidity ^0.8.4;
 
 // critter contracts
-import './Validateable.sol';
+import './Scoutable.sol';
 
 // data structures
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
@@ -31,7 +31,7 @@ import 'abdk-libraries-solidity/ABDKMath64x64.sol';
  * @title Squeakable
  * @dev A contract to handle virality for squeaks.
  */
-contract Viral is Validateable {
+contract Viral is Scoutable {
     using ABDKMath64x64 for *;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
@@ -41,32 +41,6 @@ contract Viral is Validateable {
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Viral_init() internal view onlyInitializing {}
-
-    /**
-     * @dev Gets the details of a scout pool.
-     * @param tokenId ID of the viral squeak.
-     * @return a ScoutPool.
-     */
-    function getScoutPool(uint256 tokenId)
-        external
-        view
-        returns (ScoutPool memory)
-    {
-        return scoutPools[tokenId];
-    }
-
-    /**
-     * @dev Gets a list of scouts for a viral squeak.
-     * @param tokenId ID of the viral squeak.
-     * @return a list of account addresses representing scouts.
-     */
-    function getScouts(uint256 tokenId)
-        external
-        view
-        returns (address[] memory)
-    {
-        return scouts[tokenId].values();
-    }
 
     /**
      * @dev Gets the virality score of a squeak.
@@ -154,20 +128,6 @@ contract Viral is Validateable {
 
         // save the pool to storage
         scoutPools[tokenId] = pool;
-    }
-
-    /**
-     * @dev Updates the scout level for an account, and adds them to the scout
-     *      pool of a viral squeak.
-     * @param account Account to add to scouts list for tokenId.
-     * @param tokenId ID of the viral squeak.
-     */
-    function _addScout(address account, uint256 tokenId) private {
-        // upgrade their scout level
-        users[account].scoutLevel++;
-
-        // add them to the scout pool for the squeak
-        scouts[tokenId].add(account);
     }
 
     /**
