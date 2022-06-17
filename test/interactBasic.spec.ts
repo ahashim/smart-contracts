@@ -381,6 +381,9 @@ describe('interact basic', () => {
   });
 
   describe('Virality', () => {
+    it('is not considered viral', async () => {
+      expect(await critter.isViral(squeakId)).to.be.false;
+    });
     it('returns a virality of zero when interactions do not meet criteria', async () => {
       expect(await critter.getViralityScore(squeakId)).to.eq(0);
     });

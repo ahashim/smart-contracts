@@ -32,12 +32,14 @@ describe('interact viral', () => {
   let ahmedBalance: BigNumber, squeakId: BigNumber, treasuryBalance: BigNumber;
 
   // test variables
+  const scoutPoolThreshold = ethers.utils.parseEther('0.000002');
   const treasuryFee = ethers.BigNumber.from(PLATFORM_FEE)
     .mul(PLATFORM_TAKE_RATE)
     .div(ethers.BigNumber.from(100));
   const transferAmount = ethers.BigNumber.from(PLATFORM_FEE)
     .sub(treasuryFee)
     .div(2);
+  const viralityThreshold = 60;
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie, carlos, daphne] = await (
@@ -62,8 +64,8 @@ describe('interact viral', () => {
         BASE_TOKEN_URI,
         PLATFORM_FEE,
         PLATFORM_TAKE_RATE,
-        ethers.utils.parseEther('0.000002'), // scout pool threshold
-        60, // virality threshold
+        scoutPoolThreshold,
+        viralityThreshold,
         SCOUT_BONUS,
       ])
     ).connect(ahmed) as Critter;
@@ -116,6 +118,12 @@ describe('interact viral', () => {
   });
 
   it('marks the squeak as viral', async () => {
+    // virality score is greater than the threshold
+    expect(
+      (await critter.getViralityScore(squeakId)).toNumber()
+    ).to.be.greaterThan(viralityThreshold);
+
+    // squeak is marked viral
     expect(await critter.isViral(squeakId)).to.be.true;
   });
 
