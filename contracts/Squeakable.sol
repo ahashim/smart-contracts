@@ -205,7 +205,7 @@ contract Squeakable is
         if (viralSqueaks.contains(tokenId)) {
             if (scoutPools[tokenId].amount > 0) {
                 // pay out the remaining pool funds to its members
-                _makeScoutPayments(tokenId, _getPoolUnit(tokenId));
+                _makeScoutPayments(tokenId, _getPoolSharePrice(tokenId));
             }
 
             // delete associated scout pool & its members

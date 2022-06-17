@@ -132,7 +132,7 @@ contract Bankable is Validateable {
      * @param tokenId ID of the viral squeak.
      * @return amount of each pool unit in wei.
      */
-    function _getPoolUnit(uint256 tokenId) internal view returns (uint256) {
+    function _getPoolSharePrice(uint256 tokenId) internal view returns (uint256) {
         ScoutPool memory pool = scoutPools[tokenId];
 
         return pool.amount / pool.shares;
@@ -227,7 +227,7 @@ contract Bankable is Validateable {
         emit FundsAddedToScoutPool(tokenId, amount);
 
         // determine if we need to payout
-        uint256 sharePrice = _getPoolUnit(tokenId);
+        uint256 sharePrice = _getPoolSharePrice(tokenId);
 
         if (sharePrice >= poolThreshold) {
             _makeScoutPayments(tokenId, sharePrice);
