@@ -113,7 +113,7 @@ contract Viral is Scoutable {
             // add all likers to the list of scouts list
             if (index < likesCount) {
                 _addScout(likers.at(index), tokenId);
-                pool.levelTotal += users[likers.at(index)].scoutLevel;
+                pool.shares += users[likers.at(index)].scoutLevel;
             }
 
             // add all resqueakers to the list of scouts who aren't likers
@@ -122,7 +122,7 @@ contract Viral is Scoutable {
                 !scouts[tokenId].contains(resqueakers.at(index))
             ) {
                 _addScout(resqueakers.at(index), tokenId);
-                pool.levelTotal += users[resqueakers.at(index)].scoutLevel;
+                pool.shares += users[resqueakers.at(index)].scoutLevel;
             }
         }
 

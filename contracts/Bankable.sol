@@ -135,7 +135,7 @@ contract Bankable is Validateable {
     function _getPoolUnit(uint256 tokenId) internal view returns (uint256) {
         ScoutPool memory pool = scoutPools[tokenId];
 
-        return pool.amount / pool.levelTotal;
+        return pool.amount / pool.shares;
     }
 
     /**

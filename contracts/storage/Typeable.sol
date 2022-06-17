@@ -35,11 +35,11 @@ contract Typeable is Initializable {
     /**
      * @dev ScoutPool tracks fund information for scouts of a viral squeak.
      * @param amount Total pool funds in wei.
-     * @param levelTotal Sum of the number of levels of each scout in the pool.
+     * @param shares Sum of the number of levels of each scout in the pool.
      */
     struct ScoutPool {
         uint256 amount;
-        uint256 levelTotal;
+        uint256 shares;
     }
 
     /**

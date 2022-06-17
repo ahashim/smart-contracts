@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers';
 
 export type ScoutPool = {
   amount: BigNumber;
-  levelTotal: BigNumber;
+  shares: BigNumber;
 };
 
 export type Squeak = {

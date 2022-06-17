@@ -118,7 +118,7 @@ describe('deleteViralSqueak', () => {
 
     // get pool unit
     const pool = await critter.getScoutPool(squeakId);
-    poolUnit = pool.amount.div(pool.levelTotal);
+    poolUnit = pool.amount.div(pool.shares);
 
     // ahmed delets the viral squeak
     deleteFee = await critter.getDeleteFee(squeakId, CONFIRMATION_THRESHOLD);
@@ -177,7 +177,7 @@ describe('deleteViralSqueak', () => {
   it("deletes the viral squeak's scout information", async () => {
     expect(scouts).to.be.empty;
     expect(scoutPool.amount).to.eq(0);
-    expect(scoutPool.levelTotal).to.eq(0);
+    expect(scoutPool.shares).to.eq(0);
   });
 
   it('pays out to pool members before deletion', async () => {
