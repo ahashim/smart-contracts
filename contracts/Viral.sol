@@ -17,6 +17,7 @@
 
 */
 pragma solidity ^0.8.4;
+import 'hardhat/console.sol';
 
 // critter contracts
 import './Scoutable.sol';
@@ -95,7 +96,7 @@ contract Viral is Scoutable {
 
         // give the user who pushed the squeak into virality a bonus upgrade to
         // their scout level.
-        users[msg.sender].scoutLevel += scoutViralityBonus;
+        _increaseScoutLevel(msg.sender, scoutViralityBonus);
 
         // get the upper bound of the larger set of positive interactions
         uint256 likesCount = likers.length();

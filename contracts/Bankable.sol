@@ -132,7 +132,11 @@ contract Bankable is Validateable {
      * @param tokenId ID of the viral squeak.
      * @return amount of each pool unit in wei.
      */
-    function _getPoolSharePrice(uint256 tokenId) internal view returns (uint256) {
+    function _getPoolSharePrice(uint256 tokenId)
+        internal
+        view
+        returns (uint256)
+    {
         ScoutPool memory pool = scoutPools[tokenId];
 
         return pool.amount / pool.shares;

@@ -9,6 +9,7 @@ import {
   SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
   SCOUT_BONUS,
+  SCOUT_MAX_LEVEL,
 } from '../constants';
 
 // types
@@ -39,6 +40,7 @@ describe('initialize', () => {
       SCOUT_POOL_THRESHOLD,
       VIRALITY_THRESHOLD,
       SCOUT_BONUS,
+      SCOUT_MAX_LEVEL,
     ])) as Critter;
   };
 
@@ -56,7 +58,8 @@ describe('initialize', () => {
         PLATFORM_TAKE_RATE,
         SCOUT_POOL_THRESHOLD,
         VIRALITY_THRESHOLD,
-        SCOUT_BONUS
+        SCOUT_BONUS,
+        SCOUT_MAX_LEVEL
       )
     ).to.be.reverted;
   });

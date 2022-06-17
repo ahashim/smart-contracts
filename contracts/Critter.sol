@@ -62,6 +62,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
      * @param poolThresh Minimum amount of wei required to pay out a scout pool.
      * @param viralityThresh Minimum score that a squeak must have for virality.
      * @param scoutBonus Number of levels a scout jumps when they cause a squeak to go viral.
+     * @param maxLevel Upper limit on scout level.
      */
     function initialize(
         string calldata name,
@@ -71,7 +72,8 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
         uint256 takeRate,
         uint256 poolThresh,
         uint8 viralityThresh,
-        uint8 scoutBonus
+        uint8 scoutBonus,
+        uint8 maxLevel
     ) public initializerERC721A initializer {
         // 3rd party
         __AccessControl_init();
@@ -90,7 +92,8 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
             takeRate,
             poolThresh,
             viralityThresh,
-            scoutBonus
+            scoutBonus,
+            maxLevel
         );
 
         // Logic

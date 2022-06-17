@@ -39,7 +39,7 @@ const config: HardhatUserConfig = {
           },
         },
         enabled: true,
-        runs: 2000,
+        runs: 200,
       },
     },
     version: '0.8.4',

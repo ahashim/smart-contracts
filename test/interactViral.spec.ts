@@ -8,6 +8,7 @@ import {
   PLATFORM_TAKE_RATE,
   INTERACTION,
   SCOUT_BONUS,
+  SCOUT_MAX_LEVEL,
 } from '../constants';
 
 // types
@@ -67,6 +68,7 @@ describe('interact viral', () => {
         scoutPoolThreshold,
         viralityThreshold,
         SCOUT_BONUS,
+        SCOUT_MAX_LEVEL,
       ])
     ).connect(ahmed) as Critter;
 

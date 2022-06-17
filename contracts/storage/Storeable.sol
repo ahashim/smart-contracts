@@ -18,8 +18,10 @@
 */
 pragma solidity ^0.8.4;
 
-// Contracts
+// 3rd-party contracts
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
+
+// critter contracts
 import './Immutable.sol';
 import './Mappable.sol';
 import './Typeable.sol';
@@ -57,7 +59,8 @@ contract Storeable is Typeable, Immutable, Mappable {
         uint256 takeRate,
         uint256 poolThresh,
         uint8 viralityThresh,
-        uint8 scoutBonus
+        uint8 scoutBonus,
+        uint8 maxLevel
     ) internal onlyInitializing {
         baseTokenURI = baseURI;
         platformFee = fee;
@@ -65,6 +68,7 @@ contract Storeable is Typeable, Immutable, Mappable {
         poolThreshold = poolThresh;
         viralityThreshold = viralityThresh;
         scoutViralityBonus = scoutBonus;
+        scoutMaxLevel = maxLevel;
     }
 
     /**
@@ -86,6 +90,11 @@ contract Storeable is Typeable, Immutable, Mappable {
      * @dev Minimum amount required in wei for a scout pool to pay its members.
      */
     uint256 public poolThreshold;
+
+    /**
+     * @dev Upper limit that a scout could level up to.
+     */
+    uint256 public scoutMaxLevel;
 
     /**
      * @dev Bonus number of levels added to the scout level of the user that

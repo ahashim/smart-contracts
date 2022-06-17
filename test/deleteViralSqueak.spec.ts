@@ -9,6 +9,7 @@ import {
   PLATFORM_TAKE_RATE,
   INTERACTION,
   SCOUT_BONUS,
+  SCOUT_MAX_LEVEL,
 } from '../constants';
 
 // types
@@ -71,6 +72,7 @@ describe('deleteViralSqueak', () => {
         ethers.utils.parseEther('0.000002'), // scout pool threshold
         60, // virality threshold
         SCOUT_BONUS,
+        SCOUT_MAX_LEVEL,
       ])
     ).connect(ahmed) as Critter;
 

@@ -17,6 +17,7 @@ export const PLATFORM_TAKE_RATE = 20; // "my 2 ¢…"
 
 // scouts
 export const SCOUT_BONUS = 3;
+export const SCOUT_MAX_LEVEL = 100;
 
 // thresholds
 export const CONFIRMATION_THRESHOLD = 6;
@@ -43,4 +44,5 @@ export const CONTRACT_INITIALIZER = [
   SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
   SCOUT_BONUS,
+  SCOUT_MAX_LEVEL,
 ];

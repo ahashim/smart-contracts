@@ -33,7 +33,7 @@ describe('getDeleteFee', () => {
 
   const getDeleteFeeFixture = async () => {
     const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
+    critter = (
       await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
     ).connect(ahmed) as Critter;
 

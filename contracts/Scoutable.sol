@@ -17,6 +17,7 @@
 
 */
 pragma solidity ^0.8.4;
+import 'hardhat/console.sol';
 
 // critter contracts
 import './Validateable.sol';
@@ -68,9 +69,25 @@ contract Scoutable is Validateable {
      */
     function _addScout(address account, uint256 tokenId) internal {
         // upgrade their scout level
-        users[account].scoutLevel++;
+        _increaseScoutLevel(account, 1);
 
         // add them to the scout pool for the squeak
         scouts[tokenId].add(account);
+    }
+
+    /**
+     * @dev Increases a scouts level until they hit the maximum.
+     * @param account Address of the account to modify.
+     * @param amount Number of levels to increase by.
+     */
+    function _increaseScoutLevel(address account, uint256 amount) internal {
+        User storage user = users[account];
+        uint256 newLevel = user.scoutLevel + amount;
+
+        if (newLevel < scoutMaxLevel) {
+            user.scoutLevel = newLevel;
+        } else if (user.scoutLevel < scoutMaxLevel) {
+            user.scoutLevel = scoutMaxLevel;
+        }
     }
 }
