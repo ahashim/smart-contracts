@@ -32,13 +32,14 @@ const config: HardhatUserConfig = {
   solidity: {
     settings: {
       optimizer: {
-        enabled: true,
-        runs: 200,
-      },
-      outputSelection: {
-        '*': {
-          '*': ['storageLayout'],
+        details: {
+          yul: true,
+          yulDetails: {
+            stackAllocation: true,
+          },
         },
+        enabled: true,
+        runs: 2000,
       },
     },
     version: '0.8.4',
