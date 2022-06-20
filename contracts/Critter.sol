@@ -168,27 +168,4 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
         super._afterTokenTransfers(from, to, startTokenId, quantity);
         squeaks[startTokenId].owner = to;
     }
-
-    /**
-     * @dev Hook that is called before any token transfer. This includes minting
-     *      and burning. Calling conditions:
-     *      - When `from` and `to` are both non-zero, ``from``'s `tokenId` will
-     *      be transferred to `to`.
-     *      - When `from` is zero, `tokenId` will be minted for `to`.
-     *      - When `to` is zero, ``from``'s `tokenId` will be burned.
-     *      - `from` and `to` are never both zero.
-     * @param from Address of the account that is relinquishing ownership of the
-     * token.
-     * @param to Address of the account that is gaining ownership of the token.
-     * @param startTokenId The first token id to be transferred.
-     * @param quantity The amount to be transferred.
-     */
-    function _beforeTokenTransfers(
-        address from,
-        address to,
-        uint256 startTokenId,
-        uint256 quantity
-    ) internal override(ERC721AUpgradeable) {
-        super._beforeTokenTransfers(from, to, startTokenId, quantity);
-    }
 }
