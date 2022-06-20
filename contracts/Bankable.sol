@@ -164,9 +164,11 @@ contract Bankable is Validateable {
 
             if (viralSqueaks.contains(tokenId)) {
                 // split remainder between scouts & the squeak owner
-                _addScoutFunds(tokenId, (remainder / 2));
+                uint256 half = remainder / 2;
+                _addScoutFunds(tokenId, half);
+
                 // ensure any dust from odd division goes to the owner
-                remainder -= (remainder / 2);
+                remainder -= half;
             }
 
             // transfer remaining funds to the squeak owner
