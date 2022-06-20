@@ -189,6 +189,18 @@ describe('interact viral', () => {
     expect((await ahmed.getBalance()).sub(ahmedBalance)).to.eq(transferAmount);
   });
 
+  it('deposits the full fee into the treasury for negative interactions', async () => {
+    const treasuryBalance = await critter.treasury();
+
+    await critter
+      .connect(barbie)
+      .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE });
+
+    expect((await critter.treasury()).sub(treasuryBalance)).to.eq(
+      PLATFORM_FEE
+    );
+  });
+
   it('pays out scout funds to members of the pool when it hits the threshold', async () => {
     // get starting balance of interactors before pool payout
     const ahmedBalance = await ahmed.getBalance();
