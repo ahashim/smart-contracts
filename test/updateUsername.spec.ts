@@ -53,7 +53,7 @@ describe('updateUsername', () => {
   it('emits an UsernameUpdated event', async () => {
     await expect(critter.updateUsername(newUsername))
       .to.emit(critter, 'UsernameUpdated')
-      .withArgs(ahmed.address, oldUsername, newUsername);
+      .withArgs(ahmed.address, newUsername);
   });
 
   it('reverts when the username is empty', async () => {

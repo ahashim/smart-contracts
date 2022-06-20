@@ -42,12 +42,10 @@ contract Accountable is PausableUpgradeable, Validateable {
     /**
      * @dev Emitted after updating an accounts username.
      * @param account Address of the account.
-     * @param oldUsername Previous username.
      * @param newUsername Next username.
      */
     event UsernameUpdated(
         address indexed account,
-        string oldUsername,
         string newUsername
     );
 
@@ -102,13 +100,12 @@ contract Accountable is PausableUpgradeable, Validateable {
     {
         // clear the current username
         User storage user = users[msg.sender];
-        string memory oldUsername = user.username;
-        delete addresses[oldUsername];
+        delete addresses[user.username];
 
         // set the new username
-        user.username = newUsername;
         addresses[newUsername] = msg.sender;
+        user.username = newUsername;
 
-        emit UsernameUpdated(msg.sender, oldUsername, newUsername);
+        emit UsernameUpdated(msg.sender, newUsername);
     }
 }
