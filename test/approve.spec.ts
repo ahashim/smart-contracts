@@ -68,10 +68,6 @@ describe('approve', () => {
     );
   });
 
-  it('reverts if the owner tries to approves themselves', async () => {
-    await expect(critter.approve(ahmed.address, squeakId)).to.be.reverted;
-  });
-
   it('reverts if someone other than the owner tries to approve the squeak', async () => {
     await expect(critter.connect(barbie).approve(ahmed.address, squeakId)).to
       .be.reverted;
