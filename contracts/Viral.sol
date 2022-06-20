@@ -88,7 +88,9 @@ contract Viral is Scoutable {
         EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
             tokenId
         ];
-        EnumerableSetUpgradeable.AddressSet storage tokenScouts = scouts[tokenId];
+        EnumerableSetUpgradeable.AddressSet storage tokenScouts = scouts[
+            tokenId
+        ];
         ScoutPool memory pool;
 
         // add squeak to the list of viral squeaks

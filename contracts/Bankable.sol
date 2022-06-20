@@ -120,7 +120,9 @@ contract Bankable is Validateable {
      * @param amount Amount of the funds in wei.
      */
     function _deposit(uint256 amount) internal {
-        treasury += amount;
+        unchecked {
+            treasury += amount;
+        }
 
         emit FundsDeposited(amount);
     }
