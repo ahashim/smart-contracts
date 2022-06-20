@@ -135,13 +135,10 @@ contract Squeakable is
         bytes calldata rawContent = bytes(content);
 
         // validate existence
-        if (rawContent.length == 0) {
-            revert SqueakIsEmpty();
-        }
+        if (rawContent.length == 0) revert SqueakIsEmpty();
+
         // validate length
-        if (rawContent.length > 256) {
-            revert SqueakIsTooLong();
-        }
+        if (rawContent.length > 256) revert SqueakIsTooLong();
 
         uint256 tokenId = _nextTokenId();
 
@@ -172,15 +169,12 @@ contract Squeakable is
     {
         address owner = ownerOf(tokenId);
 
-        // ensure the caller has priviledges to delete
-        if (msg.sender != owner && !isApprovedForAll(owner, msg.sender)) {
+        // validate squeak ownership
+        if (msg.sender != owner && !isApprovedForAll(owner, msg.sender))
             revert NotApprovedOrOwner();
-        }
 
         // validate delete fee
-        uint256 currentBlockDeleteFee = getDeleteFee(tokenId, 0);
-
-        if (msg.value < currentBlockDeleteFee) revert InsufficientFunds();
+        if (msg.value < getDeleteFee(tokenId, 0)) revert InsufficientFunds();
 
         // recieve payment
         _deposit(msg.value);
@@ -196,7 +190,7 @@ contract Squeakable is
         delete dislikes[tokenId];
         delete resqueaks[tokenId];
 
-        // handle virality
+        // delete virality
         if (viralSqueaks.contains(tokenId)) {
             if (scoutPools[tokenId].amount > 0) {
                 // pay out the remaining pool funds to its members

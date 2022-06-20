@@ -137,7 +137,7 @@ contract Bankable is Validateable {
         view
         returns (uint256)
     {
-        ScoutPool memory pool = scoutPools[tokenId];
+        ScoutPool storage pool = scoutPools[tokenId];
 
         return pool.amount / pool.shares;
     }
