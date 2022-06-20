@@ -12,8 +12,8 @@ export const TREASURER_ROLE = 'TREASURER_ROLE';
 export const UPGRADER_ROLE = 'UPGRADER_ROLE';
 
 // fees (in wei)
-export const PLATFORM_FEE = 33_927_831_361_389; // ~10 cents USD
-export const PLATFORM_TAKE_RATE = 20; // "my 2 ¢…"
+export const PLATFORM_FEE = utils.parseEther('0.00005');
+export const PLATFORM_TAKE_RATE = 20;
 
 // scouts
 export const SCOUT_BONUS = 3;

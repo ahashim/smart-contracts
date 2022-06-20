@@ -203,6 +203,6 @@ describe('deleteViralSqueak', () => {
   it('deposits the remaining dust into the treasury', async () => {
     expect(
       (await critter.treasury()).sub(treasuryBalance.add(deleteFee))
-    ).to.eq(4);
+    ).to.eq(9);
   });
 });

@@ -34,12 +34,8 @@ describe('interact viral', () => {
 
   // test variables
   const scoutPoolThreshold = ethers.utils.parseEther('0.000002');
-  const treasuryFee = ethers.BigNumber.from(PLATFORM_FEE)
-    .mul(PLATFORM_TAKE_RATE)
-    .div(ethers.BigNumber.from(100));
-  const transferAmount = ethers.BigNumber.from(PLATFORM_FEE)
-    .sub(treasuryFee)
-    .div(2);
+  const treasuryFee = PLATFORM_FEE.toNumber() * (PLATFORM_TAKE_RATE / 100);
+  const transferAmount = (PLATFORM_FEE.toNumber() - treasuryFee) / 2;
   const viralityThreshold = 60;
 
   before('create fixture loader', async () => {
@@ -242,7 +238,7 @@ describe('interact viral', () => {
     // remaining dust is deposited into the treasury (8 wei in this case)
     expect(
       (await critter.treasury()).sub(treasuryBalance.add(treasuryFee))
-    ).to.eq(8);
+    ).to.eq(7);
 
     // pool amount is reset
     expect((await critter.getScoutPool(squeakId)).amount).to.eq(0);

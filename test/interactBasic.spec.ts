@@ -57,10 +57,8 @@ describe('interact basic', () => {
   };
 
   // test variables
-  const treasuryFee = ethers.BigNumber.from(PLATFORM_FEE)
-    .mul(PLATFORM_TAKE_RATE)
-    .div(ethers.BigNumber.from(100));
-  const transferAmount = ethers.BigNumber.from(PLATFORM_FEE).sub(treasuryFee);
+  const treasuryFee = PLATFORM_FEE.toNumber() * (PLATFORM_TAKE_RATE / 100);
+  const transferAmount = PLATFORM_FEE.toNumber() - treasuryFee;
 
   beforeEach(
     'deploy test contract, ahmed creates an account & posts a squeak',

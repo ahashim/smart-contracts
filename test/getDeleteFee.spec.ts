@@ -19,12 +19,11 @@ import type { Result } from '@ethersproject/abi';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('getDeleteFee', () => {
-  let blockAuthored: BigNumber, expectedFee: BigNumber;
+  let blockAuthored: BigNumber, squeakId: BigNumber;
   let critter: Critter;
-  let latestBlock: number;
+  let expectedFee: number, latestBlock: number;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
-  let squeakId: BigNumber;
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -61,10 +60,9 @@ describe('getDeleteFee', () => {
   it('calculates a delete fee for a squeak based on when it was created', async () => {
     ({ blockNumber: blockAuthored } = await critter.squeaks(squeakId));
     ({ number: latestBlock } = await ethers.provider.getBlock('latest'));
-    expectedFee = ethers.BigNumber.from(latestBlock)
-      .add(CONFIRMATION_THRESHOLD)
-      .sub(blockAuthored)
-      .mul(PLATFORM_FEE);
+    expectedFee =
+      (latestBlock + CONFIRMATION_THRESHOLD - blockAuthored.toNumber()) *
+      PLATFORM_FEE.toNumber();
 
     expect(await critter.getDeleteFee(squeakId, CONFIRMATION_THRESHOLD)).to.eq(
       expectedFee

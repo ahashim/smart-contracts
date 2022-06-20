@@ -94,9 +94,7 @@ describe('withdraw', () => {
   );
 
   // test variables
-  const treasuryFee = ethers.BigNumber.from(PLATFORM_FEE)
-    .mul(PLATFORM_TAKE_RATE)
-    .div(ethers.BigNumber.from(100));
+  const treasuryFee = PLATFORM_FEE.toNumber() * (PLATFORM_TAKE_RATE / 100);
 
   it('lets an account with TREASURER_ROLE withdraw treasury funds to an address', async () => {
     expect(await critter.treasury()).to.eq(treasuryFee);
