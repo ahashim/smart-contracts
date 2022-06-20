@@ -88,13 +88,14 @@ contract Viral is Scoutable {
         EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
             tokenId
         ];
+        EnumerableSetUpgradeable.AddressSet storage tokenScouts = scouts[tokenId];
         ScoutPool memory pool;
 
         // add squeak to the list of viral squeaks
         viralSqueaks.add(tokenId);
 
-        // give the user who pushed the squeak into virality a bonus upgrade to
-        // their scout level.
+        // give the user who propelled the squeak into virality a bonus upgrade
+        // to their scout level.
         _increaseScoutLevel(users[msg.sender], scoutViralityBonus);
 
         // get the upper bound of the larger set of positive interactions
@@ -109,8 +110,10 @@ contract Viral is Scoutable {
         for (uint256 index = 0; index < upperBound; index++) {
             // add all likers to the list of scouts list
             if (index < likesCount) {
-                _addScout(likers.at(index), tokenId);
-                pool.shares += users[likers.at(index)].scoutLevel;
+                address account = likers.at(index);
+
+                _addScout(account, tokenScouts);
+                pool.shares += users[account].scoutLevel;
             }
 
             // add all resqueakers to the list of scouts who aren't likers
@@ -118,8 +121,10 @@ contract Viral is Scoutable {
                 index < resqueaksCount &&
                 !scouts[tokenId].contains(resqueakers.at(index))
             ) {
-                _addScout(resqueakers.at(index), tokenId);
-                pool.shares += users[resqueakers.at(index)].scoutLevel;
+                address account = resqueakers.at(index);
+
+                _addScout(account, tokenScouts);
+                pool.shares += users[account].scoutLevel;
             }
         }
 
