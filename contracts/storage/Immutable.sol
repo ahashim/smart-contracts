@@ -38,20 +38,20 @@ contract Immutable is Initializable {
     /**
      * @dev MINTER_ROLE has priviledges to mint tokens.
      */
-    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
+    bytes32 internal constant MINTER_ROLE = keccak256('MINTER_ROLE');
 
     /**
      * @dev PAUSER_ROLE has priviledges to pause the contract.
      */
-    bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
+    bytes32 internal constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
 
     /**
      * @dev TREASURER_ROLE has priviledges to withdraw funds and update fees.
      */
-    bytes32 public constant TREASURER_ROLE = keccak256('TREASURER_ROLE');
+    bytes32 internal constant TREASURER_ROLE = keccak256('TREASURER_ROLE');
 
     /**
      * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
      */
-    bytes32 public constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
+    bytes32 internal constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 }

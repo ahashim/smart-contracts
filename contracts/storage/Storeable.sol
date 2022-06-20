@@ -77,36 +77,36 @@ contract Storeable is Typeable, Immutable, Mappable {
     string public baseTokenURI;
 
     /**
-     * @dev Fee amount in wei used for interactions on Critter.
-     */
-    uint256 public platformFee;
-
-    /**
-     * @dev A percentage to take from each interaction.
-     */
-    uint256 public platformTakeRate;
-
-    /**
-     * @dev Minimum amount required in wei for a scout pool to pay its members.
-     */
-    uint256 public poolThreshold;
-
-    /**
      * @dev Upper limit that a scout could level up to.
      */
     uint256 public scoutMaxLevel;
-
-    /**
-     * @dev Bonus number of levels added to the scout level of the user that
-     *      propels a squeak into virality.
-     */
-    uint256 public scoutViralityBonus;
 
     /**
      * @dev Contract funds.
      * @notice Can only be withdrawn by TREASURER_ROLE.
      */
     uint256 public treasury;
+
+    /**
+     * @dev Fee amount in wei used for interactions on Critter.
+     */
+    uint256 internal platformFee;
+
+    /**
+     * @dev A percentage to take from each interaction.
+     */
+    uint256 internal platformTakeRate;
+
+    /**
+     * @dev Minimum amount required in wei for a scout pool to pay its members.
+     */
+    uint256 internal poolThreshold;
+
+    /**
+     * @dev Bonus number of levels added to the scout level of the user that
+     *      propels a squeak into virality.
+     */
+    uint256 internal scoutViralityBonus;
 
     /**
      * @dev Set of squeak ID's that have gone viral.
@@ -116,5 +116,5 @@ contract Storeable is Typeable, Immutable, Mappable {
     /**
      * @dev Minimum score that a squeak must have for it to be considered viral.
      */
-    uint8 public viralityThreshold;
+    uint8 internal viralityThreshold;
 }
