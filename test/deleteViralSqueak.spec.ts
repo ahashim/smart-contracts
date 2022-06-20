@@ -131,10 +131,16 @@ describe('deleteViralSqueak', () => {
       carlosBalance,
       daphneBalance,
       critter,
-      likes: await critter.getLikeCount(squeakId),
-      dislikes: await critter.getDislikeCount(squeakId),
+      likes: await critter.getInteractionCount(squeakId, INTERACTION.Like),
+      dislikes: await critter.getInteractionCount(
+        squeakId,
+        INTERACTION.Dislike
+      ),
       sharePrice,
-      resqueaks: await critter.getResqueakCount(squeakId),
+      resqueaks: await critter.getInteractionCount(
+        squeakId,
+        INTERACTION.Resqueak
+      ),
       scouts: await critter.getScouts(squeakId),
       scoutPool: await critter.getScoutPool(squeakId),
       squeak: await critter.squeaks(squeakId),

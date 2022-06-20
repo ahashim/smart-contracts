@@ -98,9 +98,15 @@ describe('deleteSqueak', () => {
   it('removes all associated sentiment for the squeak', async () => {
     await critter.deleteSqueak(squeakId, { value: deleteFee });
 
-    expect(await critter.getLikeCount(squeakId)).to.eq(0);
-    expect(await critter.getDislikeCount(squeakId)).to.eq(0);
-    expect(await critter.getResqueakCount(squeakId)).to.eq(0);
+    expect(
+      await critter.getInteractionCount(squeakId, INTERACTION.Dislike)
+    ).to.eq(0);
+    expect(
+      await critter.getInteractionCount(squeakId, INTERACTION.Like)
+    ).to.eq(0);
+    expect(
+      await critter.getInteractionCount(squeakId, INTERACTION.Resqueak)
+    ).to.eq(0);
   });
 
   it('deposits the delete fee into the treasury', async () => {

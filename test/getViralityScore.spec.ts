@@ -87,10 +87,16 @@ describe('getViralityScore', () => {
 
     return {
       critter,
-      dislikes: (await critter.getDislikeCount(viralSqueakId)).toNumber(),
-      likes: (await critter.getLikeCount(viralSqueakId)).toNumber(),
+      dislikes: (
+        await critter.getInteractionCount(viralSqueakId, INTERACTION.Dislike)
+      ).toNumber(),
+      likes: (
+        await critter.getInteractionCount(viralSqueakId, INTERACTION.Like)
+      ).toNumber(),
       nonViralSqueakId,
-      resqueaks: (await critter.getResqueakCount(viralSqueakId)).toNumber(),
+      resqueaks: (
+        await critter.getInteractionCount(viralSqueakId, INTERACTION.Resqueak)
+      ).toNumber(),
       viralSqueakId,
     };
   };

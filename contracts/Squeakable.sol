@@ -31,7 +31,7 @@ import './Viral.sol';
 error AlreadyDisliked(address account, uint256 tokenId);
 error AlreadyLiked(address account, uint256 tokenId);
 error AlreadyResqueaked(address account, uint256 tokenId);
-error InvalidInteraction(uint256 tokenId);
+error InvalidInteractionType();
 error NotApprovedOrOwner(address sender);
 error NotDislikedYet(address account, uint256 tokenId);
 error NotLikedYet(address account, uint256 tokenId);
@@ -220,34 +220,22 @@ contract Squeakable is
     }
 
     /**
-     * @dev Gets the number of dislikes for a squeak.
+     * @dev Gets the number of an {Interaction} that occurred for a squeak.
      * @param tokenId ID of the squeak.
-     * @notice The token must exist.
+     * @param interaction A value from the Interaction enum.
      */
-    function getDislikeCount(uint256 tokenId) external view returns (uint256) {
-        return dislikes[tokenId].length();
-    }
-
-    /**
-     * @dev Gets the number of likes for a squeak.
-     * @param tokenId ID of the squeak.
-     * @notice The token must exist.
-     */
-    function getLikeCount(uint256 tokenId) external view returns (uint256) {
-        return likes[tokenId].length();
-    }
-
-    /**
-     * @dev Gets the number of resqueaks for a squeak.
-     * @param tokenId ID of the squeak.
-     * @notice The token must exist.
-     */
-    function getResqueakCount(uint256 tokenId)
+    function getInteractionCount(uint256 tokenId, Interaction interaction)
         external
         view
         returns (uint256)
     {
-        return resqueaks[tokenId].length();
+        if (interaction == Interaction.Dislike)
+            return dislikes[tokenId].length();
+        else if (interaction == Interaction.Like)
+            return likes[tokenId].length();
+        else if (interaction == Interaction.Resqueak)
+            return resqueaks[tokenId].length();
+        else revert InvalidInteractionType();
     }
 
     /**
@@ -273,7 +261,7 @@ contract Squeakable is
         else if (interaction == Interaction.UndoLike) _undoLikeSqueak(tokenId);
         else if (interaction == Interaction.UndoResqueak)
             _undoResqueak(tokenId);
-        else revert InvalidInteraction({tokenId: tokenId});
+        else revert InvalidInteractionType();
 
         // check squeak virality
         if (
