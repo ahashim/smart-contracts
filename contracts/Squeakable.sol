@@ -32,7 +32,7 @@ error AlreadyDisliked();
 error AlreadyLiked();
 error AlreadyResqueaked();
 error InvalidInteractionType();
-error NotApprovedOrOwner(address sender);
+error NotApprovedOrOwner();
 error NotDislikedYet();
 error NotLikedYet();
 error NotResqueakedYet();
@@ -132,7 +132,7 @@ contract Squeakable is
         hasAccount
         onlyRole(MINTER_ROLE)
     {
-        bytes memory rawContent = bytes(content);
+        bytes calldata rawContent = bytes(content);
 
         // validate existence
         if (rawContent.length == 0) {
@@ -174,18 +174,13 @@ contract Squeakable is
 
         // ensure the caller has priviledges to delete
         if (msg.sender != owner && !isApprovedForAll(owner, msg.sender)) {
-            revert NotApprovedOrOwner({sender: msg.sender});
+            revert NotApprovedOrOwner();
         }
 
         // validate delete fee
         uint256 currentBlockDeleteFee = getDeleteFee(tokenId, 0);
 
-        if (msg.value < currentBlockDeleteFee) {
-            revert InsufficientFunds({
-                available: msg.value,
-                required: currentBlockDeleteFee
-            });
-        }
+        if (msg.value < currentBlockDeleteFee) revert InsufficientFunds();
 
         // recieve payment
         _deposit(msg.value);

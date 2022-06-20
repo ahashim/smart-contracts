@@ -27,12 +27,12 @@ import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './storage/Storeable.sol';
 
 // error codes
-error InsufficientFunds(uint256 available, uint256 required);
-error NonExistentAccount(address account);
-error SqueakDoesNotExist(uint256 tokenId);
-error UsernameEmpty(string username);
-error UsernameTooLong(string username);
-error UsernameUnavailable(string username);
+error InsufficientFunds();
+error NonExistentAccount();
+error SqueakDoesNotExist();
+error UsernameEmpty();
+error UsernameTooLong();
+error UsernameUnavailable();
 
 /**
  * @title Validateble
@@ -57,7 +57,7 @@ contract Validateable is
      */
     modifier hasAccount() {
         if (bytes(users[msg.sender].username).length == 0) {
-            revert NonExistentAccount({account: msg.sender});
+            revert NonExistentAccount();
         }
         _;
     }
@@ -67,10 +67,7 @@ contract Validateable is
      */
     modifier hasEnoughFunds() {
         if (msg.value < platformFee) {
-            revert InsufficientFunds({
-                available: msg.value,
-                required: platformFee
-            });
+            revert InsufficientFunds();
         }
         _;
     }
@@ -82,15 +79,15 @@ contract Validateable is
     modifier isValidUsername(string calldata username) {
         // validate existence
         if (bytes(username).length == 0) {
-            revert UsernameEmpty({username: username});
+            revert UsernameEmpty();
         }
         // validate length
         if (bytes(username).length > 32) {
-            revert UsernameTooLong({username: username});
+            revert UsernameTooLong();
         }
         // validate availability
         if (addresses[username] != address(0)) {
-            revert UsernameUnavailable({username: username});
+            revert UsernameUnavailable();
         }
         _;
     }
@@ -101,7 +98,7 @@ contract Validateable is
      */
     modifier squeakExists(uint256 tokenId) {
         if (!_exists(tokenId)) {
-            revert SqueakDoesNotExist({tokenId: tokenId});
+            revert SqueakDoesNotExist();
         }
         _;
     }
