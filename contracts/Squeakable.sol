@@ -16,7 +16,7 @@
    limitations under the License.
 
 */
-pragma solidity ^0.8.4;
+pragma solidity 0.8.9;
 
 // 3rd-party contracts
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
