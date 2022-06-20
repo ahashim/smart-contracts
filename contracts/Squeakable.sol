@@ -28,16 +28,16 @@ import './Bankable.sol';
 import './Viral.sol';
 
 // error codes
-error AlreadyDisliked(address account, uint256 tokenId);
-error AlreadyLiked(address account, uint256 tokenId);
-error AlreadyResqueaked(address account, uint256 tokenId);
+error AlreadyDisliked();
+error AlreadyLiked();
+error AlreadyResqueaked();
 error InvalidInteractionType();
 error NotApprovedOrOwner(address sender);
-error NotDislikedYet(address account, uint256 tokenId);
-error NotLikedYet(address account, uint256 tokenId);
-error NotResqueakedYet(address account, uint256 tokenId);
-error SqueakIsEmpty(string content);
-error SqueakIsTooLong(string content);
+error NotDislikedYet();
+error NotLikedYet();
+error NotResqueakedYet();
+error SqueakIsEmpty();
+error SqueakIsTooLong();
 
 /**
  * @title Squeakable
@@ -136,11 +136,11 @@ contract Squeakable is
 
         // validate existence
         if (rawContent.length == 0) {
-            revert SqueakIsEmpty({content: content});
+            revert SqueakIsEmpty();
         }
         // validate length
         if (rawContent.length > 256) {
-            revert SqueakIsTooLong({content: content});
+            revert SqueakIsTooLong();
         }
 
         uint256 tokenId = _nextTokenId();
@@ -286,7 +286,7 @@ contract Squeakable is
 
         // ensure account has not already disliked the squeak
         if (dislikers.contains(msg.sender)) {
-            revert AlreadyDisliked({account: msg.sender, tokenId: tokenId});
+            revert AlreadyDisliked();
         }
 
         // first remove them from likers set if they're in there
@@ -312,7 +312,7 @@ contract Squeakable is
 
         // ensure account has not already liked the squeak
         if (likers.contains(msg.sender)) {
-            revert AlreadyLiked({account: msg.sender, tokenId: tokenId});
+            revert AlreadyLiked();
         }
 
         // first remove them from dislikers set if they're in there
@@ -337,7 +337,7 @@ contract Squeakable is
 
         // revert if the account has already resqueaked it
         if (resqueakers.contains(msg.sender)) {
-            revert AlreadyResqueaked({account: msg.sender, tokenId: tokenId});
+            revert AlreadyResqueaked();
         }
 
         // add them to the resqueakers
@@ -357,7 +357,7 @@ contract Squeakable is
 
         // ensure the user has disliked the squeak
         if (!dislikers.contains(msg.sender)) {
-            revert NotDislikedYet({account: msg.sender, tokenId: tokenId});
+            revert NotDislikedYet();
         }
 
         // remove them from dislikers
@@ -375,7 +375,7 @@ contract Squeakable is
 
         // ensure the user has liked the squeak
         if (!likers.contains(msg.sender)) {
-            revert NotLikedYet({account: msg.sender, tokenId: tokenId});
+            revert NotLikedYet();
         }
 
         // remove them from the likers
@@ -395,7 +395,7 @@ contract Squeakable is
 
         // ensure the user has resqueaked the squeak
         if (!resqueakers.contains(msg.sender)) {
-            revert NotResqueakedYet({account: msg.sender, tokenId: tokenId});
+            revert NotResqueakedYet();
         }
 
         // remove them from the resqueakers

@@ -44,10 +44,7 @@ contract Accountable is PausableUpgradeable, Validateable {
      * @param account Address of the account.
      * @param newUsername Next username.
      */
-    event UsernameUpdated(
-        address indexed account,
-        string newUsername
-    );
+    event UsernameUpdated(address indexed account, string newUsername);
 
     /**
      * @dev Upgradeable constructor
