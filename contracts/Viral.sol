@@ -95,7 +95,7 @@ contract Viral is Scoutable {
 
         // give the user who pushed the squeak into virality a bonus upgrade to
         // their scout level.
-        _increaseScoutLevel(msg.sender, scoutViralityBonus);
+        _increaseScoutLevel(users[msg.sender], scoutViralityBonus);
 
         // get the upper bound of the larger set of positive interactions
         uint256 likesCount = likers.length();
