@@ -125,9 +125,6 @@ contract Bankable is Validateable {
         external
         onlyRole(TREASURER_ROLE)
     {
-        if (interaction > Interaction.UndoResqueak)
-            revert InvalidInteractionType();
-
         interactionFees[interaction] = amount;
 
         emit InteractionFeeUpdated(interaction, amount);
