@@ -57,7 +57,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
      * @param name Contract name (Critter).
      * @param symbol Contract symbol (CRTTR).
      * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
-     * @param fee Fee amount in wei to charge per interaction.
+     * @param platformFee Default amount in wei to charge per interaction.
      * @param takeRate Percentage of `fee` deposited into the treasury.
      * @param poolThresh Minimum amount of wei required to pay out a scout pool.
      * @param viralityThresh Minimum score that a squeak must have for virality.
@@ -68,7 +68,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
         string calldata name,
         string calldata symbol,
         string calldata baseURI,
-        uint256 fee,
+        uint256 platformFee,
         uint256 takeRate,
         uint256 poolThresh,
         uint8 viralityThresh,
@@ -84,11 +84,10 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
 
         // Storage
         __Immutable_init();
-        __Mappable_init();
+        __Mappable_init(platformFee);
         __Typeable_init();
         __Storeable_init(
             baseURI,
-            fee,
             takeRate,
             poolThresh,
             viralityThresh,

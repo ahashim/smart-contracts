@@ -23,7 +23,7 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 /**
  * @title Typeable
- * @dev A contract that only handles custom data structures (types).
+ * @dev A contract that only handles custom data structures (types) & enums.
  */
 contract Typeable is Initializable {
     /**
@@ -31,6 +31,19 @@ contract Typeable is Initializable {
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Typeable_init() internal view onlyInitializing {}
+
+    /**
+     * @dev Set of interactions
+     */
+    enum Interaction {
+        Delete,
+        Dislike,
+        Like,
+        Resqueak,
+        UndoDislike,
+        UndoLike,
+        UndoResqueak
+    }
 
     /**
      * @dev ScoutPool tracks fund information for scouts of a viral squeak.

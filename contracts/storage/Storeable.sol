@@ -38,24 +38,11 @@ contract Storeable is Typeable, Immutable, Mappable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
-     * @dev Set of interactions
-     */
-    enum Interaction {
-        Dislike,
-        Like,
-        Resqueak,
-        UndoDislike,
-        UndoLike,
-        UndoResqueak
-    }
-
-    /**
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase
     function __Storeable_init(
         string calldata baseURI,
-        uint256 fee,
         uint256 takeRate,
         uint256 poolThresh,
         uint8 viralityThresh,
@@ -63,7 +50,6 @@ contract Storeable is Typeable, Immutable, Mappable {
         uint8 maxLevel
     ) internal onlyInitializing {
         baseTokenURI = baseURI;
-        platformFee = fee;
         platformTakeRate = takeRate;
         poolThreshold = poolThresh;
         viralityThreshold = viralityThresh;
@@ -86,11 +72,6 @@ contract Storeable is Typeable, Immutable, Mappable {
      * @notice Can only be withdrawn by TREASURER_ROLE.
      */
     uint256 public treasury;
-
-    /**
-     * @dev Fee amount in wei used for interactions on Critter.
-     */
-    uint256 internal platformFee;
 
     /**
      * @dev A percentage to take from each interaction.

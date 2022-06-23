@@ -26,6 +26,7 @@ export const VIRALITY_THRESHOLD = 95;
 
 // interactions
 export const enum INTERACTION {
+  Delete,
   Dislike,
   Like,
   Resqueak,

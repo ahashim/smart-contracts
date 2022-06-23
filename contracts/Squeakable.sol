@@ -132,7 +132,7 @@ contract Squeakable is
         hasAccount
         onlyRole(MINTER_ROLE)
     {
-        bytes calldata rawContent = bytes(content);
+        bytes memory rawContent = bytes(content);
 
         // validate existence
         if (rawContent.length == 0) revert SqueakIsEmpty();
@@ -237,7 +237,6 @@ contract Squeakable is
         payable
         whenNotPaused
         hasAccount
-        hasEnoughFunds
         squeakExists(tokenId)
         nonReentrant
     {
@@ -267,7 +266,10 @@ contract Squeakable is
      * @dev Dislikes a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _dislikeSqueak(uint256 tokenId) private {
+    function _dislikeSqueak(uint256 tokenId)
+        private
+        coversFee(Interaction.Dislike)
+    {
         EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
             tokenId
         ];
@@ -293,7 +295,7 @@ contract Squeakable is
      * @dev Likes a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _likeSqueak(uint256 tokenId) private {
+    function _likeSqueak(uint256 tokenId) private coversFee(Interaction.Like) {
         EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
             tokenId
         ];
@@ -319,7 +321,10 @@ contract Squeakable is
      * @dev Resqueaks a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _resqueak(uint256 tokenId) private {
+    function _resqueak(uint256 tokenId)
+        private
+        coversFee(Interaction.Resqueak)
+    {
         EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
             tokenId
         ];
@@ -339,7 +344,10 @@ contract Squeakable is
      * @dev Undislikes a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _undoDislikeSqueak(uint256 tokenId) private {
+    function _undoDislikeSqueak(uint256 tokenId)
+        private
+        coversFee(Interaction.UndoDislike)
+    {
         EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
             tokenId
         ];
@@ -359,7 +367,10 @@ contract Squeakable is
      * @dev Unlikes a squeak.
      * @param tokenId ID of the squeak.
      */
-    function _undoLikeSqueak(uint256 tokenId) private {
+    function _undoLikeSqueak(uint256 tokenId)
+        private
+        coversFee(Interaction.UndoLike)
+    {
         EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
 
         // ensure the user has liked the squeak
@@ -377,7 +388,10 @@ contract Squeakable is
      * @dev Undoes a resqueak.
      * @param tokenId ID of the squeak.
      */
-    function _undoResqueak(uint256 tokenId) private {
+    function _undoResqueak(uint256 tokenId)
+        private
+        coversFee(Interaction.UndoResqueak)
+    {
         EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
             tokenId
         ];

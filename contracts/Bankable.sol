@@ -90,7 +90,8 @@ contract Bankable is Validateable {
     {
         return
             ((block.number + confirmationThreshold) -
-                squeaks[tokenId].blockNumber) * platformFee;
+                squeaks[tokenId].blockNumber) *
+            interactionFees[Interaction.Delete];
     }
 
     /**
@@ -104,9 +105,7 @@ contract Bankable is Validateable {
         onlyRole(TREASURER_ROLE)
     {
         // validate the amount
-        if (amount > treasury) {
-            revert InvalidWithdrawlAmount({amount: amount});
-        }
+        if (amount > treasury) revert InvalidWithdrawlAmount({amount: amount});
 
         // transfer out from the treasury
         treasury -= amount;

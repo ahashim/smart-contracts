@@ -36,13 +36,27 @@ contract Mappable is Initializable, Typeable {
     /**
      * @dev Upgradeable constructor
      */
-    // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
-    function __Mappable_init() internal view onlyInitializing {}
+    // solhint-disable-next-line func-name-mixedcase
+    function __Mappable_init(uint256 platformFee) internal onlyInitializing {
+        // set default interaction fees
+        interactionFees[Interaction.Delete] = platformFee;
+        interactionFees[Interaction.Dislike] = platformFee;
+        interactionFees[Interaction.Like] = platformFee;
+        interactionFees[Interaction.Resqueak] = platformFee;
+        interactionFees[Interaction.UndoDislike] = platformFee;
+        interactionFees[Interaction.UndoLike] = platformFee;
+        interactionFees[Interaction.UndoResqueak] = platformFee;
+    }
 
     /**
      * @dev Mapping of username <=> account address.
      */
     mapping(string => address) public addresses;
+
+    /**
+     * @dev Mapping of Interaction <=> fee amounts.
+     */
+    mapping(Interaction => uint256) public interactionFees;
 
     /**
      * @dev Mapping of tokenId <=> Squeak.
