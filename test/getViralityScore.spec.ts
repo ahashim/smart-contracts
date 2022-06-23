@@ -3,7 +3,6 @@ import { ethers, upgrades, waffle } from 'hardhat';
 import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
-  PLATFORM_FEE,
   INTERACTION,
 } from '../constants';
 
@@ -43,6 +42,13 @@ describe('getViralityScore', () => {
     await critter.connect(barbie).createAccount('barbie');
     await critter.connect(carlos).createAccount('carlos');
 
+    const fees = {
+      like: await critter.getInteractionFee(INTERACTION.Like),
+      resqueak: await critter.getInteractionFee(INTERACTION.Resqueak),
+    } as {
+      [name: string]: BigNumber;
+    };
+
     // ahmed creates an account & posts a squeak
     tx = await critter.createSqueak('hello blockchain!');
     receipt = await tx.wait();
@@ -53,28 +59,28 @@ describe('getViralityScore', () => {
 
     // everybody likes it
     await critter.interact(viralSqueakId, INTERACTION.Like, {
-      value: PLATFORM_FEE,
+      value: fees.like,
     });
     await critter
       .connect(barbie)
-      .interact(viralSqueakId, INTERACTION.Like, { value: PLATFORM_FEE });
+      .interact(viralSqueakId, INTERACTION.Like, { value: fees.like });
     await critter
       .connect(carlos)
-      .interact(viralSqueakId, INTERACTION.Like, { value: PLATFORM_FEE });
+      .interact(viralSqueakId, INTERACTION.Like, { value: fees.like });
 
     // everybody resqueaks it
     await critter.interact(viralSqueakId, INTERACTION.Resqueak, {
-      value: PLATFORM_FEE,
+      value: fees.resqueak,
     });
     await critter
       .connect(barbie)
       .interact(viralSqueakId, INTERACTION.Resqueak, {
-        value: PLATFORM_FEE,
+        value: fees.resqueak,
       });
     await critter
       .connect(carlos)
       .interact(viralSqueakId, INTERACTION.Resqueak, {
-        value: PLATFORM_FEE,
+        value: fees.resqueak,
       });
 
     // barbie posts a squeak that nobody interacts with

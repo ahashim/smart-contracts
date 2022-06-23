@@ -81,6 +81,7 @@ contract Bankable is Validateable {
      *      price estimate assuming the transaction will get mined within that
      *      range. 6 blocks is connsidered a good default.
      * @return Price of deleting the squeak in wei.
+     * @notice The token must exist.
      */
     function getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
         public
@@ -91,7 +92,20 @@ contract Bankable is Validateable {
         return
             ((block.number + confirmationThreshold) -
                 squeaks[tokenId].blockNumber) *
-            interactionFees[Interaction.Delete];
+            getInteractionFee(Interaction.Delete);
+    }
+
+    /**
+     * @dev Gets the price of a specific interaction.
+     * @param interaction A value from the Interaction enum.
+     * @return Price of the interaction in wei.
+     */
+    function getInteractionFee(Interaction interaction)
+        public
+        view
+        returns (uint256)
+    {
+        return interactionFees[interaction];
     }
 
     /**
@@ -157,11 +171,11 @@ contract Bankable is Validateable {
             interaction == Interaction.UndoDislike
         ) {
             // calculate amounts to deposit & transfer
-            uint256 interactionFee = (msg.value * platformTakeRate) / 100;
-            uint256 remainder = msg.value - interactionFee;
+            uint256 interactionTake = (msg.value * platformTakeRate) / 100;
+            uint256 remainder = msg.value - interactionTake;
 
             // deposit fee into treasury
-            _deposit(interactionFee);
+            _deposit(interactionTake);
 
             if (viralSqueaks.contains(tokenId)) {
                 // split remainder between scouts & the squeak owner

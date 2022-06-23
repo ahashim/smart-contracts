@@ -3,7 +3,6 @@ import { ethers, upgrades, waffle } from 'hardhat';
 import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
-  PLATFORM_FEE,
   INTERACTION,
 } from '../constants';
 
@@ -55,17 +54,17 @@ describe('getInteractionCount', () => {
 
     // ahmed resqueaks it
     await critter.interact(squeakId, INTERACTION.Resqueak, {
-      value: PLATFORM_FEE,
+      value: await critter.getInteractionFee(INTERACTION.Resqueak),
     });
 
     // barbie likes it
     await critter.connect(barbie).interact(squeakId, INTERACTION.Like, {
-      value: PLATFORM_FEE,
+      value: await critter.getInteractionFee(INTERACTION.Like),
     });
 
     // carlos dislikes it
     await critter.connect(carlos).interact(squeakId, INTERACTION.Dislike, {
-      value: PLATFORM_FEE,
+      value: await critter.getInteractionFee(INTERACTION.Dislike),
     });
 
     return { critter, squeakId };

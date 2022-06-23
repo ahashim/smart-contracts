@@ -31,11 +31,13 @@ describe('interact viral', () => {
     carlos: Wallet,
     daphne: Wallet;
   let ahmedBalance: BigNumber, squeakId: BigNumber, treasuryBalance: BigNumber;
+  let fees: {
+    [name: string]: BigNumber;
+  };
+  let treasuryTake: number, transferAmount: number;
 
   // test variables
   const scoutPoolThreshold = ethers.utils.parseEther('0.000002');
-  const treasuryFee = PLATFORM_FEE.toNumber() * (PLATFORM_TAKE_RATE / 100);
-  const transferAmount = (PLATFORM_FEE.toNumber() - treasuryFee) / 2;
   const viralityThreshold = 60;
 
   before('create fixture loader', async () => {
@@ -73,6 +75,17 @@ describe('interact viral', () => {
       await critter.connect(account).createAccount(index.toString());
     });
 
+    // get interaction fees
+    fees = {
+      dislike: await critter.getInteractionFee(INTERACTION.Dislike),
+      like: await critter.getInteractionFee(INTERACTION.Like),
+      resqueak: await critter.getInteractionFee(INTERACTION.Resqueak),
+    };
+
+    // determine treasury take & transfer amount based on like interaction fee
+    treasuryTake = (fees.like.toNumber() * PLATFORM_TAKE_RATE) / 100;
+    transferAmount = (fees.like.toNumber() - treasuryTake) / 2;
+
     // ahmed posts a squeak
     // current virality score: 0
     const tx = (await critter.createSqueak(
@@ -89,14 +102,14 @@ describe('interact viral', () => {
     [ahmed, barbie].forEach(async (account) => {
       await critter
         .connect(account)
-        .interact(squeakId, INTERACTION.Resqueak, { value: PLATFORM_FEE });
+        .interact(squeakId, INTERACTION.Resqueak, { value: fees.resqueak });
     });
 
     // carlos likes it, and thus makes it eligible for virality
     // current virality score: 58
     await critter
       .connect(carlos)
-      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: fees.like });
 
     // take a snaphshot of ahmeds & treasury balances before squeak goes viral
     ahmedBalance = await ahmed.getBalance();
@@ -106,13 +119,20 @@ describe('interact viral', () => {
     // current virality score: 63
     await critter
       .connect(daphne)
-      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Like, { value: fees.like });
 
-    return { critter, squeakId };
+    return {
+      critter,
+      fees,
+      squeakId,
+      transferAmount,
+      treasuryTake,
+    };
   };
 
   beforeEach('deploy test contract, and create a viral squeak', async () => {
-    ({ critter, squeakId } = await loadFixture(interactViralFixture));
+    ({ critter, fees, squeakId, transferAmount, treasuryTake } =
+      await loadFixture(interactViralFixture));
   });
 
   it('marks the squeak as viral', async () => {
@@ -171,8 +191,10 @@ describe('interact viral', () => {
     );
   });
 
-  it('deposits the treasury fee for the viral interaction', async () => {
-    expect((await critter.treasury()).sub(treasuryBalance)).to.eq(treasuryFee);
+  it('deposits the take for the viral interaction into the treasury', async () => {
+    expect((await critter.treasury()).sub(treasuryBalance)).to.eq(
+      treasuryTake
+    );
   });
 
   it('deposits half of the platform fee into the scout pool', async () => {
@@ -190,10 +212,10 @@ describe('interact viral', () => {
 
     await critter
       .connect(barbie)
-      .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Dislike, { value: fees.dislike });
 
     expect((await critter.treasury()).sub(treasuryBalance)).to.eq(
-      PLATFORM_FEE
+      fees.dislike
     );
   });
 
@@ -212,7 +234,7 @@ describe('interact viral', () => {
 
     // barbie likes the viral squeak bringing the pool unit past its threshold
     await critter.connect(barbie).interact(squeakId, INTERACTION.Like, {
-      value: PLATFORM_FEE,
+      value: fees.like,
     });
 
     // TODO: Barbie's balance after the interaction is lower than what they
@@ -237,7 +259,7 @@ describe('interact viral', () => {
 
     // remaining dust is deposited into the treasury (8 wei in this case)
     expect(
-      (await critter.treasury()).sub(treasuryBalance.add(treasuryFee))
+      (await critter.treasury()).sub(treasuryBalance.add(treasuryTake))
     ).to.eq(7);
 
     // pool amount is reset

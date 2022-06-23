@@ -24,8 +24,7 @@ describe('deleteSqueak', () => {
   let critter: Critter;
   let deleteFee: BigNumber,
     squeakId: BigNumber,
-    treasuryStartingBalance: BigNumber,
-    treasuryEndingBalance: BigNumber;
+    treasuryStartingBalance: BigNumber;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
   let receipt: ContractReceipt;
@@ -54,15 +53,15 @@ describe('deleteSqueak', () => {
 
     // barbie creates an account & likes the squeak
     await critter.connect(barbie).createAccount('barbie');
-    await critter
-      .connect(barbie)
-      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
+    await critter.connect(barbie).interact(squeakId, INTERACTION.Like, {
+      value: await critter.getInteractionFee(INTERACTION.Like),
+    });
 
     // carlos creates an account & dislikes the squeak
     await critter.connect(carlos).createAccount('carlos');
-    await critter
-      .connect(carlos)
-      .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE });
+    await critter.connect(carlos).interact(squeakId, INTERACTION.Dislike, {
+      value: await critter.getInteractionFee(INTERACTION.Like),
+    });
 
     // get the delete fee
     deleteFee = await critter.getDeleteFee(squeakId, CONFIRMATION_THRESHOLD);
@@ -112,9 +111,8 @@ describe('deleteSqueak', () => {
   it('deposits the delete fee into the treasury', async () => {
     treasuryStartingBalance = await critter.treasury();
     await critter.deleteSqueak(squeakId, { value: deleteFee });
-    treasuryEndingBalance = await critter.treasury();
 
-    expect(treasuryEndingBalance.sub(treasuryStartingBalance)).to.eq(
+    expect((await critter.treasury()).sub(treasuryStartingBalance)).to.eq(
       deleteFee
     );
   });

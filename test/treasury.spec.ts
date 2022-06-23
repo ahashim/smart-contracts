@@ -3,7 +3,6 @@ import { ethers, upgrades, waffle } from 'hardhat';
 import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
-  PLATFORM_FEE,
   INTERACTION,
 } from '../constants';
 
@@ -22,7 +21,7 @@ describe('treasury', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet;
-  let squeakId: BigNumber;
+  let dislikeFee: BigNumber, squeakId: BigNumber;
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie] = await (ethers as any).getSigners();
@@ -50,21 +49,17 @@ describe('treasury', () => {
     ({ tokenId: squeakId } = event!.args as Result);
 
     // barbie dislikes it
+    dislikeFee = await critter.getInteractionFee(INTERACTION.Dislike);
     await critter
       .connect(barbie)
-      .interact(squeakId, INTERACTION.Dislike, { value: PLATFORM_FEE });
+      .interact(squeakId, INTERACTION.Dislike, { value: dislikeFee });
 
-    return critter;
+    return { critter, dislikeFee };
   };
 
-  beforeEach(
-    'deploy test contract, ahmed creates an account & posts a squeak that barbie dislikes',
-    async () => {
-      critter = await loadFixture(treasuryFixture);
-    }
-  );
+  it('gets the current treasury value', async () => {
+    ({ critter, dislikeFee } = await loadFixture(treasuryFixture));
 
-  it('gets the current amount of funds in the treasury', async () => {
-    expect(await critter.treasury()).to.eq(PLATFORM_FEE);
+    expect(await critter.treasury()).to.eq(dislikeFee);
   });
 });

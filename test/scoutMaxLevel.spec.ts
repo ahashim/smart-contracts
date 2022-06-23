@@ -66,10 +66,11 @@ describe('scoutMaxLevel', () => {
     const { tokenId: squeakId } = event!.args as Result;
 
     // ahmed likes & resqueaks it into virality
-    [INTERACTION.Resqueak, INTERACTION.Like].forEach(async (interaction) => {
-      await critter.interact(squeakId, interaction, {
-        value: PLATFORM_FEE,
-      });
+    await critter.interact(squeakId, INTERACTION.Like, {
+      value: await critter.getInteractionFee(INTERACTION.Like),
+    });
+    await critter.interact(squeakId, INTERACTION.Resqueak, {
+      value: await critter.getInteractionFee(INTERACTION.Resqueak),
     });
 
     return {

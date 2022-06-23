@@ -95,22 +95,22 @@ describe('deleteViralSqueak', () => {
     // ahmed & barbie resqueak it
     // current virality score: 0
     [ahmed, barbie].forEach(async (account) => {
-      await critter
-        .connect(account)
-        .interact(squeakId, INTERACTION.Resqueak, { value: PLATFORM_FEE });
+      await critter.connect(account).interact(squeakId, INTERACTION.Resqueak, {
+        value: await critter.getInteractionFee(INTERACTION.Resqueak),
+      });
     });
 
     // carlos likes it, and thus makes it eligible for virality
     // current virality score: 58
-    await critter
-      .connect(carlos)
-      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
+    await critter.connect(carlos).interact(squeakId, INTERACTION.Like, {
+      value: await critter.getInteractionFee(INTERACTION.Like),
+    });
 
     // daphne likes it, and brings the score past the virality threshold
     // current virality score: 63
-    await critter
-      .connect(daphne)
-      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
+    await critter.connect(daphne).interact(squeakId, INTERACTION.Like, {
+      value: await critter.getInteractionFee(INTERACTION.Like),
+    });
 
     // take a snapshot of scouts balance
     barbieBalance = await barbie.getBalance();

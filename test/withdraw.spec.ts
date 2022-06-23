@@ -3,7 +3,6 @@ import { ethers, upgrades, waffle } from 'hardhat';
 import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
-  PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
   INTERACTION,
 } from '../constants';
@@ -27,6 +26,7 @@ describe('withdraw', () => {
   let withdrawTx: ContractTransaction;
   let squeakId: BigNumber;
   let treasuryBalance: BigNumber;
+  let treasuryFee: number;
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie, coldStorage] = await (ethers as any).getSigners();
@@ -44,6 +44,10 @@ describe('withdraw', () => {
       await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
     ).connect(owner) as Critter;
 
+    const likeFee = (await critter.getInteractionFee(
+      INTERACTION.Like
+    )) as BigNumber;
+
     // barbie creates an account & posts a squeak
     await critter.connect(barbie).createAccount('barbie');
     const tx = (await critter
@@ -57,9 +61,9 @@ describe('withdraw', () => {
 
     // ahmed creates an account likes it
     await critter.connect(ahmed).createAccount('ahmed');
-    await critter
-      .connect(ahmed)
-      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
+    await critter.connect(ahmed).interact(squeakId, INTERACTION.Like, {
+      value: likeFee,
+    });
 
     // snapshot balances
     const coldStorageBalance = (await coldStorage.getBalance()) as BigNumber;
@@ -72,15 +76,16 @@ describe('withdraw', () => {
     )) as ContractTransaction;
 
     // barbie likes the squeak to refill treasury with a single fee amount
-    await critter
-      .connect(barbie)
-      .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE });
+    await critter.connect(barbie).interact(squeakId, INTERACTION.Like, {
+      value: likeFee,
+    });
 
     return {
       critter,
       coldStorageBalance,
       squeakId,
       treasuryBalance,
+      treasuryFee: likeFee.toNumber() * (PLATFORM_TAKE_RATE / 100),
       withdrawTx,
     };
   };
@@ -88,13 +93,16 @@ describe('withdraw', () => {
   beforeEach(
     'deploy test contract, barbie creates an account & posts a squeak which ahmed withdraws',
     async () => {
-      ({ coldStorageBalance, critter, squeakId, treasuryBalance, withdrawTx } =
-        await loadFixture(withdrawFixture));
+      ({
+        coldStorageBalance,
+        critter,
+        squeakId,
+        treasuryBalance,
+        treasuryFee,
+        withdrawTx,
+      } = await loadFixture(withdrawFixture));
     }
   );
-
-  // test variables
-  const treasuryFee = PLATFORM_FEE.toNumber() * (PLATFORM_TAKE_RATE / 100);
 
   it('lets an account with TREASURER_ROLE withdraw treasury funds to an address', async () => {
     expect(await critter.treasury()).to.eq(treasuryFee);
