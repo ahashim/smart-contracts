@@ -31,7 +31,6 @@ import './Viral.sol';
 error AlreadyDisliked();
 error AlreadyLiked();
 error AlreadyResqueaked();
-error InvalidInteractionType();
 error NotApprovedOrOwner();
 error NotDislikedYet();
 error NotLikedYet();

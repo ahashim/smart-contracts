@@ -28,6 +28,7 @@ import './storage/Storeable.sol';
 
 // error codes
 error InsufficientFunds();
+error InvalidInteractionType();
 error NonExistentAccount();
 error SqueakDoesNotExist();
 error UsernameEmpty();

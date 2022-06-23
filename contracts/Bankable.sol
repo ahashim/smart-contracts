@@ -22,8 +22,8 @@ pragma solidity 0.8.9;
 import './Validateable.sol';
 
 // error codes
-error TransferFailed(address to, uint256 amount);
-error InvalidWithdrawlAmount(uint256 amount);
+error TransferFailed();
+error InvalidWithdrawlAmount();
 
 /**
  * @title Bankable
@@ -53,6 +53,13 @@ contract Bankable is Validateable {
      * @param amount Amount of the funds in wei.
      */
     event FundsWithdrawn(address indexed to, uint256 amount);
+
+    /**
+     * @dev Emitted when the fee value for an interaction is updated.
+     * @param interaction A value from the Interaction enum.
+     * @param amount Amount of the new fee in wei.
+     */
+    event InteractionFeeUpdated(Interaction interaction, uint256 amount);
 
     /**
      * @dev Emitted when fees for a viral squeak are added to its scout pool.
@@ -109,9 +116,28 @@ contract Bankable is Validateable {
     }
 
     /**
+     * @dev Updates an interaction fee.
+     * @param interaction A value from the Interaction enum.
+     * @param amount Value of the updated fee in wei.
+     * @notice Only callable by TREASURER_ROLE.
+     */
+    function updateInteractionFee(Interaction interaction, uint256 amount)
+        external
+        onlyRole(TREASURER_ROLE)
+    {
+        if (interaction > Interaction.UndoResqueak)
+            revert InvalidInteractionType();
+
+        interactionFees[interaction] = amount;
+
+        emit InteractionFeeUpdated(interaction, amount);
+    }
+
+    /**
      * @dev Transfers out funds from the treasury.
      * @param to Address of the account where the funds will go.
      * @param amount Amount to withdraw in wei.
+     * @notice Only callable by TREASURER_ROLE.
      */
     function withdraw(address to, uint256 amount)
         external
@@ -119,7 +145,7 @@ contract Bankable is Validateable {
         onlyRole(TREASURER_ROLE)
     {
         // validate the amount
-        if (amount > treasury) revert InvalidWithdrawlAmount({amount: amount});
+        if (amount > treasury) revert InvalidWithdrawlAmount();
 
         // transfer out from the treasury
         treasury -= amount;
@@ -265,7 +291,7 @@ contract Bankable is Validateable {
         (bool sent, ) = to.call{value: amount}('');
 
         if (!sent) {
-            revert TransferFailed({to: to, amount: amount});
+            revert TransferFailed();
         }
 
         emit FundsTransferred(to, amount);
