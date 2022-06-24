@@ -63,11 +63,6 @@ contract Storeable is Typeable, Immutable, Mappable {
     string public baseTokenURI;
 
     /**
-     * @dev Upper limit that a scout could level up to.
-     */
-    uint256 public scoutMaxLevel;
-
-    /**
      * @dev Contract funds.
      * @notice Can only be withdrawn by TREASURER_ROLE.
      */
@@ -82,6 +77,11 @@ contract Storeable is Typeable, Immutable, Mappable {
      * @dev Minimum amount required in wei for a scout pool to pay its members.
      */
     uint256 internal poolThreshold;
+
+    /**
+     * @dev Upper limit that a scout could level up to.
+     */
+    uint256 internal scoutMaxLevel;
 
     /**
      * @dev Bonus number of levels added to the scout level of the user that

@@ -79,17 +79,10 @@ describe('scoutMaxLevel', () => {
     };
   };
 
-  beforeEach('deploy test contract', async () => {
-    ({ critter, scoutLevel } = await loadFixture(scoutMaxlevelFixture));
-  });
-
-  it('returns the scoutMaxLevel', async () => {
-    expect(await critter.scoutMaxLevel()).to.eq(scoutMaxLevel);
-  });
-
   it('does not level up a scout past max level', async () => {
     // ahmed propelled the squeak to virality, so they get a scout bonus level
     // up of 3, however max level prevents them from getting there
+    ({ critter, scoutLevel } = await loadFixture(scoutMaxlevelFixture));
     expect(scoutLevel).to.eq(scoutMaxLevel);
   });
 });
