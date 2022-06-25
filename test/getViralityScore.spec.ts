@@ -1,10 +1,7 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  INTERACTION,
-} from '../constants';
+import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import type {
@@ -43,8 +40,8 @@ describe('getViralityScore', () => {
     await critter.connect(carlos).createAccount('carlos');
 
     const fees = {
-      like: await critter.getInteractionFee(INTERACTION.Like),
-      resqueak: await critter.getInteractionFee(INTERACTION.Resqueak),
+      like: await critter.getInteractionFee(Interaction.Like),
+      resqueak: await critter.getInteractionFee(Interaction.Resqueak),
     } as {
       [name: string]: BigNumber;
     };
@@ -58,28 +55,28 @@ describe('getViralityScore', () => {
     ({ tokenId: viralSqueakId } = viralSqueakEvent!.args as Result);
 
     // everybody likes it
-    await critter.interact(viralSqueakId, INTERACTION.Like, {
+    await critter.interact(viralSqueakId, Interaction.Like, {
       value: fees.like,
     });
     await critter
       .connect(barbie)
-      .interact(viralSqueakId, INTERACTION.Like, { value: fees.like });
+      .interact(viralSqueakId, Interaction.Like, { value: fees.like });
     await critter
       .connect(carlos)
-      .interact(viralSqueakId, INTERACTION.Like, { value: fees.like });
+      .interact(viralSqueakId, Interaction.Like, { value: fees.like });
 
     // everybody resqueaks it
-    await critter.interact(viralSqueakId, INTERACTION.Resqueak, {
+    await critter.interact(viralSqueakId, Interaction.Resqueak, {
       value: fees.resqueak,
     });
     await critter
       .connect(barbie)
-      .interact(viralSqueakId, INTERACTION.Resqueak, {
+      .interact(viralSqueakId, Interaction.Resqueak, {
         value: fees.resqueak,
       });
     await critter
       .connect(carlos)
-      .interact(viralSqueakId, INTERACTION.Resqueak, {
+      .interact(viralSqueakId, Interaction.Resqueak, {
         value: fees.resqueak,
       });
 
@@ -94,14 +91,14 @@ describe('getViralityScore', () => {
     return {
       critter,
       dislikes: (
-        await critter.getInteractionCount(viralSqueakId, INTERACTION.Dislike)
+        await critter.getInteractionCount(viralSqueakId, Interaction.Dislike)
       ).toNumber(),
       likes: (
-        await critter.getInteractionCount(viralSqueakId, INTERACTION.Like)
+        await critter.getInteractionCount(viralSqueakId, Interaction.Like)
       ).toNumber(),
       nonViralSqueakId,
       resqueaks: (
-        await critter.getInteractionCount(viralSqueakId, INTERACTION.Resqueak)
+        await critter.getInteractionCount(viralSqueakId, Interaction.Resqueak)
       ).toNumber(),
       viralSqueakId,
     };

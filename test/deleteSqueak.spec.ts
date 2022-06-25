@@ -4,9 +4,8 @@ import {
   CONFIRMATION_THRESHOLD,
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
-  INTERACTION,
-  PLATFORM_FEE,
 } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import type {
@@ -53,14 +52,14 @@ describe('deleteSqueak', () => {
 
     // barbie creates an account & likes the squeak
     await critter.connect(barbie).createAccount('barbie');
-    await critter.connect(barbie).interact(squeakId, INTERACTION.Like, {
-      value: await critter.getInteractionFee(INTERACTION.Like),
+    await critter.connect(barbie).interact(squeakId, Interaction.Like, {
+      value: await critter.getInteractionFee(Interaction.Like),
     });
 
     // carlos creates an account & dislikes the squeak
     await critter.connect(carlos).createAccount('carlos');
-    await critter.connect(carlos).interact(squeakId, INTERACTION.Dislike, {
-      value: await critter.getInteractionFee(INTERACTION.Like),
+    await critter.connect(carlos).interact(squeakId, Interaction.Dislike, {
+      value: await critter.getInteractionFee(Interaction.Like),
     });
 
     // get the delete fee
@@ -98,13 +97,13 @@ describe('deleteSqueak', () => {
     await critter.deleteSqueak(squeakId, { value: deleteFee });
 
     expect(
-      await critter.getInteractionCount(squeakId, INTERACTION.Dislike)
+      await critter.getInteractionCount(squeakId, Interaction.Dislike)
     ).to.eq(0);
     expect(
-      await critter.getInteractionCount(squeakId, INTERACTION.Like)
+      await critter.getInteractionCount(squeakId, Interaction.Like)
     ).to.eq(0);
     expect(
-      await critter.getInteractionCount(squeakId, INTERACTION.Resqueak)
+      await critter.getInteractionCount(squeakId, Interaction.Resqueak)
     ).to.eq(0);
   });
 

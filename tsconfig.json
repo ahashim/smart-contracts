@@ -11,10 +11,12 @@
   },
   "include": [
     "./constants",
+    "./enums",
     "./scripts",
     "./tasks/",
     "./test",
-    "./typechain-types"
+    "./typechain-types",
+    "./types"
   ],
   "files": ["./hardhat.config.ts"]
 }

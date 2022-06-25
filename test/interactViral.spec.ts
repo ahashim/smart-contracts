@@ -6,10 +6,10 @@ import {
   BASE_TOKEN_URI,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
-  INTERACTION,
   SCOUT_BONUS,
   SCOUT_MAX_LEVEL,
 } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import {
@@ -77,9 +77,9 @@ describe('interact viral', () => {
 
     // get interaction fees
     fees = {
-      dislike: await critter.getInteractionFee(INTERACTION.Dislike),
-      like: await critter.getInteractionFee(INTERACTION.Like),
-      resqueak: await critter.getInteractionFee(INTERACTION.Resqueak),
+      dislike: await critter.getInteractionFee(Interaction.Dislike),
+      like: await critter.getInteractionFee(Interaction.Like),
+      resqueak: await critter.getInteractionFee(Interaction.Resqueak),
     };
 
     // determine treasury take & transfer amount based on like interaction fee
@@ -102,14 +102,14 @@ describe('interact viral', () => {
     [ahmed, barbie].forEach(async (account) => {
       await critter
         .connect(account)
-        .interact(squeakId, INTERACTION.Resqueak, { value: fees.resqueak });
+        .interact(squeakId, Interaction.Resqueak, { value: fees.resqueak });
     });
 
     // carlos likes it, and thus makes it eligible for virality
     // current virality score: 58
     await critter
       .connect(carlos)
-      .interact(squeakId, INTERACTION.Like, { value: fees.like });
+      .interact(squeakId, Interaction.Like, { value: fees.like });
 
     // take a snaphshot of ahmeds & treasury balances before squeak goes viral
     ahmedBalance = await ahmed.getBalance();
@@ -119,7 +119,7 @@ describe('interact viral', () => {
     // current virality score: 63
     await critter
       .connect(daphne)
-      .interact(squeakId, INTERACTION.Like, { value: fees.like });
+      .interact(squeakId, Interaction.Like, { value: fees.like });
 
     return {
       critter,
@@ -212,7 +212,7 @@ describe('interact viral', () => {
 
     await critter
       .connect(barbie)
-      .interact(squeakId, INTERACTION.Dislike, { value: fees.dislike });
+      .interact(squeakId, Interaction.Dislike, { value: fees.dislike });
 
     expect((await critter.treasury()).sub(treasuryBalance)).to.eq(
       fees.dislike
@@ -233,7 +233,7 @@ describe('interact viral', () => {
     const sharePrice = pool.amount.add(transferAmount).div(pool.shares);
 
     // barbie likes the viral squeak bringing the pool unit past its threshold
-    await critter.connect(barbie).interact(squeakId, INTERACTION.Like, {
+    await critter.connect(barbie).interact(squeakId, Interaction.Like, {
       value: fees.like,
     });
 

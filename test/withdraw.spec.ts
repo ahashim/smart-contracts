@@ -4,8 +4,8 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_TAKE_RATE,
-  INTERACTION,
 } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import {
@@ -45,7 +45,7 @@ describe('withdraw', () => {
     ).connect(owner) as Critter;
 
     const likeFee = (await critter.getInteractionFee(
-      INTERACTION.Like
+      Interaction.Like
     )) as BigNumber;
 
     // barbie creates an account & posts a squeak
@@ -61,7 +61,7 @@ describe('withdraw', () => {
 
     // ahmed creates an account likes it
     await critter.connect(ahmed).createAccount('ahmed');
-    await critter.connect(ahmed).interact(squeakId, INTERACTION.Like, {
+    await critter.connect(ahmed).interact(squeakId, Interaction.Like, {
       value: likeFee,
     });
 
@@ -76,7 +76,7 @@ describe('withdraw', () => {
     )) as ContractTransaction;
 
     // barbie likes the squeak to refill treasury with a single fee amount
-    await critter.connect(barbie).interact(squeakId, INTERACTION.Like, {
+    await critter.connect(barbie).interact(squeakId, Interaction.Like, {
       value: likeFee,
     });
 

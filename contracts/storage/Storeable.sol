@@ -28,7 +28,7 @@ import './Typeable.sol';
 
 /**
  * @title Storeable
- * @dev A contract to handle Critter storage variables.
+ * @dev A contract to handle critter storage variables.
  * @notice This is upgradeable by means of appending new variables below the
  *      existing ones in future contract versions. This will maintain storage
  *      mappings in the EVM as new features are added. More info on EVM storage

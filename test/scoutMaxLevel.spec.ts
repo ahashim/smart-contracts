@@ -8,8 +8,8 @@ import {
   PLATFORM_TAKE_RATE,
   SCOUT_POOL_THRESHOLD,
   SCOUT_BONUS,
-  INTERACTION,
 } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import {
@@ -66,11 +66,11 @@ describe('scoutMaxLevel', () => {
     const { tokenId: squeakId } = event!.args as Result;
 
     // ahmed likes & resqueaks it into virality
-    await critter.interact(squeakId, INTERACTION.Like, {
-      value: await critter.getInteractionFee(INTERACTION.Like),
+    await critter.interact(squeakId, Interaction.Like, {
+      value: await critter.getInteractionFee(Interaction.Like),
     });
-    await critter.interact(squeakId, INTERACTION.Resqueak, {
-      value: await critter.getInteractionFee(INTERACTION.Resqueak),
+    await critter.interact(squeakId, Interaction.Resqueak, {
+      value: await critter.getInteractionFee(Interaction.Resqueak),
     });
 
     return {

@@ -1,4 +1,5 @@
 import { BigNumber } from 'ethers';
+import { AccountStatus } from './constants';
 
 export type ScoutPool = {
   amount: BigNumber;
@@ -14,6 +15,7 @@ export type Squeak = {
 
 export type User = {
   account: string;
+  status: AccountStatus;
   scoutLevel: BigNumber;
   username: string;
 };

@@ -1,10 +1,7 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  INTERACTION,
-} from '../constants';
+import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import type {
@@ -53,18 +50,18 @@ describe('getInteractionCount', () => {
     ({ tokenId: squeakId } = event!.args as Result);
 
     // ahmed resqueaks it
-    await critter.interact(squeakId, INTERACTION.Resqueak, {
-      value: await critter.getInteractionFee(INTERACTION.Resqueak),
+    await critter.interact(squeakId, Interaction.Resqueak, {
+      value: await critter.getInteractionFee(Interaction.Resqueak),
     });
 
     // barbie likes it
-    await critter.connect(barbie).interact(squeakId, INTERACTION.Like, {
-      value: await critter.getInteractionFee(INTERACTION.Like),
+    await critter.connect(barbie).interact(squeakId, Interaction.Like, {
+      value: await critter.getInteractionFee(Interaction.Like),
     });
 
     // carlos dislikes it
-    await critter.connect(carlos).interact(squeakId, INTERACTION.Dislike, {
-      value: await critter.getInteractionFee(INTERACTION.Dislike),
+    await critter.connect(carlos).interact(squeakId, Interaction.Dislike, {
+      value: await critter.getInteractionFee(Interaction.Dislike),
     });
 
     return { critter, squeakId };
@@ -79,32 +76,32 @@ describe('getInteractionCount', () => {
 
   it('gets the dislike count of a squeak', async () => {
     expect(
-      await critter.getInteractionCount(squeakId, INTERACTION.Dislike)
+      await critter.getInteractionCount(squeakId, Interaction.Dislike)
     ).to.equal(1);
   });
 
   it('gets the like count of a squeak', async () => {
     expect(
-      await critter.getInteractionCount(squeakId, INTERACTION.Like)
+      await critter.getInteractionCount(squeakId, Interaction.Like)
     ).to.equal(1);
   });
 
   it('gets the resqueak count of a squeak', async () => {
     expect(
-      await critter.getInteractionCount(squeakId, INTERACTION.Resqueak)
+      await critter.getInteractionCount(squeakId, Interaction.Resqueak)
     ).to.equal(1);
   });
 
   it('returns zero when querying for a nonexistent squeak', async () => {
-    expect(await critter.getInteractionCount(420, INTERACTION.Like)).to.equal(
+    expect(await critter.getInteractionCount(420, Interaction.Like)).to.equal(
       0
     );
   });
 
   it('reverts if the squeakId is out of bounds', async () => {
-    await expect(critter.getInteractionCount(-1, INTERACTION.Like)).to.be
+    await expect(critter.getInteractionCount(-1, Interaction.Like)).to.be
       .reverted;
-    await expect(critter.getInteractionCount(overflow, INTERACTION.Like)).to.be
+    await expect(critter.getInteractionCount(overflow, Interaction.Like)).to.be
       .reverted;
   });
 

@@ -83,9 +83,9 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
         __UUPSUpgradeable_init();
 
         // Storage
+        __Enumerable_init();
         __Immutable_init();
         __Mappable_init(platformFee);
-        __Typeable_init();
         __Storeable_init(
             baseURI,
             takeRate,
@@ -94,6 +94,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
             scoutBonus,
             maxLevel
         );
+        __Typeable_init();
 
         // Logic
         __Accountable_init();

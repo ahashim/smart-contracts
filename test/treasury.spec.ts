@@ -1,10 +1,7 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  INTERACTION,
-} from '../constants';
+import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import {
@@ -49,10 +46,10 @@ describe('treasury', () => {
     ({ tokenId: squeakId } = event!.args as Result);
 
     // barbie dislikes it
-    dislikeFee = await critter.getInteractionFee(INTERACTION.Dislike);
+    dislikeFee = await critter.getInteractionFee(Interaction.Dislike);
     await critter
       .connect(barbie)
-      .interact(squeakId, INTERACTION.Dislike, { value: dislikeFee });
+      .interact(squeakId, Interaction.Dislike, { value: dislikeFee });
 
     return { critter, dislikeFee };
   };

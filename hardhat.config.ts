@@ -49,8 +49,10 @@ const config: HardhatUserConfig = {
       files: [
         'constants.ts',
         'contracts/**/*.sol',
+        'enums.ts',
         'tasks/**/*.ts',
         'test/**/*.ts',
+        'types.ts',
       ],
       tasks: ['test'],
     },

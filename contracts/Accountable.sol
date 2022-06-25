@@ -74,7 +74,12 @@ contract Accountable is PausableUpgradeable, Validateable {
         }
 
         // create a User for the address
-        users[msg.sender] = User(msg.sender, 1, username);
+        users[msg.sender] = User(
+            msg.sender,
+            AccountStatus.Active,
+            1,
+            username
+        );
 
         // set username <-> address mapping
         addresses[username] = msg.sender;

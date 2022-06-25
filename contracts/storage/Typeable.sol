@@ -19,31 +19,18 @@
 pragma solidity 0.8.9;
 
 // contracts
-import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import './Enumerable.sol';
 
 /**
  * @title Typeable
- * @dev A contract that only handles custom data structures (types) & enums.
+ * @dev A contract that handles critter data structures.
  */
-contract Typeable is Initializable {
+contract Typeable is Enumerable {
     /**
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Typeable_init() internal view onlyInitializing {}
-
-    /**
-     * @dev Set of interactions
-     */
-    enum Interaction {
-        Delete,
-        Dislike,
-        Like,
-        Resqueak,
-        UndoDislike,
-        UndoLike,
-        UndoResqueak
-    }
 
     /**
      * @dev ScoutPool tracks fund information for scouts of a viral squeak.
@@ -78,6 +65,7 @@ contract Typeable is Initializable {
      */
     struct User {
         address account;
+        AccountStatus status;
         uint256 scoutLevel;
         string username;
     }

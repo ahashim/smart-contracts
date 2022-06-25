@@ -24,17 +24,6 @@ export const CONFIRMATION_THRESHOLD = 6;
 export const SCOUT_POOL_THRESHOLD = utils.parseEther('0.1');
 export const VIRALITY_THRESHOLD = 95;
 
-// interactions
-export const enum INTERACTION {
-  Delete,
-  Dislike,
-  Like,
-  Resqueak,
-  UndoDislike,
-  UndoLike,
-  UndoResqueak,
-}
-
 // initializer
 export const CONTRACT_INITIALIZER = [
   CONTRACT_NAME,

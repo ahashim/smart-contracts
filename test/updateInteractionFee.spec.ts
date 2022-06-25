@@ -3,10 +3,10 @@ import { ethers, upgrades, waffle } from 'hardhat';
 import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
-  INTERACTION,
   TREASURER_ROLE,
   PLATFORM_FEE,
 } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import {
@@ -44,7 +44,7 @@ describe('updateInteractionFee', () => {
     // ahmed increases the interaction fee for "like" (note: critter account not
     // required to update contract fees)
     const updatedFee = ethers.utils.parseEther('0.0001');
-    await critter.updateInteractionFee(INTERACTION.Like, updatedFee);
+    await critter.updateInteractionFee(Interaction.Like, updatedFee);
 
     // barbie creates an account & posts a squeak
     await critter.connect(barbie).createAccount('barbie');
@@ -67,7 +67,7 @@ describe('updateInteractionFee', () => {
   });
 
   it('allows TREASURER_ROLE to update an interaction fee', async () => {
-    expect(await critter.getInteractionFee(INTERACTION.Like)).to.eq(
+    expect(await critter.getInteractionFee(Interaction.Like)).to.eq(
       updatedFee
     );
   });
@@ -85,7 +85,7 @@ describe('updateInteractionFee', () => {
     await expect(
       critter
         .connect(barbie)
-        .interact(squeakId, INTERACTION.Like, { value: PLATFORM_FEE })
+        .interact(squeakId, Interaction.Like, { value: PLATFORM_FEE })
     ).to.be.reverted;
   });
 });

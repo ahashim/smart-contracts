@@ -24,7 +24,7 @@ import './Typeable.sol';
 
 /**
  * @title Mappable
- * @dev A contract that only handles data mappings.
+ * @dev A contract that only handles critter data mappings.
  * @notice Mappings do not fill storage slots in a linear fashion, but instead
  *      they store data in a location based on a hash of its key/value. This is
  *      a "good enough" collision avoidance gaurantee, and thus this contract

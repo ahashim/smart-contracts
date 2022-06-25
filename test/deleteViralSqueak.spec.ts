@@ -7,10 +7,10 @@ import {
   BASE_TOKEN_URI,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
-  INTERACTION,
   SCOUT_BONUS,
   SCOUT_MAX_LEVEL,
 } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import type {
@@ -95,21 +95,21 @@ describe('deleteViralSqueak', () => {
     // ahmed & barbie resqueak it
     // current virality score: 0
     [ahmed, barbie].forEach(async (account) => {
-      await critter.connect(account).interact(squeakId, INTERACTION.Resqueak, {
-        value: await critter.getInteractionFee(INTERACTION.Resqueak),
+      await critter.connect(account).interact(squeakId, Interaction.Resqueak, {
+        value: await critter.getInteractionFee(Interaction.Resqueak),
       });
     });
 
     // carlos likes it, and thus makes it eligible for virality
     // current virality score: 58
-    await critter.connect(carlos).interact(squeakId, INTERACTION.Like, {
-      value: await critter.getInteractionFee(INTERACTION.Like),
+    await critter.connect(carlos).interact(squeakId, Interaction.Like, {
+      value: await critter.getInteractionFee(Interaction.Like),
     });
 
     // daphne likes it, and brings the score past the virality threshold
     // current virality score: 63
-    await critter.connect(daphne).interact(squeakId, INTERACTION.Like, {
-      value: await critter.getInteractionFee(INTERACTION.Like),
+    await critter.connect(daphne).interact(squeakId, Interaction.Like, {
+      value: await critter.getInteractionFee(Interaction.Like),
     });
 
     // take a snapshot of scouts balance
@@ -131,15 +131,15 @@ describe('deleteViralSqueak', () => {
       carlosBalance,
       daphneBalance,
       critter,
-      likes: await critter.getInteractionCount(squeakId, INTERACTION.Like),
+      likes: await critter.getInteractionCount(squeakId, Interaction.Like),
       dislikes: await critter.getInteractionCount(
         squeakId,
-        INTERACTION.Dislike
+        Interaction.Dislike
       ),
       sharePrice,
       resqueaks: await critter.getInteractionCount(
         squeakId,
-        INTERACTION.Resqueak
+        Interaction.Resqueak
       ),
       scouts: await critter.getScouts(squeakId),
       scoutPool: await critter.getScoutPool(squeakId),
