@@ -28,15 +28,6 @@ import './Bankable.sol';
 import './Viral.sol';
 
 // error codes
-error AlreadyDisliked();
-error AlreadyLiked();
-error AlreadyResqueaked();
-error NotApprovedOrOwner();
-error NotDislikedYet();
-error NotLikedYet();
-error NotResqueakedYet();
-error SqueakIsEmpty();
-error SqueakIsTooLong();
 
 /**
  * @title Squeakable

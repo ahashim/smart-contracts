@@ -21,10 +21,6 @@ pragma solidity 0.8.9;
 // contracts
 import './Validateable.sol';
 
-// error codes
-error TransferFailed();
-error InvalidWithdrawlAmount();
-
 /**
  * @title Bankable
  * @dev A contract to handle interaction payments, scouts + pools, and

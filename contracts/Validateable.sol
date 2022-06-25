@@ -26,10 +26,22 @@ import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './storage/Storeable.sol';
 
 // error codes
+error AccountAlreadyExists();
+error AlreadyDisliked();
+error AlreadyLiked();
+error AlreadyResqueaked();
 error InsufficientFunds();
 error InvalidInteractionType();
+error InvalidWithdrawlAmount();
 error NonExistentAccount();
+error NotApprovedOrOwner();
+error NotDislikedYet();
+error NotLikedYet();
+error NotResqueakedYet();
 error SqueakDoesNotExist();
+error SqueakIsEmpty();
+error SqueakIsTooLong();
+error TransferFailed();
 error UsernameEmpty();
 error UsernameTooLong();
 error UsernameUnavailable();

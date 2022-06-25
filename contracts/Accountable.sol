@@ -25,7 +25,6 @@ import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import './Validateable.sol';
 
 // error codes
-error AccountAlreadyExists(address account);
 
 /**
  * @title Accountable
@@ -70,7 +69,7 @@ contract Accountable is PausableUpgradeable, Validateable {
     {
         // ensure address has not already created an account
         if (bytes(users[msg.sender].username).length > 0) {
-            revert AccountAlreadyExists({account: msg.sender});
+            revert AccountAlreadyExists();
         }
 
         // create a User for the address
