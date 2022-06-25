@@ -30,7 +30,9 @@ error AccountAlreadyExists();
 error AlreadyDisliked();
 error AlreadyLiked();
 error AlreadyResqueaked();
+error InactiveAccount();
 error InsufficientFunds();
+error InvalidAccountStatus();
 error InvalidInteractionType();
 error InvalidWithdrawlAmount();
 error NonExistentAccount();
@@ -67,9 +69,16 @@ contract Validateable is
     /**
      * @dev Ensures the sender has a Critter account.
      */
-    modifier hasAccount() {
-        if (bytes(users[msg.sender].username).length == 0) {
+    modifier hasActiveAccount() {
+        User storage account = users[msg.sender];
+
+        // validate existence
+        if (account.status == AccountStatus.NonExistent) {
             revert NonExistentAccount();
+        }
+        // validate active status
+        if (account.status != AccountStatus.Active) {
+            revert InactiveAccount();
         }
         _;
     }

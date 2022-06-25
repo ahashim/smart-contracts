@@ -41,6 +41,11 @@ contract Immutable is Initializable {
     bytes32 internal constant MINTER_ROLE = keccak256('MINTER_ROLE');
 
     /**
+     * @dev MINTER_ROLE has priviledges to mint tokens.
+     */
+    bytes32 internal constant MODERATOR_ROLE = keccak256('MODERATOR_ROLE');
+
+    /**
      * @dev PAUSER_ROLE has priviledges to pause the contract.
      */
     bytes32 internal constant PAUSER_ROLE = keccak256('PAUSER_ROLE');

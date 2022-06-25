@@ -1,13 +1,12 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
-import { abi } from '../artifacts/contracts/Critter.sol/Critter.json';
 import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
 } from '../constants';
-import { Interaction } from '../enums';
+import { AccountStatus, Interaction } from '../enums';
 
 // types
 import {
@@ -481,7 +480,19 @@ describe('interact basic', () => {
       ).to.be.reverted;
     });
 
+    it('reverts when account is not active', async () => {
+      // ban ahmed
+      await critter
+        .connect(owner)
+        .updateAccountStatus(ahmed.address, AccountStatus.Banned);
+
+      await expect(
+        critter.interact(squeakId, Interaction.Like, { value: fees.like })
+      ).to.be.reverted;
+    });
+
     it('reverts when the contract is paused', async () => {
+      // pause the contract
       await critter.connect(owner).pause();
 
       await expect(

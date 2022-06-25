@@ -26,10 +26,10 @@ import type { Critter } from '../typechain-types/contracts';
 
 describe('deleteViralSqueak', () => {
   let critter: Critter;
-  let barbieBalance: BigNumber,
-    carlosBalance: BigNumber,
-    daphneBalance: BigNumber,
-    deleteFee: BigNumber,
+  let balances: {
+    [name: string]: BigNumber;
+  };
+  let deleteFee: BigNumber,
     likes: BigNumber,
     dislikes: BigNumber,
     sharePrice: BigNumber,
@@ -113,9 +113,9 @@ describe('deleteViralSqueak', () => {
     });
 
     // take a snapshot of scouts balance
-    barbieBalance = await barbie.getBalance();
-    carlosBalance = await carlos.getBalance();
-    daphneBalance = await daphne.getBalance();
+    const barbieBalance = await barbie.getBalance();
+    const carlosBalance = await carlos.getBalance();
+    const daphneBalance = await daphne.getBalance();
     treasuryBalance = await critter.treasury();
 
     // get pool unit
@@ -127,9 +127,11 @@ describe('deleteViralSqueak', () => {
     await critter.deleteSqueak(squeakId, { value: deleteFee });
 
     return {
-      barbieBalance,
-      carlosBalance,
-      daphneBalance,
+      balances: {
+        barbie: barbieBalance,
+        carlos: carlosBalance,
+        daphne: daphneBalance,
+      },
       critter,
       likes: await critter.getInteractionCount(squeakId, Interaction.Like),
       dislikes: await critter.getInteractionCount(
@@ -153,9 +155,7 @@ describe('deleteViralSqueak', () => {
     'deploy test contract, ahmed creates viral squeak and then deletes it',
     async () => {
       ({
-        barbieBalance,
-        carlosBalance,
-        daphneBalance,
+        balances,
         critter,
         likes,
         dislikes,
@@ -189,13 +189,13 @@ describe('deleteViralSqueak', () => {
   });
 
   it('pays out to pool members before deletion', async () => {
-    expect((await barbie.getBalance()).sub(barbieBalance)).to.eq(
+    expect((await barbie.getBalance()).sub(balances.barbie)).to.eq(
       sharePrice.mul((await critter.users(barbie.address)).scoutLevel)
     );
-    expect((await carlos.getBalance()).sub(carlosBalance)).to.eq(
+    expect((await carlos.getBalance()).sub(balances.carlos)).to.eq(
       sharePrice.mul((await critter.users(carlos.address)).scoutLevel)
     );
-    expect((await daphne.getBalance()).sub(daphneBalance)).to.eq(
+    expect((await daphne.getBalance()).sub(balances.daphne)).to.eq(
       sharePrice.mul((await critter.users(daphne.address)).scoutLevel)
     );
   });

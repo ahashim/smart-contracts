@@ -24,8 +24,6 @@ import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 // critter contracts
 import './Validateable.sol';
 
-// error codes
-
 /**
  * @title Accountable
  * @dev A contract to handle account management.
@@ -37,6 +35,13 @@ contract Accountable is PausableUpgradeable, Validateable {
      * @param username Username of the account.
      */
     event AccountCreated(address indexed account, string username);
+
+    /**
+     * @dev Emitted after updating an account status.
+     * @param account Address of the account.
+     * @param status A value fromt the AccountStatus enum.
+     */
+    event AccountStatusUpdated(address indexed account, AccountStatus status);
 
     /**
      * @dev Emitted after updating an accounts username.
@@ -53,6 +58,7 @@ contract Accountable is PausableUpgradeable, Validateable {
         // grant all roles to contract owner
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
+        _grantRole(MODERATOR_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(TREASURER_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
@@ -90,13 +96,41 @@ contract Accountable is PausableUpgradeable, Validateable {
     }
 
     /**
+     * @dev Updates an accounts status.
+     * @param account Address of the account to update.
+     * @param status A value from the AccountStatus enum.
+     * @notice can only be called by MODERATOR_ROLE.
+     */
+    function updateAccountStatus(address account, AccountStatus status)
+        external
+        onlyRole(MODERATOR_ROLE)
+    {
+        // cannot set an account to non-existent
+        if (status == AccountStatus.NonExistent) revert InvalidAccountStatus();
+
+        User storage user = users[account];
+
+        // ensure the account exists
+        if (user.status == AccountStatus.NonExistent)
+            revert NonExistentAccount();
+
+        // ensure new status is not the same as the current status
+        if (user.status == status) revert InvalidAccountStatus();
+
+        // save updated status to storage
+        user.status = status;
+
+        emit AccountStatusUpdated(account, status);
+    }
+
+    /**
      * @dev Updates an accounts username.
      * @param newUsername The text of the new username.
      */
     function updateUsername(string calldata newUsername)
         external
         whenNotPaused
-        hasAccount
+        hasActiveAccount
         isValidUsername(newUsername)
     {
         // clear the current username

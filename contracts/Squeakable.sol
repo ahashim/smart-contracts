@@ -27,8 +27,6 @@ import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './Bankable.sol';
 import './Viral.sol';
 
-// error codes
-
 /**
  * @title Squeakable
  * @dev A contract to handle actions performed on a Squeak.
@@ -119,7 +117,7 @@ contract Squeakable is
     function createSqueak(string calldata content)
         external
         whenNotPaused
-        hasAccount
+        hasActiveAccount
         onlyRole(MINTER_ROLE)
     {
         bytes memory rawContent = bytes(content);
@@ -153,7 +151,7 @@ contract Squeakable is
         external
         payable
         whenNotPaused
-        hasAccount
+        hasActiveAccount
         squeakExists(tokenId)
         nonReentrant
     {
@@ -226,7 +224,7 @@ contract Squeakable is
         external
         payable
         whenNotPaused
-        hasAccount
+        hasActiveAccount
         squeakExists(tokenId)
         nonReentrant
     {

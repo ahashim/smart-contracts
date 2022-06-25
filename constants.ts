@@ -7,6 +7,7 @@ export const CONTRACT_SYMBOL = 'CRTTR';
 
 // role ID's
 export const MINTER_ROLE = 'MINTER_ROLE';
+export const MODERATOR_ROLE = 'MODERATOR_ROLE';
 export const PAUSER_ROLE = 'PAUSER_ROLE';
 export const TREASURER_ROLE = 'TREASURER_ROLE';
 export const UPGRADER_ROLE = 'UPGRADER_ROLE';

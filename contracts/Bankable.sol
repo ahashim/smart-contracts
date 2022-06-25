@@ -18,7 +18,7 @@
 */
 pragma solidity 0.8.9;
 
-// contracts
+// critter contracts
 import './Validateable.sol';
 
 /**

@@ -4,8 +4,9 @@ import {
   CONFIRMATION_THRESHOLD,
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
+  MODERATOR_ROLE,
 } from '../constants';
-import { Interaction } from '../enums';
+import { AccountStatus, Interaction } from '../enums';
 
 // types
 import type {
@@ -144,8 +145,20 @@ describe('deleteSqueak', () => {
     ).to.be.reverted;
   });
 
+  it('reverts when the user account is not active', async () => {
+    // moderator suspends squeak owners account
+    await critter
+      .connect(owner)
+      .updateAccountStatus(ahmed.address, AccountStatus.Suspended);
+
+    await expect(critter.deleteSqueak(squeakId, { value: deleteFee })).to.be
+      .reverted;
+  });
+
   it('reverts when the contract is paused', async () => {
+    // owner pauses the contract
     await critter.connect(owner).pause();
+
     await expect(critter.deleteSqueak(squeakId, { value: deleteFee })).to.be
       .reverted;
   });
