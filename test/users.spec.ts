@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
 import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
-import { AccountStatus } from '../enums.ts';
+import { AccountStatus } from '../enums';
 
 // types
 import type { Wallet } from 'ethers';
