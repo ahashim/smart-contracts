@@ -84,7 +84,12 @@ contract Scoutable is Validateable {
      */
     function _increaseScoutLevel(User storage user, uint256 amount) internal {
         if (user.scoutLevel < scoutMaxLevel) {
-            uint256 newLevel = user.scoutLevel + amount;
+            uint256 newLevel;
+
+            // determine new level (can be unchecked due to scoutMaxLevel limit)
+            unchecked {
+                newLevel = user.scoutLevel + amount;
+            }
 
             user.scoutLevel = newLevel < scoutMaxLevel
                 ? newLevel

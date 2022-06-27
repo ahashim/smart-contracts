@@ -266,8 +266,11 @@ contract Bankable is Validateable {
     function _addScoutFunds(uint256 tokenId, uint256 amount) private {
         ScoutPool storage pool = scoutPools[tokenId];
 
-        // add funds to the pool
-        pool.amount += amount;
+        // add funds to the pool (unchecked because pool payouts will ensure
+        // they get reset to zero)
+        unchecked {
+            pool.amount += amount;
+        }
 
         emit FundsAddedToScoutPool(tokenId, amount);
 
