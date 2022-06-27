@@ -229,7 +229,7 @@ contract Bankable is Validateable {
 
         // TODO: move this unbounded loop off-chain
         for (uint256 index = 0; index < memberCount; index++) {
-            // calculate payout based on the users scout level & pool unit
+            // calculate payout based on the users scout level & share price
             address scout = scouts[tokenId].at(index);
             uint256 payout = users[scout].scoutLevel * sharePrice;
 
