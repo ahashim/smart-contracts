@@ -184,7 +184,7 @@ contract Squeakable is
 
             if (pool.amount > 0) {
                 // pay out the remaining pool funds to its members
-                _makeScoutPayments(tokenId, pool, _getPoolSharePrice(tokenId));
+                _makeScoutPayments(tokenId, pool);
             }
 
             // delete associated scout pool & its members

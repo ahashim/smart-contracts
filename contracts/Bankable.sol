@@ -163,16 +163,14 @@ contract Bankable is Validateable {
      * @dev Gets the price of a single "unit" of funds in a squeaks scout pool.
      *      The unit gets multiplied by every scouts level, and distributed
      *      among scouts in the pool.
-     * @param tokenId ID of the viral squeak.
+     * @param pool ScoutPool of the viral squeak.
      * @return amount of each pool unit in wei.
      */
-    function _getPoolSharePrice(uint256 tokenId)
+    function _getPoolSharePrice(ScoutPool memory pool)
         internal
-        view
+        pure
         returns (uint256)
     {
-        ScoutPool storage pool = scoutPools[tokenId];
-
         return pool.amount / pool.shares;
     }
 
@@ -201,7 +199,7 @@ contract Bankable is Validateable {
                 uint256 half = remainder / 2;
                 _addScoutFunds(tokenId, half);
 
-                // ensure any dust from odd division goes to the owner
+                // any dust from odd division goes to the owner
                 remainder -= half;
             }
 
@@ -220,16 +218,14 @@ contract Bankable is Validateable {
 
     /**
      * @dev Pays out scout pool funds to its members.
-     * @param tokenId ID of viral squeak that has scouts.
+     * @param tokenId ID of viral squeak.
      * @param pool ScoutPool of the viral squeak (converted to memory).
-     * @param sharePrice Base amount to multiply scout level by in wei.
      */
-    function _makeScoutPayments(
-        uint256 tokenId,
-        ScoutPool memory pool,
-        uint256 sharePrice
-    ) internal {
+    function _makeScoutPayments(uint256 tokenId, ScoutPool memory pool)
+        internal
+    {
         uint256 memberCount = scouts[tokenId].length();
+        uint256 sharePrice = _getPoolSharePrice(pool);
 
         // TODO: move this unbounded loop off-chain
         for (uint256 index = 0; index < memberCount; index++) {
@@ -272,10 +268,8 @@ contract Bankable is Validateable {
         emit FundsAddedToScoutPool(tokenId, amount);
 
         // determine if we need to payout
-        uint256 sharePrice = _getPoolSharePrice(tokenId);
-
-        if (sharePrice >= poolThreshold) {
-            _makeScoutPayments(tokenId, pool, sharePrice);
+        if (_getPoolSharePrice(pool) >= poolPayoutThreshold) {
+            _makeScoutPayments(tokenId, pool);
         }
     }
 

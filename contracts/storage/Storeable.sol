@@ -44,14 +44,14 @@ contract Storeable is Typeable, Immutable, Mappable {
     function __Storeable_init(
         string calldata baseURI,
         uint256 takeRate,
-        uint256 poolThresh,
+        uint256 poolThreshold,
         uint8 viralityThresh,
         uint8 scoutBonus,
         uint8 maxLevel
     ) internal onlyInitializing {
         baseTokenURI = baseURI;
         platformTakeRate = takeRate;
-        poolThreshold = poolThresh;
+        poolPayoutThreshold = poolThreshold;
         viralityThreshold = viralityThresh;
         scoutViralityBonus = scoutBonus;
         scoutMaxLevel = maxLevel;
@@ -76,7 +76,7 @@ contract Storeable is Typeable, Immutable, Mappable {
     /**
      * @dev Minimum amount required in wei for a scout pool to pay its members.
      */
-    uint256 internal poolThreshold;
+    uint256 internal poolPayoutThreshold;
 
     /**
      * @dev Upper limit that a scout could level up to.
