@@ -180,9 +180,11 @@ contract Squeakable is
 
         // delete virality
         if (viralSqueaks.contains(tokenId)) {
-            if (scoutPools[tokenId].amount > 0) {
+            ScoutPool storage pool = scoutPools[tokenId];
+
+            if (pool.amount > 0) {
                 // pay out the remaining pool funds to its members
-                _makeScoutPayments(tokenId, _getPoolSharePrice(tokenId));
+                _makeScoutPayments(tokenId, pool, _getPoolSharePrice(tokenId));
             }
 
             // delete associated scout pool & its members

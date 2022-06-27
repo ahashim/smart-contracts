@@ -221,11 +221,14 @@ contract Bankable is Validateable {
     /**
      * @dev Pays out scout pool funds to its members.
      * @param tokenId ID of viral squeak that has scouts.
+     * @param pool ScoutPool of the viral squeak (converted to memory).
      * @param sharePrice Base amount to multiply scout level by in wei.
      */
-    function _makeScoutPayments(uint256 tokenId, uint256 sharePrice) internal {
-        // read pool details into memory for cheaper operations
-        ScoutPool memory pool = scoutPools[tokenId];
+    function _makeScoutPayments(
+        uint256 tokenId,
+        ScoutPool memory pool,
+        uint256 sharePrice
+    ) internal {
         uint256 memberCount = scouts[tokenId].length();
 
         // TODO: move this unbounded loop off-chain
@@ -261,8 +264,10 @@ contract Bankable is Validateable {
      * @param amount Amount to add in wei.
      */
     function _addScoutFunds(uint256 tokenId, uint256 amount) private {
+        ScoutPool storage pool = scoutPools[tokenId];
+
         // add funds to the pool
-        scoutPools[tokenId].amount += amount;
+        pool.amount += amount;
 
         emit FundsAddedToScoutPool(tokenId, amount);
 
@@ -270,7 +275,7 @@ contract Bankable is Validateable {
         uint256 sharePrice = _getPoolSharePrice(tokenId);
 
         if (sharePrice >= poolThreshold) {
-            _makeScoutPayments(tokenId, sharePrice);
+            _makeScoutPayments(tokenId, pool, sharePrice);
         }
     }
 
