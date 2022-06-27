@@ -173,12 +173,12 @@ contract Squeakable is
         // delete squeak
         delete squeaks[tokenId];
 
-        // delete interactions
+        // delete all interactions
         delete likes[tokenId];
         delete dislikes[tokenId];
         delete resqueaks[tokenId];
 
-        // delete virality
+        // delete associated virality
         if (viralSqueaks.contains(tokenId)) {
             ScoutPool storage pool = scoutPools[tokenId];
 
@@ -188,8 +188,8 @@ contract Squeakable is
             }
 
             // delete associated scout pool & its members
-            delete scouts[tokenId];
             delete scoutPools[tokenId];
+            delete scouts[tokenId];
 
             // remove from viralSqueaks set
             viralSqueaks.remove(tokenId);
