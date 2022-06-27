@@ -112,10 +112,10 @@ contract Viral is Scoutable {
         for (uint256 index = 0; index < upperBound; index++) {
             // add all likers to the list of scouts list
             if (index < likesCount) {
-                User storage user = users[likers.at(index)];
+                User storage liker = users[likers.at(index)];
 
-                _addScout(user, tokenScouts);
-                pool.shares += user.scoutLevel;
+                _addScout(liker, tokenScouts);
+                pool.shares += liker.scoutLevel;
             }
 
             // add all resqueakers to the list of scouts who aren't likers
@@ -123,10 +123,10 @@ contract Viral is Scoutable {
                 index < resqueaksCount &&
                 !tokenScouts.contains(resqueakers.at(index))
             ) {
-                User storage user = users[resqueakers.at(index)];
+                User storage resqueaker = users[resqueakers.at(index)];
 
-                _addScout(user, tokenScouts);
-                pool.shares += user.scoutLevel;
+                _addScout(resqueaker, tokenScouts);
+                pool.shares += resqueaker.scoutLevel;
             }
         }
 
