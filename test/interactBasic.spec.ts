@@ -439,6 +439,25 @@ describe('interact basic', () => {
     });
   });
 
+  describe('Moderation', () => {
+    it('deposits the full fee into the treasury when interacting with a banned account', async () => {
+      // ban ahmed & take a snapshot of balances
+      await critter
+        .connect(owner)
+        .updateAccountStatus(ahmed.address, AccountStatus.Banned);
+      ahmedBalance = await ahmed.getBalance();
+      treasuryBalance = await critter.treasury();
+
+      // barbie likes ahmeds squeak
+      await critter
+        .connect(barbie)
+        .interact(squeakId, Interaction.Like, { value: fees.like });
+
+      expect((await critter.treasury()).sub(treasuryBalance)).to.eq(fees.like);
+      expect(await ahmed.getBalance()).to.eq(ahmedBalance);
+    });
+  });
+
   describe('Virality', () => {
     it('is not considered viral', async () => {
       expect(await critter.isViral(squeakId)).to.be.false;

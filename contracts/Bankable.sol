@@ -181,7 +181,19 @@ contract Bankable is Validateable {
      * @param interaction A value from the Interaction enum.
      */
     function _makePayment(uint256 tokenId, Interaction interaction) internal {
+        User storage owner = users[ownerOf(tokenId)];
+
         if (
+            // squeak owner is banned
+            owner.status == AccountStatus.Banned ||
+            // negative interaction
+            interaction == Interaction.Dislike ||
+            interaction == Interaction.UndoLike ||
+            interaction == Interaction.UndoResqueak
+        ) {
+            // treasury takes all
+            _deposit(msg.value);
+        } else if (
             // positive interaction
             interaction == Interaction.Like ||
             interaction == Interaction.Resqueak ||
@@ -204,15 +216,7 @@ contract Bankable is Validateable {
             }
 
             // transfer remaining funds to the squeak owner
-            _transferFunds(squeaks[tokenId].owner, remainder);
-        } else if (
-            // negative interaction
-            interaction == Interaction.Dislike ||
-            interaction == Interaction.UndoLike ||
-            interaction == Interaction.UndoResqueak
-        ) {
-            // treasury takes all
-            _deposit(msg.value);
+            _transferFunds(owner.account, remainder);
         }
     }
 
