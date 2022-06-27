@@ -63,18 +63,18 @@ contract Scoutable is Validateable {
     /**
      * @dev Updates the scout level for an account, and adds them to the scout
      *      pool of a viral squeak.
-     * @param account Address to add to the scouts list.
+     * @param user User to add to scouts list.
      * @param tokenScouts Storage pointer to scouts list for the viral squeak.
      */
     function _addScout(
-        address account,
+        User storage user,
         EnumerableSetUpgradeable.AddressSet storage tokenScouts
     ) internal {
         // upgrade their scout level
-        _increaseScoutLevel(users[account], 1);
+        _increaseScoutLevel(user, 1);
 
         // add them to the scout pool for the squeak
-        tokenScouts.add(account);
+        tokenScouts.add(user.account);
     }
 
     /**
