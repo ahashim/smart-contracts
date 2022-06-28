@@ -20,6 +20,7 @@ pragma solidity 0.8.9;
 
 // 3rd-party contract
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 
 // critter contracts
@@ -38,6 +39,7 @@ error InvalidWithdrawlAmount();
 error NonExistentAccount();
 error NotApprovedOrOwner();
 error NotDislikedYet();
+error NotIncludedInScoutPool();
 error NotLikedYet();
 error NotResqueakedYet();
 error SqueakDoesNotExist();
@@ -57,6 +59,7 @@ error UsernameUnavailable();
 contract Validateable is
     Initializable,
     AccessControlUpgradeable,
+    PausableUpgradeable,
     ERC721AUpgradeable,
     Storeable
 {

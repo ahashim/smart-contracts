@@ -18,7 +18,7 @@ export const PLATFORM_TAKE_RATE = 20;
 
 // scouts
 export const SCOUT_BONUS = 3;
-export const SCOUT_MAX_LEVEL = 100;
+export const SCOUT_MAX_LEVEL = 50;
 
 // thresholds
 export const CONFIRMATION_THRESHOLD = 6;

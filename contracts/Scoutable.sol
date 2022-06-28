@@ -19,13 +19,14 @@
 pragma solidity 0.8.9;
 
 // critter contracts
+import './Bankable.sol';
 import './Validateable.sol';
 
 /**
  * @title Scoutable
  * @dev A contract to handle scout logic.
  */
-contract Scoutable is Validateable {
+contract Scoutable is Validateable, Bankable {
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
@@ -35,6 +36,14 @@ contract Scoutable is Validateable {
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Scoutable_init() internal view onlyInitializing {}
+
+    /**
+     * @dev Ejects the user from a scout pool they are a part of.
+     * @param tokenId ID of the viral squeak.
+     */
+    function ejectFromPool(uint256 tokenId) external whenNotPaused {
+        _ejectFromPool(msg.sender, tokenId);
+    }
 
     /**
      * @dev Gets the pool amount & number of shares.
@@ -81,7 +90,7 @@ contract Scoutable is Validateable {
      *      pool of a viral squeak.
      * @param tokenId ID of the viral squeak.
      * @param user User to add to scouts list.
-     * @param pool Storage pointer to ScoutPool for the viral squeak.
+     * @param pool Storage pointer to ScoutPool.
      */
     function _addScout(
         uint256 tokenId,
@@ -97,6 +106,33 @@ contract Scoutable is Validateable {
 
         // add the ID of the viral squeak to their list of scout finds
         scoutFinds[user.account].add(tokenId);
+    }
+
+    /**
+     * @dev Removes a user from a scout pool.
+     * @param account Address of the account to eject.
+     * @param tokenId ID of the viral squeak associated with the pool.
+     */
+    function _ejectFromPool(address account, uint256 tokenId) internal {
+        ScoutPool storage pool = scoutPools[tokenId];
+
+        // validate the account is in the pool
+        if (!pool.members.contains(account)) revert NotIncludedInScoutPool();
+
+        // remove the user & their shares from the pool
+        pool.shares -= pool.members.get(account);
+        pool.members.remove(account);
+
+        if (pool.members.length() == 0) {
+            // drain the funds
+            if (pool.amount > 0) _deposit(pool.amount);
+
+            // delete the pool
+            delete scoutPools[tokenId];
+
+            // remove the token from viral squeaks
+            viralSqueaks.remove(tokenId);
+        }
     }
 
     /**

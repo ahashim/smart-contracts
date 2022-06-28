@@ -19,12 +19,9 @@
 pragma solidity 0.8.9;
 
 // 3rd-party contracts
-import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 
 // critter contracts
-import './Bankable.sol';
 import './Viral.sol';
 
 /**

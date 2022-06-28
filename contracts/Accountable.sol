@@ -18,18 +18,19 @@
 */
 pragma solidity 0.8.9;
 
-// 3rd-party contracts
-import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
-
 // critter contracts
-import './Bankable.sol';
-import './Validateable.sol';
+import './Scoutable.sol';
 
 /**
  * @title Accountable
  * @dev A contract to handle account management.
  */
-contract Accountable is PausableUpgradeable, Validateable, Bankable  {
+contract Accountable is
+    PausableUpgradeable,
+    Validateable,
+    Bankable,
+    Scoutable
+{
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
@@ -133,24 +134,7 @@ contract Accountable is PausableUpgradeable, Validateable, Bankable  {
             // eject them from any viral squeaks they're a part of
             if (finds.length() > 0) {
                 for (uint256 index = 0; index < finds.length(); index++) {
-                    // get the scout pool
-                    uint256 tokenId = finds.at(index);
-                    ScoutPool storage pool = scoutPools[tokenId];
-
-                    // remove the user & their shares from the pool
-                    pool.shares -= pool.members.get(account);
-                    pool.members.remove(account);
-
-                    // if the pool is empty
-                    if (pool.members.length() == 0) {
-                        if (pool.amount > 0) _deposit(pool.amount);
-
-                        // delete the pool
-                        delete scoutPools[tokenId];
-
-                        // remove the token from viral squeaks
-                        viralSqueaks.remove(tokenId);
-                    }
+                    _ejectFromPool(account, finds.at(index));
                 }
             }
 
