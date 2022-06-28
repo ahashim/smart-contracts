@@ -29,6 +29,9 @@ import './Validateable.sol';
  * @dev A contract to handle account management.
  */
 contract Accountable is PausableUpgradeable, Validateable {
+    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+
     /**
      * @dev Emitted after creating an account.
      * @param account Address of the account.
@@ -74,7 +77,7 @@ contract Accountable is PausableUpgradeable, Validateable {
         isValidUsername(username)
     {
         // ensure address has not already created an account
-        if (bytes(users[msg.sender].username).length > 0) {
+        if (users[msg.sender].status != AccountStatus.NonExistent) {
             revert AccountAlreadyExists();
         }
 
@@ -119,6 +122,45 @@ contract Accountable is PausableUpgradeable, Validateable {
 
         // save updated status to storage
         user.status = status;
+
+        // if banning a user,
+        if (status == AccountStatus.Banned) {
+            EnumerableSetUpgradeable.UintSet storage finds = scoutFinds[
+                account
+            ];
+
+            // eject them from any viral squeaks they're a part of
+            if (finds.length() > 0) {
+                for (uint256 index = 0; index < finds.length(); index++) {
+                    // get the scout pool
+                    uint256 tokenId = finds.at(index);
+                    ScoutPool storage pool = scoutPools[tokenId];
+
+                    // remove the user & their shares from the pool
+                    pool.shares -= pool.members.get(account);
+                    pool.members.remove(account);
+
+                    // if the pool is empty
+                    if (pool.members.length() == 0) {
+                        if (pool.amount > 0) {
+                            // drain the funds
+                            unchecked {
+                                treasury += pool.amount;
+                            }
+                        }
+
+                        // delete the pool
+                        delete scoutPools[tokenId];
+
+                        // remove the token from viral squeaks
+                        viralSqueaks.remove(tokenId);
+                    }
+                }
+            }
+
+            // delete the users finds
+            delete scoutFinds[account];
+        }
 
         emit AccountStatusUpdated(account, status);
     }

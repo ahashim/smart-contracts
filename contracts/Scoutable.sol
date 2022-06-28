@@ -26,7 +26,9 @@ import './Validateable.sol';
  * @dev A contract to handle scout logic.
  */
 contract Scoutable is Validateable {
+    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
      * @dev Upgradeable constructor
@@ -35,16 +37,19 @@ contract Scoutable is Validateable {
     function __Scoutable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Gets the details of a scout pool.
+     * @dev Gets the pool amount & number of shares.
      * @param tokenId ID of the viral squeak.
-     * @return a ScoutPool.
+     * @return Amount of funds in the scout pool.
+     * @return Shares in the scout pool.
      */
     function getScoutPool(uint256 tokenId)
         external
         view
-        returns (ScoutPool memory)
+        returns (uint256, uint256)
     {
-        return scoutPools[tokenId];
+        ScoutPool storage pool = scoutPools[tokenId];
+
+        return (pool.amount, pool.shares);
     }
 
     /**
@@ -57,24 +62,41 @@ contract Scoutable is Validateable {
         view
         returns (address[] memory)
     {
-        return scouts[tokenId].values();
+        ScoutPool storage pool = scoutPools[tokenId];
+        uint256 memberCount = pool.members.length();
+
+        // initialize scouts array based on the # of pool members
+        address[] memory scouts = new address[](memberCount);
+
+        // populate the array with member addresses from the pool
+        for (uint256 index = 0; index < memberCount; index++) {
+            (scouts[index], ) = pool.members.at(index);
+        }
+
+        return scouts;
     }
 
     /**
      * @dev Updates the scout level for an account, and adds them to the scout
      *      pool of a viral squeak.
+     * @param tokenId ID of the viral squeak.
      * @param user User to add to scouts list.
-     * @param tokenScouts Storage pointer to scouts list for the viral squeak.
+     * @param pool Storage pointer to ScoutPool for the viral squeak.
      */
     function _addScout(
+        uint256 tokenId,
         User storage user,
-        EnumerableSetUpgradeable.AddressSet storage tokenScouts
+        ScoutPool storage pool
     ) internal {
-        // upgrade their scout level
+        // upgrade the users scout level
         _increaseScoutLevel(user, 1);
 
-        // add them to the scout pool for the squeak
-        tokenScouts.add(user.account);
+        // add them to the pool & increase its share count by users scout level
+        pool.members.set(user.account, user.scoutLevel);
+        pool.shares += user.scoutLevel;
+
+        // add the ID of the viral squeak to their list of scout finds
+        scoutFinds[user.account].add(tokenId);
     }
 
     /**

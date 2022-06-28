@@ -21,7 +21,7 @@ import type {
   Wallet,
 } from 'ethers';
 import { Result } from '@ethersproject/abi';
-import type { ScoutPool, Squeak } from '../types';
+import type { Squeak } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('deleteViralSqueak', () => {
@@ -30,10 +30,12 @@ describe('deleteViralSqueak', () => {
     [name: string]: BigNumber;
   };
   let deleteFee: BigNumber,
-    likes: BigNumber,
     dislikes: BigNumber,
-    sharePrice: BigNumber,
+    likes: BigNumber,
+    poolAmount: BigNumber,
+    poolShares: BigNumber,
     resqueaks: BigNumber,
+    sharePrice: BigNumber,
     squeakId: BigNumber,
     treasuryBalance: BigNumber;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
@@ -43,7 +45,6 @@ describe('deleteViralSqueak', () => {
     carlos: Wallet,
     daphne: Wallet;
   let scouts: string[];
-  let scoutPool: ScoutPool;
   let squeak: Squeak;
 
   before('create fixture loader', async () => {
@@ -118,13 +119,16 @@ describe('deleteViralSqueak', () => {
     const daphneBalance = await daphne.getBalance();
     treasuryBalance = await critter.treasury();
 
-    // get pool unit
-    const pool = await critter.getScoutPool(squeakId);
-    sharePrice = pool.amount.div(pool.shares);
+    // get share price
+    let [amount, shares] = await critter.getScoutPool(squeakId);
+    sharePrice = amount.div(shares);
 
     // ahmed delets the viral squeak
     deleteFee = await critter.getDeleteFee(squeakId, CONFIRMATION_THRESHOLD);
     await critter.deleteSqueak(squeakId, { value: deleteFee });
+
+    // get updated pool info
+    [amount, shares] = await critter.getScoutPool(squeakId);
 
     return {
       balances: {
@@ -133,11 +137,13 @@ describe('deleteViralSqueak', () => {
         daphne: daphneBalance,
       },
       critter,
-      likes: await critter.getInteractionCount(squeakId, Interaction.Like),
       dislikes: await critter.getInteractionCount(
         squeakId,
         Interaction.Dislike
       ),
+      likes: await critter.getInteractionCount(squeakId, Interaction.Like),
+      poolAmount: amount,
+      poolShares: shares,
       sharePrice,
       resqueaks: await critter.getInteractionCount(
         squeakId,
@@ -157,12 +163,13 @@ describe('deleteViralSqueak', () => {
       ({
         balances,
         critter,
-        likes,
         dislikes,
-        sharePrice,
+        likes,
+        poolAmount,
+        poolShares,
         resqueaks,
+        sharePrice,
         scouts,
-        scoutPool,
         squeak,
         squeakId,
       } = await loadFixture(deleteViralSqueakFixture));
@@ -184,8 +191,8 @@ describe('deleteViralSqueak', () => {
 
   it("deletes the viral squeak's scout information", async () => {
     expect(scouts).to.be.empty;
-    expect(scoutPool.amount).to.eq(0);
-    expect(scoutPool.shares).to.eq(0);
+    expect(poolAmount).to.eq(0);
+    expect(poolShares).to.eq(0);
   });
 
   it('pays out to pool members before deletion', async () => {

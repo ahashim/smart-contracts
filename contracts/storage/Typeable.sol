@@ -18,7 +18,10 @@
 */
 pragma solidity 0.8.9;
 
-// contracts
+// 3rd party contracts
+import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeable.sol';
+
+// critter contracts
 import './Enumerable.sol';
 
 /**
@@ -26,6 +29,8 @@ import './Enumerable.sol';
  * @dev A contract that handles critter data structures.
  */
 contract Typeable is Enumerable {
+    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
+
     /**
      * @dev Upgradeable constructor
      */
@@ -35,11 +40,13 @@ contract Typeable is Enumerable {
     /**
      * @dev ScoutPool tracks fund information for scouts of a viral squeak.
      * @param amount Total pool funds in wei.
-     * @param shares Sum of the number of levels of each scout in the pool.
+     * @param shares Total number of shares.
+     * @param members Enumerable map of addresses <=> share amount.
      */
     struct ScoutPool {
         uint256 amount;
         uint256 shares;
+        EnumerableMapUpgradeable.AddressToUintMap members;
     }
 
     /**

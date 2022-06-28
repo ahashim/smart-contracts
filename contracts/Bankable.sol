@@ -27,6 +27,7 @@ import './Validateable.sol';
  *      transacting with the treasury.
  */
 contract Bankable is Validateable {
+    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
@@ -166,9 +167,9 @@ contract Bankable is Validateable {
      * @param pool ScoutPool of the viral squeak.
      * @return amount of each pool unit in wei.
      */
-    function _getPoolSharePrice(ScoutPool memory pool)
+    function _getPoolSharePrice(ScoutPool storage pool)
         internal
-        pure
+        view
         returns (uint256)
     {
         return pool.amount / pool.shares;
@@ -225,17 +226,18 @@ contract Bankable is Validateable {
      * @param tokenId ID of viral squeak.
      * @param pool ScoutPool of the viral squeak (converted to memory).
      */
-    function _makeScoutPayments(uint256 tokenId, ScoutPool memory pool)
+    function _makeScoutPayments(uint256 tokenId, ScoutPool storage pool)
         internal
     {
-        uint256 memberCount = scouts[tokenId].length();
-        uint256 sharePrice = _getPoolSharePrice(pool);
+        // determine share price
+        uint256 memberCount = pool.members.length();
+        uint256 price = _getPoolSharePrice(pool);
 
         // TODO: move this unbounded loop off-chain
         for (uint256 index = 0; index < memberCount; index++) {
-            // calculate payout based on the users scout level & share price
-            address scout = scouts[tokenId].at(index);
-            uint256 payout = users[scout].scoutLevel * sharePrice;
+            // calculate scout payout based on the number of shares & price
+            (address scout, uint256 shares) = pool.members.at(index);
+            uint256 payout = price * shares;
 
             // subtract from pool funds
             pool.amount -= payout;
@@ -250,9 +252,6 @@ contract Bankable is Validateable {
             // pay out to the scout
             _transferFunds(scout, payout);
         }
-
-        // save updated pool details back to storage
-        scoutPools[tokenId] = pool;
 
         emit ScoutPoolPayout(tokenId);
     }

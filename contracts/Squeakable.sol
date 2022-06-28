@@ -187,9 +187,8 @@ contract Squeakable is
                 _makeScoutPayments(tokenId, pool);
             }
 
-            // delete associated scout pool & its members
+            // delete scout pool
             delete scoutPools[tokenId];
-            delete scouts[tokenId];
 
             // remove from viralSqueaks set
             viralSqueaks.remove(tokenId);

@@ -184,11 +184,10 @@ describe('interact viral', () => {
 
   it('sums the scout levels of all positive interactors as the pool level total', async () => {
     // 3 scouts at level 2 + 1 scout at level 5
-    const expectedLevelTotal = 2 * 3 + 5;
+    const expectedShares = 2 * 3 + 5;
+    const [, shares] = await critter.getScoutPool(squeakId);
 
-    expect((await critter.getScoutPool(squeakId)).shares).to.eq(
-      expectedLevelTotal
-    );
+    expect(shares).to.eq(expectedShares);
   });
 
   it('deposits the take for the viral interaction into the treasury', async () => {
@@ -198,9 +197,8 @@ describe('interact viral', () => {
   });
 
   it('deposits half of the platform fee into the scout pool', async () => {
-    expect((await critter.getScoutPool(squeakId)).amount).to.eq(
-      transferAmount
-    );
+    const [amount] = await critter.getScoutPool(squeakId);
+    expect(amount).to.eq(transferAmount);
   });
 
   it('deposits half of the platform fee into squeak owners wallet', async () => {
@@ -229,8 +227,8 @@ describe('interact viral', () => {
     const treasuryBalance = await critter.treasury();
 
     // get pool unit for expected amount after the interaction
-    const pool = await critter.getScoutPool(squeakId);
-    const sharePrice = pool.amount.add(transferAmount).div(pool.shares);
+    let [amount, shares] = await critter.getScoutPool(squeakId);
+    const sharePrice = amount.add(transferAmount).div(shares);
 
     // barbie likes the viral squeak bringing the pool unit past its threshold
     await critter.connect(barbie).interact(squeakId, Interaction.Like, {
@@ -263,6 +261,7 @@ describe('interact viral', () => {
     ).to.eq(7);
 
     // pool amount is reset
-    expect((await critter.getScoutPool(squeakId)).amount).to.eq(0);
+    [amount] = await critter.getScoutPool(squeakId);
+    expect(amount).to.eq(0);
   });
 });

@@ -30,6 +30,7 @@ import 'abdk-libraries-solidity/ABDKMath64x64.sol';
  */
 contract Viral is Scoutable {
     using ABDKMath64x64 for *;
+    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
@@ -88,10 +89,7 @@ contract Viral is Scoutable {
         EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
             tokenId
         ];
-        EnumerableSetUpgradeable.AddressSet storage tokenScouts = scouts[
-            tokenId
-        ];
-        ScoutPool memory pool;
+        ScoutPool storage pool = scoutPools[tokenId];
 
         // add squeak to the list of viral squeaks
         viralSqueaks.add(tokenId);
@@ -111,27 +109,15 @@ contract Viral is Scoutable {
         // TODO: move this unbounded loop off-chain
         for (uint256 index = 0; index < upperBound; index++) {
             // add all likers to the list of scouts list
-            if (index < likesCount) {
-                User storage liker = users[likers.at(index)];
-
-                _addScout(liker, tokenScouts);
-                pool.shares += liker.scoutLevel;
-            }
+            if (index < likesCount)
+                _addScout(tokenId, users[likers.at(index)], pool);
 
             // add all resqueakers to the list of scouts who aren't likers
             if (
                 index < resqueaksCount &&
-                !tokenScouts.contains(resqueakers.at(index))
-            ) {
-                User storage resqueaker = users[resqueakers.at(index)];
-
-                _addScout(resqueaker, tokenScouts);
-                pool.shares += resqueaker.scoutLevel;
-            }
+                !pool.members.contains(resqueakers.at(index))
+            ) _addScout(tokenId, users[resqueakers.at(index)], pool);
         }
-
-        // save the pool to storage
-        scoutPools[tokenId] = pool;
     }
 
     /**

@@ -18,9 +18,11 @@
 */
 pragma solidity 0.8.9;
 
-// contracts
-import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
+// critter contracts
 import './Typeable.sol';
+
+// data-structures
+import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 
 /**
  * @title Mappable
@@ -31,8 +33,6 @@ import './Typeable.sol';
  *      can be appended to with newer mappings in later versions.
  */
 contract Mappable is Initializable, Typeable {
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
-
     /**
      * @dev Upgradeable constructor
      */
@@ -84,9 +84,9 @@ contract Mappable is Initializable, Typeable {
     mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal resqueaks;
 
     /**
-     * @dev Mapping of tokenId <=> AddressSet of scouts.
+     * @dev Mapping of scout <=> set of viral squeaks they are a part of.
      */
-    mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal scouts;
+    mapping(address => EnumerableSetUpgradeable.UintSet) internal scoutFinds;
 
     /**
      * @dev Mapping of tokenId <=> ScoutPool.
