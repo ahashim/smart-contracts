@@ -22,13 +22,14 @@ pragma solidity 0.8.9;
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 
 // critter contracts
+import './Bankable.sol';
 import './Validateable.sol';
 
 /**
  * @title Accountable
  * @dev A contract to handle account management.
  */
-contract Accountable is PausableUpgradeable, Validateable {
+contract Accountable is PausableUpgradeable, Validateable, Bankable  {
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
@@ -142,12 +143,7 @@ contract Accountable is PausableUpgradeable, Validateable {
 
                     // if the pool is empty
                     if (pool.members.length() == 0) {
-                        if (pool.amount > 0) {
-                            // drain the funds
-                            unchecked {
-                                treasury += pool.amount;
-                            }
-                        }
+                        if (pool.amount > 0) _deposit(pool.amount);
 
                         // delete the pool
                         delete scoutPools[tokenId];
