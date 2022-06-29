@@ -21,9 +21,6 @@ pragma solidity 0.8.9;
 // critter contracts
 import './Typeable.sol';
 
-// data-structures
-import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
-
 /**
  * @title Mappable
  * @dev A contract that only handles critter data mappings.
@@ -82,6 +79,11 @@ contract Mappable is Initializable, Typeable {
      * @dev Mapping of tokenId <=> AddressSet of resqueakers.
      */
     mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal resqueaks;
+
+    /**
+     * @dev Mapping of tokenId <=> Sentiment.
+     */
+    mapping(uint256 => Sentiment) internal sentiments;
 
     /**
      * @dev Mapping of scout <=> set of viral squeaks they are a part of.

@@ -29,13 +29,37 @@ import './Enumerable.sol';
  * @dev A contract that handles critter data structures.
  */
 contract Typeable is Enumerable {
-    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
-
     /**
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Typeable_init() internal view onlyInitializing {}
+
+    /**
+     * @dev Sentiment tracks the set of likers, dislikers, and resqueakers for a
+     *      particular squeak.
+     * @param dislikes AddressSet of dislikers.
+     * @param likes AddressSet of likers.
+     * @param resqueaks AddressSet of resqueakers.
+     */
+    struct Sentiment {
+        EnumerableSetUpgradeable.AddressSet dislikes;
+        EnumerableSetUpgradeable.AddressSet likes;
+        EnumerableSetUpgradeable.AddressSet resqueaks;
+    }
+
+    /**
+     * @dev SentimentCounts is used to return the number of likes, dislikes, and
+     *      resqueaks for a particular token.
+     * @param dislikes Number of dislikers.
+     * @param likes Number of likers.
+     * @param resqueaks Number of resqueakers.
+     */
+    struct SentimentCounts {
+        uint256 dislikes;
+        uint256 likes;
+        uint256 resqueaks;
+    }
 
     /**
      * @dev ScoutPool tracks fund information for scouts of a viral squeak.

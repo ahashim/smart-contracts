@@ -20,8 +20,8 @@ import type {
   Event,
   Wallet,
 } from 'ethers';
-import { Result } from '@ethersproject/abi';
-import type { Squeak } from '../types';
+import type { Result } from '@ethersproject/abi';
+import type { SentimentCounts, Squeak } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('deleteViralSqueak', () => {
@@ -30,11 +30,8 @@ describe('deleteViralSqueak', () => {
     [name: string]: BigNumber;
   };
   let deleteFee: BigNumber,
-    dislikes: BigNumber,
-    likes: BigNumber,
     poolAmount: BigNumber,
     poolShares: BigNumber,
-    resqueaks: BigNumber,
     sharePrice: BigNumber,
     squeakId: BigNumber,
     treasuryBalance: BigNumber;
@@ -44,6 +41,7 @@ describe('deleteViralSqueak', () => {
     barbie: Wallet,
     carlos: Wallet,
     daphne: Wallet;
+  let sentimentCounts: SentimentCounts;
   let scouts: string[];
   let squeak: Squeak;
 
@@ -137,18 +135,10 @@ describe('deleteViralSqueak', () => {
         daphne: daphneBalance,
       },
       critter,
-      dislikes: await critter.getInteractionCount(
-        squeakId,
-        Interaction.Dislike
-      ),
-      likes: await critter.getInteractionCount(squeakId, Interaction.Like),
       poolAmount: amount,
       poolShares: shares,
+      sentimentCounts: await critter.getSentimentCounts(squeakId),
       sharePrice,
-      resqueaks: await critter.getInteractionCount(
-        squeakId,
-        Interaction.Resqueak
-      ),
       scouts: await critter.getScouts(squeakId),
       scoutPool: await critter.getScoutPool(squeakId),
       squeak: await critter.squeaks(squeakId),
@@ -163,11 +153,9 @@ describe('deleteViralSqueak', () => {
       ({
         balances,
         critter,
-        dislikes,
-        likes,
         poolAmount,
         poolShares,
-        resqueaks,
+        sentimentCounts,
         sharePrice,
         scouts,
         squeak,
@@ -184,6 +172,8 @@ describe('deleteViralSqueak', () => {
   });
 
   it("deletes the viral squeak's associated sentiment", async () => {
+    const { likes, dislikes, resqueaks } = sentimentCounts;
+
     expect(likes).to.eq(0);
     expect(dislikes).to.eq(0);
     expect(resqueaks).to.eq(0);

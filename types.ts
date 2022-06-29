@@ -1,6 +1,12 @@
 import { BigNumber } from 'ethers';
 import { AccountStatus } from './constants';
 
+export type SentimentCounts = {
+  dislikes: BigNumber;
+  likes: BigNumber;
+  resqueaks: BigNumber;
+};
+
 export type Squeak = {
   blockNumber: BigNumber;
   author: string;

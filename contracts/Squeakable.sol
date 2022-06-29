@@ -38,13 +38,6 @@ contract Squeakable is
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
-     * @dev Emitted after resqueaking.
-     * @param sender Account that resqueaked.
-     * @param tokenId ID of the squeak.
-     */
-    event Resqueaked(address indexed sender, uint256 tokenId);
-
-    /**
      * @dev Emitted after creating a squeak.
      * @param author Account that created the squeak.
      * @param tokenId ID of the squeak.
@@ -59,46 +52,16 @@ contract Squeakable is
     );
 
     /**
-     * @dev Emitted after deleting a squeak.
-     * @param sender Account that deleted the squeak.
+     * @dev Emitted after an interaction.
      * @param tokenId ID of the squeak.
+     * @param sender Account that resqueaked.
+     * @param interaction Value from the Interaction enum.
      */
-    event SqueakDeleted(address indexed sender, uint256 tokenId);
-
-    /**
-     * @dev Emitted after disliking a squeak.
-     * @param sender Account that disliked the squeak.
-     * @param tokenId ID of the squeak.
-     */
-    event SqueakDisliked(address indexed sender, uint256 tokenId);
-
-    /**
-     * @dev Emitted after liking a squeak.
-     * @param sender Account that liked the squeak.
-     * @param tokenId ID of the squeak.
-     */
-    event SqueakLiked(address indexed sender, uint256 tokenId);
-
-    /**
-     * @dev Emitted after undisliking a squeak.
-     * @param sender Account that undisliked the squeak.
-     * @param tokenId ID of the squeak.
-     */
-    event SqueakUndisliked(address indexed sender, uint256 tokenId);
-
-    /**
-     * @dev Emitted after unliking a squeak.
-     * @param sender Account that unliked the squeak.
-     * @param tokenId ID of the squeak.
-     */
-    event SqueakUnliked(address indexed sender, uint256 tokenId);
-
-    /**
-     * @dev Emitted after unresqueaking.
-     * @param sender Account that unresqueaked.
-     * @param tokenId ID of the squeak.
-     */
-    event Unresqueaked(address indexed sender, uint256 tokenId);
+    event SqueakInteraction(
+        uint256 tokenId,
+        address sender,
+        Interaction interaction
+    );
 
     /**
      * @dev Upgradeable constructor
@@ -167,13 +130,9 @@ contract Squeakable is
         // burn the token
         _burn(tokenId);
 
-        // delete squeak
+        // delete squeak & sentiment
         delete squeaks[tokenId];
-
-        // delete all interactions
-        delete likes[tokenId];
-        delete dislikes[tokenId];
-        delete resqueaks[tokenId];
+        delete sentiments[tokenId];
 
         // delete associated virality
         if (viralSqueaks.contains(tokenId)) {
@@ -191,26 +150,26 @@ contract Squeakable is
             viralSqueaks.remove(tokenId);
         }
 
-        emit SqueakDeleted(msg.sender, tokenId);
+        emit SqueakInteraction(tokenId, msg.sender, Interaction.Delete);
     }
 
     /**
-     * @dev Gets the number of an {Interaction} that occurred for a squeak.
+     * @dev Gets a count of each Sentiment item for a squeak.
      * @param tokenId ID of the squeak.
-     * @param interaction A value from the Interaction enum.
      */
-    function getInteractionCount(uint256 tokenId, Interaction interaction)
+    function getSentimentCounts(uint256 tokenId)
         external
         view
-        returns (uint256)
+        returns (SentimentCounts memory)
     {
-        if (interaction == Interaction.Dislike)
-            return dislikes[tokenId].length();
-        else if (interaction == Interaction.Like)
-            return likes[tokenId].length();
-        else if (interaction == Interaction.Resqueak)
-            return resqueaks[tokenId].length();
-        else revert InvalidInteractionType();
+        Sentiment storage sentiment = sentiments[tokenId];
+
+        return
+            SentimentCounts(
+                sentiment.dislikes.length(),
+                sentiment.likes.length(),
+                sentiment.resqueaks.length()
+            );
     }
 
     /**
@@ -226,23 +185,28 @@ contract Squeakable is
         squeakExists(tokenId)
         nonReentrant
     {
+        Sentiment storage sentiment = sentiments[tokenId];
+
         // determine interaction & update state
-        if (interaction == Interaction.Dislike) _dislikeSqueak(tokenId);
-        else if (interaction == Interaction.Like) _likeSqueak(tokenId);
-        else if (interaction == Interaction.Resqueak) _resqueak(tokenId);
+        if (interaction == Interaction.Dislike) _dislikeSqueak(sentiment);
+        else if (interaction == Interaction.Like) _likeSqueak(sentiment);
+        else if (interaction == Interaction.Resqueak) _resqueak(sentiment);
         else if (interaction == Interaction.UndoDislike)
-            _undoDislikeSqueak(tokenId);
-        else if (interaction == Interaction.UndoLike) _undoLikeSqueak(tokenId);
+            _undoDislikeSqueak(sentiment);
+        else if (interaction == Interaction.UndoLike)
+            _undoLikeSqueak(sentiment);
         else if (interaction == Interaction.UndoResqueak)
-            _undoResqueak(tokenId);
+            _undoResqueak(sentiment);
         else revert InvalidInteractionType();
+
+        emit SqueakInteraction(tokenId, msg.sender, interaction);
 
         // check squeak virality
         if (
             !viralSqueaks.contains(tokenId) &&
             getViralityScore(tokenId) >= viralityThreshold
         ) {
-            _markViral(tokenId);
+            _markViral(tokenId, sentiment);
         }
 
         _makePayment(tokenId, interaction);
@@ -250,146 +214,113 @@ contract Squeakable is
 
     /**
      * @dev Dislikes a squeak.
-     * @param tokenId ID of the squeak.
+     * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _dislikeSqueak(uint256 tokenId)
+    function _dislikeSqueak(Sentiment storage sentiment)
         private
         coversFee(Interaction.Dislike)
     {
-        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
-            tokenId
-        ];
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
-
         // ensure account has not already disliked the squeak
-        if (dislikers.contains(msg.sender)) {
+        if (sentiment.dislikes.contains(msg.sender)) {
             revert AlreadyDisliked();
         }
 
-        // first remove them from likers set if they're in there
-        if (likers.contains(msg.sender)) {
-            likers.remove(msg.sender);
+        // first remove them from likes set if they're in there
+        if (sentiment.likes.contains(msg.sender)) {
+            sentiment.likes.remove(msg.sender);
         }
 
-        // then add them to the dislikers set
-        dislikers.add(msg.sender);
-
-        emit SqueakDisliked(msg.sender, tokenId);
+        // then add them to the dislikes set
+        sentiment.dislikes.add(msg.sender);
     }
 
     /**
      * @dev Likes a squeak.
-     * @param tokenId ID of the squeak.
+     * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _likeSqueak(uint256 tokenId) private coversFee(Interaction.Like) {
-        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
-            tokenId
-        ];
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
-
+    function _likeSqueak(Sentiment storage sentiment)
+        private
+        coversFee(Interaction.Like)
+    {
         // ensure account has not already liked the squeak
-        if (likers.contains(msg.sender)) {
+        if (sentiment.likes.contains(msg.sender)) {
             revert AlreadyLiked();
         }
 
-        // first remove them from dislikers set if they're in there
-        if (dislikers.contains(msg.sender)) {
-            dislikers.remove(msg.sender);
+        // first remove them from dislikes set if they're in there
+        if (sentiment.dislikes.contains(msg.sender)) {
+            sentiment.dislikes.remove(msg.sender);
         }
 
-        // then add them to the likers set
-        likers.add(msg.sender);
-
-        emit SqueakLiked(msg.sender, tokenId);
+        // then add them to the likes set
+        sentiment.likes.add(msg.sender);
     }
 
     /**
      * @dev Resqueaks a squeak.
-     * @param tokenId ID of the squeak.
+     * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _resqueak(uint256 tokenId)
+    function _resqueak(Sentiment storage sentiment)
         private
         coversFee(Interaction.Resqueak)
     {
-        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
-            tokenId
-        ];
-
         // revert if the account has already resqueaked it
-        if (resqueakers.contains(msg.sender)) {
+        if (sentiment.resqueaks.contains(msg.sender)) {
             revert AlreadyResqueaked();
         }
 
-        // add them to the resqueakers
-        resqueakers.add(msg.sender);
-
-        emit Resqueaked(msg.sender, tokenId);
+        // add them to the resqueaks
+        sentiment.resqueaks.add(msg.sender);
     }
 
     /**
      * @dev Undislikes a squeak.
-     * @param tokenId ID of the squeak.
+     * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _undoDislikeSqueak(uint256 tokenId)
+    function _undoDislikeSqueak(Sentiment storage sentiment)
         private
         coversFee(Interaction.UndoDislike)
     {
-        EnumerableSetUpgradeable.AddressSet storage dislikers = dislikes[
-            tokenId
-        ];
-
         // ensure the user has disliked the squeak
-        if (!dislikers.contains(msg.sender)) {
+        if (!sentiment.dislikes.contains(msg.sender)) {
             revert NotDislikedYet();
         }
 
-        // remove them from dislikers
-        dislikers.remove(msg.sender);
-
-        emit SqueakUndisliked(msg.sender, tokenId);
+        // remove them from dislikes
+        sentiment.dislikes.remove(msg.sender);
     }
 
     /**
      * @dev Unlikes a squeak.
-     * @param tokenId ID of the squeak.
+     * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _undoLikeSqueak(uint256 tokenId)
+    function _undoLikeSqueak(Sentiment storage sentiment)
         private
         coversFee(Interaction.UndoLike)
     {
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
-
         // ensure the user has liked the squeak
-        if (!likers.contains(msg.sender)) {
+        if (!sentiment.likes.contains(msg.sender)) {
             revert NotLikedYet();
         }
 
         // remove them from the likers
-        likers.remove(msg.sender);
-
-        emit SqueakUnliked(msg.sender, tokenId);
+        sentiment.likes.remove(msg.sender);
     }
 
     /**
      * @dev Undoes a resqueak.
-     * @param tokenId ID of the squeak.
+     * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _undoResqueak(uint256 tokenId)
+    function _undoResqueak(Sentiment storage sentiment)
         private
         coversFee(Interaction.UndoResqueak)
     {
-        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
-            tokenId
-        ];
-
         // ensure the user has resqueaked the squeak
-        if (!resqueakers.contains(msg.sender)) {
+        if (!sentiment.resqueaks.contains(msg.sender)) {
             revert NotResqueakedYet();
         }
 
-        // remove them from the resqueakers
-        resqueakers.remove(msg.sender);
-
-        emit Unresqueaked(msg.sender, tokenId);
+        // remove them from the resqueaks
+        sentiment.resqueaks.remove(msg.sender);
     }
 }

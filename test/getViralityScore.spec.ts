@@ -11,16 +11,18 @@ import type {
   Event,
   Wallet,
 } from 'ethers';
-import { Result } from '@ethersproject/abi';
+import type { Result } from '@ethersproject/abi';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('getViralityScore', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let likes: number, dislikes: number, resqueaks: number;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
-  let receipt: ContractReceipt;
   let nonViralSqueakId: BigNumber, viralSqueakId: BigNumber;
+  let receipt: ContractReceipt;
+  let sentiment: {
+    [key: string]: number;
+  };
   let tx: ContractTransaction;
 
   before('create fixture loader', async () => {
@@ -90,16 +92,7 @@ describe('getViralityScore', () => {
 
     return {
       critter,
-      dislikes: (
-        await critter.getInteractionCount(viralSqueakId, Interaction.Dislike)
-      ).toNumber(),
-      likes: (
-        await critter.getInteractionCount(viralSqueakId, Interaction.Like)
-      ).toNumber(),
       nonViralSqueakId,
-      resqueaks: (
-        await critter.getInteractionCount(viralSqueakId, Interaction.Resqueak)
-      ).toNumber(),
       viralSqueakId,
     };
   };
@@ -107,15 +100,23 @@ describe('getViralityScore', () => {
   beforeEach(
     'deploy test contract, ahmed creates a squeak that everybody likes',
     async () => {
-      ({ critter, dislikes, likes, resqueaks, viralSqueakId } =
-        await loadFixture(getViralityScoreFixture));
+      ({ critter, nonViralSqueakId, viralSqueakId } = await loadFixture(
+        getViralityScoreFixture
+      ));
     }
   );
 
-  // test variables
-  const overflow = ethers.constants.MaxUint256.add(ethers.BigNumber.from(1));
-
   it('gets the virality score of a squeak', async () => {
+    // get sentiment counts
+    const counts = await critter.getSentimentCounts(viralSqueakId);
+
+    // convert from BigNumber -> number for use with {Math}
+    sentiment = {};
+    for (const key in counts) {
+      sentiment[key] = counts[key].toNumber();
+    }
+    let { dislikes, likes, resqueaks } = sentiment;
+
     // calculate blockDelta for the viral squeak
     const latestBlock = (await ethers.provider.getBlock('latest')).number;
     const publishedBlock = (
@@ -133,12 +134,11 @@ describe('getViralityScore', () => {
     const amplifier = Math.log(resqueaks) / resqueaks;
     const order = ratio * total * amplifier;
     const coefficient = order !== 0 ? 1 / order : 0;
-    const expectedScore = 1000 / (blockDelta + coefficient + 10);
-    const delta = 0.15;
+    const expectedScore = Math.round(1000 / (blockDelta + coefficient + 10));
 
-    expect(
-      (await critter.getViralityScore(viralSqueakId)).toNumber()
-    ).to.be.closeTo(expectedScore, delta);
+    expect((await critter.getViralityScore(viralSqueakId)).toNumber()).to.eq(
+      expectedScore
+    );
   });
 
   it('returns a score of zero when the squeak does not meet the minimum virality requirement', async () => {
@@ -152,6 +152,8 @@ describe('getViralityScore', () => {
   });
 
   it('reverts if the squeakId is out of bounds', async () => {
+    const overflow = ethers.constants.MaxUint256.add(ethers.BigNumber.from(1));
+
     await expect(critter.getViralityScore(-1)).to.be.reverted;
     await expect(critter.getViralityScore(overflow)).to.be.reverted;
   });

@@ -4,7 +4,6 @@ import {
   CONFIRMATION_THRESHOLD,
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
-  MODERATOR_ROLE,
 } from '../constants';
 import { AccountStatus, Interaction } from '../enums';
 
@@ -95,17 +94,15 @@ describe('deleteSqueak', () => {
   });
 
   it('removes all associated sentiment for the squeak', async () => {
+    // delete the squeak
     await critter.deleteSqueak(squeakId, { value: deleteFee });
+    const { dislikes, likes, resqueaks } = await critter.getSentimentCounts(
+      squeakId
+    );
 
-    expect(
-      await critter.getInteractionCount(squeakId, Interaction.Dislike)
-    ).to.eq(0);
-    expect(
-      await critter.getInteractionCount(squeakId, Interaction.Like)
-    ).to.eq(0);
-    expect(
-      await critter.getInteractionCount(squeakId, Interaction.Resqueak)
-    ).to.eq(0);
+    expect(dislikes).to.eq(0);
+    expect(likes).to.eq(0);
+    expect(resqueaks).to.eq(0);
   });
 
   it('deposits the delete fee into the treasury', async () => {

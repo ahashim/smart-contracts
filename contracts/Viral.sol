@@ -52,10 +52,13 @@ contract Viral is Scoutable {
         squeakExists(tokenId)
         returns (uint64)
     {
+        // get squeak sentiment values
+        Sentiment storage sentiment = sentiments[tokenId];
+
         uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
-        uint256 dislikes = dislikes[tokenId].length();
-        uint256 likes = likes[tokenId].length();
-        uint256 resqueaks = resqueaks[tokenId].length();
+        uint256 dislikes = sentiment.dislikes.length();
+        uint256 likes = sentiment.likes.length();
+        uint256 resqueaks = sentiment.resqueaks.length();
 
         // squeak needs to have at least 1 like and 1 resqueak to be considered
         return
@@ -83,12 +86,11 @@ contract Viral is Scoutable {
      * @dev Adds a squeak to the list of viral squeaks, and all of its positive
      *      interactors to a scout pool while upgrading their scout levels.
      * @param tokenId ID of the squeak.
+     * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _markViral(uint256 tokenId) internal {
-        EnumerableSetUpgradeable.AddressSet storage likers = likes[tokenId];
-        EnumerableSetUpgradeable.AddressSet storage resqueakers = resqueaks[
-            tokenId
-        ];
+    function _markViral(uint256 tokenId, Sentiment storage sentiment)
+        internal
+    {
         ScoutPool storage pool = scoutPools[tokenId];
 
         // add squeak to the list of viral squeaks
@@ -99,8 +101,8 @@ contract Viral is Scoutable {
         _increaseScoutLevel(users[msg.sender], scoutViralityBonus);
 
         // get the upper bound of the larger set of positive interactions
-        uint256 likesCount = likers.length();
-        uint256 resqueaksCount = resqueakers.length();
+        uint256 likesCount = sentiment.likes.length();
+        uint256 resqueaksCount = sentiment.resqueaks.length();
         uint256 upperBound = likesCount > resqueaksCount
             ? likesCount
             : resqueaksCount;
@@ -110,13 +112,13 @@ contract Viral is Scoutable {
         for (uint256 index = 0; index < upperBound; index++) {
             // add all likers to the list of scouts list
             if (index < likesCount)
-                _addScout(tokenId, users[likers.at(index)], pool);
+                _addScout(tokenId, users[sentiment.likes.at(index)], pool);
 
             // add all resqueakers to the list of scouts who aren't likers
             if (
                 index < resqueaksCount &&
-                !pool.members.contains(resqueakers.at(index))
-            ) _addScout(tokenId, users[resqueakers.at(index)], pool);
+                !pool.members.contains(sentiment.resqueaks.at(index))
+            ) _addScout(tokenId, users[sentiment.resqueaks.at(index)], pool);
         }
     }
 
