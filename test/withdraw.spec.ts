@@ -129,6 +129,12 @@ describe('withdraw', () => {
     await expect(critter.withdraw(coldStorage.address, -1)).to.be.reverted;
   });
 
+  it('reverts if the to address is not valid', async () => {
+    await expect(
+      critter.withdraw('looking for love in Alderaan places', treasuryBalance)
+    ).to.be.reverted;
+  });
+
   it('reverts if someone other than TREASURER_ROLE tries to withdraw funds', async () => {
     await expect(
       critter.connect(ahmed).withdraw(coldStorage.address, treasuryFee)
