@@ -66,21 +66,6 @@ contract Mappable is Initializable, Typeable {
     mapping(address => User) public users;
 
     /**
-     * @dev Mapping of tokenId <=> AddressSet of dislikers.
-     */
-    mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal dislikes;
-
-    /**
-     * @dev Mapping of tokenId <=> AddressSet of likers.
-     */
-    mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal likes;
-
-    /**
-     * @dev Mapping of tokenId <=> AddressSet of resqueakers.
-     */
-    mapping(uint256 => EnumerableSetUpgradeable.AddressSet) internal resqueaks;
-
-    /**
      * @dev Mapping of tokenId <=> Sentiment.
      */
     mapping(uint256 => Sentiment) internal sentiments;
