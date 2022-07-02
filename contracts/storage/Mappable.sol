@@ -36,13 +36,13 @@ contract Mappable is Initializable, Typeable {
     // solhint-disable-next-line func-name-mixedcase
     function __Mappable_init(uint256 platformFee) internal onlyInitializing {
         // set default interaction fees
-        interactionFees[Interaction.Delete] = platformFee;
-        interactionFees[Interaction.Dislike] = platformFee;
-        interactionFees[Interaction.Like] = platformFee;
-        interactionFees[Interaction.Resqueak] = platformFee;
-        interactionFees[Interaction.UndoDislike] = platformFee;
-        interactionFees[Interaction.UndoLike] = platformFee;
-        interactionFees[Interaction.UndoResqueak] = platformFee;
+        fees[Interaction.Delete] = platformFee;
+        fees[Interaction.Dislike] = platformFee;
+        fees[Interaction.Like] = platformFee;
+        fees[Interaction.Resqueak] = platformFee;
+        fees[Interaction.UndoDislike] = platformFee;
+        fees[Interaction.UndoLike] = platformFee;
+        fees[Interaction.UndoResqueak] = platformFee;
     }
 
     /**
@@ -53,7 +53,7 @@ contract Mappable is Initializable, Typeable {
     /**
      * @dev Mapping of Interaction <=> fee amounts.
      */
-    mapping(Interaction => uint256) public interactionFees;
+    mapping(Interaction => uint256) public fees;
 
     /**
      * @dev Mapping of tokenId <=> Squeak.

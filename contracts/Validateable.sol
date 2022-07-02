@@ -90,7 +90,7 @@ contract Validateable is
      * @dev Ensures that the sender has enough to cover the interaction fee.
      */
     modifier coversFee(Interaction interaction) {
-        if (msg.value < interactionFees[interaction]) {
+        if (msg.value < fees[interaction]) {
             revert InsufficientFunds();
         }
         _;

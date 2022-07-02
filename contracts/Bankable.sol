@@ -109,7 +109,7 @@ contract Bankable is Validateable {
         view
         returns (uint256)
     {
-        return interactionFees[interaction];
+        return fees[interaction];
     }
 
     /**
@@ -122,7 +122,7 @@ contract Bankable is Validateable {
         external
         onlyRole(TREASURER_ROLE)
     {
-        interactionFees[interaction] = amount;
+        fees[interaction] = amount;
 
         emit InteractionFeeUpdated(interaction, amount);
     }
