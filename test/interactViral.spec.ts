@@ -21,8 +21,10 @@ import {
 } from 'ethers';
 import type { Result } from '@ethersproject/abi';
 import type { Critter } from '../typechain-types/contracts';
+import type { BigNumberObject, PoolInfo } from '../types';
 
 describe('interact viral', () => {
+  let balances: BigNumberObject, fees: BigNumberObject;
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet,
@@ -31,9 +33,7 @@ describe('interact viral', () => {
     carlos: Wallet,
     daphne: Wallet;
   let ahmedBalance: BigNumber, squeakId: BigNumber, treasuryBalance: BigNumber;
-  let fees: {
-    [name: string]: BigNumber;
-  };
+  let poolInfo: PoolInfo;
   let treasuryTake: number, transferAmount: number;
 
   // test variables
@@ -122,8 +122,15 @@ describe('interact viral', () => {
       .interact(squeakId, Interaction.Like, { value: fees.like });
 
     return {
+      balances: {
+        ahmed: ahmedBalance,
+        carlos: await carlos.getBalance(),
+        daphne: await daphne.getBalance(),
+        treasury: treasuryBalance,
+      },
       critter,
       fees,
+      poolInfo: await critter.getPoolInfo(squeakId),
       squeakId,
       transferAmount,
       treasuryTake,
@@ -131,8 +138,15 @@ describe('interact viral', () => {
   };
 
   beforeEach('deploy test contract, and create a viral squeak', async () => {
-    ({ critter, fees, squeakId, transferAmount, treasuryTake } =
-      await loadFixture(interactViralFixture));
+    ({
+      balances,
+      critter,
+      fees,
+      poolInfo,
+      squeakId,
+      transferAmount,
+      treasuryTake,
+    } = await loadFixture(interactViralFixture));
   });
 
   it('marks the squeak as viral', async () => {
@@ -175,7 +189,7 @@ describe('interact viral', () => {
   it('adds all positive interactors to the scout pool', async () => {
     // everybody who either liked or resqueaked the viral squeak
     const interactors = [ahmed, barbie, carlos, daphne];
-    const scouts = await critter.getScouts(squeakId);
+    const scouts = (await critter.getScouts(squeakId)).map((s) => s.account);
 
     interactors.forEach((account) => {
       expect(scouts.includes(account.address)).to.be.true;
@@ -185,7 +199,7 @@ describe('interact viral', () => {
   it('sums the scout levels of all positive interactors as the pool level total', async () => {
     // 3 scouts at level 2 + 1 scout at level 5
     const expectedShares = 2 * 3 + 5;
-    const [, shares] = await critter.getScoutPool(squeakId);
+    const [, shares] = await critter.getPoolInfo(squeakId);
 
     expect(shares).to.eq(expectedShares);
   });
@@ -197,8 +211,7 @@ describe('interact viral', () => {
   });
 
   it('deposits half of the platform fee into the scout pool', async () => {
-    const [amount] = await critter.getScoutPool(squeakId);
-    expect(amount).to.eq(transferAmount);
+    expect(poolInfo.amount).to.eq(transferAmount);
   });
 
   it('deposits half of the platform fee into squeak owners wallet', async () => {
@@ -218,17 +231,15 @@ describe('interact viral', () => {
   });
 
   it('pays out scout funds to members of the pool when it hits the threshold', async () => {
-    // get starting balance of interactors before pool payout
-    const ahmedBalance = await ahmed.getBalance();
-    const carlosBalance = await carlos.getBalance();
-    const daphneBalance = await daphne.getBalance();
-
-    // get treasury balance before pool payout
-    const treasuryBalance = await critter.treasury();
+    // update ahmeds & treasury balances to after the squeak went viral & before
+    // the pool payout interaction
+    balances.ahmed = await ahmed.getBalance();
+    balances.treasury = await critter.treasury();
 
     // get pool unit for expected amount after the interaction
-    let [amount, shares] = await critter.getScoutPool(squeakId);
-    const sharePrice = amount.add(transferAmount).div(shares);
+    const sharePrice = poolInfo.amount
+      .add(transferAmount)
+      .div(poolInfo.shares);
 
     // barbie likes the viral squeak bringing the pool unit past its threshold
     await critter.connect(barbie).interact(squeakId, Interaction.Like, {
@@ -241,15 +252,15 @@ describe('interact viral', () => {
     // the payout loop off-chain, and replacing it with an O(1) bitmap.
 
     // pool members are paid based on their scout level
-    expect((await carlos.getBalance()).sub(carlosBalance)).to.eq(
+    expect((await carlos.getBalance()).sub(balances.carlos)).to.eq(
       sharePrice.mul((await critter.users(carlos.address)).scoutLevel)
     );
-    expect((await daphne.getBalance()).sub(daphneBalance)).to.eq(
+    expect((await daphne.getBalance()).sub(balances.daphne)).to.eq(
       sharePrice.mul((await critter.users(daphne.address)).scoutLevel)
     );
 
     // squeak owner gets transferAmount in addition to pool payout
-    expect((await ahmed.getBalance()).sub(ahmedBalance)).to.eq(
+    expect((await ahmed.getBalance()).sub(balances.ahmed)).to.eq(
       sharePrice
         .mul((await critter.users(ahmed.address)).scoutLevel)
         .add(transferAmount)
@@ -257,11 +268,10 @@ describe('interact viral', () => {
 
     // remaining dust is deposited into the treasury (8 wei in this case)
     expect(
-      (await critter.treasury()).sub(treasuryBalance.add(treasuryTake))
+      (await critter.treasury()).sub(balances.treasury.add(treasuryTake))
     ).to.eq(7);
 
     // pool amount is reset
-    [amount] = await critter.getScoutPool(squeakId);
-    expect(amount).to.eq(0);
+    expect((await critter.getPoolInfo(squeakId)).amount).to.eq(0);
   });
 });

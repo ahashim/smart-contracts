@@ -263,7 +263,7 @@ contract Bankable is Validateable {
      * @param amount Amount to add in wei.
      */
     function _addScoutFunds(uint256 tokenId, uint256 amount) private {
-        ScoutPool storage pool = scoutPools[tokenId];
+        ScoutPool storage pool = pools[tokenId];
 
         // add funds to the pool (unchecked because pool payouts will ensure
         // they get reset to zero)

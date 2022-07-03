@@ -36,7 +36,18 @@ contract Typeable is Enumerable {
     function __Typeable_init() internal view onlyInitializing {}
 
     /**
-     * @dev ScoutPool tracks fund information for scouts of a viral squeak.
+     * @dev Scout a user that belongs to a ScoutPool for a viral squeak.
+     * @param account Address of the user.
+     * @param shares Total number of shares.
+     */
+    struct Scout {
+        address account;
+        uint256 shares;
+    }
+
+    /**
+     * @dev ScoutPool tracks detailed fund & member information for scouts of
+     *      a viral squeak.
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
      * @param members Enumerable map of addresses <=> share amount.
@@ -45,6 +56,18 @@ contract Typeable is Enumerable {
         uint256 amount;
         uint256 shares;
         EnumerableMapUpgradeable.AddressToUintMap members;
+    }
+
+    /**
+     * @dev ScoutPoolInfo keeps a succint overview of a ScoutPool.
+     * @param amount Total pool funds in wei.
+     * @param shares Total number of shares.
+     * @param memberCount Count of the members in the share.
+     */
+    struct ScoutPoolInfo {
+        uint256 amount;
+        uint256 shares;
+        uint256 memberCount;
     }
 
     /**

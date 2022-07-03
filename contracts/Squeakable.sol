@@ -136,7 +136,7 @@ contract Squeakable is
 
         if (viralSqueaks.contains(tokenId)) {
             // delete associated virality
-            ScoutPool storage pool = scoutPools[tokenId];
+            ScoutPool storage pool = pools[tokenId];
 
             if (pool.amount > 0) {
                 // pay out any remaining pool funds
@@ -144,7 +144,7 @@ contract Squeakable is
             }
 
             // delete the pool
-            delete scoutPools[tokenId];
+            delete pools[tokenId];
 
             // remove squeak from set of viral squeaks
             viralSqueaks.remove(tokenId);
@@ -156,6 +156,7 @@ contract Squeakable is
     /**
      * @dev Gets a count of each Sentiment item for a squeak.
      * @param tokenId ID of the squeak.
+     * @return SentimentCounts
      */
     function getSentimentCounts(uint256 tokenId)
         external

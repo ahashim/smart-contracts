@@ -22,14 +22,16 @@ import {
 } from 'ethers';
 import { Result } from '@ethersproject/abi';
 import { Critter } from '../typechain-types/contracts';
+import { PoolInfo, Scout } from '../types';
 
 describe('ejectFromPool', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
+  let poolInfo: PoolInfo;
   let receipt: ContractReceipt;
-  let scouts: string[];
-  let squeakId: BigNumber;
+  let scouts: Scout[];
+  let squeakId: BigNumber, treasuryBalance: BigNumber;
   let tx: ContractTransaction;
 
   before('create fixture loader', async () => {
@@ -80,37 +82,43 @@ describe('ejectFromPool', () => {
 
     return {
       critter,
+      poolInfo: await critter.getPoolInfo(squeakId),
       scouts: await critter.getScouts(squeakId),
+      treasuryBalance: await critter.treasury(),
     };
   };
 
   beforeEach('deploy test contract', async () => {
-    ({ critter, scouts } = await loadFixture(ejectFromPoolFixture));
+    ({ critter, poolInfo, scouts, treasuryBalance } = await loadFixture(
+      ejectFromPoolFixture
+    ));
   });
 
   it('ejects the user from a scout pool', async () => {
+    const accounts = scouts.map((s) => s.account);
+
     expect(scouts.length).to.eq(1);
-    expect(scouts.includes(barbie.address)).to.be.false;
-    expect(scouts.includes(carlos.address)).to.be.true;
+    expect(accounts.includes(barbie.address)).to.be.false;
+    expect(accounts.includes(carlos.address)).to.be.true;
   });
 
   it('deletes the pool & removes it from virality when all members eject', async () => {
-    // pre-eject
-    let [amount, shares] = await critter.getScoutPool(squeakId);
     const expectedPoolAmount = ethers.utils.parseEther('.00002');
-    const treasuryBalance = await critter.treasury();
+    let { amount, shares, memberCount } = poolInfo;
 
     // squeak is still viral, and pool exists
     expect(amount).to.eq(expectedPoolAmount);
     expect(shares).to.eq(5); // carlos' scout level
+    expect(memberCount).to.eq(1);
     expect(await critter.isViral(squeakId)).to.be.true;
 
     // remaining member ejects
     await critter.connect(carlos).ejectFromPool(squeakId);
-    [amount, shares] = await critter.getScoutPool(squeakId);
+    ({ amount, shares, memberCount } = await critter.getPoolInfo(squeakId));
 
     expect(amount).to.eq(0);
     expect(shares).to.eq(0);
+    expect(memberCount).to.eq(0);
     expect(await critter.isViral(squeakId)).to.be.false;
     expect((await critter.treasury()).sub(treasuryBalance)).to.eq(
       expectedPoolAmount

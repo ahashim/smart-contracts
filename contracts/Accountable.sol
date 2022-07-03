@@ -39,21 +39,21 @@ contract Accountable is
      * @param account Address of the account.
      * @param username Username of the account.
      */
-    event AccountCreated(address indexed account, string username);
+    event AccountCreated(address account, string username);
 
     /**
      * @dev Emitted after updating an account status.
      * @param account Address of the account.
      * @param status A value fromt the AccountStatus enum.
      */
-    event AccountStatusUpdated(address indexed account, AccountStatus status);
+    event AccountStatusUpdated(address account, AccountStatus status);
 
     /**
      * @dev Emitted after updating an accounts username.
      * @param account Address of the account.
      * @param newUsername Next username.
      */
-    event UsernameUpdated(address indexed account, string newUsername);
+    event UsernameUpdated(address account, string newUsername);
 
     /**
      * @dev Upgradeable constructor

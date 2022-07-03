@@ -42,11 +42,10 @@ contract Scoutable is Validateable, Bankable {
      * @param tokenId ID of the viral squeak.
      */
     function ejectFromPool(uint256 tokenId) external whenNotPaused {
-        ScoutPool storage pool = scoutPools[tokenId];
+        ScoutPool storage pool = pools[tokenId];
 
         // validate the account is in the pool
-        if (!pool.members.contains(msg.sender))
-            revert NotIncludedInScoutPool();
+        if (!pool.members.contains(msg.sender)) revert NotInScoutPool();
 
         // remove the user & their shares from the pool
         pool.shares -= pool.members.get(msg.sender);
@@ -57,7 +56,7 @@ contract Scoutable is Validateable, Bankable {
             if (pool.amount > 0) _deposit(pool.amount);
 
             // delete the pool
-            delete scoutPools[tokenId];
+            delete pools[tokenId];
 
             // remove the token from viral squeaks
             viralSqueaks.remove(tokenId);
@@ -67,38 +66,38 @@ contract Scoutable is Validateable, Bankable {
     /**
      * @dev Gets the pool amount & number of shares.
      * @param tokenId ID of the viral squeak.
-     * @return Amount of funds in the scout pool.
-     * @return Shares in the scout pool.
+     * @return ScoutPoolInfo
      */
-    function getScoutPool(uint256 tokenId)
+    function getPoolInfo(uint256 tokenId)
         external
         view
-        returns (uint256, uint256)
+        returns (ScoutPoolInfo memory)
     {
-        ScoutPool storage pool = scoutPools[tokenId];
+        ScoutPool storage pool = pools[tokenId];
 
-        return (pool.amount, pool.shares);
+        return ScoutPoolInfo(pool.amount, pool.shares, pool.members.length());
     }
 
     /**
      * @dev Gets a list of scouts for a viral squeak.
      * @param tokenId ID of the viral squeak.
-     * @return a list of account addresses representing scouts.
+     * @return A list of Scouts.
      */
     function getScouts(uint256 tokenId)
         external
         view
-        returns (address[] memory)
+        returns (Scout[] memory)
     {
-        ScoutPool storage pool = scoutPools[tokenId];
+        ScoutPool storage pool = pools[tokenId];
         uint256 memberCount = pool.members.length();
 
         // initialize scouts array based on the # of pool members
-        address[] memory scouts = new address[](memberCount);
+        Scout[] memory scouts = new Scout[](memberCount);
 
         // populate the array with member addresses from the pool
         for (uint256 i = 0; i < memberCount; i++) {
-            (scouts[i], ) = pool.members.at(i);
+            (address account, uint256 shares) = pool.members.at(i);
+            scouts[i] = Scout(account, shares);
         }
 
         return scouts;

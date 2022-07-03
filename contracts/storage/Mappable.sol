@@ -68,7 +68,7 @@ contract Mappable is Initializable, Typeable {
     /**
      * @dev Mapping of tokenId <=> ScoutPool.
      */
-    mapping(uint256 => ScoutPool) internal scoutPools;
+    mapping(uint256 => ScoutPool) internal pools;
 
     /**
      * @dev Mapping of tokenId <=> Sentiment.

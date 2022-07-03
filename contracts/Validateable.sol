@@ -39,7 +39,7 @@ error InvalidWithdrawlAmount();
 error NonExistentAccount();
 error NotApprovedOrOwner();
 error NotDislikedYet();
-error NotIncludedInScoutPool();
+error NotInScoutPool();
 error NotLikedYet();
 error NotResqueakedYet();
 error SqueakDoesNotExist();
