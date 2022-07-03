@@ -234,16 +234,16 @@ contract Bankable is Validateable {
         uint256 price = _getPoolSharePrice(pool);
 
         // TODO: move this unbounded loop off-chain
-        for (uint256 index = 0; index < memberCount; index++) {
+        for (uint256 i = 0; i < memberCount; i++) {
             // calculate scout payout based on the number of shares & price
-            (address scout, uint256 shares) = pool.members.at(index);
+            (address scout, uint256 shares) = pool.members.at(i);
             uint256 payout = price * shares;
 
             // subtract from pool funds
             pool.amount -= payout;
 
             // if there is any dust remaining on the last iteration
-            if (index == memberCount - 1 && pool.amount > 0) {
+            if (i == memberCount - 1 && pool.amount > 0) {
                 // deposit it into the treasury, and reset the pool amount
                 _deposit(pool.amount);
                 pool.amount = 0;

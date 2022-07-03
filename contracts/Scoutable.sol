@@ -78,8 +78,8 @@ contract Scoutable is Validateable, Bankable {
         address[] memory scouts = new address[](memberCount);
 
         // populate the array with member addresses from the pool
-        for (uint256 index = 0; index < memberCount; index++) {
-            (scouts[index], ) = pool.members.at(index);
+        for (uint256 i = 0; i < memberCount; i++) {
+            (scouts[i], ) = pool.members.at(i);
         }
 
         return scouts;
@@ -88,24 +88,16 @@ contract Scoutable is Validateable, Bankable {
     /**
      * @dev Updates the scout level for an account, and adds them to the scout
      *      pool of a viral squeak.
-     * @param tokenId ID of the viral squeak.
      * @param user User to add to scouts list.
      * @param pool Storage pointer to ScoutPool.
      */
-    function _addScout(
-        uint256 tokenId,
-        User storage user,
-        ScoutPool storage pool
-    ) internal {
+    function _addScout(User storage user, ScoutPool storage pool) internal {
         // upgrade the users scout level
         _increaseScoutLevel(user, 1);
 
         // add them to the pool & increase its share count by users scout level
         pool.members.set(user.account, user.scoutLevel);
         pool.shares += user.scoutLevel;
-
-        // add the ID of the viral squeak to their list of scout finds
-        scoutFinds[user.account].add(tokenId);
     }
 
     /**

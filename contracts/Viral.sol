@@ -100,25 +100,25 @@ contract Viral is Scoutable {
         // to their scout level.
         _increaseScoutLevel(users[msg.sender], scoutViralityBonus);
 
-        // get the upper bound of the larger set of positive interactions
+        // iterate over both sets & add all unique addresses to the scouts list
         uint256 likesCount = sentiment.likes.length();
         uint256 resqueaksCount = sentiment.resqueaks.length();
         uint256 upperBound = likesCount > resqueaksCount
             ? likesCount
             : resqueaksCount;
 
-        // iterate over both sets & add all unique addresses to the scouts list
-        // TODO: move this unbounded loop off-chain
-        for (uint256 index = 0; index < upperBound; index++) {
-            // add all likers to the list of scouts list
-            if (index < likesCount)
-                _addScout(tokenId, users[sentiment.likes.at(index)], pool);
+        // TODO: move this unbounded loop offchain
+        for (uint256 i = 0; i < upperBound; i++) {
+            if (i < likesCount)
+                // add all likers
+                _addScout(users[sentiment.likes.at(i)], pool);
 
-            // add all resqueakers to the list of scouts who aren't likers
             if (
-                index < resqueaksCount &&
-                !pool.members.contains(sentiment.resqueaks.at(index))
-            ) _addScout(tokenId, users[sentiment.resqueaks.at(index)], pool);
+                i < resqueaksCount &&
+                !pool.members.contains(sentiment.resqueaks.at(i))
+            )
+                // add all resqueakers who aren't likers
+                _addScout(users[sentiment.resqueaks.at(i)], pool);
         }
     }
 

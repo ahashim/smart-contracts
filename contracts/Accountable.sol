@@ -125,23 +125,6 @@ contract Accountable is
         // save updated status to storage
         user.status = status;
 
-        // if banning a user,
-        if (status == AccountStatus.Banned) {
-            EnumerableSetUpgradeable.UintSet storage finds = scoutFinds[
-                account
-            ];
-
-            // eject them from any viral squeaks they're a part of
-            if (finds.length() > 0) {
-                for (uint256 index = 0; index < finds.length(); index++) {
-                    _ejectFromPool(account, finds.at(index));
-                }
-            }
-
-            // delete the users finds
-            delete scoutFinds[account];
-        }
-
         emit AccountStatusUpdated(account, status);
     }
 

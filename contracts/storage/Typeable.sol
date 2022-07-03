@@ -36,32 +36,6 @@ contract Typeable is Enumerable {
     function __Typeable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Sentiment tracks the set of likers, dislikers, and resqueakers for a
-     *      particular squeak.
-     * @param dislikes AddressSet of dislikers.
-     * @param likes AddressSet of likers.
-     * @param resqueaks AddressSet of resqueakers.
-     */
-    struct Sentiment {
-        EnumerableSetUpgradeable.AddressSet dislikes;
-        EnumerableSetUpgradeable.AddressSet likes;
-        EnumerableSetUpgradeable.AddressSet resqueaks;
-    }
-
-    /**
-     * @dev SentimentCounts is used to return the number of likes, dislikes, and
-     *      resqueaks for a particular token.
-     * @param dislikes Number of dislikers.
-     * @param likes Number of likers.
-     * @param resqueaks Number of resqueakers.
-     */
-    struct SentimentCounts {
-        uint256 dislikes;
-        uint256 likes;
-        uint256 resqueaks;
-    }
-
-    /**
      * @dev ScoutPool tracks fund information for scouts of a viral squeak.
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
@@ -88,10 +62,37 @@ contract Typeable is Enumerable {
     }
 
     /**
+     * @dev Sentiment tracks the set of likers, dislikers, and resqueakers
+     *      for a particular squeak.
+     * @param dislikes AddressSet of dislikers.
+     * @param likes AddressSet of likers.
+     * @param resqueaks AddressSet of resqueakers.
+     */
+    struct Sentiment {
+        EnumerableSetUpgradeable.AddressSet dislikes;
+        EnumerableSetUpgradeable.AddressSet likes;
+        EnumerableSetUpgradeable.AddressSet resqueaks;
+    }
+
+    /**
+     * @dev SentimentCounts is used to return the number of likes,
+     *      dislikes, and resqueaks for a particular token.
+     * @param dislikes Number of dislikers.
+     * @param likes Number of likers.
+     * @param resqueaks Number of resqueakers.
+     */
+    struct SentimentCounts {
+        uint256 dislikes;
+        uint256 likes;
+        uint256 resqueaks;
+    }
+
+    /**
      * @dev User is a registered Critter account.
      * @param account Address of the account.
+     * @param status A value from the AccountStatus enum.
      * @param scoutLevel Level of "scout" the user has achieved based on their
-            squeak and interaction history.
+     *       squeak and interaction history.
      * @param username The accounts username.
      */
     struct User {
@@ -99,5 +100,21 @@ contract Typeable is Enumerable {
         AccountStatus status;
         uint256 scoutLevel;
         string username;
+    }
+
+    /**
+     * @dev UserInteraction tracks the set of tokens that a user has interacted
+     *      with, grouped by interaction type.
+     * @param disliked Set of token ID's they disliked.
+     * @param liked Set of token ID's they liked.
+     * @param resqueaked Set of token ID's they resqueaked.
+     * @param scouted Set of token ID's the user scouted by interacting with,
+     *      which then went on to go viral.
+     */
+    struct UserInteraction {
+        EnumerableSetUpgradeable.UintSet disliked;
+        EnumerableSetUpgradeable.UintSet liked;
+        EnumerableSetUpgradeable.UintSet resqueaked;
+        EnumerableSetUpgradeable.UintSet scouted;
     }
 }

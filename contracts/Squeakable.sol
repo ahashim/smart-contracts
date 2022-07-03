@@ -124,29 +124,29 @@ contract Squeakable is
         // validate delete fee
         if (msg.value < getDeleteFee(tokenId, 0)) revert InsufficientFunds();
 
-        // recieve payment
+        // receive payment
         _deposit(msg.value);
 
         // burn the token
         _burn(tokenId);
 
-        // delete squeak & sentiment
+        // delete the squeak + sentiment
         delete squeaks[tokenId];
         delete sentiments[tokenId];
 
-        // delete associated virality
         if (viralSqueaks.contains(tokenId)) {
+            // delete associated virality
             ScoutPool storage pool = scoutPools[tokenId];
 
             if (pool.amount > 0) {
-                // pay out the remaining pool funds to its members
+                // pay out any remaining pool funds
                 _makeScoutPayments(tokenId, pool);
             }
 
-            // delete scout pool
+            // delete the pool
             delete scoutPools[tokenId];
 
-            // remove from viralSqueaks set
+            // remove squeak from set of viral squeaks
             viralSqueaks.remove(tokenId);
         }
 
@@ -220,17 +220,13 @@ contract Squeakable is
         private
         coversFee(Interaction.Dislike)
     {
-        // ensure account has not already disliked the squeak
-        if (sentiment.dislikes.contains(msg.sender)) {
-            revert AlreadyDisliked();
-        }
+        // ensure the user has not already disliked the squeak
+        if (sentiment.dislikes.contains(msg.sender)) revert AlreadyDisliked();
 
-        // first remove them from likes set if they're in there
-        if (sentiment.likes.contains(msg.sender)) {
+        // remove previous like
+        if (sentiment.likes.contains(msg.sender))
             sentiment.likes.remove(msg.sender);
-        }
 
-        // then add them to the dislikes set
         sentiment.dislikes.add(msg.sender);
     }
 
@@ -242,17 +238,13 @@ contract Squeakable is
         private
         coversFee(Interaction.Like)
     {
-        // ensure account has not already liked the squeak
-        if (sentiment.likes.contains(msg.sender)) {
-            revert AlreadyLiked();
-        }
+        // ensure the user has not already liked the squeak
+        if (sentiment.likes.contains(msg.sender)) revert AlreadyLiked();
 
-        // first remove them from dislikes set if they're in there
-        if (sentiment.dislikes.contains(msg.sender)) {
+        if (sentiment.dislikes.contains(msg.sender))
+            // remove previous dislike
             sentiment.dislikes.remove(msg.sender);
-        }
 
-        // then add them to the likes set
         sentiment.likes.add(msg.sender);
     }
 
@@ -264,12 +256,10 @@ contract Squeakable is
         private
         coversFee(Interaction.Resqueak)
     {
-        // revert if the account has already resqueaked it
-        if (sentiment.resqueaks.contains(msg.sender)) {
+        // ensure the user has not already resqueaked the squeak
+        if (sentiment.resqueaks.contains(msg.sender))
             revert AlreadyResqueaked();
-        }
 
-        // add them to the resqueaks
         sentiment.resqueaks.add(msg.sender);
     }
 
@@ -282,9 +272,7 @@ contract Squeakable is
         coversFee(Interaction.UndoDislike)
     {
         // ensure the user has disliked the squeak
-        if (!sentiment.dislikes.contains(msg.sender)) {
-            revert NotDislikedYet();
-        }
+        if (!sentiment.dislikes.contains(msg.sender)) revert NotDislikedYet();
 
         // remove them from dislikes
         sentiment.dislikes.remove(msg.sender);
@@ -299,9 +287,7 @@ contract Squeakable is
         coversFee(Interaction.UndoLike)
     {
         // ensure the user has liked the squeak
-        if (!sentiment.likes.contains(msg.sender)) {
-            revert NotLikedYet();
-        }
+        if (!sentiment.likes.contains(msg.sender)) revert NotLikedYet();
 
         // remove them from the likers
         sentiment.likes.remove(msg.sender);
@@ -316,9 +302,8 @@ contract Squeakable is
         coversFee(Interaction.UndoResqueak)
     {
         // ensure the user has resqueaked the squeak
-        if (!sentiment.resqueaks.contains(msg.sender)) {
+        if (!sentiment.resqueaks.contains(msg.sender))
             revert NotResqueakedYet();
-        }
 
         // remove them from the resqueaks
         sentiment.resqueaks.remove(msg.sender);
