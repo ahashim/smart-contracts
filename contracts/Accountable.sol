@@ -146,6 +146,6 @@ contract Accountable is
         addresses[newUsername] = msg.sender;
         user.username = newUsername;
 
-        emit UsernameUpdated(msg.sender, newUsername);
+        emit AccountUsernameUpdated(msg.sender, newUsername);
     }
 }
