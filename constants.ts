@@ -37,3 +37,6 @@ export const CONTRACT_INITIALIZER = [
   SCOUT_BONUS,
   SCOUT_MAX_LEVEL,
 ];
+
+// test variables
+export const EMPTY_BYTE_STRING = utils.hexlify(utils.toUtf8Bytes(''));

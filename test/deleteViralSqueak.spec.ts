@@ -5,6 +5,7 @@ import {
   CONTRACT_NAME,
   CONTRACT_SYMBOL,
   BASE_TOKEN_URI,
+  EMPTY_BYTE_STRING,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
   SCOUT_BONUS,
@@ -165,7 +166,7 @@ describe('deleteViralSqueak', () => {
     expect(squeak.blockNumber).to.eq(0);
     expect(squeak.author).to.eq(ethers.constants.AddressZero);
     expect(squeak.owner).to.eq(ethers.constants.AddressZero);
-    expect(squeak.content).to.eq('');
+    expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 
   it("deletes the viral squeak's associated sentiment", async () => {

@@ -1,6 +1,10 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import {
+  CONTRACT_NAME,
+  CONTRACT_INITIALIZER,
+  EMPTY_BYTE_STRING,
+} from '../constants';
 
 // types
 import type {
@@ -21,6 +25,10 @@ describe('squeaks', () => {
   let owner: Wallet, ahmed: Wallet;
   let squeakId: BigNumber;
   let squeak: Squeak;
+
+  // test variables
+  const { utils } = ethers;
+  const content = 'hello blockchain!';
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -55,16 +63,13 @@ describe('squeaks', () => {
     }
   );
 
-  // test variables
-  const content = 'hello blockcain!';
-
   it('returns a squeak using a squeakId', async () => {
     squeak = await critter.squeaks(squeakId);
 
     expect(squeak.blockNumber).to.eq(blockAuthored);
     expect(squeak.author).to.eq(ahmed.address);
     expect(squeak.owner).to.eq(ahmed.address);
-    expect(squeak.content).to.eq(content);
+    expect(squeak.content).to.eq(utils.hexlify(utils.toUtf8Bytes(content)));
   });
 
   it('returns an empty squeak for a non-existent squeakId', async () => {
@@ -73,7 +78,7 @@ describe('squeaks', () => {
     expect(squeak.blockNumber).to.eq(0);
     expect(squeak.author).to.eq(ethers.constants.AddressZero);
     expect(squeak.owner).to.eq(ethers.constants.AddressZero);
-    expect(squeak.content).to.eq('');
+    expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 
   it('reverts if the squeakId is out of bounds', async () => {

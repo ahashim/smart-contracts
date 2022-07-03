@@ -95,7 +95,7 @@ contract Squeakable is
             block.number,
             msg.sender,
             msg.sender,
-            content
+            rawContent
         );
 
         _mint(msg.sender, 1);

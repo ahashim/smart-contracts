@@ -69,10 +69,13 @@ describe('createSqueak', () => {
   });
 
   it('lets a user create a squeak', async () => {
+    const { utils } = ethers;
+    const rawContent = utils.hexlify(utils.toUtf8Bytes(content));
+
     expect(squeak.blockNumber).to.eq(receipt.blockNumber);
     expect(squeak.author).to.eq(ahmed.address);
     expect(squeak.owner).to.eq(ahmed.address);
-    expect(squeak.content).to.eq(content);
+    expect(squeak.content).to.eq(rawContent);
   });
 
   it('emits a SqueakCreated event', async () => {

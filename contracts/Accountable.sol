@@ -53,7 +53,7 @@ contract Accountable is
      * @param account Address of the account.
      * @param newUsername Next username.
      */
-    event UsernameUpdated(address account, string newUsername);
+    event AccountUsernameUpdated(address account, string newUsername);
 
     /**
      * @dev Upgradeable constructor

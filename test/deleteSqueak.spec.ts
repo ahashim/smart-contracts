@@ -4,6 +4,7 @@ import {
   CONFIRMATION_THRESHOLD,
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
+  EMPTY_BYTE_STRING,
 } from '../constants';
 import { AccountStatus, Interaction } from '../enums';
 
@@ -84,13 +85,14 @@ describe('deleteSqueak', () => {
   });
 
   it('removes all squeak information upon deletion', async () => {
+    // delete squeak & retrieve it
     await critter.deleteSqueak(squeakId, { value: deleteFee });
     squeak = await critter.squeaks(squeakId);
 
     expect(squeak.blockNumber).to.eq(0);
     expect(squeak.author).to.eq(ethers.constants.AddressZero);
     expect(squeak.owner).to.eq(ethers.constants.AddressZero);
-    expect(squeak.content).to.eq('');
+    expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 
   it('removes all associated sentiment for the squeak', async () => {

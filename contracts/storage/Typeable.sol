@@ -81,7 +81,7 @@ contract Typeable is Enumerable {
         uint256 blockNumber;
         address author;
         address owner;
-        string content;
+        bytes content;
     }
 
     /**
