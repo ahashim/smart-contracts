@@ -42,7 +42,26 @@ contract Scoutable is Validateable, Bankable {
      * @param tokenId ID of the viral squeak.
      */
     function ejectFromPool(uint256 tokenId) external whenNotPaused {
-        _ejectFromPool(msg.sender, tokenId);
+        ScoutPool storage pool = scoutPools[tokenId];
+
+        // validate the account is in the pool
+        if (!pool.members.contains(msg.sender))
+            revert NotIncludedInScoutPool();
+
+        // remove the user & their shares from the pool
+        pool.shares -= pool.members.get(msg.sender);
+        pool.members.remove(msg.sender);
+
+        if (pool.members.length() == 0) {
+            // drain the funds
+            if (pool.amount > 0) _deposit(pool.amount);
+
+            // delete the pool
+            delete scoutPools[tokenId];
+
+            // remove the token from viral squeaks
+            viralSqueaks.remove(tokenId);
+        }
     }
 
     /**
@@ -98,33 +117,6 @@ contract Scoutable is Validateable, Bankable {
         // add them to the pool & increase its share count by users scout level
         pool.members.set(user.account, user.scoutLevel);
         pool.shares += user.scoutLevel;
-    }
-
-    /**
-     * @dev Removes a user from a scout pool.
-     * @param account Address of the account to eject.
-     * @param tokenId ID of the viral squeak associated with the pool.
-     */
-    function _ejectFromPool(address account, uint256 tokenId) internal {
-        ScoutPool storage pool = scoutPools[tokenId];
-
-        // validate the account is in the pool
-        if (!pool.members.contains(account)) revert NotIncludedInScoutPool();
-
-        // remove the user & their shares from the pool
-        pool.shares -= pool.members.get(account);
-        pool.members.remove(account);
-
-        if (pool.members.length() == 0) {
-            // drain the funds
-            if (pool.amount > 0) _deposit(pool.amount);
-
-            // delete the pool
-            delete scoutPools[tokenId];
-
-            // remove the token from viral squeaks
-            viralSqueaks.remove(tokenId);
-        }
     }
 
     /**
