@@ -45,14 +45,14 @@ contract Storeable is Typeable, Immutable, Mappable {
         string calldata baseURI,
         uint256 takeRate,
         uint256 poolThreshold,
-        uint8 viralityThresh,
+        uint8 viralThreshold,
         uint8 scoutBonus,
         uint8 maxLevel
     ) internal onlyInitializing {
         baseTokenURI = baseURI;
         platformTakeRate = takeRate;
         poolPayoutThreshold = poolThreshold;
-        viralityThreshold = viralityThresh;
+        viralityThreshold = viralThreshold;
         scoutViralityBonus = scoutBonus;
         scoutMaxLevel = maxLevel;
     }
