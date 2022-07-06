@@ -25,6 +25,9 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import './Accountable.sol';
 import './Squeakable.sol';
 
+// interface
+import './interfaces/ICritter.sol';
+
 /**
  * @title Critter: a microblogging platform where each post is an ERC721 token.
  * @author Ahmed Hashim <ahashim@users.noreply.github.com>
@@ -44,8 +47,7 @@ import './Squeakable.sol';
  *        split among the owner and those who helped it go viral (likers &
  *        resqueakers).
  */
-
-contract Critter is UUPSUpgradeable, Accountable, Squeakable {
+contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
     /* solhint-disable func-name-mixedcase, no-empty-blocks */
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -53,16 +55,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
     /* solhint-enable func-name-mixedcase, no-empty-blocks */
 
     /**
-     * @dev Upgradeable "constructor" function to initialize sub-contracts.
-     * @param name Contract name (Critter).
-     * @param symbol Contract symbol (CRTTR).
-     * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
-     * @param platformFee Default amount in wei to charge per interaction.
-     * @param takeRate Percentage of `fee` deposited into the treasury.
-     * @param poolThreshold Minimum amount of wei required to pay out a scout pool.
-     * @param viralThreshold Minimum score that a squeak must have for virality.
-     * @param scoutBonus Number of levels a scout jumps when they cause a squeak to go viral.
-     * @param maxLevel Upper limit on scout level.
+     * @dev See {ICritter-initialize}.
      */
     function initialize(
         string calldata name,
@@ -106,14 +99,14 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable {
     }
 
     /**
-     * @dev Pauses the contract.
+     * @dev See {ICritter-pause}.
      */
     function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
     /**
-     * @dev Unpauses the contract.
+     * @dev See {ICritter-unpause}.
      */
     function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
