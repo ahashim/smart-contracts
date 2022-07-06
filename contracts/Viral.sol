@@ -18,17 +18,15 @@
 */
 pragma solidity 0.8.9;
 
-// critter contracts
-import './Scoutable.sol';
-
-// libraries
 import 'abdk-libraries-solidity/ABDKMath64x64.sol';
+import './Scoutable.sol';
+import './interfaces/IViral.sol';
 
 /**
  * @title Squeakable
  * @dev A contract to handle virality for squeaks.
  */
-contract Viral is Scoutable {
+contract Viral is Scoutable, IViral {
     using ABDKMath64x64 for *;
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;

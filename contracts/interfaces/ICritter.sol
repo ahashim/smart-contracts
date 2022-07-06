@@ -19,7 +19,7 @@
 pragma solidity 0.8.9;
 
 /**
- * @dev Interface for main Critter contract.
+ * @dev Interface for the main Critter contract.
  */
 interface ICritter {
     /**

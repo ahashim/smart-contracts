@@ -18,22 +18,14 @@
 */
 pragma solidity 0.8.9;
 
-// critter contracts
-import './Scoutable.sol';
+import './Validateable.sol';
+import './interfaces/IAccountable.sol';
 
 /**
  * @title Accountable
  * @dev A contract to handle account management.
  */
-contract Accountable is
-    PausableUpgradeable,
-    Validateable,
-    Bankable,
-    Scoutable
-{
-    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-
+contract Accountable is Validateable, IAccountable {
     /**
      * @dev Emitted after creating an account.
      * @param account Address of the account.

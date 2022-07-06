@@ -18,13 +18,8 @@
 */
 pragma solidity 0.8.9;
 
-// 3rd-party contracts
-import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
-
-// critter contracts
 import './Immutable.sol';
-import './Mappable.sol';
-import './Typeable.sol';
+import '../interfaces/storage/IStoreable.sol';
 
 /**
  * @title Storeable
@@ -34,7 +29,7 @@ import './Typeable.sol';
  *      mappings in the EVM as new features are added. More info on EVM storage
  *      collisions & upgradeability: https://tinyurl.com/d424mcpx
  */
-contract Storeable is Typeable, Immutable, Mappable {
+contract Storeable is Immutable, IStoreable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**

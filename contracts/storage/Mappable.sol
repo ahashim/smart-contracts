@@ -18,8 +18,7 @@
 */
 pragma solidity 0.8.9;
 
-// critter contracts
-import './Typeable.sol';
+import './Storeable.sol';
 
 /**
  * @title Mappable
@@ -29,7 +28,7 @@ import './Typeable.sol';
  *      a "good enough" collision avoidance gaurantee, and thus this contract
  *      can be appended to with newer mappings in later versions.
  */
-contract Mappable is Initializable, Typeable {
+contract Mappable is Storeable {
     /**
      * @dev Upgradeable constructor
      */

@@ -18,14 +18,9 @@
 */
 pragma solidity 0.8.9;
 
-// 3rd party contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
-
-// critter contracts
 import './Accountable.sol';
 import './Squeakable.sol';
-
-// interface
 import './interfaces/ICritter.sol';
 
 /**
@@ -76,7 +71,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
         __UUPSUpgradeable_init();
 
         // Storage
-        __Enumerable_init();
         __Immutable_init();
         __Mappable_init(platformFee);
         __Storeable_init(
@@ -87,7 +81,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
             scoutBonus,
             maxLevel
         );
-        __Typeable_init();
 
         // Logic
         __Accountable_init();

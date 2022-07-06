@@ -18,22 +18,35 @@
 */
 pragma solidity 0.8.9;
 
-// 3rd party contracts
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeable.sol';
 
-// critter contracts
-import './Enumerable.sol';
-
 /**
- * @title Typeable
- * @dev A contract that handles critter data structures.
+ * @dev Interface for Storeable.
+ * @notice This is where all the Critter data structures & enums live.
  */
-contract Typeable is Enumerable {
+interface IStoreable {
     /**
-     * @dev Upgradeable constructor
+     * @dev Set of interactions for a squeak.
      */
-    // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
-    function __Typeable_init() internal view onlyInitializing {}
+    enum Interaction {
+        Delete,
+        Dislike,
+        Like,
+        Resqueak,
+        UndoDislike,
+        UndoLike,
+        UndoResqueak
+    }
+
+    /**
+     * @dev Set of statuses of a critter account.
+     */
+    enum AccountStatus {
+        NonExistent,
+        Active,
+        Suspended,
+        Banned
+    }
 
     /**
      * @dev Scout a user that belongs to a ScoutPool for a viral squeak.

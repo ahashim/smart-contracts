@@ -18,18 +18,17 @@
 */
 pragma solidity 0.8.9;
 
-// critter contracts
 import './Validateable.sol';
+import './interfaces/IBankable.sol';
 
 /**
  * @title Bankable
  * @dev A contract to handle interaction payments, scouts + pools, and
  *      transacting with the treasury.
  */
-contract Bankable is Validateable {
+contract Bankable is Validateable, IBankable {
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     /**
      * @dev Emitted when funds are deposited into the treasury.

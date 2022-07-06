@@ -18,28 +18,11 @@
 */
 pragma solidity 0.8.9;
 
-// 3rd-party contract
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
-
-// critter contracts
-import './storage/Storeable.sol';
-
-// error codes
-error AlreadyInteracted();
-error InsufficientFunds();
-error InvalidAccount();
-error InvalidAccountStatus();
-error InvalidInteraction();
-error InvalidLength();
-error InvalidAmount();
-error NotApprovedOrOwner();
-error NotInScoutPool();
-error NotInteractedYet();
-error SqueakDoesNotExist();
-error TransferFailed();
-error Unavailable();
+import './storage/Mappable.sol';
+import './interfaces/IValidateable.sol';
 
 /**
  * @title Validateble
@@ -48,11 +31,11 @@ error Unavailable();
  *      inheritance from both AccessControlUpgradeable & ERC721AUpgradeable.
  */
 contract Validateable is
-    Initializable,
     AccessControlUpgradeable,
     PausableUpgradeable,
     ERC721AUpgradeable,
-    Storeable
+    Mappable,
+    IValidateable
 {
     /**
      * @dev Upgradeable constructor
@@ -124,7 +107,7 @@ contract Validateable is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(AccessControlUpgradeable, ERC721AUpgradeable)
+        override(AccessControlUpgradeable, ERC721AUpgradeable, IValidateable)
         returns (bool)
     {
         return

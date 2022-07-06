@@ -18,22 +18,15 @@
 */
 pragma solidity 0.8.9;
 
-// 3rd-party contracts
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-
-// critter contracts
 import './Viral.sol';
+import './interfaces/ISqueakable.sol';
 
 /**
  * @title Squeakable
  * @dev A contract to handle actions performed on a Squeak.
  */
-contract Squeakable is
-    ReentrancyGuardUpgradeable,
-    PausableUpgradeable,
-    Bankable,
-    Viral
-{
+contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 

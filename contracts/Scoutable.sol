@@ -18,17 +18,15 @@
 */
 pragma solidity 0.8.9;
 
-// critter contracts
 import './Bankable.sol';
-import './Validateable.sol';
+import './interfaces/IScoutable.sol';
 
 /**
  * @title Scoutable
  * @dev A contract to handle scout logic.
  */
-contract Scoutable is Validateable, Bankable {
+contract Scoutable is Bankable, IScoutable {
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**

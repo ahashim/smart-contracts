@@ -18,7 +18,6 @@
 */
 pragma solidity 0.8.9;
 
-// contracts
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 /**
