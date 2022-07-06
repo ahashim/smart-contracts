@@ -28,9 +28,7 @@ import './storage/Storeable.sol';
 
 // error codes
 error AccountAlreadyExists();
-error AlreadyDisliked();
-error AlreadyLiked();
-error AlreadyResqueaked();
+error AlreadyInteracted();
 error InactiveAccount();
 error InsufficientFunds();
 error InvalidAccountStatus();
@@ -38,10 +36,8 @@ error InvalidInteractionType();
 error InvalidWithdrawlAmount();
 error NonExistentAccount();
 error NotApprovedOrOwner();
-error NotDislikedYet();
 error NotInScoutPool();
-error NotLikedYet();
-error NotResqueakedYet();
+error NotInteractedYet();
 error SqueakDoesNotExist();
 error SqueakIsEmpty();
 error SqueakIsTooLong();

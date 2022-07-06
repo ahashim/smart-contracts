@@ -222,7 +222,7 @@ contract Squeakable is
         coversFee(Interaction.Dislike)
     {
         // ensure the user has not already disliked the squeak
-        if (sentiment.dislikes.contains(msg.sender)) revert AlreadyDisliked();
+        if (sentiment.dislikes.contains(msg.sender)) revert AlreadyInteracted();
 
         // remove previous like
         if (sentiment.likes.contains(msg.sender))
@@ -240,7 +240,7 @@ contract Squeakable is
         coversFee(Interaction.Like)
     {
         // ensure the user has not already liked the squeak
-        if (sentiment.likes.contains(msg.sender)) revert AlreadyLiked();
+        if (sentiment.likes.contains(msg.sender)) revert AlreadyInteracted();
 
         if (sentiment.dislikes.contains(msg.sender))
             // remove previous dislike
@@ -259,7 +259,7 @@ contract Squeakable is
     {
         // ensure the user has not already resqueaked the squeak
         if (sentiment.resqueaks.contains(msg.sender))
-            revert AlreadyResqueaked();
+            revert AlreadyInteracted();
 
         sentiment.resqueaks.add(msg.sender);
     }
@@ -273,7 +273,7 @@ contract Squeakable is
         coversFee(Interaction.UndoDislike)
     {
         // ensure the user has disliked the squeak
-        if (!sentiment.dislikes.contains(msg.sender)) revert NotDislikedYet();
+        if (!sentiment.dislikes.contains(msg.sender)) revert NotInteractedYet();
 
         // remove them from dislikes
         sentiment.dislikes.remove(msg.sender);
@@ -288,7 +288,7 @@ contract Squeakable is
         coversFee(Interaction.UndoLike)
     {
         // ensure the user has liked the squeak
-        if (!sentiment.likes.contains(msg.sender)) revert NotLikedYet();
+        if (!sentiment.likes.contains(msg.sender)) revert NotInteractedYet();
 
         // remove them from the likers
         sentiment.likes.remove(msg.sender);
@@ -304,7 +304,7 @@ contract Squeakable is
     {
         // ensure the user has resqueaked the squeak
         if (!sentiment.resqueaks.contains(msg.sender))
-            revert NotResqueakedYet();
+            revert NotInteractedYet();
 
         // remove them from the resqueaks
         sentiment.resqueaks.remove(msg.sender);
