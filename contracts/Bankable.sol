@@ -139,7 +139,7 @@ contract Bankable is Validateable {
         onlyRole(TREASURER_ROLE)
     {
         // validate the amount
-        if (amount > treasury) revert InvalidWithdrawlAmount();
+        if (amount > treasury) revert InvalidAmount();
 
         // transfer out from the treasury
         treasury -= amount;

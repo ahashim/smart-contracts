@@ -33,7 +33,7 @@ error InvalidAccount();
 error InvalidAccountStatus();
 error InvalidInteraction();
 error InvalidLength();
-error InvalidWithdrawlAmount();
+error InvalidAmount();
 error NotApprovedOrOwner();
 error NotInScoutPool();
 error NotInteractedYet();
