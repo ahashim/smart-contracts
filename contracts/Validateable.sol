@@ -27,24 +27,19 @@ import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './storage/Storeable.sol';
 
 // error codes
-error AccountAlreadyExists();
 error AlreadyInteracted();
-error InactiveAccount();
 error InsufficientFunds();
+error InvalidAccount();
 error InvalidAccountStatus();
-error InvalidInteractionType();
+error InvalidInteraction();
+error InvalidLength();
 error InvalidWithdrawlAmount();
-error NonExistentAccount();
 error NotApprovedOrOwner();
 error NotInScoutPool();
 error NotInteractedYet();
 error SqueakDoesNotExist();
-error SqueakIsEmpty();
-error SqueakIsTooLong();
 error TransferFailed();
-error UsernameEmpty();
-error UsernameTooLong();
-error UsernameUnavailable();
+error Unavailable();
 
 /**
  * @title Validateble
@@ -73,11 +68,11 @@ contract Validateable is
 
         // validate existence
         if (account.status == AccountStatus.NonExistent) {
-            revert NonExistentAccount();
+            revert InvalidAccount();
         }
         // validate active status
         if (account.status != AccountStatus.Active) {
-            revert InactiveAccount();
+            revert InvalidAccountStatus();
         }
         _;
     }
@@ -99,15 +94,15 @@ contract Validateable is
     modifier isValidUsername(string calldata username) {
         // validate existence
         if (bytes(username).length == 0) {
-            revert UsernameEmpty();
+            revert InvalidLength();
         }
         // validate length
         if (bytes(username).length > 32) {
-            revert UsernameTooLong();
+            revert InvalidLength();
         }
         // validate availability
         if (addresses[username] != address(0)) {
-            revert UsernameUnavailable();
+            revert Unavailable();
         }
         _;
     }

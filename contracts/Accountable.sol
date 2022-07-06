@@ -80,7 +80,7 @@ contract Accountable is
     {
         // ensure address has not already created an account
         if (users[msg.sender].status != AccountStatus.NonExistent) {
-            revert AccountAlreadyExists();
+            revert InvalidAccount();
         }
 
         // create a User for the address
@@ -116,8 +116,7 @@ contract Accountable is
         User storage user = users[account];
 
         // ensure the account exists
-        if (user.status == AccountStatus.NonExistent)
-            revert NonExistentAccount();
+        if (user.status == AccountStatus.NonExistent) revert InvalidAccount();
 
         // ensure new status is not the same as the current status
         if (user.status == status) revert InvalidAccountStatus();

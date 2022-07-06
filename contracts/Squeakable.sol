@@ -83,10 +83,10 @@ contract Squeakable is
         bytes memory rawContent = bytes(content);
 
         // validate existence
-        if (rawContent.length == 0) revert SqueakIsEmpty();
+        if (rawContent.length == 0) revert InvalidLength();
 
         // validate length
-        if (rawContent.length > 256) revert SqueakIsTooLong();
+        if (rawContent.length > 256) revert InvalidLength();
 
         uint256 tokenId = _nextTokenId();
 
@@ -198,7 +198,7 @@ contract Squeakable is
             _undoLikeSqueak(sentiment);
         else if (interaction == Interaction.UndoResqueak)
             _undoResqueak(sentiment);
-        else revert InvalidInteractionType();
+        else revert InvalidInteraction();
 
         emit SqueakInteraction(tokenId, msg.sender, interaction);
 
@@ -222,7 +222,8 @@ contract Squeakable is
         coversFee(Interaction.Dislike)
     {
         // ensure the user has not already disliked the squeak
-        if (sentiment.dislikes.contains(msg.sender)) revert AlreadyInteracted();
+        if (sentiment.dislikes.contains(msg.sender))
+            revert AlreadyInteracted();
 
         // remove previous like
         if (sentiment.likes.contains(msg.sender))
@@ -273,7 +274,8 @@ contract Squeakable is
         coversFee(Interaction.UndoDislike)
     {
         // ensure the user has disliked the squeak
-        if (!sentiment.dislikes.contains(msg.sender)) revert NotInteractedYet();
+        if (!sentiment.dislikes.contains(msg.sender))
+            revert NotInteractedYet();
 
         // remove them from dislikes
         sentiment.dislikes.remove(msg.sender);
