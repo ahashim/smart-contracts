@@ -49,14 +49,6 @@ interface ICritter is IStoreable {
     ) external;
 
     /**
-     * @dev Gets a contract Configuration value.
-     * @return Configuration value amount.
-     */
-    function getConfiguration(Configuration configuration)
-        external
-        returns (uint256);
-
-    /**
      * @dev Pauses the contract.
      */
     function pause() external;

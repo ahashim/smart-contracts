@@ -51,13 +51,13 @@ describe('updateConfiguration', () => {
   });
 
   it('updates a contract configuration value', async () => {
-    expect(await critter.getConfiguration(Configuration.ScoutMaxLevel)).to.eq(
+    expect(await critter.config(Configuration.ScoutMaxLevel)).to.eq(
       newMaxLevel
     );
   });
 
   it('reverts when given an invalid configuration key', async () => {
-    await expect(critter.getConfiguration(69)).to.be.reverted;
+    await expect(critter.config(69)).to.be.reverted;
   });
 
   it('reverts when the config amount is out of bounds', async () => {

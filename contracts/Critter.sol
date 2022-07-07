@@ -92,17 +92,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
     }
 
     /**
-     * @dev See {ICritter-getConfiguration}.
-     */
-    function getConfiguration(Configuration configuration)
-        external
-        view
-        returns (uint256)
-    {
-        return config[configuration];
-    }
-
-    /**
      * @dev See {ICritter-pause}.
      */
     function pause() external onlyRole(PAUSER_ROLE) {
