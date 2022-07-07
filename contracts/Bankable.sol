@@ -229,15 +229,29 @@ contract Bankable is Validateable, IBankable {
     function _makeScoutPayments(uint256 tokenId, ScoutPool storage pool)
         internal
     {
+        uint256 sharePrice = _getPoolSharePrice(pool);
+        _makeScoutPayments(tokenId, pool, sharePrice);
+    }
+
+    /**
+     * @dev Pays out scout pool funds to its members.
+     * @param tokenId ID of viral squeak.
+     * @param pool Storage pointer to ScoutPool of the viral squeak.
+     * @param sharePrice Price of each share at the time of payment.
+     */
+    function _makeScoutPayments(
+        uint256 tokenId,
+        ScoutPool storage pool,
+        uint256 sharePrice
+    ) internal {
         // determine share price
         uint256 memberCount = pool.members.length();
-        uint256 price = _getPoolSharePrice(pool);
 
         // TODO: move this unbounded loop off-chain
         for (uint256 i = 0; i < memberCount; i++) {
             // calculate scout payout based on the number of shares & price
             (address scout, uint256 shares) = pool.members.at(i);
-            uint256 payout = price * shares;
+            uint256 payout = sharePrice * shares;
 
             // subtract from pool funds
             pool.amount -= payout;
@@ -274,10 +288,9 @@ contract Bankable is Validateable, IBankable {
         emit FundsAddedToScoutPool(tokenId, amount);
 
         // determine if we need to payout
-        if (
-            _getPoolSharePrice(pool) >=
-            config[Configuration.PoolPayoutThreshold]
-        ) _makeScoutPayments(tokenId, pool);
+        uint256 sharePrice = _getPoolSharePrice(pool);
+        if (sharePrice >= config[Configuration.PoolPayoutThreshold])
+            _makeScoutPayments(tokenId, pool, sharePrice);
     }
 
     /**
