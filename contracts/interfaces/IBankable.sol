@@ -30,10 +30,7 @@ interface IBankable is IStoreable {
      * @return Price of deleting the squeak in wei.
      * @notice The token must exist.
      */
-    function getDeleteFee(uint256 tokenId)
-        external
-        view
-        returns (uint256);
+    function getDeleteFee(uint256 tokenId) external view returns (uint256);
 
     /**
      * @dev Gets the price of a specific interaction.

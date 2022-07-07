@@ -92,7 +92,6 @@ contract Bankable is Validateable, IBankable {
         return _getDeleteFee(tokenId, 6);
     }
 
-
     /**
      * @dev Gets the price of deleting a squeak based on its age.
      * @param tokenId ID of the squeak to delete.
