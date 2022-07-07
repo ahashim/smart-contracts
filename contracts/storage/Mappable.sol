@@ -61,12 +61,12 @@ contract Mappable is Storeable {
     /**
      * @dev Mapping of username <=> account address.
      */
-    mapping(string => address) internal addresses;
+    mapping(string => address) public addresses;
 
     /**
      * @dev Mapping of a contract Configuration key <=> its amount value.
      */
-    mapping(Configuration => uint256) internal config;
+    mapping(Configuration => uint256) public config;
 
     /**
      * @dev Mapping of Interaction <=> fee amounts.

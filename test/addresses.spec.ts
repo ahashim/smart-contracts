@@ -6,7 +6,7 @@ import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
 import type { Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 
-describe('getAddress', () => {
+describe('addresses', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
@@ -17,7 +17,7 @@ describe('getAddress', () => {
     loadFixture = waffle.createFixtureLoader([owner, ahmed]);
   });
 
-  const getAddressFixture = async () => {
+  const addressesFixture = async () => {
     const factory = await ethers.getContractFactory(CONTRACT_NAME);
     critter = (
       await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
@@ -31,15 +31,15 @@ describe('getAddress', () => {
   };
 
   beforeEach('deploy test contract', async () => {
-    ({ critter, username } = await loadFixture(getAddressFixture));
+    ({ critter, username } = await loadFixture(addressesFixture));
   });
 
   it('returns the address of an account', async () => {
-    expect(await critter.getAddress(username)).to.eq(ahmed.address);
+    expect(await critter.addresses(username)).to.eq(ahmed.address);
   });
 
   it('returns the zero address for a non-existent account', async () => {
-    expect(await critter.getAddress('obi-wan')).to.eq(
+    expect(await critter.addresses('obi-wan')).to.eq(
       ethers.constants.AddressZero
     );
   });
