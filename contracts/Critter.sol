@@ -92,6 +92,17 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
     }
 
     /**
+     * @dev See {ICritter-getConfiguration}.
+     */
+    function getConfiguration(Configuration configuration)
+        external
+        view
+        returns (uint256)
+    {
+        return config[configuration];
+    }
+
+    /**
      * @dev See {ICritter-pause}.
      */
     function pause() external onlyRole(PAUSER_ROLE) {
@@ -103,6 +114,16 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
      */
     function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
+    }
+
+    /**
+     * @dev See {ICritter-updateConfiguration}.
+     */
+    function updateConfiguration(Configuration configuration, uint256 amount)
+        external
+        onlyRole(ADMIN_ROLE)
+    {
+        config[configuration] = amount;
     }
 
     /* solhint-disable no-empty-blocks */

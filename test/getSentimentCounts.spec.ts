@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { CONTRACT_NAME, CONTRACT_INITIALIZER, OVERFLOW } from '../constants';
 import { Interaction } from '../enums';
 
 // types
@@ -102,9 +102,7 @@ describe('getSentimentCounts', () => {
   });
 
   it('reverts if the squeakId is out of bounds', async () => {
-    const overflow = ethers.constants.MaxUint256.add(ethers.BigNumber.from(1));
-
     await expect(critter.getSentimentCounts(-1)).to.be.reverted;
-    await expect(critter.getSentimentCounts(overflow)).to.be.reverted;
+    await expect(critter.getSentimentCounts(OVERFLOW)).to.be.reverted;
   });
 });

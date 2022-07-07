@@ -18,10 +18,12 @@
 */
 pragma solidity 0.8.9;
 
+import './storage/IStoreable.sol';
+
 /**
  * @dev Interface for the main Critter contract.
  */
-interface ICritter {
+interface ICritter is IStoreable {
     /**
      * @dev Upgradeable "constructor" function to initialize sub-contracts.
      * @param name Contract name (Critter).
@@ -47,6 +49,14 @@ interface ICritter {
     ) external;
 
     /**
+     * @dev Gets a contract Configuration value.
+     * @return Configuration value amount.
+     */
+    function getConfiguration(Configuration configuration)
+        external
+        returns (uint256);
+
+    /**
      * @dev Pauses the contract.
      */
     function pause() external;
@@ -55,4 +65,10 @@ interface ICritter {
      * @dev Unpauses the contract.
      */
     function unpause() external;
+
+    /**
+     * @dev Unpauses the contract.
+     */
+    function updateConfiguration(Configuration configuration, uint256 amount)
+        external;
 }

@@ -66,7 +66,7 @@ contract Mappable is Storeable {
     /**
      * @dev Mapping of a contract Configuration key <=> its amount value.
      */
-    mapping(Configuration => uint256) public config;
+    mapping(Configuration => uint256) internal config;
 
     /**
      * @dev Mapping of Interaction <=> fee amounts.

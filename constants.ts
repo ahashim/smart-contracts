@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { constants, BigNumber, utils } from 'ethers';
 
 // contract
 export const BASE_TOKEN_URI = 'https://critter.fyi/token/';
@@ -6,6 +6,7 @@ export const CONTRACT_NAME = 'Critter';
 export const CONTRACT_SYMBOL = 'CRTTR';
 
 // role ID's
+export const ADMIN_ROLE = 'ADMIN_ROLE';
 export const MINTER_ROLE = 'MINTER_ROLE';
 export const MODERATOR_ROLE = 'MODERATOR_ROLE';
 export const PAUSER_ROLE = 'PAUSER_ROLE';
@@ -40,3 +41,4 @@ export const CONTRACT_INITIALIZER = [
 
 // test variables
 export const EMPTY_BYTE_STRING = utils.hexlify(utils.toUtf8Bytes(''));
+export const OVERFLOW = constants.MaxUint256.add(BigNumber.from(1));
