@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
 import {
-  CONFIRMATION_THRESHOLD,
   CONTRACT_NAME,
   CONTRACT_SYMBOL,
   BASE_TOKEN_URI,
@@ -123,7 +122,7 @@ describe('deleteViralSqueak', () => {
     sharePrice = amount.div(shares);
 
     // ahmed deletes the viral squeak
-    deleteFee = await critter.getDeleteFee(squeakId, CONFIRMATION_THRESHOLD);
+    deleteFee = await critter.getDeleteFee(squeakId);
     await critter.deleteSqueak(squeakId, { value: deleteFee });
 
     return {

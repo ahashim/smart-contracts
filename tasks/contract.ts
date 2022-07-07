@@ -2,7 +2,6 @@ import { task } from 'hardhat/config';
 
 // constants
 import {
-  CONFIRMATION_THRESHOLD,
   CONTRACT_INITIALIZER,
   CONTRACT_NAME,
   PLATFORM_FEE,
@@ -88,7 +87,7 @@ task(
     tokenId: number;
   }): Promise<TransactionReceipt> => {
     // get delete fee tx (in the current block, so no waiting)
-    const fee = await contract.getDeleteFee(tokenId, CONFIRMATION_THRESHOLD);
+    const fee = await contract.getDeleteFee(tokenId);
 
     // delete the token w/ fee amount
     const tx: ContractTransaction = await contract

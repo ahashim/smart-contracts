@@ -115,7 +115,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
             revert NotApprovedOrOwner();
 
         // validate delete fee
-        if (msg.value < getDeleteFee(tokenId, 0)) revert InsufficientFunds();
+        if (msg.value < _getDeleteFee(tokenId, 0)) revert InsufficientFunds();
 
         // receive payment
         _deposit(msg.value);

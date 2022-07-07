@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { ethers, upgrades, waffle } from 'hardhat';
 import {
-  CONFIRMATION_THRESHOLD,
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   EMPTY_BYTE_STRING,
@@ -64,7 +63,7 @@ describe('deleteSqueak', () => {
     });
 
     // get the delete fee
-    deleteFee = await critter.getDeleteFee(squeakId, CONFIRMATION_THRESHOLD);
+    deleteFee = await critter.getDeleteFee(squeakId);
 
     return { critter, deleteFee, squeakId };
   };

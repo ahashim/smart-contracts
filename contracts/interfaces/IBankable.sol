@@ -27,14 +27,10 @@ interface IBankable is IStoreable {
     /**
      * @dev Gets the price of deleting a squeak based on its age.
      * @param tokenId ID of the squeak to delete.
-     * @param confirmationThreshold The number of future blocks that the delete
-     *      will potentially occur in. Required to give a mostly correct
-     *      price estimate assuming the transaction will get mined within that
-     *      range. 6 blocks is connsidered a good default.
      * @return Price of deleting the squeak in wei.
      * @notice The token must exist.
      */
-    function getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
+    function getDeleteFee(uint256 tokenId)
         external
         view
         returns (uint256);

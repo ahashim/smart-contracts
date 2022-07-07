@@ -1,10 +1,6 @@
 import { expect } from 'chai';
 import { ethers, waffle, upgrades } from 'hardhat';
-import {
-  CONFIRMATION_THRESHOLD,
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-} from '../constants';
+import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
 
 // types
 import { BigNumber, Wallet } from 'ethers';
@@ -41,10 +37,7 @@ describe('totalSupply', () => {
 
     // ahmed burns the first created squeak at tokenId 0
     const tokenId = 0;
-    const deleteFee = (await critter.getDeleteFee(
-      tokenId,
-      CONFIRMATION_THRESHOLD
-    )) as BigNumber;
+    const deleteFee = (await critter.getDeleteFee(tokenId)) as BigNumber;
     await critter.deleteSqueak(tokenId, { value: deleteFee });
 
     return { critter, squeaks };

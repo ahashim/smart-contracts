@@ -4,7 +4,6 @@ import {
   CONTRACT_NAME,
   CONTRACT_INITIALIZER,
   PLATFORM_FEE,
-  CONFIRMATION_THRESHOLD,
 } from '../constants';
 
 // types
@@ -60,21 +59,15 @@ describe('getDeleteFee', () => {
   it('calculates a delete fee for a squeak based on when it was created', async () => {
     ({ blockNumber: blockAuthored } = await critter.squeaks(squeakId));
     ({ number: latestBlock } = await ethers.provider.getBlock('latest'));
+    const defaultConfirmationThreshold = 6;
     expectedFee =
-      (latestBlock + CONFIRMATION_THRESHOLD - blockAuthored.toNumber()) *
+      (latestBlock + defaultConfirmationThreshold - blockAuthored.toNumber()) *
       PLATFORM_FEE.toNumber();
 
-    expect(await critter.getDeleteFee(squeakId, CONFIRMATION_THRESHOLD)).to.eq(
-      expectedFee
-    );
-  });
-
-  it('reverts when passing an invalid block confirmation threshold', async () => {
-    await expect(critter.getDeleteFee(squeakId, -69)).to.be.reverted;
+    expect(await critter.getDeleteFee(squeakId)).to.eq(expectedFee);
   });
 
   it('reverts if the squeak does not exist', async () => {
-    await expect(critter.getDeleteFee(420, CONFIRMATION_THRESHOLD)).to.be
-      .reverted;
+    await expect(critter.getDeleteFee(420)).to.be.reverted;
   });
 });

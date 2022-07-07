@@ -79,6 +79,23 @@ contract Bankable is Validateable, IBankable {
     /**
      * @dev Gets the price of deleting a squeak based on its age.
      * @param tokenId ID of the squeak to delete.
+     * @return Price of deleting the squeak in wei.
+     * @notice The token must exist.
+     */
+    function getDeleteFee(uint256 tokenId)
+        external
+        view
+        squeakExists(tokenId)
+        returns (uint256)
+    {
+        // defaulting confirmation threshold to 6 blocks
+        return _getDeleteFee(tokenId, 6);
+    }
+
+
+    /**
+     * @dev Gets the price of deleting a squeak based on its age.
+     * @param tokenId ID of the squeak to delete.
      * @param confirmationThreshold The number of future blocks that the delete
      *      will potentially occur in. Required to give a mostly correct
      *      price estimate assuming the transaction will get mined within that
@@ -86,10 +103,9 @@ contract Bankable is Validateable, IBankable {
      * @return Price of deleting the squeak in wei.
      * @notice The token must exist.
      */
-    function getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
-        public
+    function _getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
+        internal
         view
-        squeakExists(tokenId)
         returns (uint256)
     {
         return

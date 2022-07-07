@@ -22,7 +22,6 @@ export const SCOUT_BONUS = 3;
 export const SCOUT_MAX_LEVEL = 50;
 
 // thresholds
-export const CONFIRMATION_THRESHOLD = 6;
 export const SCOUT_POOL_THRESHOLD = utils.parseEther('0.1');
 export const VIRALITY_THRESHOLD = 95;
 
