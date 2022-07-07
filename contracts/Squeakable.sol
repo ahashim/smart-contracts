@@ -213,7 +213,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      */
     function _dislikeSqueak(Sentiment storage sentiment)
         private
-        coversFee(Interaction.Dislike)
+        costs(fees[Interaction.Dislike])
     {
         // ensure the user has not already disliked the squeak
         if (sentiment.dislikes.contains(msg.sender))
@@ -232,7 +232,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      */
     function _likeSqueak(Sentiment storage sentiment)
         private
-        coversFee(Interaction.Like)
+        costs(fees[Interaction.Like])
     {
         // ensure the user has not already liked the squeak
         if (sentiment.likes.contains(msg.sender)) revert AlreadyInteracted();
@@ -250,7 +250,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      */
     function _resqueak(Sentiment storage sentiment)
         private
-        coversFee(Interaction.Resqueak)
+        costs(fees[Interaction.Resqueak])
     {
         // ensure the user has not already resqueaked the squeak
         if (sentiment.resqueaks.contains(msg.sender))
@@ -265,7 +265,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      */
     function _undoDislikeSqueak(Sentiment storage sentiment)
         private
-        coversFee(Interaction.UndoDislike)
+        costs(fees[Interaction.UndoDislike])
     {
         // ensure the user has disliked the squeak
         if (!sentiment.dislikes.contains(msg.sender))
@@ -281,7 +281,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      */
     function _undoLikeSqueak(Sentiment storage sentiment)
         private
-        coversFee(Interaction.UndoLike)
+        costs(fees[Interaction.UndoLike])
     {
         // ensure the user has liked the squeak
         if (!sentiment.likes.contains(msg.sender)) revert NotInteractedYet();
@@ -296,7 +296,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      */
     function _undoResqueak(Sentiment storage sentiment)
         private
-        coversFee(Interaction.UndoResqueak)
+        costs(fees[Interaction.UndoResqueak])
     {
         // ensure the user has resqueaked the squeak
         if (!sentiment.resqueaks.contains(msg.sender))

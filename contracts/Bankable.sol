@@ -215,9 +215,10 @@ contract Bankable is Validateable, IBankable {
             interaction == Interaction.UndoDislike
         ) {
             // calculate amounts to deposit & transfer
-            uint256 interactionTake = (msg.value *
+            uint256 interactionFee = fees[interaction];
+            uint256 interactionTake = (interactionFee *
                 config[Configuration.PlatformTakeRate]) / 100;
-            uint256 remainder = msg.value - interactionTake;
+            uint256 remainder = interactionFee - interactionTake;
 
             // deposit fee into treasury
             _deposit(interactionTake);
@@ -314,12 +315,7 @@ contract Bankable is Validateable, IBankable {
      * @param amount Amount to transfer in wei.
      */
     function _transferFunds(address to, uint256 amount) private {
-        // solhint-disable-next-line avoid-low-level-calls
-        (bool sent, ) = to.call{value: amount}('');
-
-        if (!sent) {
-            revert TransferFailed();
-        }
+        payable(to).transfer(amount);
 
         emit FundsTransferred(to, amount);
     }

@@ -44,6 +44,17 @@ contract Validateable is
     function __Validateable_init() internal view onlyInitializing {}
 
     /**
+     * @dev Ensures the transaction has the required fee amount, and refunds
+     *      any remainder back to the sender.
+     * @param fee fee in wei.
+     */
+    modifier costs(uint256 fee) {
+        if (msg.value < fee) revert InsufficientFunds();
+        _;
+        if (msg.value > fee) payable(msg.sender).transfer(msg.value - fee);
+    }
+
+    /**
      * @dev Ensures the sender has a Critter account.
      */
     modifier hasActiveAccount() {
@@ -56,16 +67,6 @@ contract Validateable is
         // validate active status
         if (account.status != AccountStatus.Active) {
             revert InvalidAccountStatus();
-        }
-        _;
-    }
-
-    /**
-     * @dev Ensures that the sender has enough to cover the interaction fee.
-     */
-    modifier coversFee(Interaction interaction) {
-        if (msg.value < fees[interaction]) {
-            revert InsufficientFunds();
         }
         _;
     }
