@@ -31,6 +31,16 @@ interface IAccountable is IStoreable {
     function createAccount(string calldata username) external;
 
     /**
+     * @dev Gets the address for an account.
+     * @param username Username of the account.
+     * @return The accounts address.
+     */
+    function getAddress(string calldata username)
+        external
+        view
+        returns (address);
+
+    /**
      * @dev Updates an accounts status.
      * @param account Address of the account to update.
      * @param status A value from the AccountStatus enum.

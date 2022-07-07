@@ -4,46 +4,42 @@ import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
 
 // types
 import type { Wallet } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import { Critter } from '../typechain-types/contracts';
 
-describe('addresses', () => {
+describe('getAddress', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
+  let username: string;
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
     loadFixture = waffle.createFixtureLoader([owner, ahmed]);
   });
 
-  const addressesFixture = async () => {
+  const getAddressFixture = async () => {
     const factory = await ethers.getContractFactory(CONTRACT_NAME);
     critter = (
       await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
     ).connect(ahmed) as Critter;
+    username = 'ahmed';
 
-    // create account
+    // ahmed creates an account
     await critter.createAccount(username);
 
-    return critter;
+    return { critter, username };
   };
 
-  beforeEach(
-    'deploy test contract, and ahmed creates an account',
-    async () => {
-      critter = await loadFixture(addressesFixture);
-    }
-  );
-
-  // test variables
-  const username = 'ahmed';
-
-  it('returns a username of an account using their address', async () => {
-    expect(await critter.addresses(username)).to.eq(ahmed.address);
+  beforeEach('deploy test contract', async () => {
+    ({ critter, username } = await loadFixture(getAddressFixture));
   });
 
-  it('returns address zero for a non-existent username', async () => {
-    expect(await critter.addresses('nonexistent-user')).to.eq(
+  it('returns the address of an account', async () => {
+    expect(await critter.getAddress(username)).to.eq(ahmed.address);
+  });
+
+  it('returns the zero address for a non-existent account', async () => {
+    expect(await critter.getAddress('obi-wan')).to.eq(
       ethers.constants.AddressZero
     );
   });

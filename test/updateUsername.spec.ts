@@ -49,14 +49,14 @@ describe('updateUsername', () => {
 
   it('lets a user create an account with a valid username', async () => {
     expect((await critter.users(ahmed.address)).username).to.eq(newUsername);
-    expect(await critter.addresses(newUsername)).to.eq(ahmed.address);
+    expect(await critter.getAddress(newUsername)).to.eq(ahmed.address);
   });
 
   it('makes the old username available when updating to a new one', async () => {
     await critter.connect(owner).createAccount(oldUsername);
 
     expect((await critter.users(owner.address)).username).to.eq(oldUsername);
-    expect(await critter.addresses(oldUsername)).to.eq(owner.address);
+    expect(await critter.getAddress(oldUsername)).to.eq(owner.address);
   });
 
   it('emits an AccountUsernameUpdated event', async () => {

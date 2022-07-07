@@ -219,8 +219,8 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         if (sentiment.dislikes.contains(msg.sender))
             revert AlreadyInteracted();
 
-        // remove previous like
         if (sentiment.likes.contains(msg.sender))
+            // remove previous like
             sentiment.likes.remove(msg.sender);
 
         sentiment.dislikes.add(msg.sender);

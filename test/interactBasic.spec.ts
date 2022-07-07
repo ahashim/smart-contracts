@@ -520,7 +520,7 @@ describe('interact basic', () => {
   describe('Reverted', async () => {
     it('reverts when the interaction ID is invalid', async () => {
       await expect(
-        critter.connect(barbie).interact(squeakId, 420, { value: 1 })
+        critter.connect(barbie).interact(squeakId, 420, { value: fees.like })
       ).to.be.reverted;
     });
 

@@ -94,6 +94,17 @@ contract Accountable is Validateable, IAccountable {
     }
 
     /**
+     * @dev See {IAccountable-getAddress}.
+     */
+    function getAddress(string calldata username)
+        external
+        view
+        returns (address)
+    {
+        return addresses[username];
+    }
+
+    /**
      * @dev Updates an accounts status.
      * @param account Address of the account to update.
      * @param status A value from the AccountStatus enum.
