@@ -41,9 +41,9 @@ interface ICritter {
         uint256 platformFee,
         uint256 takeRate,
         uint256 poolThreshold,
-        uint8 viralThreshold,
-        uint8 scoutBonus,
-        uint8 maxLevel
+        uint256 viralThreshold,
+        uint256 scoutBonus,
+        uint256 maxLevel
     ) external;
 
     /**

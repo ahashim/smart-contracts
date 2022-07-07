@@ -198,7 +198,8 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         // check squeak virality
         if (
             !viralSqueaks.contains(tokenId) &&
-            getViralityScore(tokenId) >= viralityThreshold
+            getViralityScore(tokenId) >=
+            config[Configuration.ViralityThreshold]
         ) {
             _markViral(tokenId, sentiment);
         }

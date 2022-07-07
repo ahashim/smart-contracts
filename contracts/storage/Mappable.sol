@@ -33,7 +33,21 @@ contract Mappable is Storeable {
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase
-    function __Mappable_init(uint256 platformFee) internal onlyInitializing {
+    function __Mappable_init(
+        uint256 platformFee,
+        uint256 platformTakeRate,
+        uint256 poolPayoutThreshold,
+        uint256 scoutMaxLevel,
+        uint256 scoutViralityBonus,
+        uint256 viralityThreshold
+    ) internal onlyInitializing {
+        // set contract config values
+        config[Configuration.PlatformTakeRate] = platformTakeRate;
+        config[Configuration.ScoutMaxLevel] = scoutMaxLevel;
+        config[Configuration.PoolPayoutThreshold] = poolPayoutThreshold;
+        config[Configuration.ScoutViralityBonus] = scoutViralityBonus;
+        config[Configuration.ViralityThreshold] = viralityThreshold;
+
         // set default interaction fees
         fees[Interaction.Delete] = platformFee;
         fees[Interaction.Dislike] = platformFee;
@@ -48,6 +62,11 @@ contract Mappable is Storeable {
      * @dev Mapping of username <=> account address.
      */
     mapping(string => address) public addresses;
+
+    /**
+     * @dev Mapping of a contract Configuration key <=> its amount value.
+     */
+    mapping(Configuration => uint256) public config;
 
     /**
      * @dev Mapping of Interaction <=> fee amounts.

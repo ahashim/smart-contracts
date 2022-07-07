@@ -54,6 +54,7 @@ contract Accountable is Validateable, IAccountable {
     function __Accountable_init() internal onlyInitializing {
         // grant all roles to contract owner
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(MODERATOR_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);

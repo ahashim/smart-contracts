@@ -36,20 +36,11 @@ contract Storeable is Immutable, IStoreable {
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase
-    function __Storeable_init(
-        string calldata baseURI,
-        uint256 takeRate,
-        uint256 poolThreshold,
-        uint8 viralThreshold,
-        uint8 scoutBonus,
-        uint8 maxLevel
-    ) internal onlyInitializing {
+    function __Storeable_init(string calldata baseURI)
+        internal
+        onlyInitializing
+    {
         baseTokenURI = baseURI;
-        platformTakeRate = takeRate;
-        poolPayoutThreshold = poolThreshold;
-        viralityThreshold = viralThreshold;
-        scoutViralityBonus = scoutBonus;
-        scoutMaxLevel = maxLevel;
     }
 
     /**
@@ -64,33 +55,7 @@ contract Storeable is Immutable, IStoreable {
     uint256 public treasury;
 
     /**
-     * @dev A percentage to take from each interaction.
-     */
-    uint256 internal platformTakeRate;
-
-    /**
-     * @dev Minimum amount required in wei for a scout pool to pay its members.
-     */
-    uint256 internal poolPayoutThreshold;
-
-    /**
-     * @dev Upper limit that a scout could level up to.
-     */
-    uint256 internal scoutMaxLevel;
-
-    /**
-     * @dev Bonus number of levels added to the scout level of the user that
-     *      propels a squeak into virality.
-     */
-    uint256 internal scoutViralityBonus;
-
-    /**
      * @dev Set of squeak ID's that have gone viral.
      */
     EnumerableSetUpgradeable.UintSet internal viralSqueaks;
-
-    /**
-     * @dev Minimum score that a squeak must have for it to be considered viral.
-     */
-    uint8 internal viralityThreshold;
 }

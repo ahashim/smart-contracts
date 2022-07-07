@@ -24,30 +24,42 @@ import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeab
  * @dev Interface for Storeable.
  * @notice This is where all the Critter data structures & enums live.
  */
+
+/**
+ * @dev Set of statuses of a critter account.
+ */
+enum AccountStatus {
+    NonExistent,
+    Active,
+    Suspended,
+    Banned
+}
+
+/**
+ * @dev Set of Configuration keys for the contract.
+ */
+enum Configuration {
+    PlatformTakeRate,
+    PoolPayoutThreshold,
+    ScoutMaxLevel,
+    ScoutViralityBonus,
+    ViralityThreshold
+}
+
+/**
+ * @dev Set of interactions for a squeak.
+ */
+enum Interaction {
+    Delete,
+    Dislike,
+    Like,
+    Resqueak,
+    UndoDislike,
+    UndoLike,
+    UndoResqueak
+}
+
 interface IStoreable {
-    /**
-     * @dev Set of interactions for a squeak.
-     */
-    enum Interaction {
-        Delete,
-        Dislike,
-        Like,
-        Resqueak,
-        UndoDislike,
-        UndoLike,
-        UndoResqueak
-    }
-
-    /**
-     * @dev Set of statuses of a critter account.
-     */
-    enum AccountStatus {
-        NonExistent,
-        Active,
-        Suspended,
-        Banned
-    }
-
     /**
      * @dev Scout a user that belongs to a ScoutPool for a viral squeak.
      * @param account Address of the user.

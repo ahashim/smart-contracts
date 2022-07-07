@@ -57,11 +57,11 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
         string calldata symbol,
         string calldata baseURI,
         uint256 platformFee,
-        uint256 takeRate,
-        uint256 poolThreshold,
-        uint8 viralThreshold,
-        uint8 scoutBonus,
-        uint8 maxLevel
+        uint256 platformTakeRate,
+        uint256 poolPayoutThreshold,
+        uint256 viralityThreshold,
+        uint256 scoutViralityBonus,
+        uint256 scoutMaxLevel
     ) public initializerERC721A initializer {
         // 3rd party
         __AccessControl_init();
@@ -72,15 +72,15 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
 
         // Storage
         __Immutable_init();
-        __Mappable_init(platformFee);
-        __Storeable_init(
-            baseURI,
-            takeRate,
-            poolThreshold,
-            viralThreshold,
-            scoutBonus,
-            maxLevel
+        __Mappable_init(
+            platformFee,
+            platformTakeRate,
+            poolPayoutThreshold,
+            scoutMaxLevel,
+            scoutViralityBonus,
+            viralityThreshold
         );
+        __Storeable_init(baseURI);
 
         // Logic
         __Accountable_init();

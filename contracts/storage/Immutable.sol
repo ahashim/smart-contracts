@@ -35,12 +35,17 @@ contract Immutable is Initializable {
     function __Immutable_init() internal view onlyInitializing {}
 
     /**
+     * @dev ADMIN_ROLE has priviledges to update contract configuration amounts.
+     */
+    bytes32 internal constant ADMIN_ROLE = keccak256('ADMIN_ROLE');
+
+    /**
      * @dev MINTER_ROLE has priviledges to mint tokens.
      */
     bytes32 internal constant MINTER_ROLE = keccak256('MINTER_ROLE');
 
     /**
-     * @dev MINTER_ROLE has priviledges to mint tokens.
+     * @dev MODERATOR_ROLE has priviledges to update a users account status.
      */
     bytes32 internal constant MODERATOR_ROLE = keccak256('MODERATOR_ROLE');
 

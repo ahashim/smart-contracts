@@ -200,7 +200,8 @@ contract Bankable is Validateable, IBankable {
             interaction == Interaction.UndoDislike
         ) {
             // calculate amounts to deposit & transfer
-            uint256 interactionTake = (msg.value * platformTakeRate) / 100;
+            uint256 interactionTake = (msg.value *
+                config[Configuration.PlatformTakeRate]) / 100;
             uint256 remainder = msg.value - interactionTake;
 
             // deposit fee into treasury
@@ -273,9 +274,10 @@ contract Bankable is Validateable, IBankable {
         emit FundsAddedToScoutPool(tokenId, amount);
 
         // determine if we need to payout
-        if (_getPoolSharePrice(pool) >= poolPayoutThreshold) {
-            _makeScoutPayments(tokenId, pool);
-        }
+        if (
+            _getPoolSharePrice(pool) >=
+            config[Configuration.PoolPayoutThreshold]
+        ) _makeScoutPayments(tokenId, pool);
     }
 
     /**
