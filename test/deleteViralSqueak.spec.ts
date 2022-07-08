@@ -138,7 +138,6 @@ describe('deleteViralSqueak', () => {
       sentimentCounts: await critter.getSentimentCounts(squeakId),
       sharePrice,
       scouts: await critter.getScouts(squeakId),
-      scoutPool: await critter.getPoolInfo(squeakId),
       squeak: await critter.squeaks(squeakId),
       squeakId,
     };
