@@ -31,32 +31,6 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
-     * @dev Emitted after creating a squeak.
-     * @param author Account that created the squeak.
-     * @param tokenId ID of the squeak.
-     * @param blockNumber Block in which the squeak was created.
-     * @param content Content of the squeak.
-     */
-    event SqueakCreated(
-        address indexed author,
-        uint256 tokenId,
-        uint256 blockNumber,
-        string content
-    );
-
-    /**
-     * @dev Emitted after an interaction.
-     * @param tokenId ID of the squeak.
-     * @param sender Account that resqueaked.
-     * @param interaction Value from the Interaction enum.
-     */
-    event SqueakInteraction(
-        uint256 tokenId,
-        address sender,
-        Interaction interaction
-    );
-
-    /**
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks

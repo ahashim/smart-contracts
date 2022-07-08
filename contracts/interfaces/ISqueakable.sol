@@ -25,6 +25,32 @@ import './storage/IStoreable.sol';
  */
 interface ISqueakable is IStoreable {
     /**
+     * @dev Emitted after creating a squeak.
+     * @param author Account that created the squeak.
+     * @param tokenId ID of the squeak.
+     * @param blockNumber Block in which the squeak was created.
+     * @param content Content of the squeak.
+     */
+    event SqueakCreated(
+        address indexed author,
+        uint256 tokenId,
+        uint256 blockNumber,
+        string content
+    );
+
+    /**
+     * @dev Emitted after an interaction.
+     * @param tokenId ID of the squeak.
+     * @param sender Account that resqueaked.
+     * @param interaction Value from the Interaction enum.
+     */
+    event SqueakInteraction(
+        uint256 tokenId,
+        address sender,
+        Interaction interaction
+    );
+
+    /**
      * @dev Creates a squeak.
      * @param content Text content of the squeak.
      * @notice Content must be between 0 and 256 bytes in length.
