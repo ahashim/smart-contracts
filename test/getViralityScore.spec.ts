@@ -42,8 +42,8 @@ describe('getViralityScore', () => {
     await critter.connect(carlos).createAccount('carlos');
 
     const fees = {
-      like: await critter.getInteractionFee(Interaction.Like),
-      resqueak: await critter.getInteractionFee(Interaction.Resqueak),
+      like: await critter.fees(Interaction.Like),
+      resqueak: await critter.fees(Interaction.Resqueak),
     } as {
       [name: string]: BigNumber;
     };

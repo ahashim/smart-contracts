@@ -33,16 +33,6 @@ interface IBankable is IStoreable {
     function getDeleteFee(uint256 tokenId) external view returns (uint256);
 
     /**
-     * @dev Gets the price of a specific interaction.
-     * @param interaction A value from the Interaction enum.
-     * @return Price of the interaction in wei.
-     */
-    function getInteractionFee(Interaction interaction)
-        external
-        view
-        returns (uint256);
-
-    /**
      * @dev Updates an interaction fee.
      * @param interaction A value from the Interaction enum.
      * @param amount Value of the updated fee in wei.

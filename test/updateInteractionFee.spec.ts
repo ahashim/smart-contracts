@@ -67,9 +67,7 @@ describe('updateInteractionFee', () => {
   });
 
   it('allows TREASURER_ROLE to update an interaction fee', async () => {
-    expect(await critter.getInteractionFee(Interaction.Like)).to.eq(
-      updatedFee
-    );
+    expect(await critter.fees(Interaction.Like)).to.eq(updatedFee);
   });
 
   it('reverts when trying to update an invalid interaction', async () => {

@@ -53,13 +53,13 @@ describe('deleteSqueak', () => {
     // barbie creates an account & likes the squeak
     await critter.connect(barbie).createAccount('barbie');
     await critter.connect(barbie).interact(squeakId, Interaction.Like, {
-      value: await critter.getInteractionFee(Interaction.Like),
+      value: await critter.fees(Interaction.Like),
     });
 
     // carlos creates an account & dislikes the squeak
     await critter.connect(carlos).createAccount('carlos');
     await critter.connect(carlos).interact(squeakId, Interaction.Dislike, {
-      value: await critter.getInteractionFee(Interaction.Like),
+      value: await critter.fees(Interaction.Like),
     });
 
     // get the delete fee

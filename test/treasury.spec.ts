@@ -46,7 +46,7 @@ describe('treasury', () => {
     ({ tokenId: squeakId } = event!.args as Result);
 
     // barbie dislikes it
-    dislikeFee = await critter.getInteractionFee(Interaction.Dislike);
+    dislikeFee = await critter.fees(Interaction.Dislike);
     await critter
       .connect(barbie)
       .interact(squeakId, Interaction.Dislike, { value: dislikeFee });

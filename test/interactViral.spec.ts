@@ -77,9 +77,9 @@ describe('interact viral', () => {
 
     // get interaction fees
     fees = {
-      dislike: await critter.getInteractionFee(Interaction.Dislike),
-      like: await critter.getInteractionFee(Interaction.Like),
-      resqueak: await critter.getInteractionFee(Interaction.Resqueak),
+      dislike: await critter.fees(Interaction.Dislike),
+      like: await critter.fees(Interaction.Like),
+      resqueak: await critter.fees(Interaction.Resqueak),
     };
 
     // determine treasury take & transfer amount based on like interaction fee

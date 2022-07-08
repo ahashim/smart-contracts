@@ -44,9 +44,7 @@ describe('withdraw', () => {
       await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
     ).connect(owner) as Critter;
 
-    const likeFee = (await critter.getInteractionFee(
-      Interaction.Like
-    )) as BigNumber;
+    const likeFee = (await critter.fees(Interaction.Like)) as BigNumber;
 
     // barbie creates an account & posts a squeak
     await critter.connect(barbie).createAccount('barbie');

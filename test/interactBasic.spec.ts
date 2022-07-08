@@ -52,12 +52,12 @@ describe('interact basic', () => {
 
     // get interaction fees
     fees = {
-      dislike: await critter.getInteractionFee(Interaction.Dislike),
-      like: await critter.getInteractionFee(Interaction.Like),
-      resqueak: await critter.getInteractionFee(Interaction.Resqueak),
-      undoDislike: await critter.getInteractionFee(Interaction.UndoDislike),
-      undoLike: await critter.getInteractionFee(Interaction.UndoLike),
-      UndoResqueak: await critter.getInteractionFee(Interaction.UndoResqueak),
+      dislike: await critter.fees(Interaction.Dislike),
+      like: await critter.fees(Interaction.Like),
+      resqueak: await critter.fees(Interaction.Resqueak),
+      undoDislike: await critter.fees(Interaction.UndoDislike),
+      undoLike: await critter.fees(Interaction.UndoLike),
+      UndoResqueak: await critter.fees(Interaction.UndoResqueak),
     };
 
     // ahmed posts a squeak

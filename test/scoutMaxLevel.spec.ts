@@ -67,10 +67,10 @@ describe('scoutMaxLevel', () => {
 
     // ahmed likes & resqueaks it into virality
     await critter.interact(squeakId, Interaction.Like, {
-      value: await critter.getInteractionFee(Interaction.Like),
+      value: await critter.fees(Interaction.Like),
     });
     await critter.interact(squeakId, Interaction.Resqueak, {
-      value: await critter.getInteractionFee(Interaction.Resqueak),
+      value: await critter.fees(Interaction.Resqueak),
     });
 
     return {

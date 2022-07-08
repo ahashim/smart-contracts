@@ -109,21 +109,7 @@ contract Bankable is Validateable, IBankable {
     {
         return
             ((block.number + confirmationThreshold) -
-                squeaks[tokenId].blockNumber) *
-            getInteractionFee(Interaction.Delete);
-    }
-
-    /**
-     * @dev Gets the price of a specific interaction.
-     * @param interaction A value from the Interaction enum.
-     * @return Price of the interaction in wei.
-     */
-    function getInteractionFee(Interaction interaction)
-        public
-        view
-        returns (uint256)
-    {
-        return fees[interaction];
+                squeaks[tokenId].blockNumber) * fees[Interaction.Delete];
     }
 
     /**

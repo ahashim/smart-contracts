@@ -71,10 +71,10 @@ describe('ejectFromPool', () => {
     // barbie & carlos interact with the squeak to propel it into virality
     // both are added to its scout pool
     await critter.connect(barbie).interact(squeakId, Interaction.Resqueak, {
-      value: await critter.getInteractionFee(Interaction.Resqueak),
+      value: await critter.fees(Interaction.Resqueak),
     });
     await critter.connect(carlos).interact(squeakId, Interaction.Like, {
-      value: await critter.getInteractionFee(Interaction.Like),
+      value: await critter.fees(Interaction.Like),
     });
 
     // barbie ejects from the pool

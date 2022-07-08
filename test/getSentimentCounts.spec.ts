@@ -50,17 +50,17 @@ describe('getSentimentCounts', () => {
 
     // ahmed resqueaks it
     await critter.interact(squeakId, Interaction.Resqueak, {
-      value: await critter.getInteractionFee(Interaction.Resqueak),
+      value: await critter.fees(Interaction.Resqueak),
     });
 
     // barbie likes it
     await critter.connect(barbie).interact(squeakId, Interaction.Like, {
-      value: await critter.getInteractionFee(Interaction.Like),
+      value: await critter.fees(Interaction.Like),
     });
 
     // carlos dislikes it
     await critter.connect(carlos).interact(squeakId, Interaction.Dislike, {
-      value: await critter.getInteractionFee(Interaction.Dislike),
+      value: await critter.fees(Interaction.Dislike),
     });
 
     return {
