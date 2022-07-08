@@ -79,10 +79,37 @@ describe('scoutMaxLevel', () => {
     };
   };
 
+  beforeEach('deploy test contract', async () => {
+    ({ critter, scoutLevel } = await loadFixture(scoutMaxlevelFixture));
+  });
+
   it('does not level up a scout past max level', async () => {
     // ahmed propelled the squeak to virality, so they get a scout bonus level
     // up of 3, however max level prevents them from getting there
-    ({ critter, scoutLevel } = await loadFixture(scoutMaxlevelFixture));
     expect(scoutLevel).to.eq(scoutMaxLevel);
+  });
+
+  it('stays at max level when scouting new viral squeaks', async () => {
+    // ahmed creates another squeak
+    const tx = (await critter.createSqueak(
+      'is this thing on?'
+    )) as ContractTransaction;
+    const receipt = (await tx.wait()) as ContractReceipt;
+    const event = receipt.events!.find(
+      (event: Event) => event.event === 'SqueakCreated'
+    );
+    const { tokenId: squeakId } = event!.args as Result;
+
+    // ahmed likes & resqueaks the new squeak into virality
+    await critter.interact(squeakId, Interaction.Like, {
+      value: await critter.fees(Interaction.Like),
+    });
+    await critter.interact(squeakId, Interaction.Resqueak, {
+      value: await critter.fees(Interaction.Resqueak),
+    });
+
+    expect((await critter.users(ahmed.address)).scoutLevel).to.eq(
+      scoutMaxLevel
+    );
   });
 });
