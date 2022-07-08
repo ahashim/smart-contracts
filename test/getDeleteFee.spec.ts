@@ -16,6 +16,7 @@ import {
 } from 'ethers';
 import type { Result } from '@ethersproject/abi';
 import type { Critter } from '../typechain-types/contracts';
+import { Interaction } from '../enums';
 
 describe('getDeleteFee', () => {
   let blockAuthored: BigNumber, squeakId: BigNumber;
@@ -57,12 +58,12 @@ describe('getDeleteFee', () => {
   );
 
   it('calculates a delete fee for a squeak based on when it was created', async () => {
+    const defaultConfirmationThreshold = 6; // defaults to 6 under the hood
     ({ blockNumber: blockAuthored } = await critter.squeaks(squeakId));
     ({ number: latestBlock } = await ethers.provider.getBlock('latest'));
-    const defaultConfirmationThreshold = 6;
     expectedFee =
       (latestBlock + defaultConfirmationThreshold - blockAuthored.toNumber()) *
-      PLATFORM_FEE.toNumber();
+      (await critter.fees(Interaction.Delete)).toNumber();
 
     expect(await critter.getDeleteFee(squeakId)).to.eq(expectedFee);
   });

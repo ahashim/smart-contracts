@@ -51,7 +51,6 @@ contract Validateable is
     modifier costs(uint256 fee) {
         if (msg.value < fee) revert InsufficientFunds();
         _;
-        if (msg.value > fee) payable(msg.sender).transfer(msg.value - fee);
     }
 
     /**

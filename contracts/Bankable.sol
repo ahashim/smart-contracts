@@ -17,6 +17,7 @@
 
 */
 pragma solidity 0.8.9;
+import 'hardhat/console.sol';
 
 import './Validateable.sol';
 import './interfaces/IBankable.sol';
@@ -88,7 +89,7 @@ contract Bankable is Validateable, IBankable {
         squeakExists(tokenId)
         returns (uint256)
     {
-        // defaulting confirmation threshold to 6 blocks
+        // defaulting confirmation threshold to 6 - excess will be refunded
         return _getDeleteFee(tokenId, 6);
     }
 
@@ -182,6 +183,7 @@ contract Bankable is Validateable, IBankable {
      * @param interaction A value from the Interaction enum.
      */
     function _makePayment(uint256 tokenId, Interaction interaction) internal {
+        uint256 interactionFee = fees[interaction];
         User storage owner = users[ownerOf(tokenId)];
 
         if (
@@ -193,7 +195,7 @@ contract Bankable is Validateable, IBankable {
             interaction == Interaction.UndoResqueak
         ) {
             // treasury takes all
-            _deposit(msg.value);
+            _deposit(interactionFee);
         } else if (
             // positive interaction
             interaction == Interaction.Like ||
@@ -201,7 +203,6 @@ contract Bankable is Validateable, IBankable {
             interaction == Interaction.UndoDislike
         ) {
             // calculate amounts to deposit & transfer
-            uint256 interactionFee = fees[interaction];
             uint256 interactionTake = (interactionFee *
                 config[Configuration.PlatformTakeRate]) / 100;
             uint256 remainder = interactionFee - interactionTake;
@@ -221,12 +222,16 @@ contract Bankable is Validateable, IBankable {
             // transfer remaining funds to the squeak owner
             _transferFunds(owner.account, remainder);
         }
+
+        // refund any excess
+        if (msg.value > interactionFee)
+            _transferFunds(msg.sender, msg.value - interactionFee);
     }
 
     /**
      * @dev Pays out scout pool funds to its members.
      * @param tokenId ID of viral squeak.
-     * @param pool ScoutPool of the viral squeak (converted to memory).
+     * @param pool ScoutPool of the viral squeak.
      */
     function _makeScoutPayments(uint256 tokenId, ScoutPool storage pool)
         internal
@@ -300,7 +305,7 @@ contract Bankable is Validateable, IBankable {
      * @param to Address of the account.
      * @param amount Amount to transfer in wei.
      */
-    function _transferFunds(address to, uint256 amount) private {
+    function _transferFunds(address to, uint256 amount) internal {
         payable(to).transfer(amount);
 
         emit FundsTransferred(to, amount);

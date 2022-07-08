@@ -62,18 +62,19 @@ describe('deleteSqueak', () => {
       value: await critter.fees(Interaction.Like),
     });
 
-    // get the delete fee
-    deleteFee = await critter.getDeleteFee(squeakId);
-
-    return { critter, deleteFee, squeakId };
+    return {
+      critter,
+      deleteFee: await critter.getDeleteFee(squeakId),
+      squeakId,
+      treasuryStartingBalance: await critter.treasury(),
+    };
   };
 
   beforeEach(
     'deploy test contract, ahmed creates an account & posts a squeak which barbie likes, and carlos dislikes',
     async () => {
-      ({ critter, deleteFee, squeakId } = await loadFixture(
-        deleteSqueakFixture
-      ));
+      ({ critter, deleteFee, squeakId, treasuryStartingBalance } =
+        await loadFixture(deleteSqueakFixture));
     }
   );
 
@@ -107,12 +108,31 @@ describe('deleteSqueak', () => {
   });
 
   it('deposits the delete fee into the treasury', async () => {
-    treasuryStartingBalance = await critter.treasury();
+    const expectedDifference = ethers.utils.parseEther('0.00025');
+
+    // delete squeak
     await critter.deleteSqueak(squeakId, { value: deleteFee });
 
     expect((await critter.treasury()).sub(treasuryStartingBalance)).to.eq(
-      deleteFee
+      expectedDifference
     );
+  });
+
+  it('refunds any excess funds back to the sender', async () => {
+    // delete squeak
+    const tx = await critter.deleteSqueak(squeakId, { value: deleteFee });
+
+    // NOTE: Part of the fee refund is lost to slippage due the chain continuing
+    // to mine blocks while getting the original delete fee, so by the time the
+    // actual get delete fee request is sent, the fee expected is slightly
+    // higher than what was reported, therefore the refund is slightly less.
+    // This is why we cannot calculate the fee refunded beforehand. Consider
+    // this is a UX tax to keep the 'getDeleteFee(id)' method simple.
+    const expectedRefund = ethers.utils.parseEther('0.00025');
+
+    await expect(tx)
+      .to.emit(critter, 'FundsTransferred')
+      .withArgs(ahmed.address, expectedRefund);
   });
 
   it('emits a SqueakDeleted event', async () => {

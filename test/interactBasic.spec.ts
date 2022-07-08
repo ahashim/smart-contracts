@@ -26,7 +26,7 @@ describe('interact basic', () => {
     [name: string]: BigNumber;
   };
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet;
+  let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
 
   // the values below should be the same for all interactions (except delete),
   // so we can declare treasuryTake and transferAmount in terms of PLATFORM_FEE
@@ -36,8 +36,8 @@ describe('interact basic', () => {
   const transferAmount: number = PLATFORM_FEE.toNumber() - treasuryTake;
 
   before('create fixture loader', async () => {
-    [owner, ahmed, barbie] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
+    [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
+    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
   });
 
   const interactBasicFixture = async () => {
@@ -47,8 +47,9 @@ describe('interact basic', () => {
     ).connect(ahmed) as Critter;
 
     // creates accounts
-    await critter.createAccount('ahmed');
-    await critter.connect(barbie).createAccount('barbie');
+    [ahmed, barbie, carlos].forEach(async (user, index) => {
+      await critter.connect(user).createAccount(index.toString());
+    });
 
     // get interaction fees
     fees = {
@@ -483,6 +484,30 @@ describe('interact basic', () => {
           value: fees.UndoResqueak,
         })
       ).to.be.reverted;
+    });
+  });
+
+  describe('Fees', () => {
+    it('refunds any excess amount paid beyond the required interaction fee', async () => {
+      const interactionFee = await critter.fees(Interaction.Dislike);
+      const treasuryBalance = await critter.treasury();
+
+      // carlos dislikes the squeak w/ double the fee
+      const tx = await critter
+        .connect(carlos)
+        .interact(squeakId, Interaction.Dislike, {
+          value: interactionFee.mul(2),
+        });
+
+      // treasury only deposits the fee
+      expect((await critter.treasury()).sub(treasuryBalance)).to.eq(
+        interactionFee
+      );
+
+      // carlos receives his refund
+      await expect(tx)
+        .to.emit(critter, 'FundsTransferred')
+        .withArgs(carlos.address, interactionFee);
     });
   });
 

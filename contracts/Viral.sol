@@ -17,6 +17,7 @@
 
 */
 pragma solidity 0.8.9;
+import 'hardhat/console.sol';
 
 import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 import './Scoutable.sol';

@@ -114,11 +114,17 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         if (msg.sender != owner && !isApprovedForAll(owner, msg.sender))
             revert NotApprovedOrOwner();
 
-        // validate delete fee
-        if (msg.value < _getDeleteFee(tokenId, 0)) revert InsufficientFunds();
+        // get the delete fee in this block
+        uint256 deleteFee = _getDeleteFee(tokenId, 0);
+
+        // validate the transaction fee & track the remainder to refund
+        if (msg.value < deleteFee) revert InsufficientFunds();
+
+        // calculate remainder to refund at the end of the transaction
+        uint256 remainder = msg.value - deleteFee;
 
         // receive payment
-        _deposit(msg.value);
+        _deposit(deleteFee);
 
         // burn the token
         _burn(tokenId);
@@ -142,6 +148,9 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
             // remove squeak from set of viral squeaks
             viralSqueaks.remove(tokenId);
         }
+
+        // refund any excess funds
+        if (remainder > 0) _transferFunds(msg.sender, remainder);
 
         emit SqueakInteraction(tokenId, msg.sender, Interaction.Delete);
     }
@@ -177,6 +186,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         whenNotPaused
         hasActiveAccount
         squeakExists(tokenId)
+        costs(fees[interaction])
         nonReentrant
     {
         Sentiment storage sentiment = sentiments[tokenId];
@@ -191,7 +201,6 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
             _undoLikeSqueak(sentiment);
         else if (interaction == Interaction.UndoResqueak)
             _undoResqueak(sentiment);
-        else revert InvalidInteraction();
 
         emit SqueakInteraction(tokenId, msg.sender, interaction);
 
@@ -211,10 +220,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      * @dev Dislikes a squeak.
      * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _dislikeSqueak(Sentiment storage sentiment)
-        private
-        costs(fees[Interaction.Dislike])
-    {
+    function _dislikeSqueak(Sentiment storage sentiment) private {
         // ensure the user has not already disliked the squeak
         if (sentiment.dislikes.contains(msg.sender))
             revert AlreadyInteracted();
@@ -230,10 +236,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      * @dev Likes a squeak.
      * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _likeSqueak(Sentiment storage sentiment)
-        private
-        costs(fees[Interaction.Like])
-    {
+    function _likeSqueak(Sentiment storage sentiment) private {
         // ensure the user has not already liked the squeak
         if (sentiment.likes.contains(msg.sender)) revert AlreadyInteracted();
 
@@ -248,10 +251,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      * @dev Resqueaks a squeak.
      * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _resqueak(Sentiment storage sentiment)
-        private
-        costs(fees[Interaction.Resqueak])
-    {
+    function _resqueak(Sentiment storage sentiment) private {
         // ensure the user has not already resqueaked the squeak
         if (sentiment.resqueaks.contains(msg.sender))
             revert AlreadyInteracted();
@@ -263,10 +263,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      * @dev Undislikes a squeak.
      * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _undoDislikeSqueak(Sentiment storage sentiment)
-        private
-        costs(fees[Interaction.UndoDislike])
-    {
+    function _undoDislikeSqueak(Sentiment storage sentiment) private {
         // ensure the user has disliked the squeak
         if (!sentiment.dislikes.contains(msg.sender))
             revert NotInteractedYet();
@@ -279,10 +276,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      * @dev Unlikes a squeak.
      * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _undoLikeSqueak(Sentiment storage sentiment)
-        private
-        costs(fees[Interaction.UndoLike])
-    {
+    function _undoLikeSqueak(Sentiment storage sentiment) private {
         // ensure the user has liked the squeak
         if (!sentiment.likes.contains(msg.sender)) revert NotInteractedYet();
 
@@ -294,10 +288,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      * @dev Undoes a resqueak.
      * @param sentiment Pointer to Sentiment values for the squeak.
      */
-    function _undoResqueak(Sentiment storage sentiment)
-        private
-        costs(fees[Interaction.UndoResqueak])
-    {
+    function _undoResqueak(Sentiment storage sentiment) private {
         // ensure the user has resqueaked the squeak
         if (!sentiment.resqueaks.contains(msg.sender))
             revert NotInteractedYet();
