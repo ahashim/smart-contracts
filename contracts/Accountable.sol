@@ -27,27 +27,6 @@ import './interfaces/IAccountable.sol';
  */
 contract Accountable is Validateable, IAccountable {
     /**
-     * @dev Emitted after creating an account.
-     * @param account Address of the account.
-     * @param username Username of the account.
-     */
-    event AccountCreated(address account, string username);
-
-    /**
-     * @dev Emitted after updating an account status.
-     * @param account Address of the account.
-     * @param status A value fromt the AccountStatus enum.
-     */
-    event AccountStatusUpdated(address account, AccountStatus status);
-
-    /**
-     * @dev Emitted after updating an accounts username.
-     * @param account Address of the account.
-     * @param newUsername Next username.
-     */
-    event AccountUsernameUpdated(address account, string newUsername);
-
-    /**
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase

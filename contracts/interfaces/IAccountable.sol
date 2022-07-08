@@ -25,6 +25,27 @@ import './storage/IStoreable.sol';
  */
 interface IAccountable is IStoreable {
     /**
+     * @dev Emitted after creating an account.
+     * @param account Address of the account.
+     * @param username Username of the account.
+     */
+    event AccountCreated(address account, string username);
+
+    /**
+     * @dev Emitted after updating an account status.
+     * @param account Address of the account.
+     * @param status A value fromt the AccountStatus enum.
+     */
+    event AccountStatusUpdated(address account, AccountStatus status);
+
+    /**
+     * @dev Emitted after updating an accounts username.
+     * @param account Address of the account.
+     * @param newUsername Next username.
+     */
+    event AccountUsernameUpdated(address account, string newUsername);
+
+    /**
      * @dev Creates a Critter account.
      * @param username Username for the account.
      */
