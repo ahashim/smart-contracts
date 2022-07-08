@@ -17,7 +17,6 @@
 
 */
 pragma solidity 0.8.9;
-import 'hardhat/console.sol';
 
 import './Validateable.sol';
 import './interfaces/IBankable.sol';
@@ -30,46 +29,6 @@ import './interfaces/IBankable.sol';
 contract Bankable is Validateable, IBankable {
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-
-    /**
-     * @dev Emitted when funds are deposited into the treasury.
-     * @param amount Amount of the funds in wei.
-     */
-    event FundsDeposited(uint256 amount);
-
-    /**
-     * @dev Emitted when funds are transferred to an account.
-     * @param to Address of the account.
-     * @param amount Amount of the funds in wei.
-     */
-    event FundsTransferred(address indexed to, uint256 amount);
-
-    /**
-     * @dev Emitted when funds are withdrawn from the treasury.
-     * @param to Address of the account.
-     * @param amount Amount of the funds in wei.
-     */
-    event FundsWithdrawn(address indexed to, uint256 amount);
-
-    /**
-     * @dev Emitted when the fee value for an interaction is updated.
-     * @param interaction A value from the Interaction enum.
-     * @param amount Amount of the new fee in wei.
-     */
-    event InteractionFeeUpdated(Interaction interaction, uint256 amount);
-
-    /**
-     * @dev Emitted when fees for a viral squeak are added to its scout pool.
-     * @param tokenId ID of the viral squeak.
-     * @param amount Amount of the funds in wei.
-     */
-    event FundsAddedToScoutPool(uint256 tokenId, uint256 amount);
-
-    /**
-     * @dev Emitted when funds in a scout pool are paid out its members.
-     * @param tokenId ID of the viral squeak.
-     */
-    event ScoutPoolPayout(uint256 tokenId);
 
     /**
      * @dev Upgradeable constructor

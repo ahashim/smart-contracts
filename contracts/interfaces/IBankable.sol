@@ -25,6 +25,46 @@ import './storage/IStoreable.sol';
  */
 interface IBankable is IStoreable {
     /**
+     * @dev Emitted when funds are deposited into the treasury.
+     * @param amount Amount of the funds in wei.
+     */
+    event FundsDeposited(uint256 amount);
+
+    /**
+     * @dev Emitted when funds are transferred to an account.
+     * @param to Address of the account.
+     * @param amount Amount of the funds in wei.
+     */
+    event FundsTransferred(address indexed to, uint256 amount);
+
+    /**
+     * @dev Emitted when funds are withdrawn from the treasury.
+     * @param to Address of the account.
+     * @param amount Amount of the funds in wei.
+     */
+    event FundsWithdrawn(address indexed to, uint256 amount);
+
+    /**
+     * @dev Emitted when the fee value for an interaction is updated.
+     * @param interaction A value from the Interaction enum.
+     * @param amount Amount of the new fee in wei.
+     */
+    event InteractionFeeUpdated(Interaction interaction, uint256 amount);
+
+    /**
+     * @dev Emitted when fees for a viral squeak are added to its scout pool.
+     * @param tokenId ID of the viral squeak.
+     * @param amount Amount of the funds in wei.
+     */
+    event FundsAddedToScoutPool(uint256 tokenId, uint256 amount);
+
+    /**
+     * @dev Emitted when funds in a scout pool are paid out its members.
+     * @param tokenId ID of the viral squeak.
+     */
+    event ScoutPoolPayout(uint256 tokenId);
+
+    /**
      * @dev Gets the price of deleting a squeak based on its age.
      * @param tokenId ID of the squeak to delete.
      * @return Price of deleting the squeak in wei.
