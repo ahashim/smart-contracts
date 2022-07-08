@@ -21,11 +21,6 @@ pragma solidity 0.8.9;
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeable.sol';
 
 /**
- * @dev Interface for Storeable.
- * @notice This is where all the Critter data structures & enums live.
- */
-
-/**
  * @dev Set of statuses of a critter account.
  */
 enum AccountStatus {
@@ -59,6 +54,10 @@ enum Interaction {
     UndoResqueak
 }
 
+/**
+ * @dev Interface for Storeable.
+ * @notice This is where all the Critter data structures & enums are defined.
+ */
 interface IStoreable {
     /**
      * @dev Scout a user that belongs to a ScoutPool for a viral squeak.
