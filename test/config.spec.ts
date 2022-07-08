@@ -18,12 +18,11 @@ import { Configuration } from '../enums';
 describe('config', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
-  let username: string;
+  let owner: Wallet;
 
   before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
+    [owner] = await (ethers as any).getSigners();
+    loadFixture = waffle.createFixtureLoader([owner]);
   });
 
   const configFixture = async () => {
