@@ -36,8 +36,7 @@ contract Scoutable is Bankable, IScoutable {
     function __Scoutable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Ejects the user from a scout pool they are a part of.
-     * @param tokenId ID of the viral squeak.
+     * @dev See {IScoutable-ejectFromPool}.
      */
     function ejectFromPool(uint256 tokenId) external whenNotPaused {
         ScoutPool storage pool = pools[tokenId];
@@ -62,9 +61,7 @@ contract Scoutable is Bankable, IScoutable {
     }
 
     /**
-     * @dev Gets the pool amount & number of shares.
-     * @param tokenId ID of the viral squeak.
-     * @return ScoutPoolInfo
+     * @dev See {IScoutable-getPoolInfo}.
      */
     function getPoolInfo(uint256 tokenId)
         external
@@ -77,9 +74,7 @@ contract Scoutable is Bankable, IScoutable {
     }
 
     /**
-     * @dev Gets a list of scouts for a viral squeak.
-     * @param tokenId ID of the viral squeak.
-     * @return A list of Scouts.
+     * @dev See {IScoutable-getScouts}.
      */
     function getScouts(uint256 tokenId)
         external

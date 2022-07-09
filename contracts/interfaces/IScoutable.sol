@@ -25,8 +25,9 @@ import './storage/IStoreable.sol';
  */
 interface IScoutable is IStoreable {
     /**
-     * @dev Ejects the user from a scout pool they are a part of.
+     * @dev Ejects the sender from a scout pool they are a part of.
      * @param tokenId ID of the viral squeak.
+     * @notice Sender must be a member of the pool.
      */
     function ejectFromPool(uint256 tokenId) external;
 
