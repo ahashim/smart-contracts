@@ -39,10 +39,7 @@ contract Viral is Scoutable, IViral {
     function __Viral_init() internal view onlyInitializing {}
 
     /**
-     * @dev Gets the virality score of a squeak.
-     * @param tokenId ID of the squeak.
-     * @return A value between 0-100 representing the virality of the squeak.
-     * @notice The token must exist.
+     * @dev See {IViral-getViralityScore}.
      */
     function getViralityScore(uint256 tokenId)
         public
@@ -66,10 +63,7 @@ contract Viral is Scoutable, IViral {
     }
 
     /**
-     * @dev Looks up if a squeak is viral or not.
-     * @param tokenId ID of the squeak.
-     * @return boolean statings if the squeak is viral.
-     * @notice The token must exist.
+     * @dev See {IViral-isViral}.
      */
     function isViral(uint256 tokenId)
         external
