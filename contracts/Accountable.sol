@@ -42,8 +42,7 @@ contract Accountable is Validateable, IAccountable {
     }
 
     /**
-     * @dev Creates a Critter account.
-     * @param username Username for the account.
+     * @dev See {IAccountable-createAccount}.
      */
     function createAccount(string calldata username)
         external
@@ -73,10 +72,7 @@ contract Accountable is Validateable, IAccountable {
     }
 
     /**
-     * @dev Updates an accounts status.
-     * @param account Address of the account to update.
-     * @param status A value from the AccountStatus enum.
-     * @notice can only be called by MODERATOR_ROLE.
+     * @dev See {IAccountable-updateAccountStatus}.
      */
     function updateAccountStatus(address account, AccountStatus status)
         external
@@ -100,8 +96,7 @@ contract Accountable is Validateable, IAccountable {
     }
 
     /**
-     * @dev Updates an accounts username.
-     * @param newUsername The text of the new username.
+     * @dev See {IAccountable-updateUsername}.
      */
     function updateUsername(string calldata newUsername)
         external
