@@ -37,9 +37,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     function __Squeakable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Creates a squeak.
-     * @param content Text content of the squeak.
-     * @notice Content must be between 0 and 256 bytes in length.
+     * @dev See {ISqueakable-createSqueak}.
      */
     function createSqueak(string calldata content)
         external
@@ -71,8 +69,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     }
 
     /**
-     * @dev Deletes a squeak & its associated information.
-     * @param tokenId ID of the squeak.
+     * @dev See {ISqueakable-deleteSqueak}.
      */
     function deleteSqueak(uint256 tokenId)
         external
@@ -130,9 +127,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     }
 
     /**
-     * @dev Gets a count of each Sentiment item for a squeak.
-     * @param tokenId ID of the squeak.
-     * @return SentimentCounts
+     * @dev See {ISqueakable-getSentimentCounts}.
      */
     function getSentimentCounts(uint256 tokenId)
         external
@@ -150,9 +145,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     }
 
     /**
-     * @dev Interacts with a squeak.
-     * @param tokenId ID of the squeak.
-     * @param interaction A value from the Interaction enum.
+     * @dev See {ISqueakable-interact}.
      */
     function interact(uint256 tokenId, Interaction interaction)
         external

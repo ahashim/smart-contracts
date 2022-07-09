@@ -60,6 +60,7 @@ interface ISqueakable is IStoreable {
     /**
      * @dev Deletes a squeak & its associated information.
      * @param tokenId ID of the squeak.
+     * @notice Caller must own the squeak or be an approved account.
      */
     function deleteSqueak(uint256 tokenId) external payable;
 
