@@ -102,7 +102,7 @@ contract Validateable is
     }
 
     /**
-     * @dev See {IERC721AUpgradeable-supportsInterface}.
+     * @dev See {IValidateable-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)
         public
