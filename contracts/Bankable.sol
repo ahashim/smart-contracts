@@ -37,10 +37,7 @@ contract Bankable is Validateable, IBankable {
     function __Bankable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Gets the price of deleting a squeak based on its age.
-     * @param tokenId ID of the squeak to delete.
-     * @return Price of deleting the squeak in wei.
-     * @notice The token must exist.
+     * @dev See {IBankable-getDeleteFee}.
      */
     function getDeleteFee(uint256 tokenId)
         external
@@ -53,30 +50,7 @@ contract Bankable is Validateable, IBankable {
     }
 
     /**
-     * @dev Gets the price of deleting a squeak based on its age.
-     * @param tokenId ID of the squeak to delete.
-     * @param confirmationThreshold The number of future blocks that the delete
-     *      will potentially occur in. Required to give a mostly correct
-     *      price estimate assuming the transaction will get mined within that
-     *      range. 6 blocks is connsidered a good default.
-     * @return Price of deleting the squeak in wei.
-     * @notice The token must exist.
-     */
-    function _getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
-        internal
-        view
-        returns (uint256)
-    {
-        return
-            ((block.number + confirmationThreshold) -
-                squeaks[tokenId].blockNumber) * fees[Interaction.Delete];
-    }
-
-    /**
-     * @dev Updates an interaction fee.
-     * @param interaction A value from the Interaction enum.
-     * @param amount Value of the updated fee in wei.
-     * @notice Only callable by TREASURER_ROLE.
+     * @dev See {IBankable-updateInteractionFee}.
      */
     function updateInteractionFee(Interaction interaction, uint256 amount)
         external
@@ -88,10 +62,7 @@ contract Bankable is Validateable, IBankable {
     }
 
     /**
-     * @dev Transfers out funds from the treasury.
-     * @param to Address of the account where the funds will go.
-     * @param amount Amount to withdraw in wei.
-     * @notice Only callable by TREASURER_ROLE.
+     * @dev See {IBankable-withdraw}.
      */
     function withdraw(address to, uint256 amount)
         external
@@ -118,6 +89,26 @@ contract Bankable is Validateable, IBankable {
         }
 
         emit FundsDeposited(amount);
+    }
+
+    /**
+     * @dev Gets the price of deleting a squeak based on its age.
+     * @param tokenId ID of the squeak to delete.
+     * @param confirmationThreshold The number of future blocks that the delete
+     *      will potentially occur in. Required to give a mostly correct
+     *      price estimate assuming the transaction will get mined within that
+     *      range. 6 blocks is connsidered a good default.
+     * @return Price of deleting the squeak in wei.
+     * @notice The token must exist.
+     */
+    function _getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
+        internal
+        view
+        returns (uint256)
+    {
+        return
+            ((block.number + confirmationThreshold) -
+                squeaks[tokenId].blockNumber) * fees[Interaction.Delete];
     }
 
     /**
@@ -237,6 +228,17 @@ contract Bankable is Validateable, IBankable {
     }
 
     /**
+     * @dev Sends funds to an account.
+     * @param to Address of the account.
+     * @param amount Amount to transfer in wei.
+     */
+    function _transferFunds(address to, uint256 amount) internal {
+        payable(to).transfer(amount);
+
+        emit FundsTransferred(to, amount);
+    }
+
+    /**
      * @dev Add funds to the scout pool of a viral squeak. It may possibly pay
      *      out to its members.
      * @param tokenId ID of the squeak.
@@ -257,16 +259,5 @@ contract Bankable is Validateable, IBankable {
         uint256 sharePrice = _getPoolSharePrice(pool);
         if (sharePrice >= config[Configuration.PoolPayoutThreshold])
             _makeScoutPayments(tokenId, pool, sharePrice);
-    }
-
-    /**
-     * @dev Sends funds to an account.
-     * @param to Address of the account.
-     * @param amount Amount to transfer in wei.
-     */
-    function _transferFunds(address to, uint256 amount) internal {
-        payable(to).transfer(amount);
-
-        emit FundsTransferred(to, amount);
     }
 }
