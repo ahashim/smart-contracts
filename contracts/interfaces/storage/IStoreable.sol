@@ -148,20 +148,4 @@ interface IStoreable {
         uint256 scoutLevel;
         string username;
     }
-
-    /**
-     * @dev UserInteraction tracks the set of tokens that a user has interacted
-     *      with, grouped by interaction type.
-     * @param disliked Set of token ID's they disliked.
-     * @param liked Set of token ID's they liked.
-     * @param resqueaked Set of token ID's they resqueaked.
-     * @param scouted Set of token ID's the user scouted by interacting with,
-     *      which then went on to go viral.
-     */
-    struct UserInteraction {
-        EnumerableSetUpgradeable.UintSet disliked;
-        EnumerableSetUpgradeable.UintSet liked;
-        EnumerableSetUpgradeable.UintSet resqueaked;
-        EnumerableSetUpgradeable.UintSet scouted;
-    }
 }
