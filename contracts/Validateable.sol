@@ -44,8 +44,7 @@ contract Validateable is
     function __Validateable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Ensures the transaction has the required fee amount, and refunds
-     *      any remainder back to the sender.
+     * @dev Ensures the transaction has the required fee amount.
      * @param fee fee in wei.
      */
     modifier costs(uint256 fee) {
@@ -71,7 +70,7 @@ contract Validateable is
     }
 
     /**
-     * @dev Ensures a username isn't empty or too long, and is available.
+     * @dev Ensures a username is available, and isn't empty or too long.
      * @param username Text of the username.
      */
     modifier isValidUsername(string calldata username) {
@@ -102,7 +101,7 @@ contract Validateable is
     }
 
     /**
-     * @dev See {IValidateable-supportsInterface}.
+     * @dev See {IERC721AUpgradeable-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId)
         public
