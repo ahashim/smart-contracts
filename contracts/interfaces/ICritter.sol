@@ -26,15 +26,18 @@ import './storage/IStoreable.sol';
 interface ICritter is IStoreable {
     /**
      * @dev Upgradeable "constructor" function to initialize sub-contracts.
-     * @param name Contract name (Critter).
-     * @param symbol Contract symbol (CRTTR).
-     * @param baseURI Prefix for all token URI's (https://critter.fyi/token).
+     * @param name Contract name.
+     * @param symbol Contract symbol.
+     * @param baseURI Prefix for all token URI's.
      * @param platformFee Default amount in wei to charge per interaction.
-     * @param takeRate Percentage of `fee` deposited into the treasury.
-     * @param poolThreshold Minimum amount of wei required to pay out a scout pool.
-     * @param viralThreshold Minimum score that a squeak must have for virality.
-     * @param scoutBonus Number of levels a scout jumps when they cause a squeak to go viral.
-     * @param maxLevel Upper limit on scout level.
+     * @param takeRate Percentage of the interactio fee deposited into the
+     *      treasury.
+     * @param poolThreshold Minimum amount required to pay out a scout pool.
+     * @param viralThreshold Minimum score that a squeak must have to achieve
+     *      virality.
+     * @param scoutBonus Number of levels a scout increases when they propel a
+     *      squeak to virality.
+     * @param maxLevel The maximum scout level a user can reach.
      */
     function initialize(
         string calldata name,
@@ -50,16 +53,19 @@ interface ICritter is IStoreable {
 
     /**
      * @dev Pauses the contract.
+     * @notice Only callable by PAUSER_ROLE.
      */
     function pause() external;
 
     /**
      * @dev Unpauses the contract.
+     * @notice Only callable by PAUSER_ROLE.
      */
     function unpause() external;
 
     /**
-     * @dev Unpauses the contract.
+     * @dev Updates the value of a {Configuration} item.
+     * @notice Only callable by ADMIN_ROLE.
      */
     function updateConfiguration(Configuration configuration, uint256 amount)
         external;

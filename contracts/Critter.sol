@@ -27,20 +27,21 @@ import './interfaces/ICritter.sol';
  * @title Critter: a microblogging platform where each post is an ERC721 token.
  * @author Ahmed Hashim <ahashim@users.noreply.github.com>
  * @dev Core concepts:
- *      - Every address is a unique username.
- *      - Every post, called a "Squeak" is an NFT.
- *      - Actions, such as "favorite" & "resqueak", cost a fee.
- *      - Fees are paid out to the owner of said squeak (not necessarily the
- *        original author).
+ *      - Every address is a user.
+ *      - Every post, called a "Squeak", is an NFT.
  *      - Squeaks can be bought & sold via a bidding price discovery mechanism.
+ *      - Interactions on squeaks, such as liking, disliking, or resqueaking
+          cost a fee.
+ *      - Fees are paid out to the owner of the squeak (not necessarily the
+ *        original author).
  *      - Once an author sells their squeak, the ownership is transferred to a
  *        new user.
- *      - Only owners can delete squeaks.
- *      - Deleting a squeak costs a fee of `blocks elapsed x deletion fee`.
- *      - Every squeak has a "virality" coefficient that is tracked on-chain.
+ *      - Only the owner of a squeak is able to delete it (burn the token).
+ *      - Deleting a squeak costs a fee of `time elapsed x fixed delete fee`.
+ *      - Every squeak has a "virality" score that is calculated on-chain.
  *      - When a squeak goes "viral", future profits from that point on are
- *        split among the owner and those who helped it go viral (likers &
- *        resqueakers).
+ *        split among the owner and its scouts (i.e., those who propelled it to
+ *        virality via likes & resqueaks).
  */
 contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
     /* solhint-disable func-name-mixedcase, no-empty-blocks */
