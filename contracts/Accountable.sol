@@ -49,12 +49,11 @@ contract Accountable is Validateable, IAccountable {
         whenNotPaused
         isValidUsername(username)
     {
-        // ensure address has not already created an account
-        if (users[msg.sender].status != AccountStatus.NonExistent) {
+        // ensure account does not already exist
+        if (users[msg.sender].status != AccountStatus.NonExistent)
             revert InvalidAccount();
-        }
 
-        // create a User for the address
+        // create an active User for the account
         users[msg.sender] = User(
             msg.sender,
             AccountStatus.Active,
@@ -78,7 +77,7 @@ contract Accountable is Validateable, IAccountable {
         external
         onlyRole(MODERATOR_ROLE)
     {
-        // cannot set an account to non-existent
+        // cannot set a status to non-existent
         if (status == AccountStatus.NonExistent) revert InvalidAccountStatus();
 
         User storage user = users[account];
@@ -89,7 +88,7 @@ contract Accountable is Validateable, IAccountable {
         // ensure new status is not the same as the current status
         if (user.status == status) revert InvalidAccountStatus();
 
-        // save updated status to storage
+        // save the updated status
         user.status = status;
 
         emit AccountStatusUpdated(account, status);
@@ -104,8 +103,9 @@ contract Accountable is Validateable, IAccountable {
         hasActiveAccount
         isValidUsername(newUsername)
     {
-        // clear the current username
         User storage user = users[msg.sender];
+
+        // clear the current username
         delete addresses[user.username];
 
         // set the new username
