@@ -42,7 +42,7 @@ interface ISqueakable is IStoreable {
      * @dev Emitted after an interaction.
      * @param tokenId ID of the squeak.
      * @param sender Account that resqueaked.
-     * @param interaction Value from the Interaction enum.
+     * @param interaction An {Interaction} value.
      */
     event SqueakInteraction(
         uint256 tokenId,
@@ -60,14 +60,14 @@ interface ISqueakable is IStoreable {
     /**
      * @dev Deletes a squeak & its associated information.
      * @param tokenId ID of the squeak.
-     * @notice Caller must own the squeak or be an approved account.
+     * @notice Caller must own the squeak or be an approved account to delete.
      */
     function deleteSqueak(uint256 tokenId) external payable;
 
     /**
      * @dev Gets a count of each Sentiment item for a squeak.
      * @param tokenId ID of the squeak.
-     * @return SentimentCounts
+     * @return {SentimentCounts}
      */
     function getSentimentCounts(uint256 tokenId)
         external
@@ -77,7 +77,7 @@ interface ISqueakable is IStoreable {
     /**
      * @dev Interacts with a squeak.
      * @param tokenId ID of the squeak.
-     * @param interaction A value from the Interaction enum.
+     * @param interaction An {Interaction} value.
      */
     function interact(uint256 tokenId, Interaction interaction)
         external

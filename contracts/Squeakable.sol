@@ -31,7 +31,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
-     * @dev Upgradeable constructor
+     * @dev Upgradeable constructor.
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Squeakable_init() internal view onlyInitializing {}
@@ -45,17 +45,16 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         hasActiveAccount
         onlyRole(MINTER_ROLE)
     {
+        // convert to bytes for storage
         bytes memory rawContent = bytes(content);
 
-        // validate existence
+        // validate existence & length of the raw content
         if (rawContent.length == 0) revert InvalidLength();
-
-        // validate length
-        if (rawContent.length > 256) revert InvalidLength();
+        else if (rawContent.length > 256) revert InvalidLength();
 
         uint256 tokenId = _nextTokenId();
 
-        // create & save the squeak to storage
+        // save the squeak details to storage
         squeaks[tokenId] = Squeak(
             block.number,
             msg.sender,
@@ -63,6 +62,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
             rawContent
         );
 
+        // mint the NFT
         _mint(msg.sender, 1);
 
         emit SqueakCreated(msg.sender, tokenId, block.number, content);
@@ -88,16 +88,14 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         // get the delete fee in this block
         uint256 deleteFee = _getDeleteFee(tokenId, 0);
 
-        // validate the transaction fee & track the remainder to refund
+        // validate the fee & calculate the remainder to refund
         if (msg.value < deleteFee) revert InsufficientFunds();
-
-        // calculate remainder to refund at the end of the transaction
         uint256 remainder = msg.value - deleteFee;
 
         // receive payment
         _deposit(deleteFee);
 
-        // burn the token
+        // burn the NFT
         _burn(tokenId);
 
         // delete the squeak + sentiment
@@ -108,15 +106,16 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
             // delete associated virality
             ScoutPool storage pool = pools[tokenId];
 
-            if (pool.amount > 0) {
-                // pay out any remaining pool funds
-                _makeScoutPayments(tokenId, pool);
-            }
+            // pay out any remaining pool funds
+            if (pool.amount > 0) _makeScoutPayments(tokenId, pool);
+
+            // deposit any remaining dust into the treasury
+            if (pool.amount > 0) _deposit(pool.amount);
 
             // delete the pool
             delete pools[tokenId];
 
-            // remove squeak from set of viral squeaks
+            // remove the squeak from the viral squeaks list
             viralSqueaks.remove(tokenId);
         }
 
@@ -158,7 +157,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     {
         Sentiment storage sentiment = sentiments[tokenId];
 
-        // determine interaction & update state
+        // determine interaction & update sentiment
         if (interaction == Interaction.Dislike) _dislikeSqueak(sentiment);
         else if (interaction == Interaction.Like) _likeSqueak(sentiment);
         else if (interaction == Interaction.Resqueak) _resqueak(sentiment);
@@ -171,7 +170,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
 
         emit SqueakInteraction(tokenId, msg.sender, interaction);
 
-        // check squeak virality
+        // check virality
         if (
             !viralSqueaks.contains(tokenId) &&
             getViralityScore(tokenId) >=
@@ -185,7 +184,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
 
     /**
      * @dev Dislikes a squeak.
-     * @param sentiment Pointer to Sentiment values for the squeak.
+     * @param sentiment Pointer to the {Sentiment} of the squeak.
      */
     function _dislikeSqueak(Sentiment storage sentiment) private {
         // ensure the user has not already disliked the squeak
@@ -193,7 +192,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
             revert AlreadyInteracted();
 
         if (sentiment.likes.contains(msg.sender))
-            // remove previous like
+            // remove the previous like
             sentiment.likes.remove(msg.sender);
 
         sentiment.dislikes.add(msg.sender);
@@ -201,14 +200,14 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
 
     /**
      * @dev Likes a squeak.
-     * @param sentiment Pointer to Sentiment values for the squeak.
+     * @param sentiment Pointer to the {Sentiment} of the squeak.
      */
     function _likeSqueak(Sentiment storage sentiment) private {
         // ensure the user has not already liked the squeak
         if (sentiment.likes.contains(msg.sender)) revert AlreadyInteracted();
 
         if (sentiment.dislikes.contains(msg.sender))
-            // remove previous dislike
+            // remove the previous dislike
             sentiment.dislikes.remove(msg.sender);
 
         sentiment.likes.add(msg.sender);
@@ -216,7 +215,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
 
     /**
      * @dev Resqueaks a squeak.
-     * @param sentiment Pointer to Sentiment values for the squeak.
+     * @param sentiment Pointer to the {Sentiment} of the squeak.
      */
     function _resqueak(Sentiment storage sentiment) private {
         // ensure the user has not already resqueaked the squeak
@@ -228,39 +227,39 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
 
     /**
      * @dev Undislikes a squeak.
-     * @param sentiment Pointer to Sentiment values for the squeak.
+     * @param sentiment Pointer to the {Sentiment} of the squeak.
      */
     function _undoDislikeSqueak(Sentiment storage sentiment) private {
         // ensure the user has disliked the squeak
         if (!sentiment.dislikes.contains(msg.sender))
             revert NotInteractedYet();
 
-        // remove them from dislikes
+        // remove their dislike
         sentiment.dislikes.remove(msg.sender);
     }
 
     /**
      * @dev Unlikes a squeak.
-     * @param sentiment Pointer to Sentiment values for the squeak.
+     * @param sentiment Pointer to the {Sentiment} of the squeak.
      */
     function _undoLikeSqueak(Sentiment storage sentiment) private {
         // ensure the user has liked the squeak
         if (!sentiment.likes.contains(msg.sender)) revert NotInteractedYet();
 
-        // remove them from the likers
+        // remove their like
         sentiment.likes.remove(msg.sender);
     }
 
     /**
      * @dev Undoes a resqueak.
-     * @param sentiment Pointer to Sentiment values for the squeak.
+     * @param sentiment Pointer to the {Sentiment} of the squeak.
      */
     function _undoResqueak(Sentiment storage sentiment) private {
         // ensure the user has resqueaked the squeak
         if (!sentiment.resqueaks.contains(msg.sender))
             revert NotInteractedYet();
 
-        // remove them from the resqueaks
+        // remove their resqueak
         sentiment.resqueaks.remove(msg.sender);
     }
 }
