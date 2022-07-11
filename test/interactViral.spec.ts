@@ -265,13 +265,5 @@ describe('interact viral', () => {
         .mul((await critter.users(ahmed.address)).scoutLevel)
         .add(transferAmount)
     );
-
-    // remaining dust is deposited into the treasury (8 wei in this case)
-    expect(
-      (await critter.treasury()).sub(balances.treasury.add(treasuryTake))
-    ).to.eq(7);
-
-    // pool amount is reset
-    expect((await critter.getPoolInfo(squeakId)).amount).to.eq(0);
   });
 });

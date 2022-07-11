@@ -27,7 +27,7 @@ import './interfaces/IAccountable.sol';
  */
 contract Accountable is Validateable, IAccountable {
     /**
-     * @dev Upgradeable constructor
+     * @dev Upgradeable constructor.
      */
     // solhint-disable-next-line func-name-mixedcase
     function __Accountable_init() internal onlyInitializing {

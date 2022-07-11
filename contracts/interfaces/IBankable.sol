@@ -38,34 +38,34 @@ interface IBankable is IStoreable {
     event FundsTransferred(address indexed to, uint256 amount);
 
     /**
-     * @dev Emitted when funds are withdrawn from the treasury.
+     * @dev Emitted when funds are withdrawn from the treasury to an account.
      * @param to Address of the account.
      * @param amount Amount of the funds in wei.
      */
     event FundsWithdrawn(address indexed to, uint256 amount);
 
     /**
-     * @dev Emitted when the fee value for an interaction is updated.
+     * @dev Emitted when the fee for an interaction is updated.
      * @param interaction A value from the Interaction enum.
      * @param amount Amount of the new fee in wei.
      */
     event InteractionFeeUpdated(Interaction interaction, uint256 amount);
 
     /**
-     * @dev Emitted when fees for a viral squeak are added to its scout pool.
+     * @dev Emitted when the fee for a viral squeak is added to its scout pool.
      * @param tokenId ID of the viral squeak.
      * @param amount Amount of the funds in wei.
      */
     event FundsAddedToScoutPool(uint256 tokenId, uint256 amount);
 
     /**
-     * @dev Emitted when funds in a scout pool are paid out its members.
+     * @dev Emitted when funds in a scout pool are paid out to its members.
      * @param tokenId ID of the viral squeak.
      */
     event ScoutPoolPayout(uint256 tokenId);
 
     /**
-     * @dev Gets the price of deleting a squeak based on its age.
+     * @dev Gets the price of deleting a squeak.
      * @param tokenId ID of the squeak to delete.
      * @return Price of deleting the squeak in wei.
      * @notice The token must exist.
