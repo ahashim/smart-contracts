@@ -31,9 +31,9 @@ interface IViral {
     function getViralityScore(uint256 tokenId) external view returns (uint64);
 
     /**
-     * @dev Looks up if a squeak is viral or not.
+     * @dev Gets the virality status of a squeak.
      * @param tokenId ID of the squeak.
-     * @return boolean statings if the squeak is viral.
+     * @return A boolean representing the virality status.
      * @notice The token must exist.
      */
     function isViral(uint256 tokenId) external view returns (bool);

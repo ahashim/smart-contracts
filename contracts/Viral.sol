@@ -23,7 +23,7 @@ import './Scoutable.sol';
 import './interfaces/IViral.sol';
 
 /**
- * @title Squeakable
+ * @title Viral
  * @dev A contract to handle virality for squeaks.
  */
 contract Viral is Scoutable, IViral {
@@ -33,7 +33,7 @@ contract Viral is Scoutable, IViral {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
-     * @dev Upgradeable constructor
+     * @dev Upgradeable constructor.
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Viral_init() internal view onlyInitializing {}
@@ -47,7 +47,6 @@ contract Viral is Scoutable, IViral {
         squeakExists(tokenId)
         returns (uint64)
     {
-        // get squeak sentiment values
         Sentiment storage sentiment = sentiments[tokenId];
 
         uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
@@ -55,7 +54,8 @@ contract Viral is Scoutable, IViral {
         uint256 likes = sentiment.likes.length();
         uint256 resqueaks = sentiment.resqueaks.length();
 
-        // squeak needs to have at least 1 like and 1 resqueak to be considered
+        // the squeak needs to have at least 1 like, and 1 resqueak for it to
+        // be considered for virality
         return
             likes > 0 && resqueaks > 0
                 ? _calculateVirality(blockDelta, dislikes, likes, resqueaks)
@@ -95,7 +95,7 @@ contract Viral is Scoutable, IViral {
             config[Configuration.ScoutViralityBonus]
         );
 
-        // iterate over both sets & add all unique addresses to the scouts list
+        // iterate over both sets & add all unique addresses to the scout pool
         uint256 likesCount = sentiment.likes.length();
         uint256 resqueaksCount = sentiment.resqueaks.length();
         uint256 upperBound = likesCount > resqueaksCount
@@ -123,7 +123,7 @@ contract Viral is Scoutable, IViral {
      * @param dislikes Number of dislikes.
      * @param likes Number of likes.
      * @param resqueaks Number of resqueaks.
-     * @return A value between 0-100 representing the virality of the squeak.
+     * @return A score between 0-100 representing the virality of the squeak.
      */
     function _calculateVirality(
         uint256 blockDelta,

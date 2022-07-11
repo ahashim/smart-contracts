@@ -25,7 +25,7 @@ import './storage/Mappable.sol';
 import './interfaces/IValidateable.sol';
 
 /**
- * @title Validateble
+ * @title Validateable
  * @dev A contract to handle modifiers which validate contract functions.
  * @notice This contract needs to override {supportsInterface} due to its
  *      inheritance from both AccessControlUpgradeable & ERC721AUpgradeable.
@@ -38,7 +38,7 @@ contract Validateable is
     IValidateable
 {
     /**
-     * @dev Upgradeable constructor
+     * @dev Upgradeable constructor.
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Validateable_init() internal view onlyInitializing {}
