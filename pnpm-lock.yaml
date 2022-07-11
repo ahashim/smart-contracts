@@ -34,7 +34,7 @@ specifiers:
   hardhat-gas-reporter: ^1.0.8
   hardhat-watcher: ^2.3.0
   prettier: ^2.7.1
-  prettier-plugin-solidity: 1.0.0-beta.19
+  prettier-plugin-solidity: 1.0.0-dev.22
   solhint: ^3.3.7
   solhint-plugin-prettier: ^0.0.5
   solidity-coverage: ^0.7.21
@@ -76,9 +76,9 @@ devDependencies:
   hardhat-gas-reporter: 1.0.8_hardhat@2.10.0
   hardhat-watcher: 2.3.0_hardhat@2.10.0
   prettier: 2.7.1
-  prettier-plugin-solidity: 1.0.0-beta.19_prettier@2.7.1
+  prettier-plugin-solidity: 1.0.0-dev.22_prettier@2.7.1
   solhint: 3.3.7
-  solhint-plugin-prettier: 0.0.5_crqb3mgkdppjha35dqdzgwofw4
+  solhint-plugin-prettier: 0.0.5_r7jkvaoul5idvzyirtba3mejq4
   solidity-coverage: 0.7.21
   ts-node: 10.8.2_fxk5i3xm3ivo7fjwhcizcinpla
   typechain: 8.1.0_typescript@4.7.4
@@ -3512,8 +3512,8 @@ packages:
       minimalistic-crypto-utils: 1.0.1
     dev: true
 
-  /emoji-regex/10.0.1:
-    resolution: {integrity: sha512-cLuZzriSWVE+rllzeq4zpUEoCPfYEbQ6ZVhIq+ed6ynWST7Bw9XnOr+bKWgCup4paq72DI21gw9M3aaFkm4HAw==}
+  /emoji-regex/10.1.0:
+    resolution: {integrity: sha512-xAEnNCT3w2Tg6MA7ly6QqYJvEoY1tm9iIjJ3yMKK9JPlWuRHAMoe5iETwQnx3M9TVbFMfsrBgWKR+IsmswwNjg==}
     dev: true
 
   /emoji-regex/7.0.3:
@@ -7795,17 +7795,17 @@ packages:
       fast-diff: 1.2.0
     dev: true
 
-  /prettier-plugin-solidity/1.0.0-beta.19_prettier@2.7.1:
-    resolution: {integrity: sha512-xxRQ5ZiiZyUoMFLE9h7HnUDXI/daf1tnmL1msEdcKmyh7ZGQ4YklkYLC71bfBpYU2WruTb5/SFLUaEb3RApg5g==}
+  /prettier-plugin-solidity/1.0.0-dev.22_prettier@2.7.1:
+    resolution: {integrity: sha512-0v+O2/sqq6WMlZ2TsnRBXaNmKF4zANn0uLLWuvNra4BjmKUtp33EZ4AVKB26fzWy14BkVGeJfPAtKry0x3SFfQ==}
     engines: {node: '>=12'}
     peerDependencies:
       prettier: ^2.3.0
     dependencies:
-      '@solidity-parser/parser': 0.14.1
-      emoji-regex: 10.0.1
+      '@solidity-parser/parser': 0.14.2
+      emoji-regex: 10.1.0
       escape-string-regexp: 4.0.0
       prettier: 2.7.1
-      semver: 7.3.5
+      semver: 7.3.7
       solidity-comments-extractor: 0.0.7
       string-width: 4.2.3
     dev: true
@@ -8804,7 +8804,7 @@ packages:
       - debug
     dev: true
 
-  /solhint-plugin-prettier/0.0.5_crqb3mgkdppjha35dqdzgwofw4:
+  /solhint-plugin-prettier/0.0.5_r7jkvaoul5idvzyirtba3mejq4:
     resolution: {integrity: sha512-7jmWcnVshIrO2FFinIvDQmhQpfpS2rRRn3RejiYgnjIE68xO2bvrYvjqVNfrio4xH9ghOqn83tKuTzLjEbmGIA==}
     peerDependencies:
       prettier: ^1.15.0 || ^2.0.0
@@ -8812,7 +8812,7 @@ packages:
     dependencies:
       prettier: 2.7.1
       prettier-linter-helpers: 1.0.0
-      prettier-plugin-solidity: 1.0.0-beta.19_prettier@2.7.1
+      prettier-plugin-solidity: 1.0.0-dev.22_prettier@2.7.1
     dev: true
 
   /solhint/3.3.7:
