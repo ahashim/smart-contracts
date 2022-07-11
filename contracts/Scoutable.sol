@@ -30,7 +30,7 @@ contract Scoutable is Bankable, IScoutable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
-     * @dev Upgradeable constructor
+     * @dev Upgradeable constructor.
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
     function __Scoutable_init() internal view onlyInitializing {}
@@ -41,10 +41,10 @@ contract Scoutable is Bankable, IScoutable {
     function ejectFromPool(uint256 tokenId) external whenNotPaused {
         ScoutPool storage pool = pools[tokenId];
 
-        // validate the account is in the pool
+        // validate that the account is in the pool
         if (!pool.members.contains(msg.sender)) revert NotInScoutPool();
 
-        // remove the user & their shares from the pool
+        // remove the scout & their shares from the pool
         pool.shares -= pool.members.get(msg.sender);
         pool.members.remove(msg.sender);
 
@@ -55,7 +55,7 @@ contract Scoutable is Bankable, IScoutable {
             // delete the pool
             delete pools[tokenId];
 
-            // remove the token from viral squeaks
+            // remove the squeak from the viral squeaks list
             viralSqueaks.remove(tokenId);
         }
     }
@@ -84,7 +84,7 @@ contract Scoutable is Bankable, IScoutable {
         ScoutPool storage pool = pools[tokenId];
         uint256 memberCount = pool.members.length();
 
-        // initialize scouts array based on the # of pool members
+        // initialize scouts array based on the number of pool members
         Scout[] memory scouts = new Scout[](memberCount);
 
         // populate the array with member addresses from the pool
@@ -97,23 +97,23 @@ contract Scoutable is Bankable, IScoutable {
     }
 
     /**
-     * @dev Updates the scout level for an account, and adds them to the scout
-     *      pool of a viral squeak.
+     * @dev Increases the scout level for a user, and adds them to the scout
+     *      pool for the viral squeak.
      * @param user User to add to scouts list.
-     * @param pool Storage pointer to ScoutPool.
+     * @param pool pointer to a {ScoutPool}.
      */
     function _addScout(User storage user, ScoutPool storage pool) internal {
         // upgrade the users scout level
         _increaseScoutLevel(user, 1);
 
-        // add them to the pool & increase its share count by users scout level
+        // add them to the pool & increase its share count
         pool.members.set(user.account, user.scoutLevel);
         pool.shares += user.scoutLevel;
     }
 
     /**
      * @dev Increases a scouts level until they hit the maximum.
-     * @param user User to modify.
+     * @param user {User} to modify.
      * @param amount Number of levels to increase by.
      */
     function _increaseScoutLevel(User storage user, uint256 amount) internal {
@@ -122,11 +122,12 @@ contract Scoutable is Bankable, IScoutable {
         if (user.scoutLevel < maxLevel) {
             uint256 newLevel;
 
-            // determine new level (can be unchecked due to scoutMaxLevel limit)
+            // determine the new level (unchecked due to scoutMaxLevel limit)
             unchecked {
                 newLevel = user.scoutLevel + amount;
             }
 
+            // increase the users level
             user.scoutLevel = newLevel < maxLevel ? newLevel : maxLevel;
         }
     }

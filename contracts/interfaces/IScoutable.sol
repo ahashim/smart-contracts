@@ -26,7 +26,7 @@ import './storage/IStoreable.sol';
 interface IScoutable is IStoreable {
     /**
      * @dev Ejects the sender from a scout pool they are a part of.
-     * @param tokenId ID of the viral squeak.
+     * @param tokenId ID of the viral squeak associated with the pool.
      * @notice Sender must be a member of the pool.
      */
     function ejectFromPool(uint256 tokenId) external;
@@ -34,7 +34,7 @@ interface IScoutable is IStoreable {
     /**
      * @dev Gets the pool amount & number of shares.
      * @param tokenId ID of the viral squeak.
-     * @return ScoutPoolInfo
+     * @return A {ScoutPoolInfo}.
      */
     function getPoolInfo(uint256 tokenId)
         external
@@ -44,7 +44,7 @@ interface IScoutable is IStoreable {
     /**
      * @dev Gets a list of scouts for a viral squeak.
      * @param tokenId ID of the viral squeak.
-     * @return A list of Scouts.
+     * @return Array of {Scout}'s.
      */
     function getScouts(uint256 tokenId) external view returns (Scout[] memory);
 }
