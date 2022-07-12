@@ -17,7 +17,6 @@
 
 */
 pragma solidity 0.8.9;
-import 'hardhat/console.sol';
 
 import './Validateable.sol';
 import './interfaces/IBankable.sol';
