@@ -25,11 +25,19 @@ import './storage/IStoreable.sol';
  */
 interface IScoutable is IStoreable {
     /**
-     * @dev Ejects the sender from a scout pool they are a part of.
+     * @dev Ejects the sender from a scout pool they belong to.
      * @param tokenId ID of the viral squeak associated with the pool.
      * @notice Sender must be a member of the pool.
      */
     function ejectFromPool(uint256 tokenId) external;
+
+    /**
+     * @dev Ejects the account from a scout pool.
+     * @param tokenId ID of the viral squeak associated with the pool.
+     * @param account Address of the account.
+     * @notice Only callable by MODERATOR_ROLE.
+     */
+    function ejectFromPool(uint256 tokenId, address account) external;
 
     /**
      * @dev Gets the pool amount & number of shares.

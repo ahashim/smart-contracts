@@ -39,25 +39,17 @@ contract Scoutable is Bankable, IScoutable {
      * @dev See {IScoutable-ejectFromPool}.
      */
     function ejectFromPool(uint256 tokenId) external whenNotPaused {
-        ScoutPool storage pool = pools[tokenId];
+        _ejectFromPool(tokenId, msg.sender);
+    }
 
-        // validate that the account is in the pool
-        if (!pool.members.contains(msg.sender)) revert NotInScoutPool();
-
-        // remove the scout & their shares from the pool
-        pool.shares -= pool.members.get(msg.sender);
-        pool.members.remove(msg.sender);
-
-        if (pool.members.length() == 0) {
-            // drain the funds
-            if (pool.amount > 0) _deposit(pool.amount);
-
-            // delete the pool
-            delete pools[tokenId];
-
-            // remove the squeak from the viral squeaks list
-            viralSqueaks.remove(tokenId);
-        }
+    /**
+     * @dev See {IScoutable-ejectFromPool}.
+     */
+    function ejectFromPool(uint256 tokenId, address account)
+        external
+        onlyRole(MODERATOR_ROLE)
+    {
+        _ejectFromPool(tokenId, account);
     }
 
     /**
@@ -129,6 +121,33 @@ contract Scoutable is Bankable, IScoutable {
 
             // increase the users level
             user.scoutLevel = newLevel < maxLevel ? newLevel : maxLevel;
+        }
+    }
+
+    /**
+     * @dev Ejects the account from a scout pool.
+     * @param tokenId ID of the viral squeak associated with the pool.
+     * @param account Address of the account.
+     */
+    function _ejectFromPool(uint256 tokenId, address account) private {
+        ScoutPool storage pool = pools[tokenId];
+
+        // validate that the account is in the pool
+        if (!pool.members.contains(account)) revert NotInScoutPool();
+
+        // remove the scout & their shares from the pool
+        pool.shares -= pool.members.get(account);
+        pool.members.remove(account);
+
+        if (pool.members.length() == 0) {
+            // drain the funds
+            if (pool.amount > 0) _deposit(pool.amount);
+
+            // delete the pool
+            delete pools[tokenId];
+
+            // remove the squeak from the viral squeaks list
+            viralSqueaks.remove(tokenId);
         }
     }
 }

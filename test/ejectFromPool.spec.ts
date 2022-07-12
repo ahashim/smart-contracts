@@ -9,6 +9,7 @@ import {
   SCOUT_POOL_THRESHOLD,
   SCOUT_BONUS,
   SCOUT_MAX_LEVEL,
+  MODERATOR_ROLE,
 } from '../constants';
 import { Interaction } from '../enums';
 
@@ -60,6 +61,11 @@ describe('ejectFromPool', () => {
       await critter.connect(account).createAccount(index.toString());
     });
 
+    // the owner grants ahmed the MODERATOR_ROLE
+    await critter
+      .connect(owner)
+      .grantRole(ethers.utils.id(MODERATOR_ROLE), ahmed.address);
+
     // ahmed posts a squeak
     tx = await critter.createSqueak('hello blockchain!');
     receipt = await tx.wait();
@@ -78,7 +84,7 @@ describe('ejectFromPool', () => {
     });
 
     // barbie ejects from the pool
-    await critter.connect(barbie).ejectFromPool(squeakId);
+    await critter.connect(barbie)['ejectFromPool(uint256)'](squeakId);
 
     return {
       critter,
@@ -117,7 +123,7 @@ describe('ejectFromPool', () => {
     expect(memberCount).to.eq(1);
 
     // remaining member ejects
-    await critter.connect(carlos).ejectFromPool(squeakId);
+    await critter.connect(carlos)['ejectFromPool(uint256)'](squeakId);
     ({ amount, shares, memberCount } = await critter.getPoolInfo(squeakId));
 
     expect(amount).to.eq(0);
@@ -129,19 +135,32 @@ describe('ejectFromPool', () => {
     );
   });
 
+  it('allows a moderator to eject a member from the pool', async () => {
+    // moderator ejects the last member
+    await critter['ejectFromPool(uint256,address)'](squeakId, carlos.address);
+    const { amount, shares, memberCount } = await critter.getPoolInfo(
+      squeakId
+    );
+
+    expect(amount).to.eq(0);
+    expect(memberCount).to.eq(0);
+    expect(shares).to.eq(0);
+    expect(await critter.isViral(squeakId)).to.be.false;
+  });
+
   it('reverts when the user is not a part of the pool', async () => {
-    await expect(critter.ejectFromPool(squeakId)).to.be.reverted;
+    await expect(critter['ejectFromPool(uint256)'](squeakId)).to.be.reverted;
   });
 
   it('reverts when the pool does not exist', async () => {
-    await expect(critter.ejectFromPool(420)).to.be.reverted;
+    await expect(critter['ejectFromPool(uint256)'](420)).to.be.reverted;
   });
 
   it('reverts when the contract is paused', async () => {
     // pause the contract
     await critter.connect(owner).pause();
 
-    await expect(critter.connect(carlos).ejectFromPool(squeakId)).to.be
-      .reverted;
+    await expect(critter.connect(carlos)['ejectFromPool(uint256)'](squeakId))
+      .to.be.reverted;
   });
 });
