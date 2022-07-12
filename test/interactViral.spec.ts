@@ -32,12 +32,15 @@ describe('interact viral', () => {
     barbie: Wallet,
     carlos: Wallet,
     daphne: Wallet;
-  let ahmedBalance: BigNumber, squeakId: BigNumber, treasuryBalance: BigNumber;
+  let ahmedBalance: BigNumber,
+    squeakId: BigNumber,
+    transferAmount: BigNumber,
+    treasuryBalance: BigNumber,
+    treasuryTake: BigNumber;
   let poolInfo: PoolInfo;
-  let treasuryTake: number, transferAmount: number;
 
   // test variables
-  const scoutPoolThreshold = ethers.utils.parseEther('0.000002');
+  const scoutPoolThreshold = ethers.utils.parseEther('0.000004');
   const viralityThreshold = 60;
 
   before('create fixture loader', async () => {
@@ -83,8 +86,8 @@ describe('interact viral', () => {
     };
 
     // determine treasury take & transfer amount based on like interaction fee
-    treasuryTake = (fees.like.toNumber() * PLATFORM_TAKE_RATE) / 100;
-    transferAmount = (fees.like.toNumber() - treasuryTake) / 2;
+    treasuryTake = fees.like.mul(PLATFORM_TAKE_RATE).div(100);
+    transferAmount = fees.like.sub(treasuryTake).div(2);
 
     // ahmed posts a squeak
     // current virality score: 0
@@ -210,7 +213,7 @@ describe('interact viral', () => {
     );
   });
 
-  it('deposits half of the platform fee into the scout pool', async () => {
+  it('deposits part of the interaction fee into the scout pool', async () => {
     expect(poolInfo.amount).to.eq(transferAmount);
   });
 

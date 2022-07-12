@@ -78,7 +78,7 @@ contract Viral is Scoutable, IViral {
      * @dev Adds a squeak to the list of viral squeaks, and all of its positive
      *      interactors to a scout pool while upgrading their scout levels.
      * @param tokenId ID of the squeak.
-     * @param sentiment Pointer to Sentiment values for the squeak.
+     * @param sentiment Pointer to the {Sentiment} of the squeak.
      */
     function _markViral(uint256 tokenId, Sentiment storage sentiment)
         internal
@@ -102,7 +102,7 @@ contract Viral is Scoutable, IViral {
             ? likesCount
             : resqueaksCount;
 
-        // TODO: move this unbounded loop offchain
+        // TODO: move this unbounded loop off-chain
         for (uint256 i = 0; i < upperBound; i++) {
             if (i < likesCount)
                 // add all likers

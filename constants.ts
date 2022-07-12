@@ -15,7 +15,7 @@ export const UPGRADER_ROLE = 'UPGRADER_ROLE';
 
 // fees (in wei)
 export const PLATFORM_FEE = utils.parseEther('0.00005');
-export const PLATFORM_TAKE_RATE = 20;
+export const PLATFORM_TAKE_RATE = 10;
 
 // scouts
 export const SCOUT_BONUS = 3;

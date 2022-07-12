@@ -103,14 +103,18 @@ describe('ejectFromPool', () => {
   });
 
   it('deletes the pool & removes it from virality when all members eject', async () => {
-    const expectedPoolAmount = ethers.utils.parseEther('.00002');
     let { amount, shares, memberCount } = poolInfo;
 
+    // get expected pool amount after Carlos propels the squeak to virality
+    const interactionFee = await critter.fees(Interaction.Like);
+    const interactionTake = interactionFee.mul(PLATFORM_TAKE_RATE).div(100);
+    const expectedPoolAmount = interactionFee.sub(interactionTake).div(2);
+
     // squeak is still viral, and pool exists
-    expect(amount).to.eq(expectedPoolAmount);
-    expect(shares).to.eq(5); // carlos' scout level
-    expect(memberCount).to.eq(1);
     expect(await critter.isViral(squeakId)).to.be.true;
+    expect(amount).to.eq(expectedPoolAmount);
+    expect(shares).to.eq(5);
+    expect(memberCount).to.eq(1);
 
     // remaining member ejects
     await critter.connect(carlos).ejectFromPool(squeakId);

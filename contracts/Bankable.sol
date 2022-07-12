@@ -17,6 +17,7 @@
 
 */
 pragma solidity 0.8.9;
+import 'hardhat/console.sol';
 
 import './Validateable.sol';
 import './interfaces/IBankable.sol';
@@ -128,7 +129,7 @@ contract Bankable is Validateable, IBankable {
      * @dev Makes a payment for an interaction from the sender to the squeaks
      *      owner or the treasury (based on interaction polarity).
      * @param tokenId ID of the squeak.
-     * @param interaction A value from the Interaction enum.
+     * @param interaction An {Interaction} value.
      */
     function _makePayment(uint256 tokenId, Interaction interaction) internal {
         uint256 interactionFee = fees[interaction];
