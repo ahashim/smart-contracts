@@ -18,7 +18,7 @@ specifiers:
   abdk-libraries-solidity: ^3.0.0
   chai: ^4.3.6
   dotenv: ^16.0.1
-  erc721a-upgradeable: ^4.1.0
+  erc721a-upgradeable: ^4.2.2
   eslint: ^8.19.0
   eslint-config-prettier: ^8.5.0
   eslint-config-standard: ^17.0.0
@@ -60,7 +60,7 @@ devDependencies:
   abdk-libraries-solidity: 3.0.0
   chai: 4.3.6
   dotenv: 16.0.1
-  erc721a-upgradeable: 4.1.0
+  erc721a-upgradeable: 4.2.2
   eslint: 8.19.0
   eslint-config-prettier: 8.5.0_eslint@8.19.0
   eslint-config-standard: 17.0.0_3y77imf4oat3akor274t4exgn4
@@ -3580,8 +3580,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /erc721a-upgradeable/4.1.0:
-    resolution: {integrity: sha512-RLd1XfAAzy1/Ze+duysdDEVNvsZsCMSyO5IBF7PkgpZnDSZqRlqGjRntrtJC2fk7p3O77wW1US+80eNz8E87HA==}
+  /erc721a-upgradeable/4.2.2:
+    resolution: {integrity: sha512-STEkDBS3aVUXTog+044rvh8BqNfIbytkzgp8k11cXvK0WVbT1ssi56aFmOv2FKm25pHVlHZYBLKq6nE+HklB9g==}
     dev: true
 
   /errno/0.1.8:

@@ -43,7 +43,7 @@
     "abdk-libraries-solidity": "^3.0.0",
     "chai": "^4.3.6",
     "dotenv": "^16.0.1",
-    "erc721a-upgradeable": "^4.1.0",
+    "erc721a-upgradeable": "^4.2.2",
     "eslint": "^8.19.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard": "^17.0.0",
