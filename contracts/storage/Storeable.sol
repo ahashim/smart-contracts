@@ -16,7 +16,7 @@
    limitations under the License.
 
 */
-pragma solidity 0.8.9;
+pragma solidity 0.8.16;
 
 import './Immutable.sol';
 import '../interfaces/storage/IStoreable.sol';
