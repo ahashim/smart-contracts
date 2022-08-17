@@ -21,6 +21,8 @@ pragma solidity 0.8.16;
 import './Immutable.sol';
 import '../interfaces/storage/IStoreable.sol';
 
+using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+
 /**
  * @title Storeable
  * @dev A contract to handle critter storage variables.
@@ -30,8 +32,6 @@ import '../interfaces/storage/IStoreable.sol';
  *      collisions & upgradeability: https://tinyurl.com/d424mcpx
  */
 contract Storeable is Immutable, IStoreable {
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-
     /**
      * @dev Upgradeable constructor
      */

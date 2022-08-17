@@ -22,14 +22,14 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import './Viral.sol';
 import './interfaces/ISqueakable.sol';
 
+using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+
 /**
  * @title Squeakable
  * @dev A contract to handle actions performed on a Squeak.
  */
 contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-
     /**
      * @dev Upgradeable constructor.
      */

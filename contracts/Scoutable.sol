@@ -21,14 +21,14 @@ pragma solidity 0.8.16;
 import './Bankable.sol';
 import './interfaces/IScoutable.sol';
 
+using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
+using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+
 /**
  * @title Scoutable
  * @dev A contract to handle scout logic.
  */
 contract Scoutable is Bankable, IScoutable {
-    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-
     /**
      * @dev Upgradeable constructor.
      */
