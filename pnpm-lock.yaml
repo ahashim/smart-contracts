@@ -4,7 +4,7 @@ specifiers:
   '@ethersproject/abi': ^5.6.4
   '@ethersproject/bytes': ^5.6.1
   '@ethersproject/providers': ^5.6.8
-  '@nomiclabs/hardhat-ethers': ^2.1.0
+  '@nomiclabs/hardhat-ethers': ^2.1.1
   '@nomiclabs/hardhat-waffle': ^2.0.3
   '@openzeppelin/contracts-upgradeable': ^4.7.0
   '@openzeppelin/hardhat-upgrades': ^1.19.0
@@ -29,7 +29,7 @@ specifiers:
   eslint-plugin-promise: ^6.0.0
   ethereum-waffle: ^3.4.4
   ethers: ^5.6.9
-  hardhat: ^2.10.0
+  hardhat: ^2.10.2
   hardhat-contract-sizer: ^2.6.1
   hardhat-gas-reporter: ^1.0.8
   hardhat-watcher: ^2.3.0
@@ -46,12 +46,12 @@ devDependencies:
   '@ethersproject/abi': 5.6.4
   '@ethersproject/bytes': 5.6.1
   '@ethersproject/providers': 5.6.8
-  '@nomiclabs/hardhat-ethers': 2.1.0_aczsflea7zwg5rslfwp3gg4avy
-  '@nomiclabs/hardhat-waffle': 2.0.3_dcvnsllmm676ignkib2rbakqou
+  '@nomiclabs/hardhat-ethers': 2.1.1_illgchr2x7f55uzbyysl5sx6wu
+  '@nomiclabs/hardhat-waffle': 2.0.3_lh6okjkohliiwwdo6kku6zj24e
   '@openzeppelin/contracts-upgradeable': 4.7.0
-  '@openzeppelin/hardhat-upgrades': 1.19.0_oipwi4u5qozcenkpuwlqopgmha
+  '@openzeppelin/hardhat-upgrades': 1.19.0_fagcna7xmc2ozfszjjaiizcjxy
   '@typechain/ethers-v5': 10.1.0_3a2z4xo3ofaclmnvqkkolsxa2u
-  '@typechain/hardhat': 6.1.2_q23vbzuigdjdfqtkube2jwkffq
+  '@typechain/hardhat': 6.1.2_3xjknlb5byqadtso2k3zq5qgbu
   '@types/chai': 4.3.1
   '@types/mocha': 9.1.1
   '@types/node': 18.0.3
@@ -71,10 +71,10 @@ devDependencies:
   eslint-plugin-promise: 6.0.0_eslint@8.19.0
   ethereum-waffle: 3.4.4_typescript@4.7.4
   ethers: 5.6.9
-  hardhat: 2.10.0_bn3y5sn7aa6hsplivwol7ie4em
-  hardhat-contract-sizer: 2.6.1_hardhat@2.10.0
-  hardhat-gas-reporter: 1.0.8_hardhat@2.10.0
-  hardhat-watcher: 2.3.0_hardhat@2.10.0
+  hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
+  hardhat-contract-sizer: 2.6.1_hardhat@2.10.2
+  hardhat-gas-reporter: 1.0.8_hardhat@2.10.2
+  hardhat-watcher: 2.3.0_hardhat@2.10.2
   prettier: 2.7.1
   prettier-plugin-solidity: 1.0.0-dev.22_prettier@2.7.1
   solhint: 3.3.7
@@ -707,17 +707,17 @@ packages:
       fastq: 1.13.0
     dev: true
 
-  /@nomiclabs/hardhat-ethers/2.1.0_aczsflea7zwg5rslfwp3gg4avy:
-    resolution: {integrity: sha512-vlW90etB3675QWG7tMrHaDoTa7ymMB7irM4DAQ98g8zJoe9YqEggeDnbO6v5b+BLth/ty4vN6Ko/kaqRN1krHw==}
+  /@nomiclabs/hardhat-ethers/2.1.1_illgchr2x7f55uzbyysl5sx6wu:
+    resolution: {integrity: sha512-Gg0IFkT/DW3vOpih4/kMjeZCLYqtfgECLeLXTs7ZDPzcK0cfoc5wKk4nq5n/izCUzdhidO/Utd6ptF9JrWwWVA==}
     peerDependencies:
       ethers: ^5.0.0
       hardhat: ^2.0.0
     dependencies:
       ethers: 5.6.9
-      hardhat: 2.10.0_bn3y5sn7aa6hsplivwol7ie4em
+      hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
     dev: true
 
-  /@nomiclabs/hardhat-etherscan/3.1.0_hardhat@2.10.0:
+  /@nomiclabs/hardhat-etherscan/3.1.0_hardhat@2.10.2:
     resolution: {integrity: sha512-JroYgfN1AlYFkQTQ3nRwFi4o8NtZF7K/qFR2dxDUgHbCtIagkUseca9L4E/D2ScUm4XT40+8PbCdqZi+XmHyQA==}
     peerDependencies:
       hardhat: ^2.0.4
@@ -728,16 +728,16 @@ packages:
       chalk: 2.4.2
       debug: 4.3.4
       fs-extra: 7.0.1
-      hardhat: 2.10.0_bn3y5sn7aa6hsplivwol7ie4em
+      hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
       lodash: 4.17.21
       semver: 6.3.0
       table: 6.8.0
-      undici: 5.5.1
+      undici: 5.8.2
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@nomiclabs/hardhat-waffle/2.0.3_dcvnsllmm676ignkib2rbakqou:
+  /@nomiclabs/hardhat-waffle/2.0.3_lh6okjkohliiwwdo6kku6zj24e:
     resolution: {integrity: sha512-049PHSnI1CZq6+XTbrMbMv5NaL7cednTfPenx02k3cEh8wBMLa6ys++dBETJa6JjfwgA9nBhhHQ173LJv6k2Pg==}
     peerDependencies:
       '@nomiclabs/hardhat-ethers': ^2.0.0
@@ -745,19 +745,19 @@ packages:
       ethers: ^5.0.0
       hardhat: ^2.0.0
     dependencies:
-      '@nomiclabs/hardhat-ethers': 2.1.0_aczsflea7zwg5rslfwp3gg4avy
+      '@nomiclabs/hardhat-ethers': 2.1.1_illgchr2x7f55uzbyysl5sx6wu
       '@types/sinon-chai': 3.2.8
       '@types/web3': 1.0.19
       ethereum-waffle: 3.4.4_typescript@4.7.4
       ethers: 5.6.9
-      hardhat: 2.10.0_bn3y5sn7aa6hsplivwol7ie4em
+      hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
     dev: true
 
   /@openzeppelin/contracts-upgradeable/4.7.0:
     resolution: {integrity: sha512-wO3PyoAaAV/rA77cK8H4c3SbO98QylTjfiFxyvURUZKTFLV180rnAvna1x7/Nxvt0Gqv+jt1sXKC7ygxsq8iCw==}
     dev: true
 
-  /@openzeppelin/hardhat-upgrades/1.19.0_oipwi4u5qozcenkpuwlqopgmha:
+  /@openzeppelin/hardhat-upgrades/1.19.0_fagcna7xmc2ozfszjjaiizcjxy:
     resolution: {integrity: sha512-351QqDO3nZ96g0BO/bQnaTflix4Nw4ELWC/hZ8PwicsuVxRmxN/GZhxPrs62AOdiQdZ+xweawrVXa5knliRd4A==}
     hasBin: true
     peerDependencies:
@@ -769,11 +769,11 @@ packages:
       '@nomiclabs/harhdat-etherscan':
         optional: true
     dependencies:
-      '@nomiclabs/hardhat-ethers': 2.1.0_aczsflea7zwg5rslfwp3gg4avy
-      '@nomiclabs/hardhat-etherscan': 3.1.0_hardhat@2.10.0
+      '@nomiclabs/hardhat-ethers': 2.1.1_illgchr2x7f55uzbyysl5sx6wu
+      '@nomiclabs/hardhat-etherscan': 3.1.0_hardhat@2.10.2
       '@openzeppelin/upgrades-core': 1.16.1
       chalk: 4.1.2
-      hardhat: 2.10.0_bn3y5sn7aa6hsplivwol7ie4em
+      hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
       proper-lockfile: 4.1.2
     transitivePeerDependencies:
       - supports-color
@@ -1024,7 +1024,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@typechain/hardhat/6.1.2_q23vbzuigdjdfqtkube2jwkffq:
+  /@typechain/hardhat/6.1.2_3xjknlb5byqadtso2k3zq5qgbu:
     resolution: {integrity: sha512-k4Ea3pVITKB2DH8p1a5U38cyy7KZPD04Spo4q5b4wO+n2mT+uAz5dxckPtbczn/Kk5wiFq+ZkuOtw5ZKFhL/+w==}
     peerDependencies:
       '@ethersproject/abi': ^5.4.7
@@ -1039,7 +1039,7 @@ packages:
       '@typechain/ethers-v5': 10.1.0_3a2z4xo3ofaclmnvqkkolsxa2u
       ethers: 5.6.9
       fs-extra: 9.1.0
-      hardhat: 2.10.0_bn3y5sn7aa6hsplivwol7ie4em
+      hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
       lodash: 4.17.21
       typechain: 8.1.0_typescript@4.7.4
     dev: true
@@ -2344,6 +2344,10 @@ packages:
     resolution: {integrity: sha512-GAcQvbpsM0pUb0zw1EI0KhQEZ+lRwR5fYaAp3vPOYuP7aDvGy6cVN6XHLauvF8SOga2y0dcLcjt3iQDTSEliyw==}
     dev: true
 
+  /bignumber.js/9.1.0:
+    resolution: {integrity: sha512-4LwHK4nfDOraBCtst+wOWIHbu1vhvAPJK8g8nROd4iuc3PSEjWif/qwbkh8jwCJz6yDBvtU4KPynETgrfh7y3A==}
+    dev: true
+
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
@@ -2680,7 +2684,7 @@ packages:
     resolution: {integrity: sha512-5IMhi9e1QU76ppa5/ajP1BmMWZ2FHkhAhjeVKQ/EFCgYSEaeVaoGtL7cxJskf9oCCk+XjzaIdc3IuU/dbA/o2A==}
     engines: {node: '>=6.0.0'}
     dependencies:
-      bignumber.js: 9.0.2
+      bignumber.js: 9.1.0
       nofilter: 1.0.4
     dev: true
 
@@ -5354,7 +5358,7 @@ packages:
       source-map: 0.6.1
       wordwrap: 1.0.0
     optionalDependencies:
-      uglify-js: 3.15.3
+      uglify-js: 3.17.0
     dev: true
 
   /har-schema/2.0.0:
@@ -5371,40 +5375,40 @@ packages:
       har-schema: 2.0.0
     dev: true
 
-  /hardhat-contract-sizer/2.6.1_hardhat@2.10.0:
+  /hardhat-contract-sizer/2.6.1_hardhat@2.10.2:
     resolution: {integrity: sha512-b8wS7DBvyo22kmVwpzstAQTdDCThpl/ySBqZh5ga9Yxjf61/uTL12TEg5nl7lDeWy73ntEUzxMwY6XxbQEc2wA==}
     peerDependencies:
       hardhat: ^2.0.0
     dependencies:
       chalk: 4.1.2
       cli-table3: 0.6.1
-      hardhat: 2.10.0_bn3y5sn7aa6hsplivwol7ie4em
+      hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
     dev: true
 
-  /hardhat-gas-reporter/1.0.8_hardhat@2.10.0:
+  /hardhat-gas-reporter/1.0.8_hardhat@2.10.2:
     resolution: {integrity: sha512-1G5thPnnhcwLHsFnl759f2tgElvuwdkzxlI65fC9PwxYMEe9cmjkVAAWTf3/3y8uP6ZSPiUiOW8PgZnykmZe0g==}
     peerDependencies:
       hardhat: ^2.0.2
     dependencies:
       array-uniq: 1.0.3
       eth-gas-reporter: 0.2.24
-      hardhat: 2.10.0_bn3y5sn7aa6hsplivwol7ie4em
+      hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
       sha1: 1.1.1
     transitivePeerDependencies:
       - '@codechecks/client'
     dev: true
 
-  /hardhat-watcher/2.3.0_hardhat@2.10.0:
+  /hardhat-watcher/2.3.0_hardhat@2.10.2:
     resolution: {integrity: sha512-u76a/1pxPyW9DRZ7FZ8HoSQ4AuKOiSDQTR2NyiZlH5f0Ux+qQfahsh9CNusRLhx2s1OWzlkwCVvrdHq5FTGUzw==}
     peerDependencies:
       hardhat: ^2.0.0
     dependencies:
       chokidar: 3.5.3
-      hardhat: 2.10.0_bn3y5sn7aa6hsplivwol7ie4em
+      hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
     dev: true
 
-  /hardhat/2.10.0_bn3y5sn7aa6hsplivwol7ie4em:
-    resolution: {integrity: sha512-9VUorKvWNyW96qFXkwkpDUSeWND3gOZpm0oJ8l63JQJvWhxyxTJ92BcOrNylOKy9hzNNGdMfM2QWNP80fGOjpA==}
+  /hardhat/2.10.2_bn3y5sn7aa6hsplivwol7ie4em:
+    resolution: {integrity: sha512-L/KvDDT/MA6332uAtYTqdcHoSABljw4pPjHQe5SHdIJ+xKfaSc6vDKw03CmrQ5Xup0gHs8XnVSBpZo1AbbIW7g==}
     engines: {node: ^14.0.0 || ^16.0.0 || ^18.0.0}
     hasBin: true
     peerDependencies:
@@ -9685,8 +9689,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /uglify-js/3.15.3:
-    resolution: {integrity: sha512-6iCVm2omGJbsu3JWac+p6kUiOpg3wFO2f8lIXjfEb8RrmLjzog1wTPMmwKB7swfzzqxj9YM+sGUM++u1qN4qJg==}
+  /uglify-js/3.17.0:
+    resolution: {integrity: sha512-aTeNPVmgIMPpm1cxXr2Q/nEbvkmV8yq66F3om7X3P/cvOXQ0TMQ64Wk63iyT1gPlmdmGzjGpyLh1f3y8MZWXGg==}
     engines: {node: '>=0.8.0'}
     hasBin: true
     requiresBuild: true
@@ -9713,6 +9717,11 @@ packages:
 
   /undici/5.5.1:
     resolution: {integrity: sha512-MEvryPLf18HvlCbLSzCW0U00IMftKGI5udnjrQbC5D4P0Hodwffhv+iGfWuJwg16Y/TK11ZFK8i+BPVW2z/eAw==}
+    engines: {node: '>=12.18'}
+    dev: true
+
+  /undici/5.8.2:
+    resolution: {integrity: sha512-3KLq3pXMS0Y4IELV045fTxqz04Nk9Ms7yfBBHum3yxsTR4XNn+ZCaUbf/mWitgYDAhsplQ0B1G4S5D345lMO3A==}
     engines: {node: '>=12.18'}
     dev: true
 
