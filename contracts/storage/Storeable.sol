@@ -36,11 +36,32 @@ contract Storeable is Immutable, IStoreable {
      * @dev Upgradeable constructor
      */
     // solhint-disable-next-line func-name-mixedcase
-    function __Storeable_init(string calldata baseURI)
-        internal
-        onlyInitializing
-    {
+    function __Storeable_init(
+        string calldata baseURI,
+        uint256 platformFee,
+        uint256 platformTakeRate,
+        uint256 poolPayoutThreshold,
+        uint256 scoutMaxLevel,
+        uint256 scoutViralityBonus,
+        uint256 viralityThreshold
+    ) internal onlyInitializing {
         baseTokenURI = baseURI;
+
+        // set contract config values
+        config[Configuration.PlatformTakeRate] = platformTakeRate;
+        config[Configuration.ScoutMaxLevel] = scoutMaxLevel;
+        config[Configuration.PoolPayoutThreshold] = poolPayoutThreshold;
+        config[Configuration.ScoutViralityBonus] = scoutViralityBonus;
+        config[Configuration.ViralityThreshold] = viralityThreshold;
+
+        // set default interaction fees
+        fees[Interaction.Delete] = platformFee;
+        fees[Interaction.Dislike] = platformFee;
+        fees[Interaction.Like] = platformFee;
+        fees[Interaction.Resqueak] = platformFee;
+        fees[Interaction.UndoDislike] = platformFee;
+        fees[Interaction.UndoLike] = platformFee;
+        fees[Interaction.UndoResqueak] = platformFee;
     }
 
     /**
@@ -58,4 +79,39 @@ contract Storeable is Immutable, IStoreable {
      * @dev Set of squeak ID's that have gone viral.
      */
     EnumerableSetUpgradeable.UintSet internal viralSqueaks;
+
+    /**
+     * @dev Mapping of username <=> account address.
+     */
+    mapping(string => address) public addresses;
+
+    /**
+     * @dev Mapping of a contract Configuration key <=> its amount value.
+     */
+    mapping(Configuration => uint256) public config;
+
+    /**
+     * @dev Mapping of Interaction <=> fee amounts.
+     */
+    mapping(Interaction => uint256) public fees;
+
+    /**
+     * @dev Mapping of tokenId <=> Squeak.
+     */
+    mapping(uint256 => Squeak) public squeaks;
+
+    /**
+     * @dev Mapping of account address <=> User.
+     */
+    mapping(address => User) public users;
+
+    /**
+     * @dev Mapping of tokenId <=> ScoutPool.
+     */
+    mapping(uint256 => ScoutPool) internal pools;
+
+    /**
+     * @dev Mapping of tokenId <=> Sentiment.
+     */
+    mapping(uint256 => Sentiment) internal sentiments;
 }

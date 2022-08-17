@@ -21,7 +21,7 @@ pragma solidity 0.8.9;
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
-import './storage/Mappable.sol';
+import './storage/Storeable.sol';
 import './interfaces/IValidateable.sol';
 
 /**
@@ -34,7 +34,7 @@ contract Validateable is
     AccessControlUpgradeable,
     PausableUpgradeable,
     ERC721AUpgradeable,
-    Mappable,
+    Storeable,
     IValidateable
 {
     /**

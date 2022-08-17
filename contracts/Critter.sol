@@ -73,7 +73,8 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
 
         // Storage
         __Immutable_init();
-        __Mappable_init(
+        __Storeable_init(
+            baseURI,
             platformFee,
             platformTakeRate,
             poolPayoutThreshold,
@@ -81,7 +82,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
             scoutViralityBonus,
             viralityThreshold
         );
-        __Storeable_init(baseURI);
 
         // Logic
         __Accountable_init();

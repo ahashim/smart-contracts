@@ -25,7 +25,8 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
  * @dev A contract that only holds constant state variables.
  * @notice These variables do not take up storage slots because they are
  *      constant. This allows one to append more constant variables below the
- *      existing ones in increasing contract versions.
+ *      existing ones in increasing contract versions. More information here:
+ *      https://blog.soliditylang.org/2020/05/13/immutable-keyword/
  */
 contract Immutable is Initializable {
     /**
