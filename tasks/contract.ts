@@ -11,47 +11,29 @@ import {
 import type { Contract, ContractFactory, ContractTransaction } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { TransactionReceipt } from '@ethersproject/providers';
+import type { Critter } from '../typechain-types/contracts';
 
 // tasks
 task(
-  'createAccount',
-  'Create & confirm a signed createAccount transaction',
-  async ({
-    contract,
-    signer,
-    username,
-  }: {
-    contract: Contract;
-    signer: SignerWithAddress;
-    username: string;
-  }): Promise<TransactionReceipt> => {
-    // create account tx
-    const tx: ContractTransaction = await contract
-      .connect(signer)
-      .createAccount(username);
-
-    // wait for a confirmation
-    return await tx.wait();
-  }
-);
-
-task(
-  'deployContract',
+  'deploy-contract',
   'Deploys contracts via an upgradeable proxy from the owner EOA',
-  async (_, { ethers, upgrades }): Promise<Contract> => {
+  async (_, { ethers, upgrades }): Promise<Critter> => {
     // get contract factory instance
     const factory: ContractFactory = await ethers.getContractFactory(
       CONTRACT_NAME
     );
 
     // deploy contract via upgradeable proxy
-    return await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
+    return (await upgrades.deployProxy(
+      factory,
+      CONTRACT_INITIALIZER
+    )) as Critter;
   }
 );
 
 task(
-  'createSqueak',
-  'Create & confirm a signed squeak transaction',
+  'create-squeak',
+  'Create a signed squeak transaction',
   async ({
     contract,
     signer,
