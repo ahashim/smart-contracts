@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
+import { ethers, run, waffle } from 'hardhat';
 import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
 
 // types
@@ -10,7 +10,7 @@ describe('addresses', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
-  let username: string;
+  let username = 'ahmed';
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -18,11 +18,7 @@ describe('addresses', () => {
   });
 
   const addressesFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
-    username = 'ahmed';
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount(username);
@@ -30,7 +26,7 @@ describe('addresses', () => {
     return { critter, username };
   };
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     ({ critter, username } = await loadFixture(addressesFixture));
   });
 
