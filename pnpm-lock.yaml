@@ -6,8 +6,8 @@ specifiers:
   '@ethersproject/providers': ^5.6.8
   '@nomiclabs/hardhat-ethers': ^2.1.1
   '@nomiclabs/hardhat-waffle': ^2.0.3
-  '@openzeppelin/contracts-upgradeable': ^4.7.0
-  '@openzeppelin/hardhat-upgrades': ^1.19.0
+  '@openzeppelin/contracts-upgradeable': ^4.7.3
+  '@openzeppelin/hardhat-upgrades': ^1.20.0
   '@typechain/ethers-v5': ^10.1.0
   '@typechain/hardhat': ^6.1.2
   '@types/chai': ^4.3.1
@@ -48,8 +48,8 @@ devDependencies:
   '@ethersproject/providers': 5.6.8
   '@nomiclabs/hardhat-ethers': 2.1.1_illgchr2x7f55uzbyysl5sx6wu
   '@nomiclabs/hardhat-waffle': 2.0.3_lh6okjkohliiwwdo6kku6zj24e
-  '@openzeppelin/contracts-upgradeable': 4.7.0
-  '@openzeppelin/hardhat-upgrades': 1.19.0_fagcna7xmc2ozfszjjaiizcjxy
+  '@openzeppelin/contracts-upgradeable': 4.7.3
+  '@openzeppelin/hardhat-upgrades': 1.20.0_obiudf7iljujr2amb27etcrsaq
   '@typechain/ethers-v5': 10.1.0_3a2z4xo3ofaclmnvqkkolsxa2u
   '@typechain/hardhat': 6.1.2_3xjknlb5byqadtso2k3zq5qgbu
   '@types/chai': 4.3.1
@@ -753,17 +753,18 @@ packages:
       hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
     dev: true
 
-  /@openzeppelin/contracts-upgradeable/4.7.0:
-    resolution: {integrity: sha512-wO3PyoAaAV/rA77cK8H4c3SbO98QylTjfiFxyvURUZKTFLV180rnAvna1x7/Nxvt0Gqv+jt1sXKC7ygxsq8iCw==}
+  /@openzeppelin/contracts-upgradeable/4.7.3:
+    resolution: {integrity: sha512-+wuegAMaLcZnLCJIvrVUDzA9z/Wp93f0Dla/4jJvIhijRrPabjQbZe6fWiECLaJyfn5ci9fqf9vTw3xpQOad2A==}
     dev: true
 
-  /@openzeppelin/hardhat-upgrades/1.19.0_fagcna7xmc2ozfszjjaiizcjxy:
-    resolution: {integrity: sha512-351QqDO3nZ96g0BO/bQnaTflix4Nw4ELWC/hZ8PwicsuVxRmxN/GZhxPrs62AOdiQdZ+xweawrVXa5knliRd4A==}
+  /@openzeppelin/hardhat-upgrades/1.20.0_obiudf7iljujr2amb27etcrsaq:
+    resolution: {integrity: sha512-ign7fc/ZdPe+KAYCB91619o+wlBr7sIEEt1nqLhoXAJ9f0qVuXkwAaTdLB0MTSWH85TzlUUT2fTJp1ZnZ1o4LQ==}
     hasBin: true
     peerDependencies:
       '@nomiclabs/hardhat-ethers': ^2.0.0
       '@nomiclabs/hardhat-etherscan': ^3.1.0
       '@nomiclabs/harhdat-etherscan': '*'
+      ethers: ^5.0.5
       hardhat: ^2.0.2
     peerDependenciesMeta:
       '@nomiclabs/harhdat-etherscan':
@@ -771,25 +772,26 @@ packages:
     dependencies:
       '@nomiclabs/hardhat-ethers': 2.1.1_illgchr2x7f55uzbyysl5sx6wu
       '@nomiclabs/hardhat-etherscan': 3.1.0_hardhat@2.10.2
-      '@openzeppelin/upgrades-core': 1.16.1
+      '@openzeppelin/upgrades-core': 1.18.0
       chalk: 4.1.2
+      debug: 4.3.4
+      ethers: 5.6.9
       hardhat: 2.10.2_bn3y5sn7aa6hsplivwol7ie4em
       proper-lockfile: 4.1.2
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@openzeppelin/upgrades-core/1.16.1:
-    resolution: {integrity: sha512-+hejbeAfsZWIQL5Ih13gkdm2KO6kbERc1ektzcyb25/OtUwaRjIIHxW++LdC/3Hg5uzThVOzJBfiLdAbgwD+OA==}
+  /@openzeppelin/upgrades-core/1.18.0:
+    resolution: {integrity: sha512-fFp5sscGC876yhq7BU595LG45yky21sZFa6cDJigluUjAyJSPoLwF7GD9bSwQMMo4jC7ii1UJBtLipUxN6PVTA==}
     dependencies:
-      bn.js: 5.2.1
       cbor: 8.1.0
       chalk: 4.1.2
       compare-versions: 4.1.3
       debug: 4.3.4
-      ethereumjs-util: 7.1.4
+      ethereumjs-util: 7.1.5
       proper-lockfile: 4.1.2
-      solidity-ast: 0.4.31
+      solidity-ast: 0.4.35
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4428,6 +4430,17 @@ packages:
 
   /ethereumjs-util/7.1.4:
     resolution: {integrity: sha512-p6KmuPCX4mZIqsQzXfmSx9Y0l2hqf+VkAiwSisW3UKUFdk8ZkAt+AYaor83z2nSi6CU2zSsXMlD80hAbNEGM0A==}
+    engines: {node: '>=10.0.0'}
+    dependencies:
+      '@types/bn.js': 5.1.0
+      bn.js: 5.2.1
+      create-hash: 1.2.0
+      ethereum-cryptography: 0.1.3
+      rlp: 2.2.7
+    dev: true
+
+  /ethereumjs-util/7.1.5:
+    resolution: {integrity: sha512-SDl5kKrQAudFBUe5OJM9Ac6WmMyYmXX/6sTmLZ3ffG2eY6ZIGBes3pEDxNN6V72WyOw4CPD5RomKdsa8DAAwLg==}
     engines: {node: '>=10.0.0'}
     dependencies:
       '@types/bn.js': 5.1.0
@@ -8843,8 +8856,8 @@ packages:
       - supports-color
     dev: true
 
-  /solidity-ast/0.4.31:
-    resolution: {integrity: sha512-kX6o4XE4ihaqENuRRTMJfwQNHoqWusPENZUlX4oVb19gQdfi7IswFWnThONHSW/61umgfWdKtCBgW45iuOTryQ==}
+  /solidity-ast/0.4.35:
+    resolution: {integrity: sha512-F5bTDLh3rmDxRmLSrs3qt3nvxJprWSEkS7h2KmuXDx7XTfJ6ZKVTV1rtPIYCqJAuPsU/qa8YUeFn7jdOAZcTPA==}
     dev: true
 
   /solidity-comments-extractor/0.0.7:
