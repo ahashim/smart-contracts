@@ -8,7 +8,7 @@ import type { Critter } from '../typechain-types/contracts';
 describe('name', () => {
   let critter: Critter;
 
-  before('load the deployed contrat fixture', async () => {
+  before('load deployed contract fixture', async () => {
     const nameFixture = () => run('deploy-contract');
     critter = await waffle.createFixtureLoader()(nameFixture);
   });
