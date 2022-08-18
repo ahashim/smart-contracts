@@ -1,19 +1,17 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
+import { ethers, run, waffle } from 'hardhat';
 import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
   SCOUT_MAX_LEVEL,
   PLATFORM_TAKE_RATE,
   SCOUT_POOL_THRESHOLD,
   SCOUT_BONUS,
   VIRALITY_THRESHOLD,
 } from '../constants';
+import { Configuration } from '../enums';
 
 // types
 import type { Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
-import { Configuration } from '../enums';
+import type { Critter } from '../typechain-types/contracts';
 
 describe('config', () => {
   let critter: Critter;
@@ -25,15 +23,9 @@ describe('config', () => {
     loadFixture = waffle.createFixtureLoader([owner]);
   });
 
-  const configFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    return (await upgrades.deployProxy(
-      factory,
-      CONTRACT_INITIALIZER
-    )) as Critter;
-  };
+  const configFixture = async () => await run('deploy-contract');
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     critter = await loadFixture(configFixture);
   });
 
