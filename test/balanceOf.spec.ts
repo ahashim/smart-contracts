@@ -1,17 +1,11 @@
-import {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import { Result } from '@ethersproject/abi';
-import { ethers, upgrades, waffle } from 'hardhat';
 import { expect } from 'chai';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
-import { Critter } from '../typechain-types/contracts';
+import { ethers, run, waffle } from 'hardhat';
 
-describe('balanceOf', () => {
+// types
+import type { BigNumber, Wallet } from 'ethers';
+import type { Critter } from '../typechain-types/contracts';
+
+describe.only('balanceOf', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
@@ -23,31 +17,25 @@ describe('balanceOf', () => {
   });
 
   const balanceOfFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    // deploy contract
+    critter = (await run('deploy-contract')).connect(ahmed);
 
-    // ahmed creates an account & posts a squeak
+    // ahmed creates an account
     await critter.createAccount('ahmed');
-    const tx = (await critter.createSqueak(
-      'hello blockchain!'
-    )) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+
+    // ahmed creates a squeak
+    squeakId = await run('create-squeak', {
+      content: 'hello blockchain',
+      contract: critter,
+      signer: ahmed,
+    });
 
     return { critter, squeakId };
   };
 
-  beforeEach(
-    'deploy test contract, ahmed creates an account & posts a squeak',
-    async () => {
-      ({ critter, squeakId } = await loadFixture(balanceOfFixture));
-    }
-  );
+  beforeEach('load deployed contract fixture', async () => {
+    ({ critter, squeakId } = await loadFixture(balanceOfFixture));
+  });
 
   it('lets a user get a balance of their squeaks', async () => {
     expect(await critter.balanceOf(ahmed.address)).to.eq(1);
