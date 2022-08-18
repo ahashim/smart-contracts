@@ -24,11 +24,11 @@ describe('balanceOf', () => {
     await critter.createAccount('ahmed');
 
     // ahmed creates a squeak
-    squeakId = await run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain',
       contract: critter,
       signer: ahmed,
-    });
+    }));
 
     return { critter, squeakId };
   };

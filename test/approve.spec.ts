@@ -27,11 +27,11 @@ describe('approve', () => {
     });
 
     // ahmed creates a squeak
-    squeakId = await run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain',
       contract: critter,
       signer: ahmed,
-    });
+    }));
 
     // ahmed approves barbie to transfer the squeak
     await critter.approve(barbie.address, squeakId);

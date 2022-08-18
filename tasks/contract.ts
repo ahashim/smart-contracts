@@ -45,7 +45,11 @@ task(
     contract: Contract;
     signer: SignerWithAddress;
     content: string;
-  }): Promise<BigNumber> => {
+  }): Promise<{
+    receipt: ContractReceipt;
+    squeakId: BigNumber;
+    tx: ContractTransaction;
+  }> => {
     // create squeak tx
     const tx: ContractTransaction = await contract
       .connect(signer)
@@ -58,9 +62,9 @@ task(
     const event = receipt.events!.find(
       (event: Event) => event.event === 'SqueakCreated'
     );
-    const { tokenId } = event!.args as Result;
+    const { tokenId: squeakId } = event!.args as Result;
 
-    return tokenId;
+    return { receipt, squeakId, tx };
   }
 );
 
