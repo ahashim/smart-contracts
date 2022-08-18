@@ -60,11 +60,14 @@ describe('updateInteractionFee', () => {
     return { critter, squeakId, updatedFee };
   };
 
-  beforeEach('load deployed contract fixture, ahmed updates the price', async () => {
-    ({ critter, squeakId, updatedFee } = await loadFixture(
-      updateInteractionFeeFixture
-    ));
-  });
+  beforeEach(
+    'load deployed contract fixture, ahmed updates the price',
+    async () => {
+      ({ critter, squeakId, updatedFee } = await loadFixture(
+        updateInteractionFeeFixture
+      ));
+    }
+  );
 
   it('allows TREASURER_ROLE to update an interaction fee', async () => {
     expect(await critter.fees(Interaction.Like)).to.eq(updatedFee);

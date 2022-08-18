@@ -51,9 +51,12 @@ describe('tokenURI', () => {
     return { critter, squeakId };
   };
 
-  beforeEach('load deployed contract fixture, and ahmed creates a squeak', async () => {
-    ({ critter, squeakId } = await loadFixture(tokenURIFixture));
-  });
+  beforeEach(
+    'load deployed contract fixture, and ahmed creates a squeak',
+    async () => {
+      ({ critter, squeakId } = await loadFixture(tokenURIFixture));
+    }
+  );
 
   it('returns the URI of a squeak', async () => {
     expect(await critter.tokenURI(squeakId)).to.eq(BASE_TOKEN_URI + squeakId);

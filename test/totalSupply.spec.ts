@@ -43,9 +43,12 @@ describe('totalSupply', () => {
     return { critter, squeaks };
   };
 
-  beforeEach('load deployed contract fixture, and ahmed creates a squeak', async () => {
-    ({ critter, squeaks } = await loadFixture(totalSupplyFixture));
-  });
+  beforeEach(
+    'load deployed contract fixture, and ahmed creates a squeak',
+    async () => {
+      ({ critter, squeaks } = await loadFixture(totalSupplyFixture));
+    }
+  );
 
   it('returns the number of squeaks currently in circulation (not including burned)', async () => {
     expect(await critter.totalSupply()).to.eq(squeaks.length - 1);

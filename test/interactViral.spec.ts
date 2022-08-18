@@ -140,17 +140,20 @@ describe('interact viral', () => {
     };
   };
 
-  beforeEach('load deployed contract fixture, and create a viral squeak', async () => {
-    ({
-      balances,
-      critter,
-      fees,
-      poolInfo,
-      squeakId,
-      transferAmount,
-      treasuryTake,
-    } = await loadFixture(interactViralFixture));
-  });
+  beforeEach(
+    'load deployed contract fixture, and create a viral squeak',
+    async () => {
+      ({
+        balances,
+        critter,
+        fees,
+        poolInfo,
+        squeakId,
+        transferAmount,
+        treasuryTake,
+      } = await loadFixture(interactViralFixture));
+    }
+  );
 
   it('marks the squeak as viral', async () => {
     // virality score is greater than the threshold
