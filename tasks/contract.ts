@@ -94,14 +94,8 @@ task(
       value: await contract.getDeleteFee(squeakId),
     });
 
-    // wait for a confirmation
-    const receipt: ContractReceipt = await tx.wait();
-
-    // get the block number that the squeak was actually deleted in
-    const blockDeleted: BigNumber = ethers.BigNumber.from(receipt.blockNumber);
-
     // get the actual cost of deleting the squeak without the quoted buffer
-    const deleteFee = blockDeleted
+    const deleteFee = ethers.BigNumber.from((await tx.wait()).blockNumber)
       .sub(blockAuthored)
       .mul(await contract.fees(Interaction.Delete));
 
