@@ -185,7 +185,8 @@ contract Bankable is Validateable, IBankable {
         internal
     {
         uint256 sharePrice = _getPoolSharePrice(pool);
-        _makeScoutPayments(tokenId, pool, sharePrice);
+
+        if (sharePrice > 0) _makeScoutPayments(tokenId, pool, sharePrice);
     }
 
     /**

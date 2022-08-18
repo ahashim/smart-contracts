@@ -106,11 +106,16 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
             // delete associated virality
             ScoutPool storage pool = pools[tokenId];
 
-            // pay out any remaining pool funds
-            if (pool.amount > 0) _makeScoutPayments(tokenId, pool);
+            if (pool.amount > 0) {
+                // pay out any remaining pool funds
+                _makeScoutPayments(tokenId, pool);
 
-            // deposit any remaining dust into the treasury
-            if (pool.amount > 0) _deposit(pool.amount);
+                // deposit remaining dust into treasury
+                _deposit(pool.amount);
+
+                // drain the pool
+                pool.amount = 0;
+            }
 
             // delete the pool
             delete pools[tokenId];

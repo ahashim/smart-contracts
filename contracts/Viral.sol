@@ -33,7 +33,6 @@ using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
  * @dev A contract to handle virality for squeaks.
  */
 contract Viral is Scoutable, IViral {
-
     /**
      * @dev Upgradeable constructor.
      */

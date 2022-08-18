@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
+import { ethers, run, upgrades, waffle } from 'hardhat';
 import {
   CONTRACT_NAME,
   CONTRACT_SYMBOL,
@@ -13,14 +13,7 @@ import {
 import { Interaction } from '../enums';
 
 // types
-import type {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import type { Result } from '@ethersproject/abi';
+import type { BigNumber, Wallet } from 'ethers';
 import type {
   BigNumberObject,
   PoolInfo,
@@ -31,9 +24,12 @@ import type {
 import type { Critter } from '../typechain-types/contracts';
 
 describe('deleteViralSqueak', () => {
+  let amount: BigNumber,
+    deleteFee: BigNumber,
+    sharePrice: BigNumber,
+    squeakId: BigNumber;
   let critter: Critter;
   let balances: BigNumberObject;
-  let deleteFee: BigNumber, sharePrice: BigNumber, squeakId: BigNumber;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet,
     ahmed: Wallet,
@@ -75,90 +71,98 @@ describe('deleteViralSqueak', () => {
       ])
     ).connect(ahmed) as Critter;
 
-    // creates accounts
-    [ahmed, barbie, carlos, daphne].forEach(async (account, index) => {
-      await critter.connect(account).createAccount(index.toString());
+    // everybody creates an account
+    await run('create-accounts', {
+      accounts: [ahmed, barbie, carlos, daphne],
+      contract: critter,
     });
 
-    // ahmed posts a squeak
+    // ahmed creates a squeak
     // current virality score: 0
-    const tx = (await critter.createSqueak(
-      'hello blockchain!'
-    )) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
+    }));
 
     // ahmed & barbie resqueak it
     // current virality score: 0
-    [ahmed, barbie].forEach(async (account) => {
-      await critter.connect(account).interact(squeakId, Interaction.Resqueak, {
-        value: await critter.fees(Interaction.Resqueak),
+    [ahmed, barbie].forEach(async (signer) => {
+      await run('interact', {
+        contract: critter,
+        interaction: Interaction.Resqueak,
+        signer,
+        squeakId,
       });
     });
 
     // carlos likes it, and thus makes it eligible for virality
     // current virality score: 58
-    await critter.connect(carlos).interact(squeakId, Interaction.Like, {
-      value: await critter.fees(Interaction.Like),
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Like,
+      signer: carlos,
+      squeakId,
     });
 
     // daphne likes it, and brings the score past the virality threshold
     // current virality score: 63
-    await critter.connect(daphne).interact(squeakId, Interaction.Like, {
-      value: await critter.fees(Interaction.Like),
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Like,
+      signer: daphne,
+      squeakId,
     });
 
-    // take a snapshot of scouts balance
-    const barbieBalance = await barbie.getBalance();
-    const carlosBalance = await carlos.getBalance();
-    const daphneBalance = await daphne.getBalance();
-    const treasuryBalance = await critter.treasury();
+    // snapshot all scout balances
+    balances = {
+      barbie: await barbie.getBalance(),
+      carlos: await carlos.getBalance(),
+      daphne: await daphne.getBalance(),
+      treasury: await critter.treasury(),
+    };
 
-    // get share price before deletion
+    // get pool info for the viral squeak before deletion
+    // NOTE: the `amount` is the remaining dust in the pool before getting
+    // added to the treasury due to members already being paid out in the
+    // previous transaction due to the lower scout pool threshold.
     const { amount, shares } = await critter.getPoolInfo(squeakId);
-    sharePrice = amount.div(shares);
 
     // ahmed deletes the viral squeak
-    deleteFee = await critter.getDeleteFee(squeakId);
-    await critter.deleteSqueak(squeakId, { value: deleteFee });
+    ({ deleteFee } = await run('delete-squeak', {
+      contract: critter,
+      signer: ahmed,
+      squeakId,
+    }));
 
     return {
-      balances: {
-        barbie: barbieBalance,
-        carlos: carlosBalance,
-        daphne: daphneBalance,
-        treasury: treasuryBalance,
-      },
+      amount,
+      balances,
       critter,
       deleteFee,
       poolInfo: await critter.getPoolInfo(squeakId),
       sentimentCounts: await critter.getSentimentCounts(squeakId),
-      sharePrice,
+      sharePrice: amount.div(shares),
       scouts: await critter.getScouts(squeakId),
       squeak: await critter.squeaks(squeakId),
       squeakId,
     };
   };
 
-  beforeEach(
-    'load deployed contract fixture, ahmed creates viral squeak and then deletes it',
-    async () => {
-      ({
-        balances,
-        critter,
-        deleteFee,
-        poolInfo,
-        sentimentCounts,
-        sharePrice,
-        scouts,
-        squeak,
-        squeakId,
-      } = await loadFixture(deleteViralSqueakFixture));
-    }
-  );
+  beforeEach('load deployed contract fixture', async () => {
+    ({
+      amount,
+      balances,
+      critter,
+      deleteFee,
+      poolInfo,
+      sentimentCounts,
+      sharePrice,
+      scouts,
+      squeak,
+      squeakId,
+    } = await loadFixture(deleteViralSqueakFixture));
+  });
 
   it('deletes the viral squeak', () => {
     expect(squeak.blockNumber).to.eq(0);
@@ -168,11 +172,9 @@ describe('deleteViralSqueak', () => {
   });
 
   it("deletes the viral squeak's associated sentiment", async () => {
-    const { likes, dislikes, resqueaks } = sentimentCounts;
-
-    expect(likes).to.eq(0);
-    expect(dislikes).to.eq(0);
-    expect(resqueaks).to.eq(0);
+    expect(sentimentCounts.likes).to.eq(0);
+    expect(sentimentCounts.dislikes).to.eq(0);
+    expect(sentimentCounts.resqueaks).to.eq(0);
   });
 
   it("deletes the viral squeak's scout information", async () => {
@@ -191,5 +193,13 @@ describe('deleteViralSqueak', () => {
     expect((await daphne.getBalance()).sub(balances.daphne)).to.eq(
       sharePrice.mul((await critter.users(daphne.address)).scoutLevel)
     );
+  });
+
+  it('deposits the delete fee into the treasury', async () => {
+    // subtracting `amount` because it's the remaining dust that was deposited
+    // into the treasury when deleting the scout pool for the viral squeak
+    expect(
+      (await critter.treasury()).sub(balances.treasury).sub(amount)
+    ).to.eq(deleteFee);
   });
 });

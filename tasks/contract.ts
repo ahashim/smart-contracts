@@ -124,8 +124,8 @@ task(
   'interact',
   'Interact with a squeak',
   async ({
-    interaction,
     contract,
+    interaction,
     signer,
     squeakId,
   }: {
