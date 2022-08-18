@@ -49,7 +49,7 @@ describe('getApproved', () => {
   };
 
   beforeEach(
-    'deploy test contract, barbie & ahmed create an accounts, ahmed posts a squeak and approves barbie to transfer it',
+    'load deployed contract fixture, barbie & ahmed create an accounts, ahmed posts a squeak and approves barbie to transfer it',
     async () => {
       ({ critter, squeakId } = await loadFixture(approveFixture));
     }

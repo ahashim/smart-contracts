@@ -140,7 +140,7 @@ describe('interact viral', () => {
     };
   };
 
-  beforeEach('deploy test contract, and create a viral squeak', async () => {
+  beforeEach('load deployed contract fixture, and create a viral squeak', async () => {
     ({
       balances,
       critter,

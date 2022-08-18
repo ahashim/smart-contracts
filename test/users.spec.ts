@@ -38,7 +38,7 @@ describe('users', () => {
   };
 
   beforeEach(
-    'deploy test contract, and ahmed creates an account',
+    'load deployed contract fixture, and ahmed creates an account',
     async () => {
       ({ critter, nullUser, validUser } = await loadFixture(usersFixture));
     }

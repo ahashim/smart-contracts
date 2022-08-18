@@ -71,7 +71,7 @@ describe('getSentimentCounts', () => {
   };
 
   beforeEach(
-    'deploy test contract, ahmed creates a squeak which is interacted with',
+    'load deployed contract fixture, ahmed creates a squeak which is interacted with',
     async () => {
       ({ critter, sentimentCounts, squeakId } = await loadFixture(
         getSentimentCountsFixture

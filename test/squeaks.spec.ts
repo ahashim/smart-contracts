@@ -56,7 +56,7 @@ describe('squeaks', () => {
   };
 
   beforeEach(
-    'deploy test contract, and ahmed creates an account',
+    'load deployed contract fixture, and ahmed creates an account',
     async () => {
       ({ blockAuthored, critter, squeakId } = await loadFixture(
         squeaksFixture

@@ -75,7 +75,7 @@ describe('interact basic', () => {
   };
 
   beforeEach(
-    'deploy test contract, ahmed creates an account & posts a squeak',
+    'load deployed contract fixture, ahmed creates an account & posts a squeak',
     async () => {
       ({ critter, fees, squeakId } = await loadFixture(interactBasicFixture));
     }

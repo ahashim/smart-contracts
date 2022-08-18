@@ -86,7 +86,7 @@ describe('getPoolInfo', () => {
     };
   };
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     ({ poolInfo, invalidPool } = await loadFixture(getPoolInfoFixture));
   });
 

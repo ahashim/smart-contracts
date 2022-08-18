@@ -32,7 +32,7 @@ describe('revokeRole', () => {
   };
 
   beforeEach(
-    'deploy test contract, and ahmed creates an account that gives him MINTER_ROLE access',
+    'load deployed contract fixture, and ahmed creates an account that gives him MINTER_ROLE access',
     async () => {
       critter = await loadFixture(revokeRoleFixture);
     }

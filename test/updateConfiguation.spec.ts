@@ -46,7 +46,7 @@ describe('updateConfiguration', () => {
     return critter;
   };
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     critter = await loadFixture(updateConfigurationFixture);
   });
 

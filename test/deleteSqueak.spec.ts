@@ -71,7 +71,7 @@ describe('deleteSqueak', () => {
   };
 
   beforeEach(
-    'deploy test contract, ahmed creates an account & posts a squeak which barbie likes, and carlos dislikes',
+    'load deployed contract fixture, ahmed creates an account & posts a squeak which barbie likes, and carlos dislikes',
     async () => {
       ({ critter, deleteFee, squeakId, treasuryStartingBalance } =
         await loadFixture(deleteSqueakFixture));

@@ -79,7 +79,7 @@ describe('scoutMaxLevel', () => {
     };
   };
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     ({ critter, scoutLevel } = await loadFixture(scoutMaxlevelFixture));
   });
 

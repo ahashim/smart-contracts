@@ -60,7 +60,7 @@ describe('updateInteractionFee', () => {
     return { critter, squeakId, updatedFee };
   };
 
-  beforeEach('deploy test contract, ahmed updates the price', async () => {
+  beforeEach('load deployed contract fixture, ahmed updates the price', async () => {
     ({ critter, squeakId, updatedFee } = await loadFixture(
       updateInteractionFeeFixture
     ));

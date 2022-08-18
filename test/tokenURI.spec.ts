@@ -51,7 +51,7 @@ describe('tokenURI', () => {
     return { critter, squeakId };
   };
 
-  beforeEach('deploy test contract, and ahmed creates a squeak', async () => {
+  beforeEach('load deployed contract fixture, and ahmed creates a squeak', async () => {
     ({ critter, squeakId } = await loadFixture(tokenURIFixture));
   });
 

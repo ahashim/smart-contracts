@@ -98,7 +98,7 @@ describe('getViralityScore', () => {
   };
 
   beforeEach(
-    'deploy test contract, ahmed creates a squeak that everybody likes',
+    'load deployed contract fixture, ahmed creates a squeak that everybody likes',
     async () => {
       ({ critter, nonViralSqueakId, viralSqueakId } = await loadFixture(
         getViralityScoreFixture

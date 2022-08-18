@@ -62,7 +62,7 @@ describe('createSqueak', () => {
     return { content, critter, squeak: await critter.squeaks(squeakId), tx };
   };
 
-  beforeEach('deploy test contract, ahmed creates an account', async () => {
+  beforeEach('load deployed contract fixture, ahmed creates an account', async () => {
     ({ content, critter, squeak, tx } = await loadFixture(
       createSqueakFixture
     ));

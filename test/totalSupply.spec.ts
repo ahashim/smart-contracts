@@ -43,7 +43,7 @@ describe('totalSupply', () => {
     return { critter, squeaks };
   };
 
-  beforeEach('deploy test contract, and ahmed creates a squeak', async () => {
+  beforeEach('load deployed contract fixture, and ahmed creates a squeak', async () => {
     ({ critter, squeaks } = await loadFixture(totalSupplyFixture));
   });
 

@@ -144,7 +144,7 @@ describe('deleteViralSqueak', () => {
   };
 
   beforeEach(
-    'deploy test contract, ahmed creates viral squeak and then deletes it',
+    'load deployed contract fixture, ahmed creates viral squeak and then deletes it',
     async () => {
       ({
         balances,

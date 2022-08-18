@@ -89,7 +89,7 @@ describe('withdraw', () => {
   };
 
   beforeEach(
-    'deploy test contract, barbie creates an account & posts a squeak which ahmed withdraws',
+    'load deployed contract fixture, barbie creates an account & posts a squeak which ahmed withdraws',
     async () => {
       ({
         coldStorageBalance,

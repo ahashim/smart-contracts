@@ -42,7 +42,7 @@ describe('updateUsername', () => {
     };
   };
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     ({ critter, oldUsername, newUsername, longUsername, tx } =
       await loadFixture(updateUsernameFixture));
   });

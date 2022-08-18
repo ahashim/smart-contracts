@@ -53,7 +53,7 @@ describe('transferFrom', () => {
   };
 
   beforeEach(
-    'deploy test contract, ahmed creates an account & posts a squeak then approves barbie to transfer it',
+    'load deployed contract fixture, ahmed creates an account & posts a squeak then approves barbie to transfer it',
     async () => {
       ({ critter, squeakId } = await loadFixture(transferFromFixture));
     }

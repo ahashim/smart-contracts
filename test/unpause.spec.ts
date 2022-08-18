@@ -28,7 +28,7 @@ describe('unpause', () => {
     return critter;
   };
 
-  beforeEach('deploy test contract & pause it', async () => {
+  beforeEach('load deployed contract fixture & pause it', async () => {
     critter = await loadFixture(unpauseFixture);
   });
 

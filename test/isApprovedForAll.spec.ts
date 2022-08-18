@@ -34,7 +34,7 @@ describe('isApprovedForAll', () => {
   };
 
   beforeEach(
-    'deploy test contract, barbie & ahmed create an accounts, and ahmed posts a squeak',
+    'load deployed contract fixture, barbie & ahmed create an accounts, and ahmed posts a squeak',
     async () => {
       critter = await loadFixture(isApprovedForAllFixture);
     }

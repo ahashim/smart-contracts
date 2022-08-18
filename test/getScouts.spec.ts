@@ -96,7 +96,7 @@ describe('getScouts', () => {
     };
   };
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     ({ addresses, levels, scouts } = await loadFixture(getScoutsFixture));
   });
 

@@ -94,7 +94,7 @@ describe('ejectFromPool', () => {
     };
   };
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     ({ critter, poolInfo, scouts, treasuryBalance } = await loadFixture(
       ejectFromPoolFixture
     ));

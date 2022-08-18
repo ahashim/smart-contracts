@@ -81,7 +81,7 @@ describe('isViral', () => {
     return { critter, squeakId };
   };
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     ({ critter, squeakId } = await loadFixture(isViralFixture));
   });
 
