@@ -5,7 +5,7 @@ import { ethers, run, waffle } from 'hardhat';
 import type { BigNumber, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
-describe.only('balanceOf', () => {
+describe('balanceOf', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;

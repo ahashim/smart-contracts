@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
 
 // types
 import type { Wallet } from 'ethers';

@@ -1,12 +1,10 @@
-import { Wallet } from 'ethers';
-import { ethers, upgrades, waffle } from 'hardhat';
 import { expect } from 'chai';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  BASE_TOKEN_URI,
-} from '../constants';
-import { Critter } from '../typechain-types/contracts';
+import { ethers, run, waffle } from 'hardhat';
+import { BASE_TOKEN_URI } from '../constants';
+
+// types
+import type { Wallet } from 'ethers';
+import type { Critter } from '../typechain-types/contracts';
 
 describe('baseTokenURI', () => {
   let critter: Critter;
@@ -18,15 +16,9 @@ describe('baseTokenURI', () => {
     loadFixture = waffle.createFixtureLoader([owner]);
   });
 
-  const baseTokenURIFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    return (await upgrades.deployProxy(
-      factory,
-      CONTRACT_INITIALIZER
-    )) as Critter;
-  };
+  const baseTokenURIFixture = async () => await run('deploy-contract');
 
-  beforeEach('deploy test contract', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     critter = await loadFixture(baseTokenURIFixture);
   });
 
