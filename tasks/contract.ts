@@ -1,7 +1,6 @@
 import { task } from 'hardhat/config';
-
-// constants
 import { CONTRACT_INITIALIZER, CONTRACT_NAME } from '../constants';
+import { Interaction } from '../enums';
 
 // types
 import type {
@@ -15,12 +14,12 @@ import type {
 } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { Critter } from '../typechain-types/contracts';
-import { Result } from '@ethersproject/abi';
+import type { Result } from '@ethersproject/abi';
 
 // tasks
 task(
   'create-accounts',
-  'Create a signed squeak transaction',
+  'Create accounts from Wallets',
   async ({
     accounts,
     contract,
@@ -36,7 +35,7 @@ task(
 
 task(
   'create-squeak',
-  'Create a signed squeak transaction',
+  'Create a squeak',
   async ({
     content,
     contract,
@@ -69,6 +68,48 @@ task(
 );
 
 task(
+  'delete-squeak',
+  'Delete a squeak',
+  async ({
+    contract,
+    signer,
+    squeakId,
+  }: {
+    contract: Contract;
+    signer: SignerWithAddress;
+    squeakId: BigNumber;
+  }): Promise<{
+    deleteFee: BigNumber;
+    tx: ContractTransaction;
+  }> => {
+    // connect signer
+    contract = contract.connect(signer);
+
+    // get the block the squeak was authored in
+    const blockAuthored: BigNumber = (await contract.squeaks(squeakId))
+      .blockNumber;
+
+    // delete the squeak by paying the quoted delete fee
+    const tx: ContractTransaction = await contract.deleteSqueak(squeakId, {
+      value: await contract.getDeleteFee(squeakId),
+    });
+
+    // wait for a confirmation
+    const receipt: ContractReceipt = await tx.wait();
+
+    // get the block number that the squeak was actually deleted in
+    const blockDeleted: BigNumber = ethers.BigNumber.from(receipt.blockNumber);
+
+    // get the actual cost of deleting the squeak without the quoted buffer
+    const deleteFee = blockDeleted
+      .sub(blockAuthored)
+      .mul(await contract.fees(Interaction.Delete));
+
+    return { deleteFee, tx };
+  }
+);
+
+task(
   'deploy-contract',
   'Deploys contracts via an upgradeable proxy from the owner EOA',
   async (_, { ethers, upgrades }): Promise<Critter> => {
@@ -82,5 +123,25 @@ task(
       factory,
       CONTRACT_INITIALIZER
     )) as Critter;
+  }
+);
+
+task(
+  'interact',
+  'Interact with a squeak',
+  async ({
+    interaction,
+    contract,
+    signer,
+    squeakId,
+  }: {
+    contract: Contract;
+    interaction: Interaction;
+    signer: SignerWithAddress;
+    squeakId: BigNumber;
+  }): Promise<void> => {
+    await contract.connect(signer).interact(squeakId, interaction, {
+      value: await contract.fees(interaction),
+    });
   }
 );

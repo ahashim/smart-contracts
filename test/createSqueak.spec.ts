@@ -34,7 +34,7 @@ describe('createSqueak', () => {
     // ahmed creates an account
     await critter.createAccount('ahmed');
 
-    // owner grants ahmed the moderator role
+    // contract owner grants ahmed the moderator role
     await critter
       .connect(owner)
       .grantRole(ethers.utils.id(MODERATOR_ROLE), ahmed.address);

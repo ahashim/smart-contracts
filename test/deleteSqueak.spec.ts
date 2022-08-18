@@ -1,10 +1,6 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  EMPTY_BYTE_STRING,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { EMPTY_BYTE_STRING } from '../constants';
 import { AccountStatus, Interaction } from '../enums';
 
 // types
@@ -12,21 +8,18 @@ import type {
   BigNumber,
   ContractReceipt,
   ContractTransaction,
-  Event,
   Wallet,
 } from 'ethers';
-import { Result } from '@ethersproject/abi';
-import type { Squeak } from '../types';
+import type { SentimentCounts, Squeak } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('deleteSqueak', () => {
   let critter: Critter;
-  let deleteFee: BigNumber,
-    squeakId: BigNumber,
-    treasuryStartingBalance: BigNumber;
+  let deleteFee: BigNumber, squeakId: BigNumber, treasuryBalance: BigNumber;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
   let receipt: ContractReceipt;
+  let sentiment: SentimentCounts;
   let squeak: Squeak;
   let tx: ContractTransaction;
 
@@ -36,59 +29,78 @@ describe('deleteSqueak', () => {
   });
 
   const deleteSqueakFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    // deploy contract
+    critter = (await run('deploy-contract')).connect(ahmed);
 
-    // ahmed creates an account & posts a squeak
-    await critter.createAccount('ahmed');
-    tx = await critter.createSqueak('hello blockchain!');
-    receipt = await tx.wait();
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
-
-    // barbie creates an account & likes the squeak
-    await critter.connect(barbie).createAccount('barbie');
-    await critter.connect(barbie).interact(squeakId, Interaction.Like, {
-      value: await critter.fees(Interaction.Like),
+    // ahmed, barbie, and carlos all create accounts
+    await run('create-accounts', {
+      accounts: [ahmed, barbie, carlos],
+      contract: critter,
     });
 
-    // carlos creates an account & dislikes the squeak
-    await critter.connect(carlos).createAccount('carlos');
-    await critter.connect(carlos).interact(squeakId, Interaction.Dislike, {
-      value: await critter.fees(Interaction.Like),
+    // ahmed creates a squeak
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain',
+      contract: critter,
+      signer: ahmed,
+    }));
+
+    // barbie likes the squeak
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Like,
+      signer: barbie,
+      squeakId,
     });
+
+    // carlos dislikes the squeak
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Dislike,
+      signer: barbie,
+      squeakId,
+    });
+
+    // snapshot treasury balance before deleting the squeak
+    treasuryBalance = await critter.treasury();
+
+    // ahmed deletes the squeak
+    ({ deleteFee, tx } = await run('delete-squeak', {
+      contract: critter,
+      signer: ahmed,
+      squeakId,
+    }));
 
     return {
       critter,
-      deleteFee: await critter.getDeleteFee(squeakId),
+      deleteFee,
+      receipt,
+      sentiment: await critter.getSentimentCounts(squeakId),
+      squeak: await critter.squeaks(squeakId),
       squeakId,
-      treasuryStartingBalance: await critter.treasury(),
+      treasuryBalance,
+      tx,
     };
   };
 
-  beforeEach(
-    'load deployed contract fixture, ahmed creates an account & posts a squeak which barbie likes, and carlos dislikes',
-    async () => {
-      ({ critter, deleteFee, squeakId, treasuryStartingBalance } =
-        await loadFixture(deleteSqueakFixture));
-    }
-  );
+  beforeEach('load deployed contract fixture', async () => {
+    ({
+      critter,
+      deleteFee,
+      receipt,
+      sentiment,
+      squeak,
+      squeakId,
+      treasuryBalance,
+      tx,
+    } = await loadFixture(deleteSqueakFixture));
+  });
 
   it('lets an owner delete their squeak for a fee', async () => {
-    await critter.deleteSqueak(squeakId, { value: deleteFee });
-
     expect(await critter.balanceOf(ahmed.address)).to.equal(0);
   });
 
   it('removes all squeak information upon deletion', async () => {
-    // delete squeak & retrieve it
-    await critter.deleteSqueak(squeakId, { value: deleteFee });
-    squeak = await critter.squeaks(squeakId);
-
     expect(squeak.blockNumber).to.eq(0);
     expect(squeak.author).to.eq(ethers.constants.AddressZero);
     expect(squeak.owner).to.eq(ethers.constants.AddressZero);
@@ -96,47 +108,17 @@ describe('deleteSqueak', () => {
   });
 
   it('removes all associated sentiment for the squeak', async () => {
-    // delete the squeak
-    await critter.deleteSqueak(squeakId, { value: deleteFee });
-    const { dislikes, likes, resqueaks } = await critter.getSentimentCounts(
-      squeakId
-    );
-
-    expect(dislikes).to.eq(0);
-    expect(likes).to.eq(0);
-    expect(resqueaks).to.eq(0);
+    expect(sentiment.dislikes).to.eq(0);
+    expect(sentiment.likes).to.eq(0);
+    expect(sentiment.resqueaks).to.eq(0);
   });
 
   it('deposits the delete fee into the treasury', async () => {
-    const expectedDifference = ethers.utils.parseEther('0.00025');
-
-    // delete squeak
-    await critter.deleteSqueak(squeakId, { value: deleteFee });
-
-    expect((await critter.treasury()).sub(treasuryStartingBalance)).to.eq(
-      expectedDifference
-    );
-  });
-
-  it('refunds any excess funds back to the sender', async () => {
-    // delete squeak
-    const tx = await critter.deleteSqueak(squeakId, { value: deleteFee });
-
-    // NOTE: Part of the fee refund is lost to slippage due the chain continuing
-    // to mine blocks while getting the original delete fee, so by the time the
-    // actual get delete fee request is sent, the fee expected is slightly
-    // higher than what was reported, therefore the refund is slightly less.
-    // This is why we cannot calculate the fee refunded beforehand. Consider
-    // this is a UX tax to keep the 'getDeleteFee(id)' method simple.
-    const expectedRefund = ethers.utils.parseEther('0.00025');
-
-    await expect(tx)
-      .to.emit(critter, 'FundsTransferred')
-      .withArgs(ahmed.address, expectedRefund);
+    expect((await critter.treasury()).sub(treasuryBalance)).to.eq(deleteFee);
   });
 
   it('emits a SqueakDeleted event', async () => {
-    expect(await critter.deleteSqueak(squeakId, { value: deleteFee }))
+    expect(tx)
       .to.emit(critter, 'SqueakDeleted')
       .withArgs(ahmed.address, squeakId);
   });
@@ -152,7 +134,6 @@ describe('deleteSqueak', () => {
   });
 
   it('reverts when the squeak does not exist', async () => {
-    await critter.deleteSqueak(squeakId, { value: deleteFee });
     await expect(critter.deleteSqueak(squeakId, { value: deleteFee })).to.be
       .reverted;
   });
