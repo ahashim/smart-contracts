@@ -1,15 +1,18 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
-import { Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
+import type { ContractTransaction, Wallet } from 'ethers';
+import type { Critter } from '../typechain-types/contracts';
 
 describe('createAccount', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
+  let longUsername =
+    'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?';
   let owner: Wallet, ahmed: Wallet;
+  let tx: ContractTransaction;
+  let username = 'ahmed';
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -17,32 +20,28 @@ describe('createAccount', () => {
   });
 
   const createAccountFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    critter = (await upgrades.deployProxy(
-      factory,
-      CONTRACT_INITIALIZER
-    )) as Critter;
+    // deploy contract
+    critter = (await run('deploy-contract')).connect(ahmed);
 
-    return critter.connect(ahmed);
+    // ahmed creates an account
+    tx = await critter.createAccount(username);
+
+    return { critter, longUsername, tx, username };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(createAccountFixture);
+    ({ critter, longUsername, tx, username } = await loadFixture(
+      createAccountFixture
+    ));
   });
 
-  // test variables
-  const username = 'ahmed';
-  const longUsername =
-    'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?';
-
   it('lets a user create an account with a valid username', async () => {
-    await critter.createAccount(username);
     expect((await critter.users(ahmed.address)).username).to.eq(username);
     expect(await critter.addresses(username)).to.eq(ahmed.address);
   });
 
   it('emits an AccountCreated event', async () => {
-    await expect(critter.createAccount(username))
+    await expect(tx)
       .to.emit(critter, 'AccountCreated')
       .withArgs(ahmed.address, username);
   });
@@ -56,7 +55,6 @@ describe('createAccount', () => {
   });
 
   it('reverts when the address already has an account', async () => {
-    await critter.createAccount(username);
     await expect(critter.createAccount('a-rock')).to.be.reverted;
   });
 
