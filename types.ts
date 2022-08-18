@@ -4,6 +4,17 @@ import { AccountStatus } from './constants';
 export type BigNumberObject = {
   [key: string]: BigNumber;
 };
+export type ContractInitializerOverrides = {
+  name?: string;
+  symbol?: string;
+  baseTokenURI?: string;
+  platformFee?: BigNumber;
+  takeRate?: number;
+  scoutPoolThreshold?: BigNumber;
+  viralityThreshold?: number;
+  scoutBonus?: number;
+  scoutMaxLevel?: number;
+};
 
 export type PoolInfo = {
   amount: BigNumber;
