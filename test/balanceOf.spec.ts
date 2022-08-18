@@ -2,14 +2,13 @@ import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
 
 // types
-import type { BigNumber, Wallet } from 'ethers';
+import type { Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('balanceOf', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
-  let squeakId: BigNumber;
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -24,17 +23,17 @@ describe('balanceOf', () => {
     await critter.createAccount('ahmed');
 
     // ahmed creates a squeak
-    ({ squeakId } = await run('create-squeak', {
+    await run('create-squeak', {
       content: 'hello blockchain',
       contract: critter,
       signer: ahmed,
-    }));
+    });
 
-    return { critter, squeakId };
+    return critter;
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, squeakId } = await loadFixture(balanceOfFixture));
+    critter = await loadFixture(balanceOfFixture);
   });
 
   it('lets a user get a balance of their squeaks', async () => {
