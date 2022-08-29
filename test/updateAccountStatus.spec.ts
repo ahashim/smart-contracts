@@ -18,7 +18,7 @@ describe('updateAccountStatus', () => {
   });
 
   const updateAccountStatusFixture = async () => {
-    // deploy contract as owner with a lower virality threshold
+    // deploy contract as owner
     critter = (await run('deploy-contract')).connect(owner);
 
     // everybody creates an account
