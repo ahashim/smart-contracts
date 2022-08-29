@@ -22,17 +22,17 @@ import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 import './Scoutable.sol';
 import './interfaces/IViral.sol';
 
-using ABDKMath64x64 for uint256;
-using ABDKMath64x64 for int128;
-using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
-using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
-using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-
 /**
  * @title Viral
  * @dev A contract to handle virality for squeaks.
  */
 contract Viral is Scoutable, IViral {
+    using ABDKMath64x64 for uint256;
+    using ABDKMath64x64 for int128;
+    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+
     /**
      * @dev Upgradeable constructor.
      */

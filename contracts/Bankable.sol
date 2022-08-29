@@ -21,15 +21,15 @@ pragma solidity 0.8.16;
 import './Validateable.sol';
 import './interfaces/IBankable.sol';
 
-using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
-using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-
 /**
  * @title Bankable
  * @dev A contract to handle payments for squeak interactions, scout pools, and
  *      the treasury.
  */
 contract Bankable is Validateable, IBankable {
+    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+
     /**
      * @dev Upgradeable constructor.
      */
