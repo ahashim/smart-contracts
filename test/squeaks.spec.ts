@@ -1,21 +1,9 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  EMPTY_BYTE_STRING,
-  OVERFLOW,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { EMPTY_BYTE_STRING, OVERFLOW } from '../constants';
 
 // types
-import type {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import type { Result } from '@ethersproject/abi';
+import type { BigNumber, ContractReceipt, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { Squeak } from '../types';
 
@@ -24,6 +12,7 @@ describe('squeaks', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
+  let receipt: ContractReceipt;
   let squeakId: BigNumber;
   let squeak: Squeak;
 
@@ -37,22 +26,23 @@ describe('squeaks', () => {
   });
 
   const squeaksFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    critter = (await run('deploy-contract')).connect(ahmed) as Critter;
 
-    // create account & post a squeak
+    // ahmed creates an account
     await critter.createAccount('ahmed');
-    const tx = (await critter.createSqueak(content)) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
-    const blockAuthored = receipt.blockNumber;
 
-    return { blockAuthored, critter, squeakId };
+    // ahmed creates a squeak
+    ({ receipt, squeakId } = await run('create-squeak', {
+      content,
+      contract: critter,
+      signer: ahmed,
+    }));
+
+    return {
+      blockAuthored: receipt.blockNumber,
+      critter,
+      squeakId,
+    };
   };
 
   beforeEach(
