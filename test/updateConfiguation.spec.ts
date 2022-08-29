@@ -1,15 +1,10 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  ADMIN_ROLE,
-  OVERFLOW,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { ADMIN_ROLE, OVERFLOW } from '../constants';
 import { Configuration } from '../enums';
 
 // types
-import { Wallet } from 'ethers';
+import type { Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('updateConfiguration', () => {
@@ -26,10 +21,8 @@ describe('updateConfiguration', () => {
   });
 
   const updateConfigurationFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    // deploy contract
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // the owner grants ahmed the ADMIN_ROLE
     await critter
