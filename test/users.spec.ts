@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 import { AccountStatus } from '../enums';
 
 // types
@@ -14,18 +13,19 @@ describe('users', () => {
   let owner: Wallet, ahmed: Wallet;
   let validUser: User, nullUser: User;
 
+  // test variables
+  const username = 'ahmed';
+
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
     loadFixture = waffle.createFixtureLoader([owner, ahmed]);
   });
 
   const usersFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    // deploy contract
+    critter = (await run('deploy-contract')).connect(ahmed);
 
-    // create account
+    // ahmed creates an account
     await critter.createAccount(username);
 
     return {
@@ -43,9 +43,6 @@ describe('users', () => {
       ({ critter, nullUser, validUser } = await loadFixture(usersFixture));
     }
   );
-
-  // test variables
-  const username = 'ahmed';
 
   it('returns a username of an account', async () => {
     expect(validUser.username).to.eq(username);
