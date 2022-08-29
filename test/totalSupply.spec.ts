@@ -1,16 +1,22 @@
 import { expect } from 'chai';
-import { ethers, waffle, upgrades } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
-import { BigNumber, Wallet } from 'ethers';
+import { Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 
 describe('totalSupply', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
-  let squeaks: string[];
+
+  // test variables
+  const squeaks = [
+    'Now THIS is podracing!',
+    'I hate sand 😤',
+    'Hello there!',
+    'A surpise to be sure, but a welcome one.',
+  ];
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -18,35 +24,29 @@ describe('totalSupply', () => {
   });
 
   const totalSupplyFixture = async () => {
-    const squeaks = [
-      'Now THIS is podracing!',
-      'I hate sand 😤',
-      'Hello there!',
-      'A surpise to be sure, but a welcome one.',
-    ];
-
     // deploy contract
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    const critter = (await run('deploy-contract')).connect(ahmed);
 
-    // ahmed creates an account & posts a few squeaks
+    // ahmed creates an account
     await critter.createAccount('ahmed');
+
+    // ahmed creates a few squeaks
     squeaks.forEach(async (content) => await critter.createSqueak(content));
 
     // ahmed burns the first created squeak at tokenId 0
-    const tokenId = 0;
-    const deleteFee = (await critter.getDeleteFee(tokenId)) as BigNumber;
-    await critter.deleteSqueak(tokenId, { value: deleteFee });
+    await run('delete-squeak', {
+      contract: critter,
+      signer: ahmed,
+      squeakId: 0,
+    });
 
-    return { critter, squeaks };
+    return critter;
   };
 
   beforeEach(
     'load deployed contract fixture, and ahmed creates a squeak',
     async () => {
-      ({ critter, squeaks } = await loadFixture(totalSupplyFixture));
+      critter = await loadFixture(totalSupplyFixture);
     }
   );
 
