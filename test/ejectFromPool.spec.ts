@@ -1,39 +1,20 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  BASE_TOKEN_URI,
-  CONTRACT_NAME,
-  CONTRACT_SYMBOL,
-  PLATFORM_FEE,
-  PLATFORM_TAKE_RATE,
-  SCOUT_POOL_THRESHOLD,
-  SCOUT_BONUS,
-  SCOUT_MAX_LEVEL,
-  MODERATOR_ROLE,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { PLATFORM_TAKE_RATE, MODERATOR_ROLE } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import { Result } from '@ethersproject/abi';
+import { BigNumber, Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 import { PoolInfo, Scout } from '../types';
 
-describe('ejectFromPool', () => {
+describe.only('ejectFromPool', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
   let poolInfo: PoolInfo;
-  let receipt: ContractReceipt;
   let scouts: Scout[];
   let squeakId: BigNumber, treasuryBalance: BigNumber;
-  let tx: ContractTransaction;
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
@@ -41,24 +22,17 @@ describe('ejectFromPool', () => {
   });
 
   const ejectFromPoolFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
+    // deploy contract with a lower virality threshold
     critter = (
-      await upgrades.deployProxy(factory, [
-        CONTRACT_NAME,
-        CONTRACT_SYMBOL,
-        BASE_TOKEN_URI,
-        PLATFORM_FEE,
-        PLATFORM_TAKE_RATE,
-        SCOUT_POOL_THRESHOLD,
-        1, // low virality threshold
-        SCOUT_BONUS,
-        SCOUT_MAX_LEVEL,
-      ])
-    ).connect(ahmed) as Critter;
+      await run('deploy-contract', {
+        viralityThreshold: 1,
+      })
+    ).connect(ahmed);
 
     // everybody creates an account
-    [ahmed, barbie, carlos].forEach(async (account, index) => {
-      await critter.connect(account).createAccount(index.toString());
+    await run('create-accounts', {
+      accounts: [ahmed, barbie, carlos],
+      contract: critter,
     });
 
     // the owner grants ahmed the MODERATOR_ROLE
@@ -67,20 +41,27 @@ describe('ejectFromPool', () => {
       .grantRole(ethers.utils.id(MODERATOR_ROLE), ahmed.address);
 
     // ahmed posts a squeak
-    tx = await critter.createSqueak('hello blockchain!');
-    receipt = await tx.wait();
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
+    }));
 
-    // barbie & carlos interact with the squeak to propel it into virality
-    // both are added to its scout pool
-    await critter.connect(barbie).interact(squeakId, Interaction.Resqueak, {
-      value: await critter.fees(Interaction.Resqueak),
+    // barbie likes it
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Resqueak,
+      signer: barbie,
+      squeakId,
     });
-    await critter.connect(carlos).interact(squeakId, Interaction.Like, {
-      value: await critter.fees(Interaction.Like),
+
+    // carlos resqueaks it and propel it into virality, adding themselves and
+    // barbie to the scout pool
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Like,
+      signer: carlos,
+      squeakId,
     });
 
     // barbie ejects from the pool
