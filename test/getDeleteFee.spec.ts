@@ -19,6 +19,7 @@ describe('getDeleteFee', () => {
   });
 
   const getDeleteFeeFixture = async () => {
+    // deploy contract
     critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
