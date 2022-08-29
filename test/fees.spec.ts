@@ -1,17 +1,13 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  PLATFORM_FEE,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { PLATFORM_FEE } from '../constants';
 
 // types
 import type { Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 import { Interaction } from '../enums';
 
-describe('fees', () => {
+describe.only('fees', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet;
@@ -21,13 +17,7 @@ describe('fees', () => {
     loadFixture = waffle.createFixtureLoader([owner]);
   });
 
-  const feesFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    return (await upgrades.deployProxy(
-      factory,
-      CONTRACT_INITIALIZER
-    )) as Critter;
-  };
+  const feesFixture = async () => await run('deploy-contract');
 
   beforeEach('load deployed contract fixture', async () => {
     critter = await loadFixture(feesFixture);
