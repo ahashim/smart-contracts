@@ -8,7 +8,7 @@ import { BigNumber, Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 import { PoolInfo, Scout } from '../types';
 
-describe('ejectFromPool', () => {
+describe.only('ejectFromPool', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
@@ -50,7 +50,7 @@ describe('ejectFromPool', () => {
     // barbie likes it
     await run('interact', {
       contract: critter,
-      interaction: Interaction.Resqueak,
+      interaction: Interaction.Like,
       signer: barbie,
       squeakId,
     });
@@ -59,7 +59,7 @@ describe('ejectFromPool', () => {
     // barbie to the scout pool
     await run('interact', {
       contract: critter,
-      interaction: Interaction.Like,
+      interaction: Interaction.Resqueak,
       signer: carlos,
       squeakId,
     });
