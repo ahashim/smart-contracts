@@ -1,20 +1,9 @@
 import { expect } from 'chai';
-import { ethers, waffle, upgrades } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  BASE_TOKEN_URI,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { BASE_TOKEN_URI } from '../constants';
 
 // types
-import {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import { Result } from '@ethersproject/abi';
+import { BigNumber, Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 
 describe('tokenURI', () => {
@@ -30,23 +19,17 @@ describe('tokenURI', () => {
 
   const tokenURIFixture = async () => {
     // deploy contract
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    const critter = (await run('deploy-contract')).connect(ahmed);
 
-    // create account
+    // ahmed creates an account
     await critter.createAccount('ahmed');
 
-    // post squeak
-    const tx = (await critter.createSqueak(
-      'hello blockchain!'
-    )) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+    // ahmed posts a squeak
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
+    }));
 
     return { critter, squeakId };
   };
