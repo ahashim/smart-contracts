@@ -1,21 +1,10 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  PLATFORM_TAKE_RATE,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { PLATFORM_TAKE_RATE } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import type { Result } from '@ethersproject/abi';
+import { BigNumber, ContractTransaction, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('withdraw', () => {
@@ -39,33 +28,37 @@ describe('withdraw', () => {
   });
 
   const withdrawFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(owner) as Critter;
+    // deploy contract as owner
+    critter = (await run('deploy-contract')).connect(owner);
 
-    const likeFee = (await critter.fees(Interaction.Like)) as BigNumber;
+    // everybody creates an account
+    await run('create-accounts', {
+      accounts: [ahmed, barbie],
+      contract: critter,
+    });
 
-    // barbie creates an account & posts a squeak
-    await critter.connect(barbie).createAccount('barbie');
-    const tx = (await critter
-      .connect(barbie)
-      .createSqueak('hello blockchain!')) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+    // barbie creates a squeak
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: barbie,
+    }));
 
-    // ahmed creates an account likes it
-    await critter.connect(ahmed).createAccount('ahmed');
-    await critter.connect(ahmed).interact(squeakId, Interaction.Like, {
-      value: likeFee,
+    // ahmed likes it
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Like,
+      signer: ahmed,
+      squeakId,
     });
 
     // snapshot balances
     const coldStorageBalance = (await coldStorage.getBalance()) as BigNumber;
     const treasuryBalance = (await critter.treasury()) as BigNumber;
+
+    // calculate treasury fee
+    const likeFee = (await critter.fees(Interaction.Like)) as BigNumber;
+    treasuryFee = likeFee.toNumber() * (PLATFORM_TAKE_RATE / 100);
 
     // owner withdraws everything from the treasury into cold storage wallet
     const withdrawTx = (await critter.withdraw(
@@ -74,8 +67,11 @@ describe('withdraw', () => {
     )) as ContractTransaction;
 
     // barbie likes the squeak to refill treasury with a single fee amount
-    await critter.connect(barbie).interact(squeakId, Interaction.Like, {
-      value: likeFee,
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Like,
+      signer: barbie,
+      squeakId,
     });
 
     return {
@@ -83,7 +79,7 @@ describe('withdraw', () => {
       coldStorageBalance,
       squeakId,
       treasuryBalance,
-      treasuryFee: likeFee.toNumber() * (PLATFORM_TAKE_RATE / 100),
+      treasuryFee,
       withdrawTx,
     };
   };
