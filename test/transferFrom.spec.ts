@@ -1,16 +1,8 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
-import {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import type { Result } from '@ethersproject/abi';
+import { BigNumber, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { Squeak } from '../types';
 
@@ -27,24 +19,21 @@ describe('transferFrom', () => {
   });
 
   const transferFromFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    // deploy contract
+    const critter = (await run('deploy-contract')).connect(ahmed);
 
-    // creates accounts
-    await critter.createAccount('ahmed');
-    await critter.connect(barbie).createAccount('barbie');
+    // everybody creates an account
+    await run('create-accounts', {
+      accounts: [ahmed, barbie],
+      contract: critter,
+    });
 
     // ahmed posts a squeak
-    const tx = (await critter.createSqueak(
-      'hello blockchain!'
-    )) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
+    }));
 
     // approve barbie to transfer it
     await critter.approve(barbie.address, squeakId);
@@ -72,8 +61,10 @@ describe('transferFrom', () => {
   });
 
   it('reassigns squeak ownership once the token has been transferred', async () => {
+    // transfer ownership
     await critter.transferFrom(ahmed.address, barbie.address, squeakId);
     squeak = await critter.squeaks(squeakId);
+
     expect(squeak.owner).to.eq(barbie.address);
   });
 
