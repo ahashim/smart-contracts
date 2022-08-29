@@ -7,7 +7,7 @@ import type { Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 import { Interaction } from '../enums';
 
-describe.only('fees', () => {
+describe('fees', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet;
