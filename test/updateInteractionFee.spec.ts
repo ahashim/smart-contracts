@@ -1,29 +1,20 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  TREASURER_ROLE,
-  PLATFORM_FEE,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { TREASURER_ROLE, PLATFORM_FEE } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import type { Result } from '@ethersproject/abi';
+import { BigNumber, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('updateInteractionFee', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet;
-  let squeakId: BigNumber, updatedFee: BigNumber;
+  let squeakId: BigNumber;
+
+  // test variables
+  const updatedFee = ethers.utils.parseEther('0.0001');
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie] = await (ethers as any).getSigners();
@@ -31,41 +22,35 @@ describe('updateInteractionFee', () => {
   });
 
   const updateInteractionFeeFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    // deploy contract as owner
+    critter = (await run('deploy-contract')).connect(owner);
+
+    // everybody creates an account
+    await run('create-accounts', {
+      accounts: [ahmed, barbie],
+      contract: critter,
+    });
 
     // the owner grants ahmed the TREASURER_ROLE
-    await critter
-      .connect(owner)
-      .grantRole(ethers.utils.id(TREASURER_ROLE), ahmed.address);
+    await critter.grantRole(ethers.utils.id(TREASURER_ROLE), ahmed.address);
 
-    // ahmed increases the interaction fee for "like" (note: critter account not
-    // required to update contract fees)
-    const updatedFee = ethers.utils.parseEther('0.0001');
+    // ahmed increases the interaction fee for "like"
     await critter.updateInteractionFee(Interaction.Like, updatedFee);
 
-    // barbie creates an account & posts a squeak
-    await critter.connect(barbie).createAccount('barbie');
-    const tx = (await critter
-      .connect(barbie)
-      .createSqueak('hello blockchain!')) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+    // barbie posts a squeak
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: barbie,
+    }));
 
-    return { critter, squeakId, updatedFee };
+    return { critter, squeakId };
   };
 
   beforeEach(
     'load deployed contract fixture, ahmed updates the price',
     async () => {
-      ({ critter, squeakId, updatedFee } = await loadFixture(
-        updateInteractionFeeFixture
-      ));
+      ({ critter, squeakId } = await loadFixture(updateInteractionFeeFixture));
     }
   );
 
