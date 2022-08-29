@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { run, waffle } from 'hardhat';
 
 // types
 import type { Critter } from '../typechain-types/contracts';
@@ -13,13 +12,7 @@ describe('proxiableUUID', () => {
     loadFixture = waffle.createFixtureLoader();
   });
 
-  const proxiableUUIDFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    return (await upgrades.deployProxy(
-      factory,
-      CONTRACT_INITIALIZER
-    )) as Critter;
-  };
+  const proxiableUUIDFixture = async () => await run('deploy-contract');
 
   beforeEach('load deployed contract fixture', async () => {
     critter = await loadFixture(proxiableUUIDFixture);
