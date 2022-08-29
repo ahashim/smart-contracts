@@ -1,17 +1,10 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER, OVERFLOW } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { OVERFLOW } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import type {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import type { Result } from '@ethersproject/abi';
+import type { BigNumber, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('getViralityScore', () => {
@@ -19,11 +12,9 @@ describe('getViralityScore', () => {
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
   let nonViralSqueakId: BigNumber, viralSqueakId: BigNumber;
-  let receipt: ContractReceipt;
   let sentiment: {
     [key: string]: number;
   };
-  let tx: ContractTransaction;
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
@@ -31,64 +22,47 @@ describe('getViralityScore', () => {
   });
 
   const getViralityScoreFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    critter = (await run('deploy-contract')).connect(ahmed);
 
-    // everybody creates an account
-    await critter.createAccount('ahmed');
-    await critter.connect(barbie).createAccount('barbie');
-    await critter.connect(carlos).createAccount('carlos');
-
-    const fees = {
-      like: await critter.fees(Interaction.Like),
-      resqueak: await critter.fees(Interaction.Resqueak),
-    } as {
-      [name: string]: BigNumber;
-    };
+    // creates accounts
+    await run('create-accounts', {
+      accounts: [ahmed, barbie, carlos],
+      contract: critter,
+    });
 
     // ahmed creates an account & posts a squeak
-    tx = await critter.createSqueak('hello blockchain!');
-    receipt = await tx.wait();
-    const viralSqueakEvent = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: viralSqueakId } = viralSqueakEvent!.args as Result);
+    ({ squeakId: viralSqueakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
+    }));
 
     // everybody likes it
-    await critter.interact(viralSqueakId, Interaction.Like, {
-      value: fees.like,
+    [ahmed, barbie, carlos].forEach(async (signer) => {
+      await run('interact', {
+        contract: critter,
+        interaction: Interaction.Like,
+        signer,
+        squeakId: viralSqueakId,
+      });
     });
-    await critter
-      .connect(barbie)
-      .interact(viralSqueakId, Interaction.Like, { value: fees.like });
-    await critter
-      .connect(carlos)
-      .interact(viralSqueakId, Interaction.Like, { value: fees.like });
 
     // everybody resqueaks it
-    await critter.interact(viralSqueakId, Interaction.Resqueak, {
-      value: fees.resqueak,
+    [ahmed, barbie, carlos].forEach(async (signer) => {
+      await run('interact', {
+        contract: critter,
+        interaction: Interaction.Resqueak,
+        signer,
+        squeakId: viralSqueakId,
+      });
     });
-    await critter
-      .connect(barbie)
-      .interact(viralSqueakId, Interaction.Resqueak, {
-        value: fees.resqueak,
-      });
-    await critter
-      .connect(carlos)
-      .interact(viralSqueakId, Interaction.Resqueak, {
-        value: fees.resqueak,
-      });
 
     // barbie posts a squeak that nobody interacts with
-    tx = await critter.createSqueak('hello blockchain!');
-    receipt = await tx.wait();
-    const nonViralSqueakEvent = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: nonViralSqueakId } = nonViralSqueakEvent!.args as Result);
+    ({ squeakId: nonViralSqueakId } = await run('create-squeak', {
+      content: 'come on barbie, lets go party',
+      contract: critter,
+      signer: ahmed,
+    }));
 
     return {
       critter,
