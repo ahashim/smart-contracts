@@ -1,25 +1,15 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
-import type {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import { Result } from '@ethersproject/abi';
+import type { BigNumber, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('ownerOf', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
-  let receipt: ContractReceipt;
   let squeakId: BigNumber;
-  let tx: ContractTransaction;
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -27,19 +17,17 @@ describe('ownerOf', () => {
   });
 
   const ownerOfFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    const critter = (await run('deploy-contract')).connect(ahmed);
 
-    // ahmed creates an account & posts a squeak
+    // ahmed creates an account
     await critter.createAccount('ahmed');
-    tx = await critter.createSqueak('hello blockchain!');
-    receipt = await tx.wait();
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+
+    // ahmed posts a squeak
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
+    }));
 
     return { critter, squeakId };
   };
