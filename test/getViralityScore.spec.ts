@@ -30,7 +30,7 @@ describe('getViralityScore', () => {
       contract: critter,
     });
 
-    // ahmed creates an account & posts a squeak
+    // ahmed posts a squeak
     ({ squeakId: viralSqueakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
