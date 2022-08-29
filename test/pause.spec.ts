@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
 import type { Critter } from '../typechain-types/contracts';
@@ -16,20 +15,16 @@ describe('pause', () => {
     loadFixture = waffle.createFixtureLoader([owner, ahmed]);
   });
 
-  const pauseFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    return (await upgrades.deployProxy(
-      factory,
-      CONTRACT_INITIALIZER
-    )) as Critter;
-  };
+  const pauseFixture = async () => await run('deploy-contract');
 
   beforeEach('load deployed contract fixture', async () => {
     critter = await loadFixture(pauseFixture);
   });
 
   it('pauses the contract', async () => {
+    // pause contract
     await critter.pause();
+
     expect(await critter.paused()).to.be.true;
   });
 
