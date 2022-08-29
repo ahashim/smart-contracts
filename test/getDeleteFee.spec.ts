@@ -1,20 +1,8 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  PLATFORM_FEE,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
-import {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import type { Result } from '@ethersproject/abi';
+import { BigNumber, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import { Interaction } from '../enums';
 
@@ -31,31 +19,24 @@ describe('getDeleteFee', () => {
   });
 
   const getDeleteFeeFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    critter = (await run('deploy-contract')).connect(ahmed);
 
-    // ahmed creates an account & posts a squeak
+    // ahmed creates an account
     await critter.createAccount('ahmed');
-    const tx = (await critter.createSqueak(
-      'hello blockchain!'
-    )) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+
+    // ahmed posts a squeak
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
+    }));
 
     return { critter, squeakId };
   };
 
-  beforeEach(
-    'load deployed contract fixture, ahmed creates an account & posts a squeak',
-    async () => {
-      ({ critter, squeakId } = await loadFixture(getDeleteFeeFixture));
-    }
-  );
+  beforeEach('load deployed contract fixture', async () => {
+    ({ critter, squeakId } = await loadFixture(getDeleteFeeFixture));
+  });
 
   it('calculates a delete fee for a squeak based on when it was created', async () => {
     const defaultConfirmationThreshold = 6; // defaults to 6 under the hood
