@@ -8,7 +8,7 @@ import { BigNumber, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { BigNumberObject, PoolInfo } from '../types';
 
-describe.only('interact viral', () => {
+describe('interact viral', () => {
   let balances: BigNumberObject, fees: BigNumberObject;
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
