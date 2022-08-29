@@ -1,16 +1,16 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 import { AccountStatus } from '../enums';
 
 // types
-import { Wallet } from 'ethers';
+import { ContractTransaction, Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 
 describe('updateAccountStatus', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
+  let tx: ContractTransaction;
 
   before('create fixture loader', async () => {
     [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
@@ -18,14 +18,13 @@ describe('updateAccountStatus', () => {
   });
 
   const updateAccountStatusFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(owner) as Critter;
+    // deploy contract as owner with a lower virality threshold
+    critter = (await run('deploy-contract')).connect(owner);
 
     // everybody creates an account
-    [ahmed, barbie, carlos].forEach(async (account, index) => {
-      await critter.connect(account).createAccount(index.toString());
+    await run('create-accounts', {
+      accounts: [ahmed, barbie, carlos],
+      contract: critter,
     });
 
     // moderator suspends ahmed & barbie, then bans carlos (harsh!)
@@ -34,15 +33,15 @@ describe('updateAccountStatus', () => {
     await critter.updateAccountStatus(carlos.address, AccountStatus.Banned);
 
     // they reactivate ahmeds account (phew!)
-    await critter
+    tx = await critter
       .connect(owner)
       .updateAccountStatus(ahmed.address, AccountStatus.Active);
 
-    return critter;
+    return { critter, tx };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(updateAccountStatusFixture);
+    ({ critter, tx } = await loadFixture(updateAccountStatusFixture));
   });
 
   it('updates a users account status to active', async () => {
@@ -64,11 +63,9 @@ describe('updateAccountStatus', () => {
   });
 
   it('emits an AccountStatusUpdated event', async () => {
-    await expect(
-      critter.updateAccountStatus(ahmed.address, AccountStatus.Suspended)
-    )
+    await expect(tx)
       .to.emit(critter, 'AccountStatusUpdated')
-      .withArgs(ahmed.address, AccountStatus.Suspended);
+      .withArgs(ahmed.address, AccountStatus.Active);
   });
 
   it('reverts when trying to update a users account status to non-existent', async () => {
