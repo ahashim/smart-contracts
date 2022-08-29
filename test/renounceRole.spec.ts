@@ -1,20 +1,20 @@
 import { expect } from 'chai';
-import { ethers, waffle, upgrades } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
-  MINTER_ROLE,
-  PAUSER_ROLE,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { MINTER_ROLE, PAUSER_ROLE } from '../constants';
 
 // types
-import { Wallet } from 'ethers';
+import { ContractTransaction, Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 
 describe('renounceRole', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
+  let tx: ContractTransaction;
+
+  // test variables
+  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
+  const ID_PAUSER_ROLE = ethers.utils.id(PAUSER_ROLE);
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -22,33 +22,31 @@ describe('renounceRole', () => {
   });
 
   const renounceRoleFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    // deploy contract
+    const critter = (await run('deploy-contract')).connect(ahmed);
+
+    // ahmed creates an account
     await critter.createAccount('ahmed');
 
-    return critter;
+    // ahmed renounces the minter role
+    tx = await critter.renounceRole(ID_MINTER_ROLE, ahmed.address);
+
+    return { critter, tx };
   };
 
   beforeEach(
     'load deployed contract fixture, and ahmed creates an account that gives him MINTER_ROLE access',
     async () => {
-      critter = await loadFixture(renounceRoleFixture);
+      ({ critter, tx } = await loadFixture(renounceRoleFixture));
     }
   );
 
-  // test variables
-  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
-  const ID_PAUSER_ROLE = ethers.utils.id(PAUSER_ROLE);
-
   it('lets a user to renounce any roles they might have', async () => {
-    await critter.renounceRole(ID_MINTER_ROLE, ahmed.address);
     expect(await critter.hasRole(ID_MINTER_ROLE, ahmed.address)).to.be.false;
   });
 
   it('emits a RoleRevoked event', async () => {
-    await expect(critter.renounceRole(ID_MINTER_ROLE, ahmed.address))
+    await expect(tx)
       .to.emit(critter, 'RoleRevoked')
       .withArgs(ID_MINTER_ROLE, ahmed.address, ahmed.address);
   });
