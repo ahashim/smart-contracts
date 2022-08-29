@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
 import type { Critter } from '../typechain-types/contracts';
@@ -17,13 +16,11 @@ describe('unpause', () => {
   });
 
   const unpauseFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (await upgrades.deployProxy(
-      factory,
-      CONTRACT_INITIALIZER
-    )) as Critter;
+    // deploy contract
+    const critter = await run('deploy-contract');
 
-    critter.pause();
+    // owner pauses the contract
+    await critter.pause();
 
     return critter;
   };
@@ -33,7 +30,9 @@ describe('unpause', () => {
   });
 
   it('unpauses the contract', async () => {
+    // unpause contract
     await critter.unpause();
+
     expect(await critter.paused()).to.be.false;
   });
 
