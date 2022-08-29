@@ -25,7 +25,10 @@ import type {
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { Critter } from '../typechain-types/contracts';
 import type { Result } from '@ethersproject/abi';
-import type { ContractInitializerOverrides } from '../types';
+import type {
+  ContractInitializer,
+  ContractInitializerOverrides,
+} from '../types';
 
 // tasks
 task(
@@ -124,57 +127,59 @@ task(
     overrides: ContractInitializerOverrides,
     { ethers, upgrades }
   ): Promise<Critter> => {
-    const contractInitializer: (string | number | BigNumber)[] = [];
+    const initializer: ContractInitializer = [];
     const defaults = {
       name: {
         value: CONTRACT_NAME,
-        position: 0,
+        index: 0,
       },
       symbol: {
         value: CONTRACT_SYMBOL,
-        position: 1,
+        index: 1,
       },
       baseTokenURI: {
         value: BASE_TOKEN_URI,
-        position: 2,
+        index: 2,
       },
       platformFee: {
         value: PLATFORM_FEE,
-        position: 3,
+        index: 3,
       },
       takeRate: {
         value: PLATFORM_TAKE_RATE,
-        position: 4,
+        index: 4,
       },
       scoutPoolThreshold: {
         value: SCOUT_POOL_THRESHOLD,
-        position: 5,
+        index: 5,
       },
       viralityThreshold: {
         value: VIRALITY_THRESHOLD,
-        position: 6,
+        index: 6,
       },
       scoutBonus: {
         value: SCOUT_BONUS,
-        position: 7,
+        index: 7,
       },
       scoutMaxLevel: {
         value: SCOUT_MAX_LEVEL,
-        position: 8,
+        index: 8,
       },
     };
 
+    // narrow type declaration of the override keys when iterating over them
+    let key: keyof typeof defaults;
+
     // check for overrides
     if (Object.keys(overrides || {}).length) {
-      for (const key in overrides) {
-        defaults[key].value =
-          overrides[key as keyof ContractInitializerOverrides];
+      for (key in overrides) {
+        defaults[key].value = overrides[key];
       }
     }
 
     // build contract constructor
-    for (const key in defaults) {
-      contractInitializer[defaults[key].position] = defaults[key].value;
+    for (key in defaults) {
+      initializer[defaults[key].index] = defaults[key].value;
     }
 
     // get contract factory instance
@@ -183,10 +188,7 @@ task(
     );
 
     // deploy contract via upgradeable proxy
-    return (await upgrades.deployProxy(
-      factory,
-      contractInitializer
-    )) as Critter;
+    return (await upgrades.deployProxy(factory, initializer)) as Critter;
   }
 );
 
