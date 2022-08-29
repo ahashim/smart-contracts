@@ -19,4 +19,3 @@ coverage.json
 ## Typescript
 dist
 typechain
-typechain-types
