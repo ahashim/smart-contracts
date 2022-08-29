@@ -1,8 +1,6 @@
 import { expect } from 'chai';
-import { ethers, waffle, upgrades } from 'hardhat';
+import { ethers, run, waffle } from 'hardhat';
 import {
-  CONTRACT_NAME,
-  CONTRACT_INITIALIZER,
   MINTER_ROLE,
   PAUSER_ROLE,
   TREASURER_ROLE,
@@ -18,34 +16,30 @@ describe('roles', () => {
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
 
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
-
-  const rolesFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
-    await critter.createAccount('ahmed');
-
-    return critter;
-  };
-
-  beforeEach(
-    'load deployed contract fixture, and ahmed creates an account',
-    async () => {
-      critter = await loadFixture(rolesFixture);
-    }
-  );
-
   // test variables
   const ID_DEFAULT_ADMIN_ROLE = ethers.constants.HashZero;
   const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
   const ID_PAUSER_ROLE = ethers.utils.id(PAUSER_ROLE);
   const ID_TREASURER_ROLE = ethers.utils.id(TREASURER_ROLE);
   const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
+
+  before('create fixture loader', async () => {
+    [owner, ahmed] = await (ethers as any).getSigners();
+    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
+  });
+
+  const rolesFixture = async () => {
+    critter = (await run('deploy-contract')).connect(ahmed);
+
+    // ahmed creates an account and is assigned the minter role
+    await critter.createAccount('ahmed');
+
+    return critter;
+  };
+
+  beforeEach('load deployed contract fixture', async () => {
+    critter = await loadFixture(rolesFixture);
+  });
 
   it('grants the contract owner the DEFAULT_ADMIN_ROLE', async () => {
     expect(await critter.hasRole(ID_DEFAULT_ADMIN_ROLE, owner.address)).to.be
