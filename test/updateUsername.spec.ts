@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
 import { ContractTransaction, Wallet } from 'ethers';
@@ -11,8 +10,13 @@ describe('updateUsername', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
-  let oldUsername: string, newUsername: string, longUsername: string;
   let tx: ContractTransaction;
+
+  // test variables
+  const longUsername =
+    'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?';
+  const oldUsername = 'ahmed';
+  const newUsername = 'a-rock';
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -20,13 +24,8 @@ describe('updateUsername', () => {
   });
 
   const updateUsernameFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
-
-    oldUsername = 'ahmed';
-    newUsername = 'a-rock';
+    // deploy contract
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account & updates their username
     await critter.createAccount(oldUsername);
@@ -34,17 +33,12 @@ describe('updateUsername', () => {
 
     return {
       critter,
-      oldUsername,
-      newUsername,
-      longUsername:
-        'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?',
       tx,
     };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, oldUsername, newUsername, longUsername, tx } =
-      await loadFixture(updateUsernameFixture));
+    ({ critter, tx } = await loadFixture(updateUsernameFixture));
   });
 
   it('lets a user create an account with a valid username', async () => {
