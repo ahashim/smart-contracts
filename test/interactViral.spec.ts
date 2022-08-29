@@ -1,29 +1,14 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import {
-  CONTRACT_NAME,
-  CONTRACT_SYMBOL,
-  BASE_TOKEN_URI,
-  PLATFORM_FEE,
-  PLATFORM_TAKE_RATE,
-  SCOUT_BONUS,
-  SCOUT_MAX_LEVEL,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
+import { PLATFORM_TAKE_RATE, SCOUT_BONUS } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import type { Result } from '@ethersproject/abi';
+import { BigNumber, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { BigNumberObject, PoolInfo } from '../types';
 
-describe('interact viral', () => {
+describe.only('interact viral', () => {
   let balances: BigNumberObject, fees: BigNumberObject;
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
@@ -40,7 +25,6 @@ describe('interact viral', () => {
   let poolInfo: PoolInfo;
 
   // test variables
-  const scoutPoolThreshold = ethers.utils.parseEther('0.000004');
   const viralityThreshold = 60;
 
   before('create fixture loader', async () => {
@@ -57,25 +41,18 @@ describe('interact viral', () => {
   });
 
   const interactViralFixture = async () => {
-    // deploy contract with a lower virality & scout pool threshold for testing
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
+    // deploy contract with a lower virality threshold
     critter = (
-      await upgrades.deployProxy(factory, [
-        CONTRACT_NAME,
-        CONTRACT_SYMBOL,
-        BASE_TOKEN_URI,
-        PLATFORM_FEE,
-        PLATFORM_TAKE_RATE,
-        scoutPoolThreshold,
+      await run('deploy-contract', {
+        scoutPoolThreshold: ethers.utils.parseEther('0.000004'),
         viralityThreshold,
-        SCOUT_BONUS,
-        SCOUT_MAX_LEVEL,
-      ])
-    ).connect(ahmed) as Critter;
+      })
+    ).connect(ahmed);
 
     // creates accounts
-    [ahmed, barbie, carlos, daphne].forEach(async (account, index) => {
-      await critter.connect(account).createAccount(index.toString());
+    await run('create-accounts', {
+      accounts: [ahmed, barbie, carlos, daphne],
+      contract: critter,
     });
 
     // get interaction fees
@@ -91,20 +68,17 @@ describe('interact viral', () => {
 
     // ahmed posts a squeak
     // current virality score: 0
-    const tx = (await critter.createSqueak(
-      'hello blockchain!'
-    )) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    ({ tokenId: squeakId } = event!.args as Result);
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
+    }));
 
     // ahmed & barbie resqueak it
     // current virality score: 0
-    [ahmed, barbie].forEach(async (account) => {
+    [ahmed, barbie].forEach(async (signer) => {
       await critter
-        .connect(account)
+        .connect(signer)
         .interact(squeakId, Interaction.Resqueak, { value: fees.resqueak });
     });
 

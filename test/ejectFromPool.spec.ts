@@ -8,7 +8,7 @@ import { BigNumber, Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 import { PoolInfo, Scout } from '../types';
 
-describe.only('ejectFromPool', () => {
+describe('ejectFromPool', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
