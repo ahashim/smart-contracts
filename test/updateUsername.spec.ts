@@ -2,9 +2,9 @@ import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
 
 // types
-import { ContractTransaction, Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
-import { AccountStatus } from '../enums';
+import type { ContractTransaction, Wallet } from 'ethers';
+import type { Critter } from '../typechain-types/contracts';
+import type { AccountStatus } from '../enums';
 
 describe('updateUsername', () => {
   let critter: Critter;
