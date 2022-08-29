@@ -1,32 +1,16 @@
-import { ethers, upgrades, waffle } from 'hardhat';
 import { expect } from 'chai';
-import {
-  BASE_TOKEN_URI,
-  CONTRACT_NAME,
-  CONTRACT_SYMBOL,
-  PLATFORM_FEE,
-  PLATFORM_TAKE_RATE,
-  SCOUT_POOL_THRESHOLD,
-  SCOUT_BONUS,
-} from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 import { Interaction } from '../enums';
 
 // types
-import {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Event,
-  Wallet,
-} from 'ethers';
-import type { Result } from '@ethersproject/abi';
+import { BigNumber, Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 
 describe('scoutMaxLevel', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
-  let scoutLevel: BigNumber;
+  let scoutLevel: BigNumber, squeakId: BigNumber;
 
   // test variablse
   const scoutMaxLevel = 2;
@@ -39,38 +23,37 @@ describe('scoutMaxLevel', () => {
 
   const scoutMaxlevelFixture = async () => {
     // deploy contract with a lower virality threshold to test scout max level
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
     critter = (
-      await upgrades.deployProxy(factory, [
-        CONTRACT_NAME,
-        CONTRACT_SYMBOL,
-        BASE_TOKEN_URI,
-        PLATFORM_FEE,
-        PLATFORM_TAKE_RATE,
-        SCOUT_POOL_THRESHOLD,
+      await run('deploy-contract', {
         viralityThreshold,
-        SCOUT_BONUS,
         scoutMaxLevel,
-      ])
-    ).connect(ahmed) as Critter;
+      })
+    ).connect(ahmed);
 
-    // ahmed creates an account & posts a squeak
+    // ahmed creates an account
     await critter.createAccount('ahmed');
-    const tx = (await critter.createSqueak(
-      'hello blockchain!'
-    )) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    const { tokenId: squeakId } = event!.args as Result;
 
-    // ahmed likes & resqueaks it into virality
-    await critter.interact(squeakId, Interaction.Like, {
-      value: await critter.fees(Interaction.Like),
+    // ahmed creates a squeak
+    ({ squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
+    }));
+
+    // ahmed likes it
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Like,
+      signer: ahmed,
+      squeakId,
     });
-    await critter.interact(squeakId, Interaction.Resqueak, {
-      value: await critter.fees(Interaction.Resqueak),
+
+    // ahmed resqueaks it into virality
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Resqueak,
+      signer: ahmed,
+      squeakId,
     });
 
     return {
@@ -91,21 +74,26 @@ describe('scoutMaxLevel', () => {
 
   it('stays at max level when scouting new viral squeaks', async () => {
     // ahmed creates another squeak
-    const tx = (await critter.createSqueak(
-      'is this thing on?'
-    )) as ContractTransaction;
-    const receipt = (await tx.wait()) as ContractReceipt;
-    const event = receipt.events!.find(
-      (event: Event) => event.event === 'SqueakCreated'
-    );
-    const { tokenId: squeakId } = event!.args as Result;
-
-    // ahmed likes & resqueaks the new squeak into virality
-    await critter.interact(squeakId, Interaction.Like, {
-      value: await critter.fees(Interaction.Like),
+    const { squeakId } = await run('create-squeak', {
+      content: 'hello blockchain!',
+      contract: critter,
+      signer: ahmed,
     });
-    await critter.interact(squeakId, Interaction.Resqueak, {
-      value: await critter.fees(Interaction.Resqueak),
+
+    // ahmed likes it
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Like,
+      signer: ahmed,
+      squeakId,
+    });
+
+    // ahmed resqueaks it into virality
+    await run('interact', {
+      contract: critter,
+      interaction: Interaction.Resqueak,
+      signer: ahmed,
+      squeakId,
     });
 
     expect((await critter.users(ahmed.address)).scoutLevel).to.eq(
