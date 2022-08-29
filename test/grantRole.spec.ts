@@ -6,7 +6,7 @@ import { TREASURER_ROLE } from '../constants';
 import { Critter } from '../typechain-types/contracts';
 import { Wallet } from 'ethers';
 
-describe.only('grantRole', () => {
+describe('grantRole', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet;
