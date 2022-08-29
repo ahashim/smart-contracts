@@ -4,7 +4,7 @@ import { ethers, run, waffle } from 'hardhat';
 // types
 import type { ContractTransaction, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
-import type { AccountStatus } from '../enums';
+import { AccountStatus } from '../enums';
 
 describe('updateUsername', () => {
   let critter: Critter;
