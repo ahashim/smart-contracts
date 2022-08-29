@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { ethers, run, waffle } from 'hardhat';
 
 // types
 import type { Wallet } from 'ethers';
@@ -17,17 +16,19 @@ describe('isApprovedForAll', () => {
   });
 
   const isApprovedForAllFixture = async () => {
-    const factory = await ethers.getContractFactory(CONTRACT_NAME);
-    const critter = (
-      await upgrades.deployProxy(factory, CONTRACT_INITIALIZER)
-    ).connect(ahmed) as Critter;
+    // deploy contract
+    critter = (await run('deploy-contract')).connect(ahmed);
 
-    // barbie creates an account
-    await critter.connect(barbie).createAccount('barbie');
+    // creates accounts
+    await run('create-accounts', {
+      accounts: [ahmed, barbie],
+      contract: critter,
+    });
 
-    // ahmed creates an account, posts a squeak, and approves barbie
-    await critter.createAccount('ahmed');
+    // ahmed creates a squeak
     await critter.createSqueak('hello blockchain!');
+
+    // ahmed approves barbie as an operator on his behalf
     await critter.setApprovalForAll(barbie.address, true);
 
     return critter;
@@ -41,8 +42,8 @@ describe('isApprovedForAll', () => {
   );
 
   it('returns true if an operator is approved to manage all assets of an owner', async () => {
-    expect(await critter.isApprovedForAll(barbie.address, ahmed.address)).to.be
-      .false;
+    expect(await critter.isApprovedForAll(ahmed.address, barbie.address)).to.be
+      .true;
   });
 
   it('returns false if an operator is not approved to manage all assets of an owner', async () => {
