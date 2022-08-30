@@ -23,7 +23,6 @@ import type {
   Wallet,
 } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
 import type { Result } from '@ethersproject/abi';
 import type {
   ContractInitializer,
@@ -126,7 +125,7 @@ task(
   async (
     overrides: ContractInitializerOverrides,
     { ethers, upgrades }
-  ): Promise<Critter> => {
+  ): Promise<Contract> => {
     const initializer: ContractInitializer = [];
     const defaults = {
       name: {
@@ -188,7 +187,7 @@ task(
     );
 
     // deploy contract via upgradeable proxy
-    return (await upgrades.deployProxy(factory, initializer)) as Critter;
+    return (await upgrades.deployProxy(factory, initializer)) as Contract;
   }
 );
 
