@@ -55,6 +55,15 @@ enum Interaction {
 }
 
 /**
+ * @dev Set of interactions for a squeak.
+ */
+enum Relations {
+    Block, // TODO: implement blocking accounts
+    Follow,
+    Unfollow
+}
+
+/**
  * @dev Interface for Storeable.
  * @notice This is where all the Critter data structures & enums are defined.
  */
@@ -65,7 +74,7 @@ interface IStoreable {
      * @param followers Addresses of accounts that are following the user.
      */
     struct Relationship {
-        EnumerableSetUpgradeable.AddressSet folowing;
+        EnumerableSetUpgradeable.AddressSet following;
         EnumerableSetUpgradeable.AddressSet followers;
     }
 

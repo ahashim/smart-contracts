@@ -19,6 +19,7 @@
 pragma solidity 0.8.16;
 
 // error codes
+error AlreadyFollowing();
 error AlreadyInteracted();
 error InsufficientFunds();
 error InvalidAccount();
@@ -27,6 +28,7 @@ error InvalidInteraction();
 error InvalidLength();
 error InvalidAmount();
 error NotApprovedOrOwner();
+error NotFollowing();
 error NotInScoutPool();
 error NotInteractedYet();
 error SqueakDoesNotExist();

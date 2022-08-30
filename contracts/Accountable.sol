@@ -18,14 +18,14 @@
 */
 pragma solidity 0.8.16;
 
-import './Validateable.sol';
+import './Relatable.sol';
 import './interfaces/IAccountable.sol';
 
 /**
  * @title Accountable
  * @dev A contract to handle account management.
  */
-contract Accountable is Validateable, IAccountable {
+contract Accountable is Relatable, IAccountable {
     /**
      * @dev Upgradeable constructor.
      */
