@@ -4,18 +4,18 @@
   "description": "crypto twitter",
   "scripts": {
     "reset": "rm -rf .openzeppelin artifacts cache coverage* typechain* node_modules",
-    "compile": "npx hardhat compile",
-    "console": "NODE_OPTIONS=--experimental-repl-await npx hardhat run scripts/console.ts",
-    "coverage": "npx hardhat coverage",
-    "deploy": "npx hardhat run scripts/deploy.ts",
+    "compile": "hardhat compile",
+    "console": "NODE_OPTIONS=--experimental-repl-await hardhat run scripts/console.ts",
+    "coverage": "hardhat coverage",
+    "deploy": "hardhat run scripts/deploy.ts",
     "format": "prettier --write \"{,!(node_modules|.openzeppelin|typechain*)/**/}*.{js,md,sol,ts}\"",
     "lint": "solhint 'contracts/**/*.sol'",
-    "node": "npx hardhat node",
+    "node": "hardhat node",
     "prepare": "npm run format && npm run lint && npm run typechain && hardhat prepare",
-    "size": "npx hardhat size-contracts",
-    "test": "REPORT_GAS=1 TS_NODE_TRANSPILE_ONLY=1 npx hardhat test",
+    "size": "hardhat size-contracts",
+    "test": "REPORT_GAS=1 TS_NODE_TRANSPILE_ONLY=1 hardhat test",
     "typechain": "hardhat clean && hardhat typechain",
-    "watch": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat watch ci"
+    "watch": "TS_NODE_TRANSPILE_ONLY=1 hardhat watch ci"
   },
   "keywords": [
     "blockchain",
