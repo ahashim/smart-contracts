@@ -111,6 +111,11 @@ contract Storeable is Immutable, IStoreable {
     mapping(uint256 => ScoutPool) internal pools;
 
     /**
+     * @dev Mapping of address <=> Relationship.
+     */
+    mapping(address => Relationship) internal relationships;
+
+    /**
      * @dev Mapping of tokenId <=> Sentiment.
      */
     mapping(uint256 => Sentiment) internal sentiments;

@@ -60,6 +60,16 @@ enum Interaction {
  */
 interface IStoreable {
     /**
+     * @dev Relationship tracks follower & following addresses for a user.
+     * @param following Addresses of accounts the user is following.
+     * @param followers Addresses of accounts that are following the user.
+     */
+    struct Relationship {
+        EnumerableSetUpgradeable.AddressSet folowing;
+        EnumerableSetUpgradeable.AddressSet followers;
+    }
+
+    /**
      * @dev Scout a user that belongs to a ScoutPool for a viral squeak.
      * @param account Address of the user.
      * @param shares Total number of shares.
