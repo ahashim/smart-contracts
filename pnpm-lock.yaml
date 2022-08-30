@@ -22,6 +22,7 @@ specifiers:
   eslint: ^8.23.0
   eslint-config-prettier: ^8.5.0
   eslint-config-standard: ^17.0.0
+  eslint-plugin-chai-friendly: ^0.7.2
   eslint-plugin-import: ^2.26.0
   eslint-plugin-n: ^15.2.5
   eslint-plugin-node: ^11.1.0
@@ -64,6 +65,7 @@ devDependencies:
   eslint: 8.23.0
   eslint-config-prettier: 8.5.0_eslint@8.23.0
   eslint-config-standard: 17.0.0_ci7jzfiysajw25w4iodapaa2cq
+  eslint-plugin-chai-friendly: 0.7.2_eslint@8.23.0
   eslint-plugin-import: 2.26.0_wyxuyzvlfep3lsyoibc4fosfq4
   eslint-plugin-n: 15.2.5_eslint@8.23.0
   eslint-plugin-node: 11.1.0_eslint@8.23.0
@@ -3760,6 +3762,15 @@ packages:
       find-up: 2.1.0
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /eslint-plugin-chai-friendly/0.7.2_eslint@8.23.0:
+    resolution: {integrity: sha512-LOIfGx5sZZ5FwM1shr2GlYAWV9Omdi+1/3byuVagvQNoGUuU0iHhp7AfjA1uR+4dJ4Isfb4+FwBJgQajIw9iAg==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      eslint: '>=3.0.0'
+    dependencies:
+      eslint: 8.23.0
     dev: true
 
   /eslint-plugin-es/3.0.1_eslint@8.23.0:
