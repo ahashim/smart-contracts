@@ -44,15 +44,6 @@ contract Validateable is
     function __Validateable_init() internal view onlyInitializing {}
 
     /**
-     * @dev Ensures the transaction has the required fee amount.
-     * @param fee fee in wei.
-     */
-    modifier costs(uint256 fee) {
-        if (msg.value < fee) revert InsufficientFunds();
-        _;
-    }
-
-    /**
      * @dev Ensures the sender has a Critter account.
      */
     modifier hasActiveAccount() {

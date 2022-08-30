@@ -157,9 +157,11 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         whenNotPaused
         hasActiveAccount
         squeakExists(tokenId)
-        costs(fees[interaction])
         nonReentrant
     {
+        // validate required fee amount
+        if (msg.value < fees[interaction]) revert InsufficientFunds();
+
         Sentiment storage sentiment = sentiments[tokenId];
 
         // determine interaction & update sentiment
