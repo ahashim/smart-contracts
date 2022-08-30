@@ -4,21 +4,18 @@ import { EMPTY_BYTE_STRING } from '../constants';
 import { AccountStatus, Interaction } from '../enums';
 
 // types
-import type {
-  BigNumber,
-  ContractReceipt,
-  ContractTransaction,
-  Wallet,
-} from 'ethers';
+import type { BigNumber, ContractTransaction, Wallet } from 'ethers';
 import type { SentimentCounts, Squeak } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('deleteSqueak', () => {
   let critter: Critter;
-  let deleteFee: BigNumber, squeakId: BigNumber, treasuryBalance: BigNumber;
+  let barbieSqueak: BigNumber,
+    deleteFee: BigNumber,
+    squeakId: BigNumber,
+    treasuryBalance: BigNumber;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
-  let receipt: ContractReceipt;
   let sentiment: SentimentCounts;
   let squeak: Squeak;
   let tx: ContractTransaction;
@@ -71,10 +68,17 @@ describe('deleteSqueak', () => {
       squeakId,
     }));
 
+    // barbie creates a squeak
+    ({ squeakId: barbieSqueak } = await run('create-squeak', {
+      content: 'come on barbie, lets go party',
+      contract: critter,
+      signer: barbie,
+    }));
+
     return {
+      barbieSqueak,
       critter,
       deleteFee,
-      receipt,
       sentiment: await critter.getSentimentCounts(squeakId),
       squeak: await critter.squeaks(squeakId),
       squeakId,
@@ -85,9 +89,9 @@ describe('deleteSqueak', () => {
 
   beforeEach('load deployed contract fixture', async () => {
     ({
+      barbieSqueak,
       critter,
       deleteFee,
-      receipt,
       sentiment,
       squeak,
       squeakId,
@@ -128,9 +132,7 @@ describe('deleteSqueak', () => {
   });
 
   it('reverts when a user who is not an owner or approver tries to delete the squeak', async () => {
-    await expect(
-      critter.connect(barbie).deleteSqueak(squeakId, { value: deleteFee })
-    ).to.be.reverted;
+    await expect(critter.deleteSqueak(barbieSqueak)).to.be.reverted;
   });
 
   it('reverts when the squeak does not exist', async () => {
