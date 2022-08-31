@@ -26,5 +26,6 @@ export const enum Interaction {
 export const enum Relation {
   Block,
   Follow,
+  Unblock,
   Unfollow,
 }

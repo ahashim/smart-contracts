@@ -91,10 +91,10 @@ contract Relatable is Validateable, IRelatable {
             // add the sender to the accounts followers
             accountFollowers.add(msg.sender);
         } else if (action == Relation.Unfollow) {
-            // ensure accounts are related
+            // ensure account is being followed
             if (!accountFollowers.contains(msg.sender)) revert NotFollowing();
 
-            // remove the sender to the accounts followers
+            // remove the sender from the accounts followers
             accountFollowers.remove(msg.sender);
         } else if (action == Relation.Block) {
             // get the senders blacklist

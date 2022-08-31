@@ -60,8 +60,8 @@ enum Interaction {
 enum Relation {
     Block,
     Follow,
-    Unfollow,
-    Unblock
+    Unblock,
+    Unfollow
 }
 
 /**
