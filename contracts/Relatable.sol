@@ -42,12 +42,12 @@ contract Relatable is Validateable, IRelatable {
         view
         returns (RelationshipCounts memory)
     {
-        Relationship storage relationship = relationships[account];
+        Relationship storage user = relationships[account];
 
         return
             RelationshipCounts(
-                relationship.followers.length(),
-                relationship.following.length()
+                user.followers.length(),
+                user.following.length()
             );
     }
 

@@ -1,16 +1,16 @@
+export const enum AccountStatus {
+  NonExistent,
+  Active,
+  Suspended,
+  Banned,
+}
+
 export const enum Configuration {
   PlatformTakeRate,
   PoolPayoutThreshold,
   ScoutMaxLevel,
   ScoutViralityBonus,
   ViralityThreshold,
-}
-
-export const enum AccountStatus {
-  NonExistent,
-  Active,
-  Suspended,
-  Banned,
 }
 
 export const enum Interaction {
@@ -21,4 +21,10 @@ export const enum Interaction {
   UndoDislike,
   UndoLike,
   UndoResqueak,
+}
+
+export const enum Relations {
+  Block,
+  Follow,
+  Unfollow,
 }

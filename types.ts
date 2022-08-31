@@ -23,6 +23,11 @@ export type PoolInfo = {
   memberCount: BigNumber;
 };
 
+export type RelationshipCounts = {
+  followers: BigNumber;
+  following: BigNumber;
+};
+
 export type SentimentCounts = {
   dislikes: BigNumber;
   likes: BigNumber;
