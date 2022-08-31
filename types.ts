@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { AccountStatus } from './constants';
+import { AccountStatus } from './enums';
 
 export type BigNumberObject = {
   [key: string]: BigNumber;
