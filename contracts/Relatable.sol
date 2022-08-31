@@ -75,15 +75,19 @@ contract Relatable is Validateable, IRelatable {
             account
         ];
 
-        // sender cannot update a relationship with an account that has blocked
-        // them
-        if (accountBlacklist.contains(msg.sender)) revert Blocked();
+        // get the senders blacklist
+        EnumerableSetUpgradeable.AddressSet storage senderBlacklist = blocked[
+            msg.sender
+        ];
 
         // get the accounts followers
         EnumerableSetUpgradeable.AddressSet
             storage accountFollowers = followers[account];
 
         if (action == Relation.Follow) {
+            // sender cannot follow if account has blocked the sender
+            if (accountBlacklist.contains(msg.sender)) revert Blocked();
+
             // ensure the relationship doesn't already exist
             if (accountFollowers.contains(msg.sender))
                 revert AlreadyFollowing();
@@ -97,10 +101,6 @@ contract Relatable is Validateable, IRelatable {
             // remove the sender from the accounts followers
             accountFollowers.remove(msg.sender);
         } else if (action == Relation.Block) {
-            // get the senders blacklist
-            EnumerableSetUpgradeable.AddressSet
-                storage senderBlacklist = blocked[msg.sender];
-
             // ensure the account hasn't already been blocked
             if (senderBlacklist.contains(account)) revert AlreadyBlocked();
 
@@ -116,6 +116,12 @@ contract Relatable is Validateable, IRelatable {
 
             // add the account to the senders blocked list
             senderBlacklist.add(account);
+        } else if (action == Relation.Unblock) {
+            // ensure the sender has blocked the account
+            if (!senderBlacklist.contains(account)) revert NotBlocked();
+
+            // unblock the account
+            senderBlacklist.remove(account);
         }
 
         emit RelationshipUpdated(msg.sender, account, action);

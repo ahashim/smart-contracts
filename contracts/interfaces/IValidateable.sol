@@ -31,6 +31,7 @@ error InvalidInteraction();
 error InvalidLength();
 error InvalidRelationship();
 error NotApprovedOrOwner();
+error NotBlocked();
 error NotFollowing();
 error NotInScoutPool();
 error NotInteractedYet();

@@ -9,16 +9,29 @@ import type { Critter } from '../typechain-types/contracts';
 describe('updateRelationship', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
+  let owner: Wallet,
+    ahmed: Wallet,
+    barbie: Wallet,
+    carlos: Wallet,
+    daphne: Wallet;
   let txs: {
     block?: ContractTransaction;
     follow?: ContractTransaction;
     unfollow?: ContractTransaction;
+    unblock?: ContractTransaction;
   } = {};
 
   before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
+    [owner, ahmed, barbie, carlos, daphne] = await (
+      ethers as any
+    ).getSigners();
+    loadFixture = waffle.createFixtureLoader([
+      owner,
+      ahmed,
+      barbie,
+      carlos,
+      daphne,
+    ]);
   });
 
   const updateRelationshipFixture = async () => {
@@ -27,7 +40,7 @@ describe('updateRelationship', () => {
 
     // create accounts
     await run('create-accounts', {
-      accounts: [ahmed, barbie, carlos],
+      accounts: [ahmed, barbie, carlos, daphne],
       contract: critter,
     });
 
@@ -39,6 +52,9 @@ describe('updateRelationship', () => {
 
     // ahmed follows carlos
     await critter.updateRelationship(carlos.address, Relation.Follow);
+
+    // ahmed blocks daphne
+    await critter.updateRelationship(daphne.address, Relation.Block);
 
     // barbie follows ahmed
     await critter
@@ -60,6 +76,12 @@ describe('updateRelationship', () => {
     txs.block = await critter.updateRelationship(
       carlos.address,
       Relation.Block
+    );
+
+    // ahmed unblocks daphne
+    txs.unblock = await critter.updateRelationship(
+      daphne.address,
+      Relation.Unblock
     );
 
     return {
@@ -134,6 +156,25 @@ describe('updateRelationship', () => {
     it('reverts if the user is already being blocked', async () => {
       await expect(critter.updateRelationship(carlos.address, Relation.Block))
         .to.be.reverted;
+    });
+  });
+
+  describe('Unblock', () => {
+    it('lets a user unblock another user', async () => {
+      expect(await critter.isBlocked(ahmed.address, carlos.address)).to.be
+        .true;
+    });
+
+    it('emits a RelationshipUpdated event', async () => {
+      await expect(txs.unblock)
+        .to.emit(critter, 'RelationshipUpdated')
+        .withArgs(ahmed.address, daphne.address, Relation.Unblock);
+    });
+
+    it('reverts if the user has not been blocked', async () => {
+      await expect(
+        critter.updateRelationship(barbie.address, Relation.Unblock)
+      ).to.be.reverted;
     });
   });
 
