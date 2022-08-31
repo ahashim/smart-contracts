@@ -55,9 +55,9 @@ enum Interaction {
 }
 
 /**
- * @dev Set of interactions for a squeak.
+ * @dev Set of relation actions a user can take upon another user.
  */
-enum Relations {
+enum Relation {
     Block, // TODO: implement blocking accounts
     Follow,
     Unfollow
@@ -68,27 +68,6 @@ enum Relations {
  * @notice This is where all the Critter data structures & enums are defined.
  */
 interface IStoreable {
-    /**
-     * @dev Relationship tracks follower & following addresses for a user.
-     * @param following Addresses of accounts the user is following.
-     * @param followers Addresses of accounts that are following the user.
-     */
-    struct Relationship {
-        EnumerableSetUpgradeable.AddressSet following;
-        EnumerableSetUpgradeable.AddressSet followers;
-    }
-
-    /**
-     * @dev RelationshipCounts is used to return the number of relationships a
-     *      user has.
-     * @param followers Number of followers for the user.
-     * @param following Number of accounts the user is following.
-     */
-    struct RelationshipCounts {
-        uint256 followers;
-        uint256 following;
-    }
-
     /**
      * @dev Scout a user that belongs to a ScoutPool for a viral squeak.
      * @param account Address of the user.

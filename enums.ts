@@ -23,7 +23,7 @@ export const enum Interaction {
   UndoResqueak,
 }
 
-export const enum Relations {
+export const enum Relation {
   Block,
   Follow,
   Unfollow,

@@ -33,22 +33,23 @@ interface IRelatable is IStoreable {
     event RelationshipUpdated(
         address sender,
         address relative,
-        Relations action
+        Relation action
     );
 
     /**
-     * @dev Get the number of relations (follower/following).
-     * @param account Address of the account.
+     * @dev Checks whether user one is following user two.
+     * @param userOne Address of user one.
+     * @param userTwo Address of user two.
      */
-    function getRelationshipCounts(address account)
+    function isFollowing(address userOne, address userTwo)
         external
         view
-        returns (RelationshipCounts memory);
+        returns (bool);
 
     /**
      * @dev Updates the relationship between the sender and another account.
      * @param account Address of the account to update relationship with.
      * @param action A value from the Relations enum.
      */
-    function updateRelationship(address account, Relations action) external;
+    function updateRelationship(address account, Relation action) external;
 }

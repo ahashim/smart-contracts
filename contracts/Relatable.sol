@@ -35,51 +35,47 @@ contract Relatable is Validateable, IRelatable {
     function __Relatable_init() internal view onlyInitializing {}
 
     /**
-     * @dev See {IRelatable-getRelationsCount}.
+     * @dev See {IRelatable-isFollowing}.
      */
-    function getRelationshipCounts(address account)
+    function isFollowing(address userOne, address userTwo)
         external
         view
-        returns (RelationshipCounts memory)
+        returns (bool)
     {
-        Relationship storage user = relationships[account];
-
-        return
-            RelationshipCounts(
-                user.followers.length(),
-                user.following.length()
-            );
+        return followers[userTwo].contains(userOne);
     }
 
     /**
      * @dev See {IRelatable-updateRelationship}.
      */
-    function updateRelationship(address account, Relations action)
+    function updateRelationship(address account, Relation action)
         external
         hasActiveAccount
     {
+        // one cannot update the relationship to themselves
+        if (account == msg.sender) revert InvalidRelationship();
+
         // ensure the account is active
         if (users[account].status != AccountStatus.Active)
             revert InvalidAccountStatus();
 
-        // get relationship pointers
-        Relationship storage sender = relationships[msg.sender];
-        Relationship storage relative = relationships[account];
+        // get followers of the requested account
+        EnumerableSetUpgradeable.AddressSet storage userFollowers = followers[
+            account
+        ];
 
-        if (action == Relations.Follow) {
+        if (action == Relation.Follow) {
             // ensure the relationship doesn't already exist
-            if (sender.following.contains(account)) revert AlreadyFollowing();
+            if (userFollowers.contains(msg.sender)) revert AlreadyFollowing();
 
             // create relationships between the accounts
-            sender.following.add(account);
-            relative.followers.add(msg.sender);
-        } else if (action == Relations.Unfollow) {
+            userFollowers.add(msg.sender);
+        } else if (action == Relation.Unfollow) {
             // ensure accounts are related
-            if (!sender.following.contains(account)) revert NotFollowing();
+            if (!userFollowers.contains(msg.sender)) revert NotFollowing();
 
             // delete relationships between the accounts
-            sender.following.remove(account);
-            relative.followers.remove(msg.sender);
+            userFollowers.remove(msg.sender);
         }
 
         emit RelationshipUpdated(msg.sender, account, action);
