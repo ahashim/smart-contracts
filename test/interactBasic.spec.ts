@@ -64,7 +64,7 @@ describe('interact basic', () => {
     }
   );
 
-  describe('Dislike', async () => {
+  describe('Dislike', () => {
     it('lets a user dislike a squeak for a fee', async () => {
       // dislike squeak
       await critter
@@ -129,7 +129,7 @@ describe('interact basic', () => {
     });
   });
 
-  describe('Like', async () => {
+  describe('Like', () => {
     it('lets a user like a squeak for a fee', async () => {
       // like squeak
       await critter
@@ -210,7 +210,7 @@ describe('interact basic', () => {
     });
   });
 
-  describe('Resqueak', async () => {
+  describe('Resqueak', () => {
     it('lets a user resqueak for a fee', async () => {
       // resqueak
       await critter
@@ -274,7 +274,7 @@ describe('interact basic', () => {
     });
   });
 
-  describe('UndoDislike', async () => {
+  describe('UndoDislike', () => {
     beforeEach("barbie dislikes ahmed's squeak", async () => {
       // dislike squeak
       await critter
@@ -362,7 +362,7 @@ describe('interact basic', () => {
     });
   });
 
-  describe('UndoLike', async () => {
+  describe('UndoLike', () => {
     beforeEach("barbie likes ahmed's squeak", async () => {
       // like squeak
       await critter
@@ -414,7 +414,7 @@ describe('interact basic', () => {
     });
   });
 
-  describe('UndoResqueak', async () => {
+  describe('UndoResqueak', () => {
     beforeEach("barbie resqueaks ahmed's squeak", async () => {
       // resqueak
       await critter
@@ -525,7 +525,7 @@ describe('interact basic', () => {
     });
   });
 
-  describe('Reverted', async () => {
+  describe('Reverted', () => {
     it('reverts when the interaction ID is invalid', async () => {
       await expect(
         critter.connect(barbie).interact(squeakId, 420, { value: fees.like })
