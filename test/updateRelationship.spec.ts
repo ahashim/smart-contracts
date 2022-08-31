@@ -7,7 +7,7 @@ import type { ContractTransaction, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { RelationshipCounts } from '../types';
 
-describe.only('updateRelationship', () => {
+describe('updateRelationship', () => {
   let counts: {
     ahmed: RelationshipCounts;
     barbie: RelationshipCounts;
@@ -52,16 +52,13 @@ describe.only('updateRelationship', () => {
       Relations.Unfollow
     );
 
-    // get relationship counts for each user
-    counts = {
-      ahmed: await critter.getRelationshipCounts(ahmed.address),
-      barbie: await critter
-        .connect(barbie)
-        .getRelationshipCounts(barbie.address),
-    };
-
     return {
-      counts,
+      counts: {
+        ahmed: await critter.getRelationshipCounts(ahmed.address),
+        barbie: await critter
+          .connect(barbie)
+          .getRelationshipCounts(barbie.address),
+      },
       critter,
       txs,
     };
