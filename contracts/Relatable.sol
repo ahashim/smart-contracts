@@ -35,6 +35,17 @@ contract Relatable is Validateable, IRelatable {
     function __Relatable_init() internal view onlyInitializing {}
 
     /**
+     * @dev See {IRelatable-isBlocked}.
+     */
+    function isBlocked(address userOne, address userTwo)
+        external
+        view
+        returns (bool)
+    {
+        return blocked[userOne].contains(userTwo);
+    }
+
+    /**
      * @dev See {IRelatable-isFollowing}.
      */
     function isFollowing(address userOne, address userTwo)
@@ -52,30 +63,59 @@ contract Relatable is Validateable, IRelatable {
         external
         hasActiveAccount
     {
-        // one cannot update the relationship to themselves
+        // sender cannot update a relationship to themselves
         if (account == msg.sender) revert InvalidRelationship();
 
         // ensure the account is active
         if (users[account].status != AccountStatus.Active)
             revert InvalidAccountStatus();
 
-        // get followers of the requested account
-        EnumerableSetUpgradeable.AddressSet storage userFollowers = followers[
+        // get the accounts blacklist
+        EnumerableSetUpgradeable.AddressSet storage accountBlacklist = blocked[
             account
         ];
 
+        // sender cannot update a relationship with an account that has blocked
+        // them
+        if (accountBlacklist.contains(msg.sender)) revert Blocked();
+
+        // get the accounts followers
+        EnumerableSetUpgradeable.AddressSet
+            storage accountFollowers = followers[account];
+
         if (action == Relation.Follow) {
             // ensure the relationship doesn't already exist
-            if (userFollowers.contains(msg.sender)) revert AlreadyFollowing();
+            if (accountFollowers.contains(msg.sender))
+                revert AlreadyFollowing();
 
-            // create relationships between the accounts
-            userFollowers.add(msg.sender);
+            // add the sender to the accounts followers
+            accountFollowers.add(msg.sender);
         } else if (action == Relation.Unfollow) {
             // ensure accounts are related
-            if (!userFollowers.contains(msg.sender)) revert NotFollowing();
+            if (!accountFollowers.contains(msg.sender)) revert NotFollowing();
 
-            // delete relationships between the accounts
-            userFollowers.remove(msg.sender);
+            // remove the sender to the accounts followers
+            accountFollowers.remove(msg.sender);
+        } else if (action == Relation.Block) {
+            // get the senders blacklist
+            EnumerableSetUpgradeable.AddressSet
+                storage senderBlacklist = blocked[msg.sender];
+
+            // ensure the account hasn't already been blocked
+            if (senderBlacklist.contains(account)) revert AlreadyBlocked();
+
+            // get the senders followers
+            EnumerableSetUpgradeable.AddressSet
+                storage senderFollowers = followers[msg.sender];
+
+            // break relationship between sender & account
+            if (accountFollowers.contains(msg.sender))
+                accountFollowers.remove(msg.sender);
+            if (senderFollowers.contains(account))
+                senderFollowers.remove(account);
+
+            // add the account to the senders blocked list
+            senderBlacklist.add(account);
         }
 
         emit RelationshipUpdated(msg.sender, account, action);

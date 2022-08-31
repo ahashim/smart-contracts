@@ -58,9 +58,10 @@ enum Interaction {
  * @dev Set of relation actions a user can take upon another user.
  */
 enum Relation {
-    Block, // TODO: implement blocking accounts
+    Block,
     Follow,
-    Unfollow
+    Unfollow,
+    Unblock
 }
 
 /**

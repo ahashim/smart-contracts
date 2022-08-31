@@ -106,14 +106,19 @@ contract Storeable is Immutable, IStoreable {
     mapping(address => User) public users;
 
     /**
+     * @dev Mapping of address <=> AddressSet of blocked addresses for an user.
+     */
+    mapping(address => EnumerableSetUpgradeable.AddressSet) internal blocked;
+
+    /**
+     * @dev Mapping of address <=> AddressSet of followers for an user.
+     */
+    mapping(address => EnumerableSetUpgradeable.AddressSet) internal followers;
+
+    /**
      * @dev Mapping of tokenId <=> ScoutPool.
      */
     mapping(uint256 => ScoutPool) internal pools;
-
-    /**
-     * @dev Mapping of address <=> AddressSet of followers for an account.
-     */
-    mapping(address => EnumerableSetUpgradeable.AddressSet) internal followers;
 
     /**
      * @dev Mapping of tokenId <=> Sentiment.

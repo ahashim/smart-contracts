@@ -19,8 +19,10 @@
 pragma solidity 0.8.16;
 
 // error codes
+error AlreadyBlocked();
 error AlreadyFollowing();
 error AlreadyInteracted();
+error Blocked();
 error InsufficientFunds();
 error InvalidAccount();
 error InvalidAccountStatus();

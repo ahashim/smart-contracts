@@ -37,6 +37,16 @@ interface IRelatable is IStoreable {
     );
 
     /**
+     * @dev Checks whether user one has blocked user two.
+     * @param userOne Address of user one.
+     * @param userTwo Address of user two.
+     */
+    function isBlocked(address userOne, address userTwo)
+        external
+        view
+        returns (bool);
+
+    /**
      * @dev Checks whether user one is following user two.
      * @param userOne Address of user one.
      * @param userTwo Address of user two.
