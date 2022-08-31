@@ -35,7 +35,7 @@ contract Relatable is Validateable, IRelatable {
     function __Relatable_init() internal view onlyInitializing {}
 
     /**
-     * @dev See {IRelatable-getRelationshipCounts}.
+     * @dev See {IRelatable-getRelationsCount}.
      */
     function getRelationshipCounts(address account)
         external
