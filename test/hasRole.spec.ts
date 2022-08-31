@@ -1,11 +1,6 @@
 import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
-import {
-  MINTER_ROLE,
-  PAUSER_ROLE,
-  TREASURER_ROLE,
-  UPGRADER_ROLE,
-} from '../constants';
+import { MINTER_ROLE, TREASURER_ROLE, UPGRADER_ROLE } from '../constants';
 
 // types
 import { Wallet } from 'ethers';
@@ -19,7 +14,6 @@ describe('roles', () => {
   // test variables
   const ID_DEFAULT_ADMIN_ROLE = ethers.constants.HashZero;
   const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
-  const ID_PAUSER_ROLE = ethers.utils.id(PAUSER_ROLE);
   const ID_TREASURER_ROLE = ethers.utils.id(TREASURER_ROLE);
   const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
 
@@ -48,10 +42,6 @@ describe('roles', () => {
 
   it('grants the contract owner the MINTER_ROLE', async () => {
     expect(await critter.hasRole(ID_MINTER_ROLE, owner.address)).to.be.true;
-  });
-
-  it('grants the contract owner the PAUSER_ROLE', async () => {
-    expect(await critter.hasRole(ID_PAUSER_ROLE, owner.address)).to.be.true;
   });
 
   it('grants the contract owner the TREASURER_ROLE', async () => {

@@ -104,9 +104,4 @@ describe('createSqueak', () => {
       critter.connect(barbie).createSqueak('come on barbie, lets go party')
     ).to.be.reverted;
   });
-
-  it('reverts when the contract is paused', async () => {
-    await critter.connect(owner).pause();
-    await expect(critter.createSqueak(content)).to.be.reverted;
-  });
 });

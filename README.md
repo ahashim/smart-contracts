@@ -48,7 +48,6 @@ Available commands are:
   - By default the owner account has all available roles granted to it:
     - `DEFAULT_ADMIN_ROLE`
     - `MINTER_ROLE`
-    - `PAUSER_ROLE`
     - `TREASURER_ROLE`
     - `UPGRADER_ROLE`
   - The `owner` signer does not have a Critter account.

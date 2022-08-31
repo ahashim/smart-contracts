@@ -36,7 +36,6 @@ contract Accountable is Relatable, IAccountable {
         _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(MODERATOR_ROLE, msg.sender);
-        _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(TREASURER_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
@@ -46,7 +45,6 @@ contract Accountable is Relatable, IAccountable {
      */
     function createAccount(string calldata username)
         external
-        whenNotPaused
         isValidUsername(username)
     {
         // ensure account does not already exist
@@ -99,7 +97,6 @@ contract Accountable is Relatable, IAccountable {
      */
     function updateUsername(string calldata newUsername)
         external
-        whenNotPaused
         hasActiveAccount
         isValidUsername(newUsername)
     {

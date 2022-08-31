@@ -57,9 +57,4 @@ describe('createAccount', () => {
   it('reverts when the address already has an account', async () => {
     await expect(critter.createAccount('a-rock')).to.be.reverted;
   });
-
-  it('reverts when the contract is paused', async () => {
-    await critter.connect(owner).pause();
-    await expect(critter.createAccount(username)).to.be.reverted;
-  });
 });

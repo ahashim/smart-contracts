@@ -41,7 +41,6 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
      */
     function createSqueak(string calldata content)
         external
-        whenNotPaused
         hasActiveAccount
         onlyRole(MINTER_ROLE)
     {
@@ -74,7 +73,6 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     function deleteSqueak(uint256 tokenId)
         external
         payable
-        whenNotPaused
         hasActiveAccount
         squeakExists(tokenId)
         nonReentrant
@@ -154,7 +152,6 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     function interact(uint256 tokenId, Interaction interaction)
         external
         payable
-        whenNotPaused
         hasActiveAccount
         squeakExists(tokenId)
         nonReentrant

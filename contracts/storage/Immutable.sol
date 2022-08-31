@@ -51,11 +51,6 @@ contract Immutable is Initializable {
     bytes32 internal constant MODERATOR_ROLE = keccak256('MODERATOR_ROLE');
 
     /**
-     * @dev PAUSER_ROLE has priviledges to pause the contract.
-     */
-    bytes32 internal constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
-
-    /**
      * @dev TREASURER_ROLE has priviledges to withdraw funds and update fees.
      */
     bytes32 internal constant TREASURER_ROLE = keccak256('TREASURER_ROLE');

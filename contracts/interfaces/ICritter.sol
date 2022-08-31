@@ -52,18 +52,6 @@ interface ICritter is IStoreable {
     ) external;
 
     /**
-     * @dev Pauses the contract.
-     * @notice Only callable by PAUSER_ROLE.
-     */
-    function pause() external;
-
-    /**
-     * @dev Unpauses the contract.
-     * @notice Only callable by PAUSER_ROLE.
-     */
-    function unpause() external;
-
-    /**
      * @dev Updates the value of a {Configuration} item.
      * @notice Only callable by ADMIN_ROLE.
      */

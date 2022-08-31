@@ -79,10 +79,4 @@ describe('updateUsername', () => {
 
     await expect(critter.updateUsername('ahmed')).to.be.reverted;
   });
-
-  it('reverts when the contract is paused', async () => {
-    // pause the contract
-    await critter.connect(owner).pause();
-    await expect(critter.updateUsername(newUsername)).to.be.reverted;
-  });
 });

@@ -67,7 +67,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
         // 3rd party
         __AccessControl_init();
         __ERC721A_init(name, symbol);
-        __Pausable_init();
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
 
@@ -90,20 +89,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
         __Scoutable_init();
         __Validateable_init();
         __Viral_init();
-    }
-
-    /**
-     * @dev See {ICritter-pause}.
-     */
-    function pause() external onlyRole(PAUSER_ROLE) {
-        _pause();
-    }
-
-    /**
-     * @dev See {ICritter-unpause}.
-     */
-    function unpause() external onlyRole(PAUSER_ROLE) {
-        _unpause();
     }
 
     /**

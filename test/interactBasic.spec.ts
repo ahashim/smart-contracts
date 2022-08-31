@@ -566,16 +566,5 @@ describe('interact basic', () => {
         critter.interact(squeakId, Interaction.Like, { value: fees.like })
       ).to.be.reverted;
     });
-
-    it('reverts when the contract is paused', async () => {
-      // pause the contract
-      await critter.connect(owner).pause();
-
-      await expect(
-        critter
-          .connect(barbie)
-          .interact(squeakId, Interaction.Like, { value: fees.like })
-      ).to.be.reverted;
-    });
   });
 });

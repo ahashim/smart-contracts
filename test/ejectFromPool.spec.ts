@@ -136,12 +136,4 @@ describe('ejectFromPool', () => {
   it('reverts when the pool does not exist', async () => {
     await expect(critter['ejectFromPool(uint256)'](420)).to.be.reverted;
   });
-
-  it('reverts when the contract is paused', async () => {
-    // pause the contract
-    await critter.connect(owner).pause();
-
-    await expect(critter.connect(carlos)['ejectFromPool(uint256)'](squeakId))
-      .to.be.reverted;
-  });
 });

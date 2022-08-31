@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
-import { MINTER_ROLE, PAUSER_ROLE } from '../constants';
+import { MINTER_ROLE, UPGRADER_ROLE } from '../constants';
 
 // types
 import { ContractTransaction, Wallet } from 'ethers';
@@ -14,7 +14,7 @@ describe('renounceRole', () => {
 
   // test variables
   const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
-  const ID_PAUSER_ROLE = ethers.utils.id(PAUSER_ROLE);
+  const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
 
   before('create fixture loader', async () => {
     [owner, ahmed] = await (ethers as any).getSigners();
@@ -52,7 +52,7 @@ describe('renounceRole', () => {
   });
 
   it('reverts when trying to renounce another users role', async () => {
-    await expect(critter.renounceRole(ID_PAUSER_ROLE, owner.address)).to.be
+    await expect(critter.renounceRole(ID_UPGRADER_ROLE, owner.address)).to.be
       .reverted;
   });
 });

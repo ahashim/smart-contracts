@@ -38,7 +38,7 @@ contract Scoutable is Bankable, IScoutable {
     /**
      * @dev See {IScoutable-ejectFromPool}.
      */
-    function ejectFromPool(uint256 tokenId) external whenNotPaused {
+    function ejectFromPool(uint256 tokenId) external {
         _ejectFromPool(tokenId, msg.sender);
     }
 

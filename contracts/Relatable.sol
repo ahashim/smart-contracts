@@ -39,7 +39,6 @@ contract Relatable is Validateable, IRelatable {
      */
     function updateRelationship(address account, Relations action)
         external
-        whenNotPaused
         hasActiveAccount
     {
         // ensure the account is active
