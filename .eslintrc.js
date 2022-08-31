@@ -28,5 +28,7 @@ module.exports = {
       'error',
       { ignores: ['modules'] },
     ],
+    'no-unused-vars': 'off', // prefer tyepscript rules
+    '@typescript-eslint/no-unused-vars': 'error',
   },
 };

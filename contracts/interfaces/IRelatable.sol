@@ -37,6 +37,15 @@ interface IRelatable is IStoreable {
     );
 
     /**
+     * @dev Get the number of relations (follower/following).
+     * @param account Address of the account.
+     */
+    function getRelationshipCounts(address account)
+        external
+        view
+        returns (RelationshipCounts memory);
+
+    /**
      * @dev Updates the relationship between the sender and another account.
      * @param account Address of the account to update relationship with.
      * @param action A value from the Relations enum.

@@ -32,10 +32,27 @@ contract Relatable is Validateable, IRelatable {
      * @dev Upgradeable constructor.
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
-    function __Relatable_init() internal onlyInitializing {}
+    function __Relatable_init() internal view onlyInitializing {}
 
     /**
-     * @dev See {IRelatable-follow}.
+     * @dev See {IRelatable-getRelationsCount}.
+     */
+    function getRelationshipCounts(address account)
+        external
+        view
+        returns (RelationshipCounts memory)
+    {
+        Relationship storage relationship = relationships[account];
+
+        return
+            RelationshipCounts(
+                relationship.followers.length(),
+                relationship.following.length()
+            );
+    }
+
+    /**
+     * @dev See {IRelatable-updateRelationship}.
      */
     function updateRelationship(address account, Relations action)
         external

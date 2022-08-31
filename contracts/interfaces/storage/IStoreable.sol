@@ -79,6 +79,17 @@ interface IStoreable {
     }
 
     /**
+     * @dev RelationshipCounts is used to return the number of relationships a
+     *      user has.
+     * @param followers Number of followers for the user.
+     * @param following Number of accounts the user is following.
+     */
+    struct RelationshipCounts {
+        uint256 followers;
+        uint256 following;
+    }
+
+    /**
      * @dev Scout a user that belongs to a ScoutPool for a viral squeak.
      * @param account Address of the user.
      * @param shares Total number of shares.
