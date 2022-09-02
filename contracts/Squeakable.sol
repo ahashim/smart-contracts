@@ -159,6 +159,15 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         // validate required fee amount
         if (msg.value < fees[interaction]) revert InsufficientFunds();
 
+        address author = squeaks[tokenId].author;
+
+        // validate author & sender have not blocked each other
+        if (
+            msg.sender != author &&
+            (blocked[author].contains(msg.sender) ||
+                blocked[msg.sender].contains(author))
+        ) revert Blocked();
+
         Sentiment storage sentiment = sentiments[tokenId];
 
         // determine interaction & update sentiment
