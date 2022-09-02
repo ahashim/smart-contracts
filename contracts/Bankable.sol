@@ -159,12 +159,26 @@ contract Bankable is Validateable, IBankable {
             _deposit(interactionTake);
 
             if (viralSqueaks.contains(tokenId)) {
+                ScoutPool storage pool = pools[tokenId];
+
                 // split remainder between scouts & the squeak owner
-                uint256 half = remainder / 2;
-                _addFundsToScoutPool(tokenId, half);
+                uint256 amount = remainder / 2;
+
+                // add funds to the pool (unchecked because pool payouts will
+                // ensure they get reset to zero)
+                unchecked {
+                    pool.amount += amount;
+                }
+
+                emit FundsAddedToScoutPool(tokenId, amount);
+
+                // determine if we need to payout
+                uint256 sharePrice = _getPoolSharePrice(pool);
+                if (sharePrice >= config[Configuration.PoolPayoutThreshold])
+                    _makeScoutPayments(tokenId, pool, sharePrice);
 
                 // any dust from odd division goes to the owner
-                remainder -= half;
+                remainder -= amount;
             }
 
             // transfer remaining funds to the squeak owner
@@ -226,28 +240,5 @@ contract Bankable is Validateable, IBankable {
         payable(to).transfer(amount);
 
         emit FundsTransferred(to, amount);
-    }
-
-    /**
-     * @dev Add funds to the scout pool of a viral squeak, and pay out to its
-     *      members once it hits the threshold.
-     * @param tokenId ID of the squeak.
-     * @param amount Amount to add in wei.
-     */
-    function _addFundsToScoutPool(uint256 tokenId, uint256 amount) private {
-        ScoutPool storage pool = pools[tokenId];
-
-        // add funds to the pool (unchecked because pool payouts will ensure
-        // they get reset to zero)
-        unchecked {
-            pool.amount += amount;
-        }
-
-        emit FundsAddedToScoutPool(tokenId, amount);
-
-        // determine if we need to payout
-        uint256 sharePrice = _getPoolSharePrice(pool);
-        if (sharePrice >= config[Configuration.PoolPayoutThreshold])
-            _makeScoutPayments(tokenId, pool, sharePrice);
     }
 }
