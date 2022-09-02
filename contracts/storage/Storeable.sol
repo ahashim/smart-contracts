@@ -18,7 +18,7 @@
 */
 pragma solidity 0.8.16;
 
-import './Immutable.sol';
+import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '../interfaces/storage/IStoreable.sol';
 
 /**
@@ -29,7 +29,7 @@ import '../interfaces/storage/IStoreable.sol';
  *      mappings in the EVM as new features are added. More info on EVM storage
  *      collisions & upgradeability: https://tinyurl.com/d424mcpx
  */
-contract Storeable is Immutable, IStoreable {
+contract Storeable is Initializable, IStoreable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
     /**
@@ -65,6 +65,31 @@ contract Storeable is Immutable, IStoreable {
     }
 
     /**
+     * @dev ADMIN_ROLE has priviledges to update contract configuration amounts.
+     */
+    bytes32 internal constant ADMIN_ROLE = keccak256('ADMIN_ROLE');
+
+    /**
+     * @dev MINTER_ROLE has priviledges to mint tokens.
+     */
+    bytes32 internal constant MINTER_ROLE = keccak256('MINTER_ROLE');
+
+    /**
+     * @dev MODERATOR_ROLE has priviledges to update a users account status.
+     */
+    bytes32 internal constant MODERATOR_ROLE = keccak256('MODERATOR_ROLE');
+
+    /**
+     * @dev TREASURER_ROLE has priviledges to withdraw funds and update fees.
+     */
+    bytes32 internal constant TREASURER_ROLE = keccak256('TREASURER_ROLE');
+
+    /**
+     * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
+     */
+    bytes32 internal constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
+
+    /**
      * @dev Token URL prefix used by squeaks.
      */
     string public baseTokenURI;
@@ -74,11 +99,6 @@ contract Storeable is Immutable, IStoreable {
      * @notice Can only be withdrawn by TREASURER_ROLE.
      */
     uint256 public treasury;
-
-    /**
-     * @dev Set of squeak ID's that have gone viral.
-     */
-    EnumerableSetUpgradeable.UintSet internal viralSqueaks;
 
     /**
      * @dev Mapping of username <=> account address.
@@ -124,4 +144,9 @@ contract Storeable is Immutable, IStoreable {
      * @dev Mapping of tokenId <=> Sentiment.
      */
     mapping(uint256 => Sentiment) internal sentiments;
+
+    /**
+     * @dev Set of squeak ID's that have gone viral.
+     */
+    EnumerableSetUpgradeable.UintSet internal viralSqueaks;
 }

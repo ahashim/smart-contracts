@@ -71,7 +71,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
         __UUPSUpgradeable_init();
 
         // Storage
-        __Immutable_init();
         __Storeable_init(
             baseURI,
             platformFee,
