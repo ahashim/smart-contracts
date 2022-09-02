@@ -20,7 +20,7 @@ pragma solidity 0.8.16;
 
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
-import './storage/Storeable.sol';
+import './Storeable.sol';
 import './interfaces/IValidateable.sol';
 
 /**

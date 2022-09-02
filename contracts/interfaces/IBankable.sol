@@ -18,7 +18,7 @@
 */
 pragma solidity 0.8.16;
 
-import './storage/IStoreable.sol';
+import './IStoreable.sol';
 
 /**
  * @dev Interface for Bankable.
