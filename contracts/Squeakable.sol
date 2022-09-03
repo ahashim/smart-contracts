@@ -171,15 +171,54 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         Sentiment storage sentiment = sentiments[tokenId];
 
         // determine interaction & update sentiment
-        if (interaction == Interaction.Dislike) _dislikeSqueak(sentiment);
-        else if (interaction == Interaction.Like) _likeSqueak(sentiment);
-        else if (interaction == Interaction.Resqueak) _resqueak(sentiment);
-        else if (interaction == Interaction.UndoDislike)
-            _undoDislikeSqueak(sentiment);
-        else if (interaction == Interaction.UndoLike)
-            _undoLikeSqueak(sentiment);
-        else if (interaction == Interaction.UndoResqueak)
-            _undoResqueak(sentiment);
+        if (interaction == Interaction.Dislike) {
+            // ensure the user has not already disliked the squeak
+            if (sentiment.dislikes.contains(msg.sender))
+                revert AlreadyInteracted();
+
+            if (sentiment.likes.contains(msg.sender))
+                // remove the previous like
+                sentiment.likes.remove(msg.sender);
+
+            sentiment.dislikes.add(msg.sender);
+        } else if (interaction == Interaction.Like) {
+            // ensure the user has not already liked the squeak
+            if (sentiment.likes.contains(msg.sender))
+                revert AlreadyInteracted();
+
+            if (sentiment.dislikes.contains(msg.sender))
+                // remove the previous dislike
+                sentiment.dislikes.remove(msg.sender);
+
+            sentiment.likes.add(msg.sender);
+        } else if (interaction == Interaction.Resqueak) {
+            // ensure the user has not already resqueaked the squeak
+            if (sentiment.resqueaks.contains(msg.sender))
+                revert AlreadyInteracted();
+
+            sentiment.resqueaks.add(msg.sender);
+        } else if (interaction == Interaction.UndoDislike) {
+            // ensure the user has disliked the squeak
+            if (!sentiment.dislikes.contains(msg.sender))
+                revert NotInteractedYet();
+
+            // remove their dislike
+            sentiment.dislikes.remove(msg.sender);
+        } else if (interaction == Interaction.UndoLike) {
+            // ensure the user has liked the squeak
+            if (!sentiment.likes.contains(msg.sender))
+                revert NotInteractedYet();
+
+            // remove their like
+            sentiment.likes.remove(msg.sender);
+        } else if (interaction == Interaction.UndoResqueak) {
+            // ensure the user has resqueaked the squeak
+            if (!sentiment.resqueaks.contains(msg.sender))
+                revert NotInteractedYet();
+
+            // remove their resqueak
+            sentiment.resqueaks.remove(msg.sender);
+        }
 
         emit SqueakInteraction(tokenId, msg.sender, interaction);
 
@@ -193,86 +232,5 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         }
 
         _makePayment(tokenId, interaction);
-    }
-
-    /**
-     * @dev Dislikes a squeak.
-     * @param sentiment Pointer to the {Sentiment} of the squeak.
-     */
-    function _dislikeSqueak(Sentiment storage sentiment) private {
-        // ensure the user has not already disliked the squeak
-        if (sentiment.dislikes.contains(msg.sender))
-            revert AlreadyInteracted();
-
-        if (sentiment.likes.contains(msg.sender))
-            // remove the previous like
-            sentiment.likes.remove(msg.sender);
-
-        sentiment.dislikes.add(msg.sender);
-    }
-
-    /**
-     * @dev Likes a squeak.
-     * @param sentiment Pointer to the {Sentiment} of the squeak.
-     */
-    function _likeSqueak(Sentiment storage sentiment) private {
-        // ensure the user has not already liked the squeak
-        if (sentiment.likes.contains(msg.sender)) revert AlreadyInteracted();
-
-        if (sentiment.dislikes.contains(msg.sender))
-            // remove the previous dislike
-            sentiment.dislikes.remove(msg.sender);
-
-        sentiment.likes.add(msg.sender);
-    }
-
-    /**
-     * @dev Resqueaks a squeak.
-     * @param sentiment Pointer to the {Sentiment} of the squeak.
-     */
-    function _resqueak(Sentiment storage sentiment) private {
-        // ensure the user has not already resqueaked the squeak
-        if (sentiment.resqueaks.contains(msg.sender))
-            revert AlreadyInteracted();
-
-        sentiment.resqueaks.add(msg.sender);
-    }
-
-    /**
-     * @dev Undislikes a squeak.
-     * @param sentiment Pointer to the {Sentiment} of the squeak.
-     */
-    function _undoDislikeSqueak(Sentiment storage sentiment) private {
-        // ensure the user has disliked the squeak
-        if (!sentiment.dislikes.contains(msg.sender))
-            revert NotInteractedYet();
-
-        // remove their dislike
-        sentiment.dislikes.remove(msg.sender);
-    }
-
-    /**
-     * @dev Unlikes a squeak.
-     * @param sentiment Pointer to the {Sentiment} of the squeak.
-     */
-    function _undoLikeSqueak(Sentiment storage sentiment) private {
-        // ensure the user has liked the squeak
-        if (!sentiment.likes.contains(msg.sender)) revert NotInteractedYet();
-
-        // remove their like
-        sentiment.likes.remove(msg.sender);
-    }
-
-    /**
-     * @dev Undoes a resqueak.
-     * @param sentiment Pointer to the {Sentiment} of the squeak.
-     */
-    function _undoResqueak(Sentiment storage sentiment) private {
-        // ensure the user has resqueaked the squeak
-        if (!sentiment.resqueaks.contains(msg.sender))
-            revert NotInteractedYet();
-
-        // remove their resqueak
-        sentiment.resqueaks.remove(msg.sender);
     }
 }
