@@ -54,13 +54,45 @@ contract Viral is Scoutable, IViral {
         uint256 dislikes = sentiment.dislikes.length();
         uint256 likes = sentiment.likes.length();
         uint256 resqueaks = sentiment.resqueaks.length();
+        uint64 score = 0;
 
-        // the squeak needs to have at least 1 like, and 1 resqueak for it to
-        // be considered for virality
-        return
-            likes > 0 && resqueaks > 0
-                ? _calculateVirality(blockDelta, dislikes, likes, resqueaks)
-                : 0;
+        // squeak requires 1 like & 1 resqueak to be considered for virality
+        if (likes > 0 && resqueaks > 0) {
+            // ensure no division by zero when taking the ratio of likes to
+            // dislikes
+            if (dislikes == 0) dislikes = 1;
+
+            // convert values to signed int128 for 64.64 fixed point
+            // calculations
+            int128 signedLikes = likes.fromUInt();
+            int128 signedDislikes = dislikes.fromUInt();
+            int128 signedResqueaks = resqueaks.fromUInt();
+            int128 signedBlockDelta = blockDelta.fromUInt();
+
+            // calculate each virality component
+            int128 ratio = signedLikes.div(signedDislikes).sqrt();
+            int128 total = signedLikes.add(signedDislikes).ln();
+            int128 amplifier = signedResqueaks.ln().div(signedResqueaks);
+
+            // multiply all components to get the order
+            int128 order = ratio.mul(total).mul(amplifier);
+
+            // determine coefficient based on the order
+            int128 coefficient = order != 0
+                ? uint256(1).fromUInt().div(order)
+                : uint256(0).fromUInt();
+
+            // calculate final virality score
+            int128 numerator = uint256(1000).fromUInt();
+            int128 denominator = signedBlockDelta.add(coefficient).add(
+                uint256(10).fromUInt()
+            );
+
+            // convert back to uint64
+            score = numerator.div(denominator).toUInt();
+        }
+
+        return score;
     }
 
     /**
@@ -116,52 +148,5 @@ contract Viral is Scoutable, IViral {
                 // add all resqueakers who aren't likers
                 _addScout(users[sentiment.resqueaks.at(i)], pool);
         }
-    }
-
-    /**
-     * @dev Gets the virality score of a squeak.
-     * @param blockDelta Number of blocks elapsed since the squeak was created.
-     * @param dislikes Number of dislikes.
-     * @param likes Number of likes.
-     * @param resqueaks Number of resqueaks.
-     * @return A score between 0-100 representing the virality of the squeak.
-     */
-    function _calculateVirality(
-        uint256 blockDelta,
-        uint256 dislikes,
-        uint256 likes,
-        uint256 resqueaks
-    ) private pure returns (uint64) {
-        // ensure no division by zero when taking the ratio of likes:dislikes
-        if (dislikes == 0) dislikes = 1;
-
-        // convert values to signed int128 for 64.64 fixed point calculations
-        int128 signedLikes = likes.fromUInt();
-        int128 signedDislikes = dislikes.fromUInt();
-        int128 signedResqueaks = resqueaks.fromUInt();
-        int128 signedBlockDelta = blockDelta.fromUInt();
-
-        // calculate each virality component
-        int128 ratio = signedLikes.div(signedDislikes).sqrt();
-        int128 total = signedLikes.add(signedDislikes).ln();
-        int128 amplifier = signedResqueaks.ln().div(signedResqueaks);
-
-        // multiply all components to get the order
-        int128 order = ratio.mul(total).mul(amplifier);
-
-        // determine coefficient based on the order
-        int128 coefficient = order != 0
-            ? uint256(1).fromUInt().div(order)
-            : uint256(0).fromUInt();
-
-        // calculate final virality score
-        int128 numerator = uint256(1000).fromUInt();
-        int128 denominator = signedBlockDelta.add(coefficient).add(
-            uint256(10).fromUInt()
-        );
-        int128 score = numerator.div(denominator);
-
-        // convert back to uint64
-        return score.toUInt();
     }
 }
