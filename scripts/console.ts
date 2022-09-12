@@ -15,7 +15,7 @@ async function main() {
   // deploy contract + create accounts
   const signers = await hardhat.ethers.getSigners();
   const users = ['owner', 'ahmed', 'barbie', 'carlos'];
-  const contract = await hardhat.run('deployContract');
+  const contract = await hardhat.run('deploy-contract');
 
   // assign hardhat & contract context
   r.context.hh = hardhat;
@@ -28,11 +28,7 @@ async function main() {
     const username = users[i];
 
     // create the account
-    hardhat.run('createAccount', {
-      contract,
-      signer,
-      username,
-    });
+    await contract.connect(signer).createAccount(username);
 
     // add it to the repl
     r.context[username] = signer;
