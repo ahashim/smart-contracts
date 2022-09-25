@@ -1,6 +1,6 @@
 import repl from 'repl';
 import hardhat from 'hardhat';
-import { CONTRACT_SYMBOL, PLATFORM_FEE } from '../constants';
+import { CONTRACT_SYMBOL } from '../constants';
 
 async function main() {
   // start repl with options
@@ -12,35 +12,36 @@ async function main() {
   // start progress indicator
   process.stdout.write('Warming up...');
 
-  // deploy contract + create accounts
-  const signers = await hardhat.ethers.getSigners();
-  const users = ['owner', 'ahmed', 'barbie', 'carlos'];
+  // deploy the contract
   const contract = await hardhat.run('deploy-contract');
 
-  // assign hardhat & contract context
-  r.context.hh = hardhat;
-  r.context.critter = contract;
-  r.context.platformFee = PLATFORM_FEE;
+  // initialize accounts
+  const names = ['owner', 'ahmed', 'barbie', 'carlos'];
+  const signers = await hardhat.ethers.getSigners();
 
-  // create Critter accounts
-  for (let i = 0; i < users.length; i++) {
+  for (let i = 0; i < names.length; i++) {
     const signer = signers[i];
-    const username = users[i];
+    const username = names[i];
+    const user = contract.connect(signer);
 
-    // create the account
-    await contract.connect(signer).createAccount(username);
+    // create critter accounts for everybody except the owner
+    if (i > 0) await user.createAccount(username);
 
-    // add it to the repl
-    r.context[username] = signer;
+    // add them to the repl
+    r.context[username] = user;
   }
 
+  // add hardhat context
+  r.context.hh = hardhat;
+
   // this is where the fun begins
-  process.stdout.write(' ready! 🐁\n');
+  console.log(' ready! 🐁');
+  console.log('============================');
   console.log('Hardhat: hh');
-  console.log('Contract: critter');
-  console.log('Platform fee: platformFee');
-  console.log('Owner account: owner');
-  console.log('User accounts: ahmed, barbie, carlos');
+  console.log('Owner: owner');
+  console.log('Users: ahmed, barbie, carlos');
+  console.log('============================');
+  process.stdout.write('\n');
 }
 
 main().catch((error) => {

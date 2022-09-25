@@ -5,7 +5,7 @@
   "scripts": {
     "reset": "rm -rf .openzeppelin artifacts cache coverage* typechain* node_modules",
     "compile": "hardhat compile",
-    "console": "NODE_OPTIONS=--experimental-repl-await hardhat run scripts/console.ts",
+    "console": "NODE_OPTIONS=--experimental-repl-await hardhat run --network localhost scripts/console.ts",
     "coverage": "hardhat coverage",
     "deploy": "hardhat run scripts/deploy.ts",
     "format": "prettier --write \"{,!(node_modules|.openzeppelin|typechain*)/**/}*.{js,md,sol,ts}\"",
