@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "crypto twitter",
   "scripts": {
-    "reset": "rm -rf .openzeppelin artifacts cache coverage* typechain* node_modules",
+    "clear": "rm -rf .openzeppelin .package-lock.json .pnpm-lock.yaml artifacts cache coverage* node_modules typechain*",
     "compile": "hardhat compile",
     "console": "NODE_OPTIONS=--experimental-repl-await hardhat run --network localhost scripts/console.ts",
     "coverage": "hardhat coverage",
