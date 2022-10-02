@@ -1,0 +1,44 @@
+## Critter
+LICENSE
+README.md
+
+## Docker
+.dockerignore
+Dockerfile
+
+## ESlint
+.eslint*
+
+## Git
+.git*
+
+## Hardhat
+cache
+artifacts
+
+## Node
+.npmignore
+node_modules
+pnpm-lock.yaml
+
+## OpenZeppelin
+.openzeppelin/unknown-*.json
+
+## Prettier
+.prettier*
+
+## Solhint
+.solhint*
+
+## System files
+**/*.log
+.env
+
+## Test
+coverage
+coverage.json
+
+## Typescript
+dist
+typechain
+typechain-types/
