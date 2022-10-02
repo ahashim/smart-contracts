@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config';
 
 task(
-  'prepare',
+  'report',
   'Compiles the latest contracts, generates a contract size report & a test coverage report',
   async function (_, { run }) {
     // contract sizing report
