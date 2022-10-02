@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "crypto twitter",
   "scripts": {
-    "clear": "rm -rf .openzeppelin .package-lock.json .pnpm-lock.yaml artifacts cache coverage* node_modules typechain*",
+    "clean": "rm -rf .openzeppelin .package-lock.json .pnpm-lock.yaml artifacts cache coverage* node_modules typechain*",
     "compile": "hardhat compile",
     "console": "NODE_OPTIONS=--experimental-repl-await hardhat run --network localhost scripts/console.ts",
     "coverage": "hardhat coverage",
@@ -11,7 +11,6 @@
     "format": "prettier --write \"{,!(node_modules|.openzeppelin|typechain*)/**/}*.{js,md,sol,ts}\"",
     "lint": "solhint 'contracts/**/*.sol'",
     "node": "hardhat node",
-    "report": "pnpm format && pnpm lint && pnpm typechain && hardhat report",
     "size": "hardhat size-contracts",
     "test": "REPORT_GAS=1 TS_NODE_TRANSPILE_ONLY=1 hardhat test",
     "typechain": "hardhat clean && hardhat typechain",
