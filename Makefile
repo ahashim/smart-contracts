@@ -1,6 +1,10 @@
-image = critter-contracts
+# docker variables
+container = smart-contracts
+repo = critterfyi
+tag = latest
+image = $(repo)/$(container):$(tag)
 
-# Build docker container
+# Build docker image
 .PHONY: build
 build:
 	docker build . -t $(image)
@@ -8,7 +12,7 @@ build:
 # Open a CRTTR console (requires a running node)
 .PHONY: console
 console: build
-	docker exec -it $(image) bash -c "npm run console"
+	docker exec -it $(container) bash -c "npm run console"
 
 # Generate a test coverage report
 .PHONY: coverage
@@ -18,7 +22,7 @@ coverage: build
 # Run a local Critter node on the hardhat network
 .PHONY: node
 node: build
-	docker run -it --name $(image) --rm $(image)
+	docker run -it --name $(container) --rm $(image)
 
 # Generate a contract size report
 .PHONY: size
