@@ -8,7 +8,7 @@ build:
 # Open a CRTTR console (requires a running node)
 .PHONY: console
 console: build
-	docker exec --name $(image) -it $(image) bash -c "npm run console"
+	docker exec -it $(image) bash -c "npm run console"
 
 # Generate a test coverage report
 .PHONY: coverage
