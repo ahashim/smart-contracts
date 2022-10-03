@@ -10,7 +10,7 @@ RUN npm install
 # app source
 COPY . .
 
-# hardhat network port
+# hardhat network rpc port
 EXPOSE 8545
 
 # start hardhat node

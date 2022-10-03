@@ -19,10 +19,10 @@ console: build
 coverage: build
 	docker run --rm $(image) bash -c "npm run coverage"
 
-# Run a local Critter node on the hardhat network
+# Run a local hardhat network node
 .PHONY: node
 node: build
-	docker run -it --name $(container) --rm $(image)
+	docker run -it -p 8545:8545 --name $(container) --rm $(image)
 
 # Generate a contract size report
 .PHONY: size
