@@ -12,7 +12,8 @@ Requirements:
 make node
 ```
 
-Starts a local [hardhat network node](https://hardhat.org/hardhat-network/docs/overview).
+Starts a local [hardhat network](https://hardhat.org/hardhat-network/docs/overview)
+node and opens a JSON RPC port on `localhost:8545`.
 
 ### Start the `CRTTR` console
 
