@@ -22,6 +22,7 @@ _**note:** requires running a local node_
 
 Starts a [node repl](https://nodejs.org/api/repl.html#repl) to interact with
 Critter contracts deployed on the local hardhat network:
+
 - `hh`: an instance of hardhat, [including all available tasks](https://github.com/ahashim/critter/blob/main/tasks/contract.ts#L15).
 - `ahmed`, `barbie`, `carlos`, `owner`: each returns an individual contract instance connected to the respective signer.
   - Each signer is given 10000 ETH.
@@ -29,18 +30,19 @@ Critter contracts deployed on the local hardhat network:
 
 All [public contract methods](https://github.com/ahashim/smart-contracts/tree/main/contracts/interfaces)
 are available on these accounts. For example:
+
 ```javascript
   🦔 <CRTTR>: await ahmed.createSqueak('hello blockchain!');
   ...
   🦔 <CRTTR>: await ahmed.balanceOf(ahmed.signer.address); // BigNumber { value: "1" }
 ```
 
-
 ### Unit Tests
 
 ```bash
 make test
 ```
+
 This also reports the gas costs for every contract function called.
 
 #### Test Coverage
