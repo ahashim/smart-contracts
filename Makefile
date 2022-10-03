@@ -1,27 +1,31 @@
-repo = critterfyi
-container = smart-contracts
+container = critter-contracts
+
+# Build docker container
+.PHONY: build
+build:
+	docker build . -t $(container)
 
 # Open a CRTTR console (requires a running node)
 .PHONY: console
-console:
-	docker exec -it $(container) bash -c "npm run console"
+console: build
+	docker exec --name $(container) -it $(container) bash -c "npm run console"
 
 # Generate a test coverage report
 .PHONY: coverage
-coverage:
-	docker run -it --rm $(repo)/$(container):latest bash -c "npm run coverage"
+coverage: build
+	docker run -it --name $(container) --rm $(container) bash -c "npm run coverage"
 
 # Run a local Critter node on the hardhat network
 .PHONY: node
-node:
-	docker run -it --name $(container) --rm $(repo)/$(container):latest
+node: build
+	docker run -it --name $(container) --rm $(container)
 
 # Generate a contract size report
 .PHONY: size
-size:
-	docker run -it --rm $(repo)/$(container):latest bash -c "npm run size"
+size: build
+	docker run -it --name $(container) --rm $(container) bash -c "npm run size"
 
 # Run unit tests
 .PHONY: test
-test:
-	docker run -it --rm $(repo)/$(container):latest bash -c "npm run test"
+test: build
+	docker run -it --name $(container) --rm $(container) bash -c "npm run test"
