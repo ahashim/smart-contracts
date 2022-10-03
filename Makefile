@@ -13,7 +13,7 @@ console: build
 # Generate a test coverage report
 .PHONY: coverage
 coverage: build
-	docker run -it --name $(image) --rm $(image) bash -c "npm run coverage"
+	docker run --rm $(image) bash -c "npm run coverage"
 
 # Run a local Critter node on the hardhat network
 .PHONY: node
@@ -23,9 +23,9 @@ node: build
 # Generate a contract size report
 .PHONY: size
 size: build
-	docker run -it --name $(image) --rm $(image) bash -c "npm run size"
+	docker run -it --rm $(image) bash -c "npm run size"
 
 # Run unit tests
 .PHONY: test
 test: build
-	docker run -it --name $(image) --rm $(image) bash -c "npm run test"
+	docker run -it --rm $(image) bash -c "npm run test"
