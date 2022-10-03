@@ -1,31 +1,31 @@
-container = critter-contracts
+image = critter-contracts
 
 # Build docker container
 .PHONY: build
 build:
-	docker build . -t $(container)
+	docker build . -t $(image)
 
 # Open a CRTTR console (requires a running node)
 .PHONY: console
 console: build
-	docker exec --name $(container) -it $(container) bash -c "npm run console"
+	docker exec --name $(image) -it $(image) bash -c "npm run console"
 
 # Generate a test coverage report
 .PHONY: coverage
 coverage: build
-	docker run -it --name $(container) --rm $(container) bash -c "npm run coverage"
+	docker run -it --name $(image) --rm $(image) bash -c "npm run coverage"
 
 # Run a local Critter node on the hardhat network
 .PHONY: node
 node: build
-	docker run -it --name $(container) --rm $(container)
+	docker run -it --name $(image) --rm $(image)
 
 # Generate a contract size report
 .PHONY: size
 size: build
-	docker run -it --name $(container) --rm $(container) bash -c "npm run size"
+	docker run -it --name $(image) --rm $(image) bash -c "npm run size"
 
 # Run unit tests
 .PHONY: test
 test: build
-	docker run -it --name $(container) --rm $(container) bash -c "npm run test"
+	docker run -it --name $(image) --rm $(image) bash -c "npm run test"
