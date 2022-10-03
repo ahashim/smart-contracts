@@ -14,7 +14,6 @@ import 'solidity-coverage';
 // task files
 import './tasks/contract';
 import './tasks/network';
-import './tasks/project';
 
 const config: HardhatUserConfig = {
   contractSizer: {
