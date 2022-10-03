@@ -2,8 +2,9 @@
 
 The underlying smart-contracts that power [Critter](https://github.com/ahashim/critter).
 
-Please ensure you have [docker](https://docker.com) & [make](https://www.gnu.org/software/make)
-installed in order to run them.
+Requirements:
+* [docker](https://docker.com)
+* [make](https://www.gnu.org/software/make)
 
 ### Start a local node
 
@@ -11,7 +12,7 @@ installed in order to run them.
 make node
 ```
 
-This starts a Critter node on the local [hardhat network](https://hardhat.org/hardhat-network/docs/overview).
+Starts a local [hardhat network node](https://hardhat.org/hardhat-network/docs/overview).
 
 ### Start the `CRTTR` console
 
@@ -19,23 +20,28 @@ This starts a Critter node on the local [hardhat network](https://hardhat.org/ha
 make console
 ```
 
-Opens an interactive [node.js repl](https://nodejs.org/api/repl.html#repl) to
-interact with the locally deployed contracts. Available objects include:
+Deploys all Critter contracts to the local node, and  opens a [node.js repl](https://nodejs.org/api/repl.html#repl)
+to interact with them. Under the hood, it uses the [ethers](https://docs.ethers.io/)
+library to communicate with the deployed contracts, so its [full API](https://docs.ethers.io/v5/api/)
+is available to use.
+
+Additional objects include:
 
 - `hh`: an instance of hardhat, [including all available tasks](https://github.com/ahashim/critter/blob/main/tasks/contract.ts#L15).
 - `ahmed`, `barbie`, `carlos`, `owner`: each returns an individual contract instance connected to the respective signer.
   - Each signer is given 10000 ETH.
   - Each signer (except `owner`) has a Critter account created.
-  - All [public contract methods](https://github.com/ahashim/smart-contracts/tree/main/contracts/interfaces)
-are available on these accounts. For example:
 
-    ```javascript
-      🦔 <CRTTR>: await ahmed.createSqueak('hello blockchain!');
-      ...
-      🦔 <CRTTR>: await ahmed.balanceOf(ahmed.signer.address); // BigNumber { value: "1" }
-    ```
+All public [contract methods](https://github.com/ahashim/smart-contracts/tree/main/contracts/interfaces)
+are available on these instances. For example:
 
-### Unit Tests
+```javascript
+🦔 <CRTTR>: await ahmed.createSqueak('hello blockchain!');
+...
+🦔 <CRTTR>: await ahmed.balanceOf(ahmed.signer.address); // BigNumber { value: "1" }
+```
+
+### Run unit tests
 
 ```bash
 make test
@@ -43,13 +49,13 @@ make test
 
 This also reports the gas costs for every contract function called.
 
-#### Test Coverage
+### Test coverage report
 
 ```bash
 make coverage
 ```
 
-#### Contract Size
+### Contract size report
 
 ```bash
 make size
