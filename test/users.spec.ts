@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
-import { AccountStatus } from '../enums';
+import { Status } from '../enums';
 
 // types
 import type { Wallet } from 'ethers';
@@ -49,7 +49,7 @@ describe('users', () => {
   });
 
   it('returns a default active status for an account', async () => {
-    expect(validUser.status).to.eq(AccountStatus.Active);
+    expect(validUser.status).to.eq(Status.Active);
   });
 
   it('returns a default scout level of 0 for an account', async () => {
@@ -62,7 +62,7 @@ describe('users', () => {
 
   it('returns zero values for a non-existent account', async () => {
     expect(nullUser.account).to.eq(ethers.constants.AddressZero);
-    expect(nullUser.status).to.eq(AccountStatus.NonExistent);
+    expect(nullUser.status).to.eq(Status.NonExistent);
     expect(nullUser.scoutLevel).to.eq(0);
     expect(nullUser.username).to.be.empty;
   });

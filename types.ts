@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { AccountStatus } from './enums';
+import { Status } from './enums';
 
 export type BigNumberObject = {
   [key: string]: BigNumber;
@@ -48,7 +48,7 @@ export type Squeak = {
 
 export type User = {
   account: string;
-  status: AccountStatus;
+  status: Status;
   scoutLevel: BigNumber;
   username: string;
 };

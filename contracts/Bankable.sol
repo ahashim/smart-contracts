@@ -136,7 +136,7 @@ contract Bankable is Validateable, IBankable {
 
         if (
             // the squeak owner is banned
-            owner.status == AccountStatus.Banned ||
+            owner.status == Status.Banned ||
             // negative interaction
             interaction == Interaction.Dislike ||
             interaction == Interaction.UndoLike ||

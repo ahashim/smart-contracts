@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
 import { PLATFORM_FEE, PLATFORM_TAKE_RATE } from '../constants';
-import { AccountStatus, Interaction, Relation } from '../enums';
+import { Status, Interaction, Relation } from '../enums';
 
 // types
 import { BigNumber, Wallet } from 'ethers';
@@ -549,7 +549,7 @@ describe('interact basic', () => {
       // ban ahmed
       await critter
         .connect(owner)
-        .updateAccountStatus(ahmed.address, AccountStatus.Banned);
+        .updateStatus(ahmed.address, Status.Banned);
 
       // snapshot balances
       ahmedBalance = await ahmed.getBalance();
@@ -628,7 +628,7 @@ describe('interact basic', () => {
       // ban ahmed
       await critter
         .connect(owner)
-        .updateAccountStatus(ahmed.address, AccountStatus.Banned);
+        .updateStatus(ahmed.address, Status.Banned);
 
       await expect(
         critter.interact(ahmedSqueakId, Interaction.Like, { value: fees.like })

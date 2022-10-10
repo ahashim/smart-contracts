@@ -23,7 +23,7 @@ import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeab
 /**
  * @dev Set of statuses of a critter account.
  */
-enum AccountStatus {
+enum Status {
     NonExistent,
     Active,
     Suspended,
@@ -147,14 +147,14 @@ interface IStoreable {
     /**
      * @dev User is a registered Critter account.
      * @param account Address of the account.
-     * @param status A value from the AccountStatus enum.
+     * @param status A value from the Status enum.
      * @param scoutLevel Level of "scout" the user has achieved based on their
      *       squeak and interaction history.
      * @param username The accounts username.
      */
     struct User {
         address account;
-        AccountStatus status;
+        Status status;
         uint256 scoutLevel;
         string username;
     }

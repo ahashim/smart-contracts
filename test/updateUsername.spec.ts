@@ -4,7 +4,7 @@ import { ethers, run, waffle } from 'hardhat';
 // types
 import type { ContractTransaction, Wallet } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
-import { AccountStatus } from '../enums';
+import { Status } from '../enums';
 
 describe('updateUsername', () => {
   let critter: Critter;
@@ -75,7 +75,7 @@ describe('updateUsername', () => {
     // ban ahmed
     await critter
       .connect(owner)
-      .updateAccountStatus(ahmed.address, AccountStatus.Banned);
+      .updateStatus(ahmed.address, Status.Banned);
 
     await expect(critter.updateUsername('ahmed')).to.be.reverted;
   });

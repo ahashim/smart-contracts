@@ -1,4 +1,4 @@
-export const enum AccountStatus {
+export const enum Status {
   NonExistent,
   Active,
   Suspended,

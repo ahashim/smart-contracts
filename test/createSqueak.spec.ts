@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
 import { MODERATOR_ROLE } from '../constants';
-import { AccountStatus } from '../enums';
+import { Status } from '../enums';
 
 // types
 import type {
@@ -50,7 +50,7 @@ describe('createSqueak', () => {
     await critter.connect(barbie).createAccount('barbie');
 
     // ahmed bans barbie
-    await critter.updateAccountStatus(barbie.address, AccountStatus.Banned);
+    await critter.updateStatus(barbie.address, Status.Banned);
 
     return {
       content,

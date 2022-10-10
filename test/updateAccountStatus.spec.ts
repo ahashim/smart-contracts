@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
-import { AccountStatus } from '../enums';
+import { Status } from '../enums';
 
 // types
 import { ContractTransaction, Wallet } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 
-describe('updateAccountStatus', () => {
+describe('updateStatus', () => {
   let critter: Critter;
   let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
   let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
@@ -17,7 +17,7 @@ describe('updateAccountStatus', () => {
     loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
   });
 
-  const updateAccountStatusFixture = async () => {
+  const updateStatusFixture = async () => {
     // deploy contract as owner
     critter = (await run('deploy-contract')).connect(owner);
 
@@ -28,61 +28,61 @@ describe('updateAccountStatus', () => {
     });
 
     // moderator suspends ahmed & barbie, then bans carlos (harsh!)
-    await critter.updateAccountStatus(ahmed.address, AccountStatus.Suspended);
-    await critter.updateAccountStatus(barbie.address, AccountStatus.Suspended);
-    await critter.updateAccountStatus(carlos.address, AccountStatus.Banned);
+    await critter.updateStatus(ahmed.address, Status.Suspended);
+    await critter.updateStatus(barbie.address, Status.Suspended);
+    await critter.updateStatus(carlos.address, Status.Banned);
 
     // they reactivate ahmeds account (phew!)
     tx = await critter
       .connect(owner)
-      .updateAccountStatus(ahmed.address, AccountStatus.Active);
+      .updateStatus(ahmed.address, Status.Active);
 
     return { critter, tx };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, tx } = await loadFixture(updateAccountStatusFixture));
+    ({ critter, tx } = await loadFixture(updateStatusFixture));
   });
 
   it('updates a users account status to active', async () => {
     expect((await critter.users(ahmed.address)).status).to.eq(
-      AccountStatus.Active
+      Status.Active
     );
   });
 
   it('updates a users account status to suspended', async () => {
     expect((await critter.users(barbie.address)).status).to.eq(
-      AccountStatus.Suspended
+      Status.Suspended
     );
   });
 
   it('updates a users account status to banned', async () => {
     expect((await critter.users(carlos.address)).status).to.eq(
-      AccountStatus.Banned
+      Status.Banned
     );
   });
 
-  it('emits an AccountStatusUpdated event', async () => {
+  it('emits an StatusUpdated event', async () => {
     await expect(tx)
-      .to.emit(critter, 'AccountStatusUpdated')
-      .withArgs(ahmed.address, AccountStatus.Active);
+      .to.emit(critter, 'StatusUpdated')
+      .withArgs(ahmed.address, Status.Active);
   });
 
   it('reverts when trying to update a users account status to non-existent', async () => {
     await expect(
-      critter.updateAccountStatus(ahmed.address, AccountStatus.NonExistent)
+      critter.updateStatus(ahmed.address, Status.NonExistent)
     ).to.be.reverted;
   });
 
   it('reverts when trying to update a users account status to its already current status', async () => {
     await expect(
-      critter.updateAccountStatus(ahmed.address, AccountStatus.Active)
+      critter.updateStatus(ahmed.address, Status.Active)
     ).to.be.reverted;
   });
 
   it('reverts when users account does not exist', async () => {
     await expect(
-      critter.updateAccountStatus(owner.address, AccountStatus.Banned)
+      critter.updateStatus(owner.address, Status.Banned)
     ).to.be.reverted;
   });
 });

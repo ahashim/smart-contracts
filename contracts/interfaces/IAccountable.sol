@@ -34,9 +34,9 @@ interface IAccountable is IStoreable {
     /**
      * @dev Emitted after updating an account status.
      * @param account Address of the account.
-     * @param status A value from the AccountStatus enum.
+     * @param status A value from the Status enum.
      */
-    event AccountStatusUpdated(address account, AccountStatus status);
+    event StatusUpdated(address account, Status status);
 
     /**
      * @dev Emitted after updating an accounts username.
@@ -54,10 +54,10 @@ interface IAccountable is IStoreable {
     /**
      * @dev Updates an accounts status.
      * @param account Address of the account.
-     * @param status A value from the AccountStatus enum.
+     * @param status A value from the Status enum.
      * @notice can only be called by MODERATOR_ROLE.
      */
-    function updateAccountStatus(address account, AccountStatus status)
+    function updateStatus(address account, Status status)
         external;
 
     /**

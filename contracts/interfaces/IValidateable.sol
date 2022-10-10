@@ -25,7 +25,7 @@ error AlreadyInteracted();
 error Blocked();
 error InsufficientFunds();
 error InvalidAccount();
-error InvalidAccountStatus();
+error InvalidStatus();
 error InvalidAmount();
 error InvalidInteraction();
 error InvalidLength();

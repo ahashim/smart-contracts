@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
 import { EMPTY_BYTE_STRING } from '../constants';
-import { AccountStatus, Interaction } from '../enums';
+import { Status, Interaction } from '../enums';
 
 // types
 import type { BigNumber, ContractTransaction, Wallet } from 'ethers';
@@ -150,7 +150,7 @@ describe('deleteSqueak', () => {
     // moderator suspends squeak owners account
     await critter
       .connect(owner)
-      .updateAccountStatus(ahmed.address, AccountStatus.Suspended);
+      .updateStatus(ahmed.address, Status.Suspended);
 
     await expect(critter.deleteSqueak(squeakId, { value: deleteFee })).to.be
       .reverted;

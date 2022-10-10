@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers, run, waffle } from 'hardhat';
-import { AccountStatus, Relation } from '../enums';
+import { Status, Relation } from '../enums';
 
 // types
 import type { ContractTransaction, Wallet } from 'ethers';
@@ -188,7 +188,7 @@ describe('updateRelationship', () => {
       // moderator suspends barbie's account
       await critter
         .connect(owner)
-        .updateAccountStatus(barbie.address, AccountStatus.Suspended);
+        .updateStatus(barbie.address, Status.Suspended);
 
       await expect(critter.updateRelationship(barbie.address, Relation.Follow))
         .to.be.reverted;

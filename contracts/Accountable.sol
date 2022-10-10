@@ -48,13 +48,13 @@ contract Accountable is Relatable, IAccountable {
         isValidUsername(username)
     {
         // ensure account does not already exist
-        if (users[msg.sender].status != AccountStatus.NonExistent)
+        if (users[msg.sender].status != Status.NonExistent)
             revert InvalidAccount();
 
         // create an active User for the account
         users[msg.sender] = User(
             msg.sender,
-            AccountStatus.Active,
+            Status.Active,
             1,
             username
         );
@@ -69,27 +69,27 @@ contract Accountable is Relatable, IAccountable {
     }
 
     /**
-     * @dev See {IAccountable-updateAccountStatus}.
+     * @dev See {IAccountable-updateStatus}.
      */
-    function updateAccountStatus(address account, AccountStatus status)
+    function updateStatus(address account, Status status)
         external
         onlyRole(MODERATOR_ROLE)
     {
         // cannot set a status to non-existent
-        if (status == AccountStatus.NonExistent) revert InvalidAccountStatus();
+        if (status == Status.NonExistent) revert InvalidStatus();
 
         User storage user = users[account];
 
         // ensure the account exists
-        if (user.status == AccountStatus.NonExistent) revert InvalidAccount();
+        if (user.status == Status.NonExistent) revert InvalidAccount();
 
         // ensure new status is not the same as the current status
-        if (user.status == status) revert InvalidAccountStatus();
+        if (user.status == status) revert InvalidStatus();
 
         // save the updated status
         user.status = status;
 
-        emit AccountStatusUpdated(account, status);
+        emit StatusUpdated(account, status);
     }
 
     /**
