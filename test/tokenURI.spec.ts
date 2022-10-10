@@ -45,7 +45,7 @@ describe('tokenURI', () => {
     expect(await critter.tokenURI(squeakId)).to.eq(BASE_TOKEN_URI + squeakId);
   });
 
-  it('reverts when querying for a non-existent squeak', async () => {
+  it('reverts when querying for an unknown squeak', async () => {
     await expect(critter.tokenURI(420)).to.be.reverted;
   });
 });

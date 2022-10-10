@@ -48,7 +48,7 @@ contract Validateable is
         User storage account = users[msg.sender];
 
         // validate existence
-        if (account.status == Status.NonExistent) {
+        if (account.status == Status.Unknown) {
             revert InvalidAccount();
         }
         // validate active status

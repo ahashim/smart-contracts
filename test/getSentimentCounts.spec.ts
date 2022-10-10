@@ -88,7 +88,7 @@ describe('getSentimentCounts', () => {
     expect(sentimentCounts.resqueaks).to.equal(1);
   });
 
-  it('returns zero when querying for a nonexistent squeak', async () => {
+  it('returns zero when querying for an unknown squeak', async () => {
     const { dislikes, likes, resqueaks } = await critter.getSentimentCounts(
       420
     );

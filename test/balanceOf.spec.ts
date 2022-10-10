@@ -40,7 +40,7 @@ describe('balanceOf', () => {
     expect(await critter.balanceOf(ahmed.address)).to.eq(1);
   });
 
-  it('returns zero when looking up the balance of a non-existent account', async () => {
+  it('returns zero when looking up the balance of an unknown account', async () => {
     expect(await critter.balanceOf(owner.address)).to.eq(0);
   });
 

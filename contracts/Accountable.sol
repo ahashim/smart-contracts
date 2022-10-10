@@ -48,7 +48,7 @@ contract Accountable is Relatable, IAccountable {
         isValidUsername(username)
     {
         // ensure account does not already exist
-        if (users[msg.sender].status != Status.NonExistent)
+        if (users[msg.sender].status != Status.Unknown)
             revert InvalidAccount();
 
         // create an active User for the account
@@ -75,13 +75,13 @@ contract Accountable is Relatable, IAccountable {
         external
         onlyRole(MODERATOR_ROLE)
     {
-        // cannot set a status to non-existent
-        if (status == Status.NonExistent) revert InvalidStatus();
+        // cannot set a status to unknown
+        if (status == Status.Unknown) revert InvalidStatus();
 
         User storage user = users[account];
 
         // ensure the account exists
-        if (user.status == Status.NonExistent) revert InvalidAccount();
+        if (user.status == Status.Unknown) revert InvalidAccount();
 
         // ensure new status is not the same as the current status
         if (user.status == status) revert InvalidStatus();

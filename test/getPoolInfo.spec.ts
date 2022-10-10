@@ -88,7 +88,7 @@ describe('getPoolInfo', () => {
     expect(poolInfo.memberCount).to.eq(3);
   });
 
-  it('returns zero values for a non-existent pool', async () => {
+  it('returns zero values for an unknown pool', async () => {
     expect(invalidPool.amount).to.eq(0);
     expect(invalidPool.shares).to.eq(0);
     expect(invalidPool.memberCount).to.eq(0);

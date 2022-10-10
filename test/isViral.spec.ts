@@ -67,7 +67,7 @@ describe('isViral', () => {
     expect(await critter.isViral(squeakId)).to.be.true;
   });
 
-  it('reverts when looking up a non-existent squeak', async () => {
+  it('reverts when looking up an unknown squeak', async () => {
     await expect(critter.isViral(420)).to.be.reverted;
   });
 });

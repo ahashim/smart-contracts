@@ -24,7 +24,7 @@ import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeab
  * @dev Set of statuses of a critter account.
  */
 enum Status {
-    NonExistent,
+    Unknown,
     Active,
     Suspended,
     Banned

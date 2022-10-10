@@ -33,7 +33,7 @@ describe('addresses', () => {
     expect(await critter.addresses(username)).to.eq(ahmed.address);
   });
 
-  it('returns the zero address for a non-existent account', async () => {
+  it('returns the zero address for an unknown account', async () => {
     expect(await critter.addresses('obi-wan')).to.eq(
       ethers.constants.AddressZero
     );

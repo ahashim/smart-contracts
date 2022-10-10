@@ -121,7 +121,7 @@ describe('getViralityScore', () => {
     ).to.equal(0);
   });
 
-  it('reverts when querying for a nonexistent squeak', async () => {
+  it('reverts when querying for an unknown squeak', async () => {
     await expect(critter.getViralityScore(420)).to.be.reverted;
   });
 

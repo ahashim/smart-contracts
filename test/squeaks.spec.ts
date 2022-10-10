@@ -63,7 +63,7 @@ describe('squeaks', () => {
     expect(squeak.content).to.eq(utils.hexlify(utils.toUtf8Bytes(content)));
   });
 
-  it('returns an empty squeak for a non-existent squeakId', async () => {
+  it('returns an empty squeak for an unknown squeakId', async () => {
     squeak = await critter.squeaks(420);
 
     expect(squeak.blockNumber).to.eq(0);

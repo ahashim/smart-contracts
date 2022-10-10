@@ -60,9 +60,9 @@ describe('users', () => {
     expect(validUser.account).to.eq(ahmed.address);
   });
 
-  it('returns zero values for a non-existent account', async () => {
+  it('returns zero values for an unknown account', async () => {
     expect(nullUser.account).to.eq(ethers.constants.AddressZero);
-    expect(nullUser.status).to.eq(Status.NonExistent);
+    expect(nullUser.status).to.eq(Status.Unknown);
     expect(nullUser.scoutLevel).to.eq(0);
     expect(nullUser.username).to.be.empty;
   });

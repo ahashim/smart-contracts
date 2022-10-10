@@ -1,5 +1,5 @@
 export const enum Status {
-  NonExistent,
+  Unknown,
   Active,
   Suspended,
   Banned,

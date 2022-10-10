@@ -68,9 +68,9 @@ describe('updateStatus', () => {
       .withArgs(ahmed.address, Status.Active);
   });
 
-  it('reverts when trying to update a users account status to non-existent', async () => {
+  it('reverts when trying to update a users account status to unknown', async () => {
     await expect(
-      critter.updateStatus(ahmed.address, Status.NonExistent)
+      critter.updateStatus(ahmed.address, Status.Unknown)
     ).to.be.reverted;
   });
 
