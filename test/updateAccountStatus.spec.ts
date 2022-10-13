@@ -45,9 +45,7 @@ describe('updateStatus', () => {
   });
 
   it('updates a users account status to active', async () => {
-    expect((await critter.users(ahmed.address)).status).to.eq(
-      Status.Active
-    );
+    expect((await critter.users(ahmed.address)).status).to.eq(Status.Active);
   });
 
   it('updates a users account status to suspended', async () => {
@@ -57,9 +55,7 @@ describe('updateStatus', () => {
   });
 
   it('updates a users account status to banned', async () => {
-    expect((await critter.users(carlos.address)).status).to.eq(
-      Status.Banned
-    );
+    expect((await critter.users(carlos.address)).status).to.eq(Status.Banned);
   });
 
   it('emits an StatusUpdated event', async () => {
@@ -69,20 +65,17 @@ describe('updateStatus', () => {
   });
 
   it('reverts when trying to update a users account status to unknown', async () => {
-    await expect(
-      critter.updateStatus(ahmed.address, Status.Unknown)
-    ).to.be.reverted;
+    await expect(critter.updateStatus(ahmed.address, Status.Unknown)).to.be
+      .reverted;
   });
 
   it('reverts when trying to update a users account status to its already current status', async () => {
-    await expect(
-      critter.updateStatus(ahmed.address, Status.Active)
-    ).to.be.reverted;
+    await expect(critter.updateStatus(ahmed.address, Status.Active)).to.be
+      .reverted;
   });
 
   it('reverts when users account does not exist', async () => {
-    await expect(
-      critter.updateStatus(owner.address, Status.Banned)
-    ).to.be.reverted;
+    await expect(critter.updateStatus(owner.address, Status.Banned)).to.be
+      .reverted;
   });
 });

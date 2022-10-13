@@ -547,9 +547,7 @@ describe('interact basic', () => {
   describe('Moderation', () => {
     it('deposits the full fee into the treasury when interacting with a banned account', async () => {
       // ban ahmed
-      await critter
-        .connect(owner)
-        .updateStatus(ahmed.address, Status.Banned);
+      await critter.connect(owner).updateStatus(ahmed.address, Status.Banned);
 
       // snapshot balances
       ahmedBalance = await ahmed.getBalance();
@@ -626,9 +624,7 @@ describe('interact basic', () => {
 
     it('reverts when account is not active', async () => {
       // ban ahmed
-      await critter
-        .connect(owner)
-        .updateStatus(ahmed.address, Status.Banned);
+      await critter.connect(owner).updateStatus(ahmed.address, Status.Banned);
 
       await expect(
         critter.interact(ahmedSqueakId, Interaction.Like, { value: fees.like })

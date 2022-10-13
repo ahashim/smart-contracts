@@ -57,8 +57,7 @@ interface IAccountable is IStoreable {
      * @param status A value from the Status enum.
      * @notice can only be called by MODERATOR_ROLE.
      */
-    function updateStatus(address account, Status status)
-        external;
+    function updateStatus(address account, Status status) external;
 
     /**
      * @dev Updates an accounts username.

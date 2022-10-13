@@ -148,9 +148,7 @@ describe('deleteSqueak', () => {
 
   it('reverts when the user account is not active', async () => {
     // moderator suspends squeak owners account
-    await critter
-      .connect(owner)
-      .updateStatus(ahmed.address, Status.Suspended);
+    await critter.connect(owner).updateStatus(ahmed.address, Status.Suspended);
 
     await expect(critter.deleteSqueak(squeakId, { value: deleteFee })).to.be
       .reverted;

@@ -67,8 +67,7 @@ contract Relatable is Validateable, IRelatable {
         if (account == msg.sender) revert InvalidRelationship();
 
         // ensure the account is active
-        if (users[account].status != Status.Active)
-            revert InvalidStatus();
+        if (users[account].status != Status.Active) revert InvalidStatus();
 
         // get the accounts blacklist
         EnumerableSetUpgradeable.AddressSet storage accountBlacklist = blocked[

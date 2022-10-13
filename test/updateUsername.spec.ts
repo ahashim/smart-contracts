@@ -73,9 +73,7 @@ describe('updateUsername', () => {
 
   it('reverts when the account is not active', async () => {
     // ban ahmed
-    await critter
-      .connect(owner)
-      .updateStatus(ahmed.address, Status.Banned);
+    await critter.connect(owner).updateStatus(ahmed.address, Status.Banned);
 
     await expect(critter.updateUsername('ahmed')).to.be.reverted;
   });

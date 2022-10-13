@@ -52,12 +52,7 @@ contract Accountable is Relatable, IAccountable {
             revert InvalidAccount();
 
         // create an active User for the account
-        users[msg.sender] = User(
-            msg.sender,
-            Status.Active,
-            1,
-            username
-        );
+        users[msg.sender] = User(msg.sender, Status.Active, 1, username);
 
         // set username <-> address mapping
         addresses[username] = msg.sender;

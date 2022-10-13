@@ -3,8 +3,9 @@
 The underlying smart-contracts that power [Critter](https://github.com/ahashim/critter).
 
 Requirements:
-* [docker](https://docker.com)
-* [make](https://www.gnu.org/software/make)
+
+- [docker](https://docker.com)
+- [make](https://www.gnu.org/software/make)
 
 ### Start a local node
 
@@ -21,7 +22,7 @@ node and opens a JSON RPC port on `localhost:8545`.
 make console
 ```
 
-Deploys all Critter contracts to the local node, and  opens a [node.js repl](https://nodejs.org/api/repl.html#repl)
+Deploys all Critter contracts to the local node, and opens a [node.js repl](https://nodejs.org/api/repl.html#repl)
 to interact with them. Under the hood, it uses the [ethers](https://docs.ethers.io/)
 library to communicate with the deployed contracts, so its [full API](https://docs.ethers.io/v5/api/)
 is available to use.
