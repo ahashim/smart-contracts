@@ -44,12 +44,12 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         hasActiveAccount
         onlyRole(MINTER_ROLE)
     {
-        // convert to bytes for storage
+        // convert to bytes
         bytes memory rawContent = bytes(content);
 
         // validate existence & length of the raw content
         if (rawContent.length == 0) revert InvalidLength();
-        else if (rawContent.length > 256) revert InvalidLength();
+        else if (rawContent.length > 255) revert InvalidLength();
 
         uint256 tokenId = _nextTokenId();
 
