@@ -53,7 +53,7 @@ contract Validateable is
         }
         // validate active status
         if (account.status != Status.Active) {
-            revert InvalidStatus();
+            revert InvalidAccountStatus();
         }
         _;
     }

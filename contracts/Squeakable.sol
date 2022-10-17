@@ -48,8 +48,8 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         bytes memory rawContent = bytes(content);
 
         // validate existence & length of the raw content
-        if (rawContent.length == 0) revert InvalidLength();
-        else if (rawContent.length > 256) revert InvalidLength();
+        if (rawContent.length == 0) revert SqueakEmpty();
+        else if (rawContent.length > 256) revert SqueakTooLong();
 
         uint256 tokenId = _nextTokenId();
 

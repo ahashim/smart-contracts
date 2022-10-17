@@ -71,7 +71,7 @@ contract Accountable is Relatable, IAccountable {
         onlyRole(MODERATOR_ROLE)
     {
         // cannot set a status to unknown
-        if (status == Status.Unknown) revert InvalidStatus();
+        if (status == Status.Unknown) revert InvalidAccountStatus();
 
         User storage user = users[account];
 
@@ -79,7 +79,7 @@ contract Accountable is Relatable, IAccountable {
         if (user.status == Status.Unknown) revert InvalidAccount();
 
         // ensure new status is not the same as the current status
-        if (user.status == status) revert InvalidStatus();
+        if (user.status == status) revert InvalidAccountStatus();
 
         // save the updated status
         user.status = status;
