@@ -3,13 +3,10 @@ import 'dotenv/config';
 
 // hardhat
 import type { HardhatUserConfig } from 'hardhat/config';
-import '@nomiclabs/hardhat-waffle';
+import '@nomicfoundation/hardhat-toolbox';
 import '@openzeppelin/hardhat-upgrades';
-import '@typechain/hardhat';
 import 'hardhat-contract-sizer';
-import 'hardhat-gas-reporter';
 import 'hardhat-watcher';
-import 'solidity-coverage';
 
 // task files
 import './tasks/contract';
