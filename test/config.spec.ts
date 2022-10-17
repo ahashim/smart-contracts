@@ -14,7 +14,7 @@ import { Configuration } from '../enums';
 import type { Config } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
-describe.only('config', () => {
+describe('config', () => {
   let config: Config, critter: Critter;
 
   const configFixture = async () => {
