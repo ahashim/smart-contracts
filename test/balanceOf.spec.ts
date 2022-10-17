@@ -1,51 +1,55 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 
 // types
-import type { Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumberObject } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
-describe('balanceOf', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+describe.only('balanceOf', () => {
+  let ahmed: SignerWithAddress,
+    balances: BigNumberObject,
+    barbie: SignerWithAddress,
+    critter: Critter;
 
   const balanceOfFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
 
     // ahmed creates a squeak
-    await run('create-squeak', {
+    await hardhat.run('create-squeak', {
       content: 'hello blockchain',
       contract: critter,
       signer: ahmed,
     });
 
-    return critter;
+    return {
+      balances: {
+        ahmed: await critter.balanceOf(ahmed.address),
+        barbie: await critter.balanceOf(barbie.address),
+      },
+      critter,
+    };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(balanceOfFixture);
+    ({ balances, critter } = await loadFixture(balanceOfFixture));
   });
 
   it('lets a user get a balance of their squeaks', async () => {
-    expect(await critter.balanceOf(ahmed.address)).to.eq(1);
+    expect(balances.ahmed).to.eq(1);
   });
 
   it('returns zero when looking up the balance of an unknown account', async () => {
-    expect(await critter.balanceOf(owner.address)).to.eq(0);
+    expect(balances.barbie).to.eq(0);
   });
 
   it('reverts when getting the balance of the zero address', async () => {
-    await expect(critter.balanceOf(ethers.constants.AddressZero)).to.be
+    await expect(critter.balanceOf(hardhat.ethers.constants.AddressZero)).to.be
       .reverted;
   });
 });
