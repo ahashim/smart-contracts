@@ -4,6 +4,15 @@ import { Status } from './enums';
 export type BigNumberObject = {
   [key: string]: BigNumber;
 };
+
+export type Config = {
+  platformTakeRate: BigNumber;
+  poolPayoutThreshold: BigNumber;
+  scoutMaxLevel: BigNumber;
+  scoutViralityBonus: BigNumber;
+  viralityThreshold: BigNumber;
+};
+
 export type ContractInitializerOverrides = {
   name: string;
   symbol: string;
@@ -15,6 +24,7 @@ export type ContractInitializerOverrides = {
   scoutBonus: number;
   scoutMaxLevel: number;
 };
+
 export type ContractInitializer = (string | number | BigNumber)[];
 
 export type PoolInfo = {

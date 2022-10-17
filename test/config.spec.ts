@@ -1,5 +1,6 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import {
   SCOUT_MAX_LEVEL,
   PLATFORM_TAKE_RATE,
@@ -10,52 +11,54 @@ import {
 import { Configuration } from '../enums';
 
 // types
-import type { Wallet } from 'ethers';
+import type { Config } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
-describe('config', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet;
+describe.only('config', () => {
+  let config: Config, critter: Critter;
 
-  before('create fixture loader', async () => {
-    [owner] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner]);
-  });
+  const configFixture = async () => {
+    critter = await hardhat.run('deploy-contract');
 
-  const configFixture = async () => await run('deploy-contract');
+    return {
+      config: {
+        platformTakeRate: await critter.config(Configuration.PlatformTakeRate),
+        poolPayoutThreshold: await critter.config(
+          Configuration.PoolPayoutThreshold
+        ),
+        scoutMaxLevel: await critter.config(Configuration.ScoutMaxLevel),
+        scoutViralityBonus: await critter.config(
+          Configuration.ScoutViralityBonus
+        ),
+        viralityThreshold: await critter.config(
+          Configuration.ViralityThreshold
+        ),
+      },
+      critter,
+    };
+  };
 
   beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(configFixture);
+    ({ config, critter } = await loadFixture(configFixture));
   });
 
   it('gets the platform take rate for interactions', async () => {
-    expect(await critter.config(Configuration.PlatformTakeRate)).to.eq(
-      PLATFORM_TAKE_RATE
-    );
+    expect(config.platformTakeRate).to.eq(PLATFORM_TAKE_RATE);
   });
 
   it('gets the scout pool payout threshold', async () => {
-    expect(await critter.config(Configuration.PoolPayoutThreshold)).to.eq(
-      SCOUT_POOL_THRESHOLD
-    );
+    expect(config.poolPayoutThreshold).to.eq(SCOUT_POOL_THRESHOLD);
   });
 
   it('gets the max level a scout can reach', async () => {
-    expect(await critter.config(Configuration.ScoutMaxLevel)).to.eq(
-      SCOUT_MAX_LEVEL
-    );
+    expect(config.scoutMaxLevel).to.eq(SCOUT_MAX_LEVEL);
   });
 
   it('gets the bonus level increase a scout receives for propelling a squeak into virality', async () => {
-    expect(await critter.config(Configuration.ScoutViralityBonus)).to.eq(
-      SCOUT_BONUS
-    );
+    expect(config.scoutViralityBonus).to.eq(SCOUT_BONUS);
   });
 
   it('gets the virality threshold for a squeak', async () => {
-    expect(await critter.config(Configuration.ViralityThreshold)).to.eq(
-      VIRALITY_THRESHOLD
-    );
+    expect(config.viralityThreshold).to.eq(VIRALITY_THRESHOLD);
   });
 });
