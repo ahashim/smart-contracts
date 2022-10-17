@@ -73,7 +73,7 @@ describe('createSqueak', () => {
     expect(squeak.content).to.eq(rawContent);
   });
 
-  it('mints a token to the creators account', async () => {
+  it('mints an NFT of the squeak content to the creators account', async () => {
     expect(accountBalance).to.eq(1);
   });
 
