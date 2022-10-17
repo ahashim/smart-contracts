@@ -49,7 +49,8 @@ describe.only('balanceOf', () => {
   });
 
   it('reverts when getting the balance of the zero address', async () => {
-    await expect(critter.balanceOf(hardhat.ethers.constants.AddressZero)).to.be
-      .reverted;
+    await expect(
+      critter.balanceOf(hardhat.ethers.constants.AddressZero)
+    ).to.be.revertedWithCustomError(critter, 'BalanceQueryForZeroAddress');
   });
 });
