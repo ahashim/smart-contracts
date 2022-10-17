@@ -1,24 +1,25 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run } from 'hardhat';
+import hardhat from 'hardhat';
 
 // types
-import type { ContractTransaction, Wallet } from 'ethers';
+import type { ContractTransaction } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { User } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('createAccount', () => {
   const username = 'ahmed';
   let address: string,
-    ahmed: Wallet,
-    barbie: Wallet,
+    ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
     critter: Critter,
     tx: ContractTransaction,
     user: User;
 
   const createAccountFixture = async () => {
-    [, ahmed, barbie] = await (ethers as any).getSigners();
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     tx = await critter.createAccount(username);
