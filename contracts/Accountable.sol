@@ -49,7 +49,7 @@ contract Accountable is Relatable, IAccountable {
     {
         // ensure account does not already exist
         if (users[msg.sender].status != Status.Unknown)
-            revert InvalidAccount();
+            revert AlreadyRegistered();
 
         // create an active User for the account
         users[msg.sender] = User(msg.sender, Status.Active, 1, username);

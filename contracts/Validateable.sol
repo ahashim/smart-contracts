@@ -65,15 +65,15 @@ contract Validateable is
     modifier isValidUsername(string calldata username) {
         // validate existence
         if (bytes(username).length == 0) {
-            revert InvalidLength();
+            revert UsernameEmpty();
         }
         // validate length
         if (bytes(username).length > 32) {
-            revert InvalidLength();
+            revert UsernameTooLong();
         }
         // validate availability
         if (addresses[username] != address(0)) {
-            revert Unavailable();
+            revert UsernameUnavailable();
         }
         _;
     }

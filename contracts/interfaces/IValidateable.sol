@@ -22,6 +22,7 @@ pragma solidity 0.8.16;
 error AlreadyBlocked();
 error AlreadyFollowing();
 error AlreadyInteracted();
+error AlreadyRegistered();
 error Blocked();
 error InsufficientFunds();
 error InvalidAccount();
@@ -37,7 +38,9 @@ error NotInScoutPool();
 error NotInteractedYet();
 error SqueakDoesNotExist();
 error TransferFailed();
-error Unavailable();
+error UsernameEmpty();
+error UsernameTooLong();
+error UsernameUnavailable();
 
 /**
  * @dev Interface for Validateable.

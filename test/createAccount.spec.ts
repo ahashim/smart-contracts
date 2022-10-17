@@ -1,60 +1,75 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import { ethers, run } from 'hardhat';
 
 // types
 import type { ContractTransaction, Wallet } from 'ethers';
+import type { User } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('createAccount', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let longUsername =
-    'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?';
-  let owner: Wallet, ahmed: Wallet;
-  let tx: ContractTransaction;
-  let username = 'ahmed';
-
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+  const username = 'ahmed';
+  let address: string,
+    ahmed: Wallet,
+    barbie: Wallet,
+    critter: Critter,
+    tx: ContractTransaction,
+    user: User;
 
   const createAccountFixture = async () => {
-    // deploy contract
+    [, ahmed, barbie] = await (ethers as any).getSigners();
     critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     tx = await critter.createAccount(username);
 
-    return { critter, longUsername, tx, username };
+    return {
+      address: await critter.addresses(username),
+      critter,
+      tx,
+      user: await critter.users(ahmed.address),
+    };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, longUsername, tx, username } = await loadFixture(
-      createAccountFixture
-    ));
+    ({ address, critter, tx, user } = await loadFixture(createAccountFixture));
   });
 
   it('lets a user create an account with a valid username', async () => {
-    expect((await critter.users(ahmed.address)).username).to.eq(username);
-    expect(await critter.addresses(username)).to.eq(ahmed.address);
+    expect(user.username).to.eq(username);
+    expect(address).to.eq(ahmed.address);
   });
 
   it('emits an AccountCreated event', async () => {
     await expect(tx)
       .to.emit(critter, 'AccountCreated')
-      .withArgs(ahmed.address, username);
+      .withArgs(ahmed.address, user.username);
   });
 
   it('reverts when the username is empty', async () => {
-    await expect(critter.createAccount('')).to.be.reverted;
+    await expect(critter.createAccount('')).to.be.revertedWithCustomError(
+      critter,
+      'UsernameEmpty'
+    );
   });
 
   it('reverts when the username is too long', async () => {
-    await expect(critter.createAccount(longUsername)).to.be.reverted;
+    await expect(
+      critter.createAccount(
+        'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?'
+      )
+    ).to.be.revertedWithCustomError(critter, 'UsernameTooLong');
+  });
+
+  it('reverts when the username has been taken', async () => {
+    await expect(
+      critter.connect(barbie).createAccount(username)
+    ).to.be.revertedWithCustomError(critter, 'UsernameUnavailable');
   });
 
   it('reverts when the address already has an account', async () => {
-    await expect(critter.createAccount('a-rock')).to.be.reverted;
+    await expect(
+      critter.createAccount('a-rock')
+    ).to.be.revertedWithCustomError(critter, 'AlreadyRegistered');
   });
 });
