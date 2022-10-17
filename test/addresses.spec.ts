@@ -1,32 +1,27 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 
 // types
-import type { Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { Critter } from '../typechain-types/contracts';
 
 describe('addresses', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
-  let username = 'ahmed';
-
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+  const username = 'ahmed';
+  let ahmed: SignerWithAddress, critter: Critter;
 
   const addressesFixture = async () => {
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount(username);
 
-    return { critter, username };
+    return critter;
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, username } = await loadFixture(addressesFixture));
+    critter = await loadFixture(addressesFixture);
   });
 
   it('returns the address of an account', async () => {
@@ -34,8 +29,8 @@ describe('addresses', () => {
   });
 
   it('returns the zero address for an unknown account', async () => {
-    expect(await critter.addresses('obi-wan')).to.eq(
-      ethers.constants.AddressZero
+    expect(await critter.addresses('R2-D2')).to.eq(
+      hardhat.ethers.constants.AddressZero
     );
   });
 });
