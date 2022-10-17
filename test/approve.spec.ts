@@ -1,33 +1,31 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 
 // types
-import type { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('approve', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
-  let squeakId: BigNumber;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
-  });
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    squeakId: BigNumber;
 
   const approveFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed & barbie create accounts
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
 
     // ahmed creates a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain',
       contract: critter,
       signer: ahmed,
@@ -53,12 +51,16 @@ describe('approve', () => {
       .transferFrom(ahmed.address, barbie.address, squeakId);
 
     expect(await critter.getApproved(squeakId)).to.eq(
-      ethers.constants.AddressZero
+      hardhat.ethers.constants.AddressZero
     );
   });
 
-  it('reverts if someone other than the owner tries to approve the squeak', async () => {
-    await expect(critter.connect(carlos).approve(ahmed.address, squeakId)).to
-      .be.reverted;
+  it('reverts if someone other than the squeak owner tries to approve it', async () => {
+    await expect(
+      critter.connect(carlos).approve(ahmed.address, squeakId)
+    ).to.be.revertedWithCustomError(
+      critter,
+      'ApprovalCallerNotOwnerNorApproved'
+    );
   });
 });
