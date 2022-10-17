@@ -7,7 +7,7 @@ import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { BigNumberObject } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
-describe.only('balanceOf', () => {
+describe('balanceOf', () => {
   let ahmed: SignerWithAddress,
     balances: BigNumberObject,
     barbie: SignerWithAddress,
