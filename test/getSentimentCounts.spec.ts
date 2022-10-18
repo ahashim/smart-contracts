@@ -1,8 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { PANIC_CODES } from '@nomicfoundation/hardhat-chai-matchers/panic';
 import { expect } from 'chai';
 import hardhat from 'hardhat';
-import { OVERFLOW } from '../constants';
 import { Interaction } from '../enums';
 
 // types
