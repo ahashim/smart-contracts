@@ -45,6 +45,9 @@ describe('getApproved', () => {
   });
 
   it('reverts if the squeak does not exist', async () => {
-    await expect(critter.getApproved(420)).to.be.reverted;
+    await expect(critter.getApproved(420)).to.be.revertedWithCustomError(
+      critter,
+      'ApprovalQueryForNonexistentToken'
+    );
   });
 });

@@ -1,43 +1,43 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { PANIC_CODES } from '@nomicfoundation/hardhat-chai-matchers/panic';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { OVERFLOW } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import type { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { SentimentCounts } from '../types';
 
 describe('getSentimentCounts', () => {
   let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress;
   let sentimentCounts: SentimentCounts;
   let squeakId: BigNumber;
 
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
-  });
-
   const getSentimentCountsFixture = async () => {
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
 
     // ahmed posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
     }));
 
     // ahmed resqueaks it
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Resqueak,
       signer: ahmed,
@@ -45,7 +45,7 @@ describe('getSentimentCounts', () => {
     });
 
     // barbie likes it
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: barbie,
@@ -53,7 +53,7 @@ describe('getSentimentCounts', () => {
     });
 
     // carlos dislikes it
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Dislike,
       signer: carlos,
@@ -96,10 +96,5 @@ describe('getSentimentCounts', () => {
     expect(dislikes).to.equal(0);
     expect(likes).to.equal(0);
     expect(resqueaks).to.equal(0);
-  });
-
-  it('reverts if the squeakId is out of bounds', async () => {
-    await expect(critter.getSentimentCounts(-1)).to.be.reverted;
-    await expect(critter.getSentimentCounts(OVERFLOW)).to.be.reverted;
   });
 });
