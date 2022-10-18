@@ -1,61 +1,49 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { EMPTY_BYTE_STRING } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import type { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
 import type { PoolInfo, Scout, SentimentCounts, Squeak } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
-describe('deleteViralSqueak', () => {
+describe.only('deleteViralSqueak', () => {
   let amount: BigNumber,
     deleteFee: BigNumber,
     squeakId: BigNumber,
-    treasuryBalance: BigNumber;
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet,
-    ahmed: Wallet,
-    barbie: Wallet,
-    carlos: Wallet,
-    daphne: Wallet;
-  let poolInfo: PoolInfo;
-  let sentimentCounts: SentimentCounts;
-  let scouts: Scout[];
-  let squeak: Squeak;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos, daphne] = await (
-      ethers as any
-    ).getSigners();
-    loadFixture = waffle.createFixtureLoader([
-      owner,
-      ahmed,
-      barbie,
-      carlos,
-      daphne,
-    ]);
-  });
+    treasuryBalance: BigNumber,
+    critter: Critter,
+    ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    daphne: SignerWithAddress,
+    poolInfo: PoolInfo,
+    sentimentCounts: SentimentCounts,
+    scouts: Scout[],
+    squeak: Squeak;
 
   const deleteViralSqueakFixture = async () => {
+    [, ahmed, barbie, carlos, daphne] = await hardhat.ethers.getSigners();
     // deploy contract with a lower virality & scout pool threshold for testing
     critter = (
-      await run('deploy-contract', {
-        scoutPoolThreshold: ethers.utils.parseEther('0.000002'),
+      await hardhat.run('deploy-contract', {
+        scoutPoolThreshold: hardhat.ethers.utils.parseEther('0.000002'),
         viralityThreshold: 60,
       })
     ).connect(ahmed);
 
     // everybody creates an account
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos, daphne],
       contract: critter,
     });
 
     // ahmed creates a squeak
     // current virality score: 0
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -64,7 +52,7 @@ describe('deleteViralSqueak', () => {
     // ahmed & barbie resqueak it
     // current virality score: 0
     [ahmed, barbie].forEach(async (signer) => {
-      await run('interact', {
+      await hardhat.run('interact', {
         contract: critter,
         interaction: Interaction.Resqueak,
         signer,
@@ -74,7 +62,7 @@ describe('deleteViralSqueak', () => {
 
     // carlos likes it and makes it eligible for virality
     // current virality score: 58
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: carlos,
@@ -83,7 +71,7 @@ describe('deleteViralSqueak', () => {
 
     // daphne likes it and brings the score past the virality threshold
     // current virality score: 63
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: daphne,
@@ -102,7 +90,7 @@ describe('deleteViralSqueak', () => {
     const { amount } = await critter.getPoolInfo(squeakId);
 
     // ahmed deletes the viral squeak
-    ({ deleteFee } = await run('delete-squeak', {
+    ({ deleteFee } = await hardhat.run('delete-squeak', {
       contract: critter,
       signer: ahmed,
       squeakId,
@@ -135,8 +123,8 @@ describe('deleteViralSqueak', () => {
 
   it('deletes the viral squeak', () => {
     expect(squeak.blockNumber).to.eq(0);
-    expect(squeak.author).to.eq(ethers.constants.AddressZero);
-    expect(squeak.owner).to.eq(ethers.constants.AddressZero);
+    expect(squeak.author).to.eq(hardhat.ethers.constants.AddressZero);
+    expect(squeak.owner).to.eq(hardhat.ethers.constants.AddressZero);
     expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 
