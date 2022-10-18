@@ -1,53 +1,62 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { PLATFORM_FEE } from '../constants';
-
-// types
-import type { Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
 import { Interaction } from '../enums';
 
+// types
+import type { Critter } from '../typechain-types/contracts';
+import type { BigNumberObject } from '../types';
+
 describe('fees', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet;
+  let critter: Critter, fees: BigNumberObject;
 
-  before('create fixture loader', async () => {
-    [owner] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner]);
-  });
+  const feesFixture = async () => {
+    critter = await hardhat.run('deploy-contract');
 
-  const feesFixture = async () => await run('deploy-contract');
+    return {
+      critter,
+      fees: {
+        delete: await critter.fees(Interaction.Delete),
+        dislike: await critter.fees(Interaction.Dislike),
+        like: await critter.fees(Interaction.Like),
+        resqueak: await critter.fees(Interaction.Resqueak),
+        undoLike: await critter.fees(Interaction.UndoLike),
+        undoDislike: await critter.fees(Interaction.UndoDislike),
+        UndoResqueak: await critter.fees(Interaction.UndoResqueak),
+      },
+    };
+  };
 
   beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(feesFixture);
+    ({ critter, fees } = await loadFixture(feesFixture));
   });
 
   it('gets the base delete fee', async () => {
-    expect(await critter.fees(Interaction.Delete)).to.eq(PLATFORM_FEE);
+    expect(fees.delete).to.eq(PLATFORM_FEE);
   });
 
   it('gets the dislike fee', async () => {
-    expect(await critter.fees(Interaction.Dislike)).to.eq(PLATFORM_FEE);
+    expect(fees.dislike).to.eq(PLATFORM_FEE);
   });
 
   it('gets the like fee', async () => {
-    expect(await critter.fees(Interaction.Like)).to.eq(PLATFORM_FEE);
+    expect(fees.like).to.eq(PLATFORM_FEE);
   });
 
   it('gets the resqueak fee', async () => {
-    expect(await critter.fees(Interaction.Resqueak)).to.eq(PLATFORM_FEE);
+    expect(fees.resqueak).to.eq(PLATFORM_FEE);
   });
 
   it('gets the undo dislike fee', async () => {
-    expect(await critter.fees(Interaction.UndoDislike)).to.eq(PLATFORM_FEE);
+    expect(fees.undoDislike).to.eq(PLATFORM_FEE);
   });
 
   it('gets the undo like fee', async () => {
-    expect(await critter.fees(Interaction.UndoLike)).to.eq(PLATFORM_FEE);
+    expect(fees.undoLike).to.eq(PLATFORM_FEE);
   });
 
   it('gets the undo resqueak fee', async () => {
-    expect(await critter.fees(Interaction.UndoResqueak)).to.eq(PLATFORM_FEE);
+    expect(fees.UndoResqueak).to.eq(PLATFORM_FEE);
   });
 });
