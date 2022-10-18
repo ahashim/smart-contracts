@@ -10,7 +10,7 @@ import type { BigNumber } from 'ethers';
 import type { PoolInfo, Scout, SentimentCounts, Squeak } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
-describe.only('deleteViralSqueak', () => {
+describe('deleteViralSqueak', () => {
   let amount: BigNumber,
     deleteFee: BigNumber,
     squeakId: BigNumber,
