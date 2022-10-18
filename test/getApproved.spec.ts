@@ -1,37 +1,35 @@
-import { ethers, run, waffle } from 'hardhat';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import hardhat from 'hardhat';
 import { expect } from 'chai';
 
 // types
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { Critter } from '../typechain-types/contracts';
-import type { BigNumber, Wallet } from 'ethers';
+import type { BigNumber } from 'ethers';
 
 describe('getApproved', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet;
-  let squeakId: BigNumber;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
-  });
+  let critter: Critter,
+    ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    squeakId: BigNumber;
 
   const approveFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
-    // ahmed creates an account
-    await critter.createAccount('ahmed');
+    // ahmed & barbie create an accounts
+    await hardhat.run('create-accounts', {
+      accounts: [ahmed, barbie],
+      contract: critter,
+    });
 
     // ahmed posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
     }));
 
-    // barbie creates an account
-    critter.connect(barbie).createAccount('barbie');
 
     // ahmed approves barbie for it
     await critter.approve(barbie.address, squeakId);
