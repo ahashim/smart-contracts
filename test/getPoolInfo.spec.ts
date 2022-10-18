@@ -1,41 +1,41 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { PLATFORM_FEE, PLATFORM_TAKE_RATE, SCOUT_BONUS } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import type { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { PoolInfo } from '../types';
 
 describe('getPoolInfo', () => {
-  let critter: Critter;
-  let squeakId: BigNumber;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
-  let poolInfo: PoolInfo, invalidPool: PoolInfo;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
-  });
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    invalidPool: PoolInfo,
+    poolInfo: PoolInfo,
+    squeakId: BigNumber;
 
   const getPoolInfoFixture = async () => {
+    [, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await run('deploy-contract', {
+      await hardhat.run('deploy-contract', {
         viralityThreshold: 1,
       })
     ).connect(ahmed);
 
     // creates accounts
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
 
     // ahmed posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -43,7 +43,7 @@ describe('getPoolInfo', () => {
 
     // ahmed & barbie resqueak it
     [ahmed, barbie].forEach(async (signer) => {
-      await run('interact', {
+      await hardhat.run('interact', {
         contract: critter,
         interaction: Interaction.Resqueak,
         signer,
@@ -52,7 +52,7 @@ describe('getPoolInfo', () => {
     });
 
     // carlos likes it, and thus makes it eligible for virality
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: carlos,
