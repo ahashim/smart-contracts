@@ -1,42 +1,41 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { Interaction } from '../enums';
 
 // types
-import type { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { BigNumberObject, Scout } from '../types';
 
 describe('getScouts', () => {
-  let addresses: string[];
-  let critter: Critter;
-  let squeakId: BigNumber;
-  let levels: BigNumberObject;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
-  let scouts: Scout[];
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
-  });
+  let addresses: string[],
+    ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    levels: BigNumberObject,
+    scouts: Scout[],
+    squeakId: BigNumber;
 
   const getScoutsFixture = async () => {
+    [, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await run('deploy-contract', {
+      await hardhat.run('deploy-contract', {
         viralityThreshold: 1,
       })
     ).connect(ahmed);
 
     // creates accounts
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
 
     // ahmed posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -44,7 +43,7 @@ describe('getScouts', () => {
 
     // ahmed & barbie resqueak it
     [ahmed, barbie].forEach(async (signer) => {
-      await run('interact', {
+      await hardhat.run('interact', {
         contract: critter,
         interaction: Interaction.Resqueak,
         signer,
@@ -53,7 +52,7 @@ describe('getScouts', () => {
     });
 
     // carlos likes it, and thus makes it eligible for virality
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: carlos,
