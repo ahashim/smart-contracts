@@ -130,6 +130,9 @@ contract Scoutable is Bankable, IScoutable {
      * @param account Address of the account.
      */
     function _ejectFromPool(uint256 tokenId, address account) private {
+        // validate that a pool exists for the squeak
+        if (!viralSqueaks.contains(tokenId)) revert ScoutPoolDoesNotExist();
+
         ScoutPool storage pool = pools[tokenId];
 
         // validate that the account is in the pool

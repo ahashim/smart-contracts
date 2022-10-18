@@ -1,36 +1,37 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { PLATFORM_TAKE_RATE, MODERATOR_ROLE } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import { BigNumber, Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
-import { PoolInfo, Scout } from '../types';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
+import type { Critter } from '../typechain-types/contracts';
+import type { PoolInfo, Scout } from '../types';
 
-describe('ejectFromPool', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
-  let poolInfo: PoolInfo;
-  let scouts: Scout[];
-  let squeakId: BigNumber, treasuryBalance: BigNumber;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
-  });
+describe.only('ejectFromPool', () => {
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    owner: SignerWithAddress,
+    poolInfo: PoolInfo,
+    scouts: Scout[],
+    squeakId: BigNumber,
+    treasuryBalance: BigNumber;
 
   const ejectFromPoolFixture = async () => {
+    [owner, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await run('deploy-contract', {
+      await hardhat.run('deploy-contract', {
         viralityThreshold: 1,
       })
     ).connect(ahmed);
 
     // everybody creates an account
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
@@ -38,17 +39,17 @@ describe('ejectFromPool', () => {
     // the owner grants ahmed the MODERATOR_ROLE
     await critter
       .connect(owner)
-      .grantRole(ethers.utils.id(MODERATOR_ROLE), ahmed.address);
+      .grantRole(hardhat.ethers.utils.id(MODERATOR_ROLE), ahmed.address);
 
     // ahmed posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
     }));
 
     // barbie likes it
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: barbie,
@@ -57,7 +58,7 @@ describe('ejectFromPool', () => {
 
     // carlos resqueaks it and propel it into virality, adding themselves and
     // barbie to the scout pool
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Resqueak,
       signer: carlos,
@@ -130,10 +131,14 @@ describe('ejectFromPool', () => {
   });
 
   it('reverts when the user is not a part of the pool', async () => {
-    await expect(critter['ejectFromPool(uint256)'](squeakId)).to.be.reverted;
+    await expect(
+      critter['ejectFromPool(uint256)'](squeakId)
+    ).to.be.revertedWithCustomError(critter, 'NotInScoutPool');
   });
 
   it('reverts when the pool does not exist', async () => {
-    await expect(critter['ejectFromPool(uint256)'](420)).to.be.reverted;
+    await expect(
+      critter['ejectFromPool(uint256)'](420)
+    ).to.be.revertedWithCustomError(critter, 'ScoutPoolDoesNotExist');
   });
 });

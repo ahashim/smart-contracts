@@ -35,6 +35,7 @@ error NotBlocked();
 error NotFollowing();
 error NotInScoutPool();
 error NotInteractedYet();
+error ScoutPoolDoesNotExist();
 error SqueakDoesNotExist();
 error SqueakEmpty();
 error SqueakTooLong();
