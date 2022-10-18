@@ -1,43 +1,52 @@
-import { Wallet } from 'ethers';
-import { ethers, run, waffle } from 'hardhat';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
+import hardhat from 'hardhat';
 import { MINTER_ROLE, TREASURER_ROLE, UPGRADER_ROLE } from '../constants';
-import { Critter } from '../typechain-types/contracts';
+
+// types
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { Critter } from '../typechain-types/contracts';
 
 describe('getRoleAdmin', () => {
+  const ID_MINTER_ROLE = hardhat.ethers.utils.id(MINTER_ROLE);
+  const ID_TREASURER_ROLE = hardhat.ethers.utils.id(TREASURER_ROLE);
+  const ID_UPGRADER_ROLE = hardhat.ethers.utils.id(UPGRADER_ROLE);
+
   let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet;
-  let roleAdmin: string;
+  let owner: SignerWithAddress;
+  let roleAdmins: {
+    [key: string]: string;
+  };
 
-  // tests variables
-  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
-  const ID_TREASURER_ROLE = ethers.utils.id(TREASURER_ROLE);
-  const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
+  const getRoleAdminFixture = async () => {
+    critter = await hardhat.run('deploy-contract');
 
-  before('create fixture loader', async () => {
-    [owner] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner]);
-  });
-
-  const getRoleAdminFixture = async () => await run('deploy-contract');
+    return {
+      critter,
+      roleAdmins: {
+        minter: await critter.getRoleAdmin(ID_MINTER_ROLE),
+        treasurer: await critter.getRoleAdmin(ID_TREASURER_ROLE),
+        upgrader: await critter.getRoleAdmin(ID_UPGRADER_ROLE),
+      },
+    };
+  };
 
   beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(getRoleAdminFixture);
+    [owner] = await hardhat.ethers.getSigners();
+    ({ critter, roleAdmins } = await loadFixture(getRoleAdminFixture));
   });
 
   it('sets the owner account as the role-admin for the MINTER_ROLE', async () => {
-    roleAdmin = await critter.getRoleAdmin(ID_MINTER_ROLE);
-    expect(await critter.hasRole(roleAdmin, owner.address)).to.be.true;
+    expect(await critter.hasRole(roleAdmins.minter, owner.address)).to.be.true;
   });
 
   it('sets the owner account as the role-admin for the TREASURER_ROLE', async () => {
-    roleAdmin = await critter.getRoleAdmin(ID_TREASURER_ROLE);
-    expect(await critter.hasRole(roleAdmin, owner.address)).to.be.true;
+    expect(await critter.hasRole(roleAdmins.treasurer, owner.address)).to.be
+      .true;
   });
 
   it('sets the owner account as the role-admin for the UPGRADER_ROLE', async () => {
-    roleAdmin = await critter.getRoleAdmin(ID_UPGRADER_ROLE);
-    expect(await critter.hasRole(roleAdmin, owner.address)).to.be.true;
+    expect(await critter.hasRole(roleAdmins.upgrader, owner.address)).to.be
+      .true;
   });
 });
