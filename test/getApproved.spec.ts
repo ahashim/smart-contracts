@@ -8,9 +8,9 @@ import type { Critter } from '../typechain-types/contracts';
 import type { BigNumber } from 'ethers';
 
 describe('getApproved', () => {
-  let critter: Critter,
-    ahmed: SignerWithAddress,
+  let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
+    critter: Critter,
     squeakId: BigNumber;
 
   const approveFixture = async () => {
@@ -29,7 +29,6 @@ describe('getApproved', () => {
       contract: critter,
       signer: ahmed,
     }));
-
 
     // ahmed approves barbie for it
     await critter.approve(barbie.address, squeakId);

@@ -1,32 +1,30 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
-
-// types
-import { BigNumber, Wallet } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import hardhat from 'hardhat';
 import { Interaction } from '../enums';
 
-describe('getDeleteFee', () => {
-  let blockAuthored: BigNumber, squeakId: BigNumber;
-  let critter: Critter;
-  let expectedFee: number, latestBlock: number;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
+// types
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
+import type { Critter } from '../typechain-types/contracts';
 
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+describe('getDeleteFee', () => {
+  let ahmed: SignerWithAddress,
+    blockCreated: BigNumber,
+    critter: Critter,
+    expectedFee: number,
+    latestBlock: number,
+    squeakId: BigNumber;
 
   const getDeleteFeeFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
 
     // ahmed posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -41,10 +39,12 @@ describe('getDeleteFee', () => {
 
   it('calculates a delete fee for a squeak based on when it was created', async () => {
     const defaultConfirmationThreshold = 6; // defaults to 6 under the hood
-    ({ blockNumber: blockAuthored } = await critter.squeaks(squeakId));
-    ({ number: latestBlock } = await ethers.provider.getBlock('latest'));
+    ({ blockNumber: blockCreated } = await critter.squeaks(squeakId));
+    ({ number: latestBlock } = await hardhat.ethers.provider.getBlock(
+      'latest'
+    ));
     expectedFee =
-      (latestBlock + defaultConfirmationThreshold - blockAuthored.toNumber()) *
+      (latestBlock + defaultConfirmationThreshold - blockCreated.toNumber()) *
       (await critter.fees(Interaction.Delete)).toNumber();
 
     expect(await critter.getDeleteFee(squeakId)).to.eq(expectedFee);
