@@ -10,7 +10,7 @@ import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { PoolInfo, Scout } from '../types';
 
-describe.only('ejectFromPool', () => {
+describe('ejectFromPool', () => {
   let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
