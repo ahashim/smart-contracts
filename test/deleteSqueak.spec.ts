@@ -1,49 +1,48 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { EMPTY_BYTE_STRING } from '../constants';
 import { Status, Interaction } from '../enums';
 
 // types
-import type { BigNumber, ContractTransaction, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber, ContractTransaction } from 'ethers';
 import type { SentimentCounts, Squeak } from '../types';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('deleteSqueak', () => {
-  let critter: Critter;
-  let barbieSqueak: BigNumber,
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    barbieSqueak: BigNumber,
+    carlos: SignerWithAddress,
+    critter: Critter,
     deleteFee: BigNumber,
+    owner: SignerWithAddress,
+    sentiment: SentimentCounts,
+    squeak: Squeak,
     squeakId: BigNumber,
-    treasuryBalance: BigNumber;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
-  let sentiment: SentimentCounts;
-  let squeak: Squeak;
-  let tx: ContractTransaction;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
-  });
+    treasuryBalance: BigNumber,
+    tx: ContractTransaction;
 
   const deleteSqueakFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed, barbie, and carlos all create accounts
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
 
     // ahmed creates a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain',
       contract: critter,
       signer: ahmed,
     }));
 
     // barbie likes the squeak
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: barbie,
@@ -51,7 +50,7 @@ describe('deleteSqueak', () => {
     });
 
     // carlos dislikes the squeak
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Dislike,
       signer: barbie,
@@ -62,14 +61,14 @@ describe('deleteSqueak', () => {
     treasuryBalance = await critter.treasury();
 
     // ahmed deletes the squeak
-    ({ deleteFee, tx } = await run('delete-squeak', {
+    ({ deleteFee, tx } = await hardhat.run('delete-squeak', {
       contract: critter,
       signer: ahmed,
       squeakId,
     }));
 
     // barbie creates a squeak
-    ({ squeakId: barbieSqueak } = await run('create-squeak', {
+    ({ squeakId: barbieSqueak } = await hardhat.run('create-squeak', {
       content: 'come on barbie, lets go party',
       contract: critter,
       signer: barbie,
@@ -106,8 +105,8 @@ describe('deleteSqueak', () => {
 
   it('removes all squeak information upon deletion', async () => {
     expect(squeak.blockNumber).to.eq(0);
-    expect(squeak.author).to.eq(ethers.constants.AddressZero);
-    expect(squeak.owner).to.eq(ethers.constants.AddressZero);
+    expect(squeak.author).to.eq(hardhat.ethers.constants.AddressZero);
+    expect(squeak.owner).to.eq(hardhat.ethers.constants.AddressZero);
     expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 
@@ -128,29 +127,35 @@ describe('deleteSqueak', () => {
   });
 
   it('reverts when the delete fee is not sufficient', async () => {
-    await expect(critter.deleteSqueak(squeakId, { value: 1 })).to.be.reverted;
+    await expect(
+      critter.connect(barbie).deleteSqueak(barbieSqueak, { value: 1 })
+    ).to.be.revertedWithCustomError(critter, 'InsufficientFunds');
   });
 
   it('reverts when a user who is not an owner or approver tries to delete the squeak', async () => {
-    await expect(critter.deleteSqueak(barbieSqueak)).to.be.reverted;
+    await expect(
+      critter.deleteSqueak(barbieSqueak)
+    ).to.be.revertedWithCustomError(critter, 'NotApprovedOrOwner');
   });
 
   it('reverts when the squeak does not exist', async () => {
-    await expect(critter.deleteSqueak(squeakId, { value: deleteFee })).to.be
-      .reverted;
+    await expect(
+      critter.deleteSqueak(squeakId, { value: deleteFee })
+    ).to.be.revertedWithCustomError(critter, 'SqueakDoesNotExist');
   });
 
   it('reverts when the user does not have an account', async () => {
     await expect(
       critter.connect(owner).deleteSqueak(squeakId, { value: deleteFee })
-    ).to.be.reverted;
+    ).to.be.revertedWithCustomError(critter, 'InvalidAccount');
   });
 
-  it('reverts when the user account is not active', async () => {
+  it('reverts when the users account status is not active', async () => {
     // moderator suspends squeak owners account
     await critter.connect(owner).updateStatus(ahmed.address, Status.Suspended);
 
-    await expect(critter.deleteSqueak(squeakId, { value: deleteFee })).to.be
-      .reverted;
+    await expect(
+      critter.deleteSqueak(squeakId, { value: deleteFee })
+    ).to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
   });
 });
