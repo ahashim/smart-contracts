@@ -1,26 +1,20 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 
 // types
-import type { Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('isApprovedForAll', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
-  });
+  let ahmed: SignerWithAddress, barbie: SignerWithAddress, critter: Critter;
 
   const isApprovedForAllFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
@@ -28,7 +22,7 @@ describe('isApprovedForAll', () => {
     // ahmed creates a squeak
     await critter.createSqueak('hello blockchain!');
 
-    // ahmed approves barbie as an operator on his behalf
+    // ahmed approves barbie to manage all his squeaks
     await critter.setApprovalForAll(barbie.address, true);
 
     return critter;
@@ -41,12 +35,12 @@ describe('isApprovedForAll', () => {
     }
   );
 
-  it('returns true if an operator is approved to manage all assets of an owner', async () => {
+  it('returns true if a user is approved to manage all assets of an owner', async () => {
     expect(await critter.isApprovedForAll(ahmed.address, barbie.address)).to.be
       .true;
   });
 
-  it('returns false if an operator is not approved to manage all assets of an owner', async () => {
+  it('returns false if a user is not approved to manage all assets of an owner', async () => {
     expect(await critter.isApprovedForAll(barbie.address, ahmed.address)).to.be
       .false;
   });
