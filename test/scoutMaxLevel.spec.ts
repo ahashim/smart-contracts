@@ -8,7 +8,7 @@ import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
-describe.only('scoutMaxLevel', () => {
+describe('scoutMaxLevel', () => {
   const scoutMaxLevel = 2;
   const viralityThreshold = 1;
 
