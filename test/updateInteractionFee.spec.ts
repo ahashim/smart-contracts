@@ -1,77 +1,82 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { TREASURER_ROLE, PLATFORM_FEE } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('updateInteractionFee', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet;
-  let squeakId: BigNumber;
+  const updatedFee = hardhat.ethers.utils.parseEther('0.0001');
 
-  // test variables
-  const updatedFee = ethers.utils.parseEther('0.0001');
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
-  });
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    critter: Critter,
+    likeFee: BigNumber,
+    squeakId: BigNumber;
 
   const updateInteractionFeeFixture = async () => {
-    // deploy contract as owner
-    critter = (await run('deploy-contract')).connect(owner);
+    [, ahmed, barbie] = await hardhat.ethers.getSigners();
+    critter = await hardhat.run('deploy-contract');
 
     // everybody creates an account
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
 
     // the owner grants ahmed the TREASURER_ROLE
-    await critter.grantRole(ethers.utils.id(TREASURER_ROLE), ahmed.address);
+    await critter.grantRole(
+      hardhat.ethers.utils.id(TREASURER_ROLE),
+      ahmed.address
+    );
 
     // ahmed increases the interaction fee for "like"
     await critter.updateInteractionFee(Interaction.Like, updatedFee);
 
     // barbie posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: barbie,
     }));
 
-    return { critter, squeakId };
+    return {
+      critter,
+      likeFee: await critter.fees(Interaction.Like),
+      squeakId,
+    };
   };
 
   beforeEach(
     'load deployed contract fixture, ahmed updates the price',
     async () => {
-      ({ critter, squeakId } = await loadFixture(updateInteractionFeeFixture));
+      ({ critter, likeFee, squeakId } = await loadFixture(
+        updateInteractionFeeFixture
+      ));
     }
   );
 
-  it('allows TREASURER_ROLE to update an interaction fee', async () => {
-    expect(await critter.fees(Interaction.Like)).to.eq(updatedFee);
+  it('allows TREASURER_ROLE to update an interaction fee', () => {
+    expect(likeFee).to.eq(updatedFee);
   });
 
-  it('reverts when trying to update an invalid interaction', async () => {
-    await expect(critter.updateInteractionFee(420, updatedFee)).to.be.reverted;
+  it('reverts when the update fee is not sufficient', async () => {
+    await expect(
+      critter
+        .connect(ahmed)
+        .interact(squeakId, Interaction.Like, { value: PLATFORM_FEE })
+    ).to.be.revertedWithCustomError(critter, 'InsufficientFunds');
   });
 
   it('reverts when someone other than the TREASURER_ROLE tries to update an interaction fee', async () => {
-    await expect(critter.connect(barbie).updateInteractionFee(420, updatedFee))
-      .to.be.reverted;
-  });
-
-  it('reverts when interacting with the original platform fee', async () => {
     await expect(
       critter
         .connect(barbie)
-        .interact(squeakId, Interaction.Like, { value: PLATFORM_FEE })
+        .updateInteractionFee(Interaction.Dislike, updatedFee)
     ).to.be.reverted;
   });
 });
