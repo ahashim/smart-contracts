@@ -1,35 +1,38 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
-
-// types
-import type { ContractTransaction, Wallet } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import hardhat from 'hardhat';
 import { Status } from '../enums';
 
-describe('updateUsername', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
-  let tx: ContractTransaction;
+// types
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { ContractTransaction } from 'ethers';
+import type { Critter } from '../typechain-types/contracts';
 
-  // test variables
+describe('updateUsername', () => {
   const longUsername =
     'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?';
   const oldUsername = 'ahmed';
   const newUsername = 'a-rock';
 
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    owner: SignerWithAddress,
+    tx: ContractTransaction;
 
   const updateUsernameFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
-    // ahmed creates an account & updates their username
+    // ahmed creates an account
     await critter.createAccount(oldUsername);
+
+    // ahmed updates their username
     tx = await critter.updateUsername(newUsername);
+
+    // barbie creates an account with ahmeds old username
+    await critter.connect(barbie).createAccount(oldUsername);
 
     return {
       critter,
@@ -47,10 +50,8 @@ describe('updateUsername', () => {
   });
 
   it('makes the old username available when updating to a new one', async () => {
-    await critter.connect(owner).createAccount(oldUsername);
-
-    expect((await critter.users(owner.address)).username).to.eq(oldUsername);
-    expect(await critter.addresses(oldUsername)).to.eq(owner.address);
+    expect((await critter.users(barbie.address)).username).to.eq(oldUsername);
+    expect(await critter.addresses(oldUsername)).to.eq(barbie.address);
   });
 
   it('emits an AccountUsernameUpdated event', async () => {
@@ -60,21 +61,36 @@ describe('updateUsername', () => {
   });
 
   it('reverts when the username is empty', async () => {
-    await expect(critter.updateUsername('')).to.be.reverted;
+    await expect(critter.updateUsername('')).to.be.revertedWithCustomError(
+      critter,
+      'UsernameEmpty'
+    );
   });
 
   it('reverts when the username is too long', async () => {
-    await expect(critter.updateUsername(longUsername)).to.be.reverted;
+    await expect(
+      critter.updateUsername(longUsername)
+    ).to.be.revertedWithCustomError(critter, 'UsernameTooLong');
   });
 
   it('reverts when the address already has an account', async () => {
-    await expect(critter.updateUsername('a-rock')).to.be.reverted;
+    await expect(
+      critter.updateUsername('a-rock')
+    ).to.be.revertedWithCustomError(critter, 'UsernameUnavailable');
   });
 
-  it('reverts when the account is not active', async () => {
+  it('reverts when the user does not have an account', async () => {
+    await expect(
+      critter.connect(carlos).updateUsername('ahmed')
+    ).to.be.revertedWithCustomError(critter, 'InvalidAccount');
+  });
+
+  it('reverts when the account status is not active', async () => {
     // ban ahmed
     await critter.connect(owner).updateStatus(ahmed.address, Status.Banned);
 
-    await expect(critter.updateUsername('ahmed')).to.be.reverted;
+    await expect(
+      critter.updateUsername('ahmed')
+    ).to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
   });
 });
