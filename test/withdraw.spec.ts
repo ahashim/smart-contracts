@@ -1,51 +1,44 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
-import { PLATFORM_TAKE_RATE } from '../constants';
+import hardhat from 'hardhat';
+import { PLATFORM_TAKE_RATE, TREASURER_ROLE } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import { BigNumber, ContractTransaction, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber, ContractTransaction } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('withdraw', () => {
-  let coldStorageBalance: BigNumber;
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet, coldStorage: Wallet;
-  let withdrawTx: ContractTransaction;
-  let squeakId: BigNumber;
-  let treasuryBalance: BigNumber;
-  let treasuryFee: number;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, coldStorage] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([
-      owner,
-      ahmed,
-      barbie,
-      coldStorage,
-    ]);
-  });
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    coldStorage: SignerWithAddress,
+    coldStorageBalance: BigNumber,
+    critter: Critter,
+    squeakId: BigNumber,
+    treasuryBalance: BigNumber,
+    treasuryFee: number,
+    withdrawTx: ContractTransaction;
 
   const withdrawFixture = async () => {
-    // deploy contract as owner
-    critter = (await run('deploy-contract')).connect(owner);
+    [, ahmed, barbie, coldStorage] = await hardhat.ethers.getSigners();
+    critter = await hardhat.run('deploy-contract');
 
     // everybody creates an account
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
 
     // barbie creates a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: barbie,
     }));
 
     // ahmed likes it
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: ahmed,
@@ -67,7 +60,7 @@ describe('withdraw', () => {
     )) as ContractTransaction;
 
     // barbie likes the squeak to refill treasury with a single fee amount
-    await run('interact', {
+    await hardhat.run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: barbie,
@@ -115,23 +108,20 @@ describe('withdraw', () => {
 
   it('reverts if the amount to withdraw is greater than what is available in the treasury', async () => {
     await expect(
-      critter.withdraw(coldStorage.address, ethers.constants.MaxUint256)
-    ).to.be.reverted;
+      critter.withdraw(
+        coldStorage.address,
+        hardhat.ethers.constants.MaxUint256
+      )
+    ).to.be.revertedWithCustomError(critter, 'InvalidAmount');
   });
 
-  it('reverts if a negative amount to withdraw is supplied', async () => {
-    await expect(critter.withdraw(coldStorage.address, -1)).to.be.reverted;
-  });
-
-  it('reverts if the to address is not valid', async () => {
-    await expect(
-      critter.withdraw('looking for love in Alderaan places', treasuryBalance)
-    ).to.be.reverted;
-  });
-
-  it('reverts if someone other than TREASURER_ROLE tries to withdraw funds', async () => {
+  it('reverts if someone other than the treasurer tries to withdraw funds', async () => {
     await expect(
       critter.connect(ahmed).withdraw(coldStorage.address, treasuryFee)
-    ).to.be.reverted;
+    ).to.be.revertedWith(
+      `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${hardhat.ethers.utils.id(
+        TREASURER_ROLE
+      )}`
+    );
   });
 });
