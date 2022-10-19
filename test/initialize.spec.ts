@@ -1,5 +1,6 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import {
   BASE_TOKEN_URI,
   CONTRACT_NAME,
@@ -17,13 +18,8 @@ import type { Critter } from '../typechain-types/contracts';
 
 describe('initialize', () => {
   let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
 
-  before('create fixture loader', async () => {
-    loadFixture = waffle.createFixtureLoader();
-  });
-
-  const initializeFixture = async () => await run('deploy-contract');
+  const initializeFixture = async () => await hardhat.run('deploy-contract');
 
   beforeEach('load deployed contract fixture', async () => {
     critter = await loadFixture(initializeFixture);
