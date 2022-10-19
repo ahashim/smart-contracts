@@ -1,29 +1,24 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { Status } from '../enums';
 
 // types
-import type { Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { Critter } from '../typechain-types/contracts';
-import { User } from '../types';
+import type { User } from '../types';
 
 describe('users', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
-  let validUser: User, nullUser: User;
-
-  // test variables
   const username = 'ahmed';
 
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+  let ahmed: SignerWithAddress,
+    critter: Critter,
+    validUser: User,
+    nullUser: User;
 
   const usersFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount(username);
@@ -44,31 +39,26 @@ describe('users', () => {
     }
   );
 
-  it('returns a username of an account', async () => {
+  it('returns a username of an account', () => {
     expect(validUser.username).to.eq(username);
   });
 
-  it('returns a default active status for an account', async () => {
+  it('returns a default active status for an account', () => {
     expect(validUser.status).to.eq(Status.Active);
   });
 
-  it('returns a default scout level of 0 for an account', async () => {
+  it('returns a default scout level of 0 for an account', () => {
     expect(validUser.scoutLevel).to.eq(1);
   });
 
-  it('returns the address for an account', async () => {
+  it('returns the address for an account', () => {
     expect(validUser.account).to.eq(ahmed.address);
   });
 
-  it('returns zero values for an unknown account', async () => {
-    expect(nullUser.account).to.eq(ethers.constants.AddressZero);
+  it('returns zero values for an unknown account', () => {
+    expect(nullUser.account).to.eq(hardhat.ethers.constants.AddressZero);
     expect(nullUser.status).to.eq(Status.Unknown);
     expect(nullUser.scoutLevel).to.eq(0);
     expect(nullUser.username).to.be.empty;
-  });
-
-  it('reverts when a proper address is not provided', async () => {
-    await expect(critter.users("the droids you're looking for")).to.be
-      .reverted;
   });
 });
