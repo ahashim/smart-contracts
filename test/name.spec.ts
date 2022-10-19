@@ -1,5 +1,6 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { CONTRACT_NAME } from '../constants';
 
 // types
@@ -9,8 +10,8 @@ describe('name', () => {
   let critter: Critter;
 
   before('load deployed contract fixture', async () => {
-    const nameFixture = () => run('deploy-contract');
-    critter = await waffle.createFixtureLoader()(nameFixture);
+    const nameFixture = async () => await hardhat.run('deploy-contract');
+    critter = await loadFixture(nameFixture);
   });
 
   it('returns the contract name', async () => {
