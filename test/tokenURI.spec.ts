@@ -1,48 +1,49 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { BASE_TOKEN_URI } from '../constants';
 
 // types
-import { BigNumber, Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
+import type { Critter } from '../typechain-types/contracts';
 
 describe('tokenURI', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
-  let squeakId: BigNumber;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+  let ahmed: SignerWithAddress,
+    critter: Critter,
+    squeakId: BigNumber,
+    tokenURI: string;
 
   const tokenURIFixture = async () => {
-    // deploy contract
-    const critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await hardhat.ethers.getSigners();
+    const critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
 
     // ahmed posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
     }));
 
-    return { critter, squeakId };
+    return {
+      critter,
+      squeakId,
+      tokenURI: await critter.tokenURI(squeakId),
+    };
   };
 
   beforeEach(
     'load deployed contract fixture, and ahmed creates a squeak',
     async () => {
-      ({ critter, squeakId } = await loadFixture(tokenURIFixture));
+      ({ critter, squeakId, tokenURI } = await loadFixture(tokenURIFixture));
     }
   );
 
-  it('returns the URI of a squeak', async () => {
-    expect(await critter.tokenURI(squeakId)).to.eq(BASE_TOKEN_URI + squeakId);
+  it('returns the URI of a squeak', () => {
+    expect(tokenURI).to.eq(BASE_TOKEN_URI + squeakId);
   });
 
   it('reverts when querying for an unknown squeak', async () => {
