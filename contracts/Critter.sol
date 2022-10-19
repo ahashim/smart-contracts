@@ -28,10 +28,11 @@ import './interfaces/ICritter.sol';
  * @author Ahmed Hashim <ahashim@users.noreply.github.com>
  * @dev Core concepts:
  *      - Every address is a user.
+ *      - Users can follow one another.
  *      - Every post, called a "Squeak", is an NFT.
  *      - Squeaks can be bought & sold via a bidding price discovery mechanism.
  *      - Interactions on squeaks, such as liking, disliking, or resqueaking
-          cost a fee.
+ *        cost a fee.
  *      - Fees are paid out to the owner of the squeak (not necessarily the
  *        original author).
  *      - Once an author sells their squeak, the ownership is transferred to a
