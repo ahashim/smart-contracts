@@ -1,69 +1,46 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { PLATFORM_FEE, PLATFORM_TAKE_RATE } from '../constants';
 import { Status, Interaction, Relation } from '../enums';
 
 // types
-import { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
+import type { BigNumberObject } from '../types';
 
 describe('interact basic', () => {
-  let ahmedBalance: BigNumber,
-    daphneSqueakId: BigNumber,
-    ahmedSqueakId: BigNumber,
-    treasuryBalance: BigNumber;
-  let critter: Critter;
-  let fees: {
-    [name: string]: BigNumber;
-  };
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet,
-    ahmed: Wallet,
-    barbie: Wallet,
-    carlos: Wallet,
-    daphne: Wallet;
-
   // the values below should be the same for all interactions (except delete),
   // so we can declare treasuryTake and transferAmount in terms of PLATFORM_FEE
   // and PLATFORM_TAKE_RATE
-  const treasuryTake: number =
-    PLATFORM_FEE.toNumber() * (PLATFORM_TAKE_RATE / 100);
-  const transferAmount: number = PLATFORM_FEE.toNumber() - treasuryTake;
+  const treasuryTake = PLATFORM_FEE.toNumber() * (PLATFORM_TAKE_RATE / 100);
+  const transferAmount = PLATFORM_FEE.toNumber() - treasuryTake;
 
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos, daphne] = await (
-      ethers as any
-    ).getSigners();
-    loadFixture = waffle.createFixtureLoader([
-      owner,
-      ahmed,
-      barbie,
-      carlos,
-      daphne,
-    ]);
-  });
+  let ahmed: SignerWithAddress,
+    ahmedBalance: BigNumber,
+    ahmedSqueakId: BigNumber,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    daphne: SignerWithAddress,
+    daphneSqueakId: BigNumber,
+    fees: BigNumberObject,
+    owner: SignerWithAddress,
+    treasuryBalance: BigNumber;
 
   const interactBasicFixture = async () => {
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie, carlos, daphne] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos, daphne],
       contract: critter,
     });
 
-    // get interaction fees
-    fees = {
-      dislike: await critter.fees(Interaction.Dislike),
-      like: await critter.fees(Interaction.Like),
-      resqueak: await critter.fees(Interaction.Resqueak),
-      undoDislike: await critter.fees(Interaction.UndoDislike),
-      undoLike: await critter.fees(Interaction.UndoLike),
-      UndoResqueak: await critter.fees(Interaction.UndoResqueak),
-    };
-
     // daphne posts a squeak
-    ({ squeakId: daphneSqueakId } = await run('create-squeak', {
+    ({ squeakId: daphneSqueakId } = await hardhat.run('create-squeak', {
       content: 'is this thing on?',
       contract: critter,
       signer: daphne,
@@ -73,7 +50,7 @@ describe('interact basic', () => {
     await critter.updateRelationship(daphne.address, Relation.Block);
 
     // ahmed posts a squeak
-    ({ squeakId: ahmedSqueakId } = await run('create-squeak', {
+    ({ squeakId: ahmedSqueakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -84,17 +61,21 @@ describe('interact basic', () => {
       ahmedSqueakId,
       daphneSqueakId,
       critter,
-      fees,
+      fees: {
+        dislike: await critter.fees(Interaction.Dislike),
+        like: await critter.fees(Interaction.Like),
+        resqueak: await critter.fees(Interaction.Resqueak),
+        undoDislike: await critter.fees(Interaction.UndoDislike),
+        undoLike: await critter.fees(Interaction.UndoLike),
+        UndoResqueak: await critter.fees(Interaction.UndoResqueak),
+      },
     };
   };
 
-  beforeEach(
-    'load deployed contract fixture, ahmed creates an account & posts a squeak',
-    async () => {
-      ({ ahmedBalance, critter, daphneSqueakId, fees, ahmedSqueakId } =
-        await loadFixture(interactBasicFixture));
-    }
-  );
+  beforeEach('load deployed contract fixture', async () => {
+    ({ ahmedBalance, critter, daphneSqueakId, fees, ahmedSqueakId } =
+      await loadFixture(interactBasicFixture));
+  });
 
   describe('Dislike', () => {
     it('lets a user dislike a squeak for a fee', async () => {
@@ -161,7 +142,7 @@ describe('interact basic', () => {
         critter.connect(barbie).interact(ahmedSqueakId, Interaction.Dislike, {
           value: fees.dislike,
         })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'AlreadyInteracted');
     });
   });
 
@@ -241,7 +222,7 @@ describe('interact basic', () => {
         critter
           .connect(barbie)
           .interact(ahmedSqueakId, Interaction.Like, { value: fees.like })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'AlreadyInteracted');
     });
   });
 
@@ -312,7 +293,7 @@ describe('interact basic', () => {
         critter.connect(barbie).interact(ahmedSqueakId, Interaction.Resqueak, {
           value: fees.resqueak,
         })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'AlreadyInteracted');
     });
   });
 
@@ -398,7 +379,7 @@ describe('interact basic', () => {
         critter.interact(ahmedSqueakId, Interaction.UndoDislike, {
           value: fees.undoDislike,
         })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'NotInteractedYet');
     });
   });
 
@@ -454,7 +435,7 @@ describe('interact basic', () => {
         critter.interact(ahmedSqueakId, Interaction.UndoLike, {
           value: fees.undoLike,
         })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'NotInteractedYet');
     });
   });
 
@@ -516,7 +497,7 @@ describe('interact basic', () => {
         critter.interact(ahmedSqueakId, Interaction.UndoResqueak, {
           value: fees.UndoResqueak,
         })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'NotInteractedYet');
     });
   });
 
@@ -567,7 +548,7 @@ describe('interact basic', () => {
         critter.interact(daphneSqueakId, Interaction.Like, {
           value: fees.like,
         })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'Blocked');
     });
 
     it('reverts when a blocked user interacts with your squeak', async () => {
@@ -575,7 +556,7 @@ describe('interact basic', () => {
         critter.connect(daphne).interact(ahmedSqueakId, Interaction.Like, {
           value: fees.like,
         })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'Blocked');
     });
   });
 
@@ -590,20 +571,12 @@ describe('interact basic', () => {
   });
 
   describe('Reverted', () => {
-    it('reverts when the interaction ID is invalid', async () => {
-      await expect(
-        critter
-          .connect(barbie)
-          .interact(ahmedSqueakId, 420, { value: fees.like })
-      ).to.be.reverted;
-    });
-
     it('reverts when the interaction fee is not sufficient', async () => {
       await expect(
         critter
           .connect(barbie)
           .interact(ahmedSqueakId, Interaction.Like, { value: 1 })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'InsufficientFunds');
     });
 
     it('reverts when the squeak does not exist', async () => {
@@ -611,7 +584,7 @@ describe('interact basic', () => {
         critter
           .connect(barbie)
           .interact(420, Interaction.Like, { value: fees.like })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'SqueakDoesNotExist');
     });
 
     it('reverts when the user does not have an account', async () => {
@@ -619,7 +592,7 @@ describe('interact basic', () => {
         critter
           .connect(owner)
           .interact(ahmedSqueakId, Interaction.Like, { value: fees.like })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'InvalidAccount');
     });
 
     it('reverts when account is not active', async () => {
@@ -628,7 +601,7 @@ describe('interact basic', () => {
 
       await expect(
         critter.interact(ahmedSqueakId, Interaction.Like, { value: fees.like })
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
     });
   });
 });
