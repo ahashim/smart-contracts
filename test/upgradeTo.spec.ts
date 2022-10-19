@@ -1,52 +1,53 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, upgrades, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
 
 // types
-import type { ContractFactory, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { ContractFactory, Contract } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('upgradeTo', () => {
-  let critter: Critter;
-  let factory: ContractFactory;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet;
-
-  before('create fixture loader', async () => {
-    [owner] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner]);
-  });
+  let ahmed: SignerWithAddress,
+    critter: Critter,
+    factory: ContractFactory,
+    upgradedContract: Contract;
 
   const upgradeToFixture = async () => {
-    const factory = (await ethers.getContractFactory(
-      CONTRACT_NAME
-    )) as ContractFactory;
-    const critter = (await upgrades.deployProxy(
+    [, ahmed] = await hardhat.ethers.getSigners();
+    factory = await hardhat.ethers.getContractFactory(CONTRACT_NAME);
+    critter = (await hardhat.upgrades.deployProxy(
       factory,
       CONTRACT_INITIALIZER
     )) as Critter;
 
-    return { critter, factory };
-  };
-
-  beforeEach('load deployed contract fixture', async () => {
-    ({ critter, factory } = await loadFixture(upgradeToFixture));
-  });
-
-  it('upgrades the contract', async () => {
-    const critterUpgraded = await upgrades.upgradeProxy(
+    // owner upgrades the contract
+    upgradedContract = await hardhat.upgrades.upgradeProxy(
       critter.address,
       factory
     );
-    expect(critter.address).to.equal(critterUpgraded.address);
+
+    return { critter, factory, upgradedContract };
+  };
+
+  beforeEach('load deployed contract fixture', async () => {
+    ({ critter, factory, upgradedContract } = await loadFixture(
+      upgradeToFixture
+    ));
+  });
+
+  it('upgrades the contract', () => {
+    expect(upgradedContract.address).to.equal(critter.address);
   });
 
   it('reverts when upgrading to an account that does not support UUPS', async () => {
-    await expect(critter.upgradeTo(critter.address)).to.be.reverted;
+    await expect(critter.upgradeTo(critter.address)).to.be.revertedWith(
+      'ERC1967Upgrade: new implementation is not UUPS'
+    );
   });
 
   it('reverts when upgrading to a non-contract account', async () => {
-    await expect(critter.upgradeTo(ethers.constants.AddressZero)).to.be
-      .reverted;
+    await expect(critter.upgradeTo(ahmed.address)).to.be.reverted;
   });
 });
