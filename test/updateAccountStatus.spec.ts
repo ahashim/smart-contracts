@@ -1,28 +1,28 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
+import { MODERATOR_ROLE } from '../constants';
 import { Status } from '../enums';
 
 // types
-import { ContractTransaction, Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { ContractTransaction } from 'ethers';
+import type { Critter } from '../typechain-types/contracts';
 
 describe('updateStatus', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet, carlos: Wallet;
-  let tx: ContractTransaction;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie, carlos]);
-  });
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    owner: SignerWithAddress,
+    tx: ContractTransaction;
 
   const updateStatusFixture = async () => {
-    // deploy contract as owner
-    critter = (await run('deploy-contract')).connect(owner);
+    [owner, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
+    critter = await hardhat.run('deploy-contract');
 
     // everybody creates an account
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
@@ -65,17 +65,30 @@ describe('updateStatus', () => {
   });
 
   it('reverts when trying to update a users account status to unknown', async () => {
-    await expect(critter.updateStatus(ahmed.address, Status.Unknown)).to.be
-      .reverted;
+    await expect(
+      critter.updateStatus(ahmed.address, Status.Unknown)
+    ).to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
   });
 
   it('reverts when trying to update a users account status to its already current status', async () => {
-    await expect(critter.updateStatus(ahmed.address, Status.Active)).to.be
-      .reverted;
+    await expect(
+      critter.updateStatus(ahmed.address, Status.Active)
+    ).to.be.to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
   });
 
   it('reverts when users account does not exist', async () => {
-    await expect(critter.updateStatus(owner.address, Status.Banned)).to.be
-      .reverted;
+    await expect(
+      critter.updateStatus(owner.address, Status.Banned)
+    ).to.be.to.be.revertedWithCustomError(critter, 'InvalidAccount');
+  });
+
+  it('reverts when someone other than the moderator tries to update a users account status', async () => {
+    await expect(
+      critter.connect(ahmed).updateStatus(barbie.address, Status.Unknown)
+    ).to.be.revertedWith(
+      `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${hardhat.ethers.utils.id(
+        MODERATOR_ROLE
+      )}`
+    );
   });
 });
