@@ -13,7 +13,7 @@ import {
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { Critter } from '../typechain-types/contracts';
 
-describe.only('hasRole', () => {
+describe('hasRole', () => {
   const ID_DEFAULT_ADMIN_ROLE = hardhat.ethers.constants.HashZero;
   const ID_MINTER_ROLE = hardhat.ethers.utils.id(MINTER_ROLE);
   const ID_MODERATOR_ROLE = hardhat.ethers.utils.id(MODERATOR_ROLE);
