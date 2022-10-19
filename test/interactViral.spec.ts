@@ -1,56 +1,45 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { PLATFORM_TAKE_RATE, SCOUT_BONUS } from '../constants';
 import { Interaction } from '../enums';
 
 // types
-import { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 import type { BigNumberObject, PoolInfo } from '../types';
 
 describe('interact viral', () => {
-  let balances: BigNumberObject, fees: BigNumberObject;
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet,
-    ahmed: Wallet,
-    barbie: Wallet,
-    carlos: Wallet,
-    daphne: Wallet;
-  let ahmedBalance: BigNumber,
+  let ahmed: SignerWithAddress,
+    ahmedBalance: BigNumber,
+    balances: BigNumberObject,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    daphne: SignerWithAddress,
+    fees: BigNumberObject,
+    poolInfo: PoolInfo,
     squeakId: BigNumber,
     transferAmount: BigNumber,
     treasuryBalance: BigNumber,
     treasuryTake: BigNumber;
-  let poolInfo: PoolInfo;
 
   // test variables
   const viralityThreshold = 60;
 
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos, daphne] = await (
-      ethers as any
-    ).getSigners();
-    loadFixture = waffle.createFixtureLoader([
-      owner,
-      ahmed,
-      barbie,
-      carlos,
-      daphne,
-    ]);
-  });
-
   const interactViralFixture = async () => {
+    [, ahmed, barbie, carlos, daphne] = await hardhat.ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await run('deploy-contract', {
-        scoutPoolThreshold: ethers.utils.parseEther('0.000004'),
+      await hardhat.run('deploy-contract', {
+        scoutPoolThreshold: hardhat.ethers.utils.parseEther('0.000004'),
         viralityThreshold,
       })
     ).connect(ahmed);
 
     // creates accounts
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos, daphne],
       contract: critter,
     });
@@ -68,7 +57,7 @@ describe('interact viral', () => {
 
     // ahmed posts a squeak
     // current virality score: 0
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
