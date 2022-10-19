@@ -1,29 +1,25 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { MINTER_ROLE, UPGRADER_ROLE } from '../constants';
 
 // types
-import { ContractTransaction, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { ContractTransaction } from 'ethers';
 import { Critter } from '../typechain-types/contracts';
 
 describe('renounceRole', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
-  let tx: ContractTransaction;
+  const ID_MINTER_ROLE = hardhat.ethers.utils.id(MINTER_ROLE);
+  const ID_UPGRADER_ROLE = hardhat.ethers.utils.id(UPGRADER_ROLE);
 
-  // test variables
-  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
-  const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
-
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+  let ahmed: SignerWithAddress,
+    critter: Critter,
+    owner: SignerWithAddress,
+    tx: ContractTransaction;
 
   const renounceRoleFixture = async () => {
-    // deploy contract
-    const critter = (await run('deploy-contract')).connect(ahmed);
+    [owner, ahmed] = await hardhat.ethers.getSigners();
+    const critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
@@ -52,7 +48,8 @@ describe('renounceRole', () => {
   });
 
   it('reverts when trying to renounce another users role', async () => {
-    await expect(critter.renounceRole(ID_UPGRADER_ROLE, owner.address)).to.be
-      .reverted;
+    await expect(
+      critter.renounceRole(ID_UPGRADER_ROLE, owner.address)
+    ).to.be.revertedWith('AccessControl: can only renounce roles for self');
   });
 });
