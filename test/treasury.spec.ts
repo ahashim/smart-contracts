@@ -1,34 +1,32 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { Interaction } from '../enums';
 
 // types
-import { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('treasury', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet;
-  let dislikeFee: BigNumber, squeakId: BigNumber;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
-  });
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    critter: Critter,
+    dislikeFee: BigNumber,
+    squeakId: BigNumber;
 
   const treasuryFixture = async () => {
-    // deploy contract
-    const critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await hardhat.ethers.getSigners();
+    const critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // everybody creates an account
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
 
     // ahmed posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -43,9 +41,11 @@ describe('treasury', () => {
     return { critter, dislikeFee };
   };
 
-  it('gets the current treasury value', async () => {
+  beforeEach('load deployed contract fixture', async () => {
     ({ critter, dislikeFee } = await loadFixture(treasuryFixture));
+  });
 
+  it('gets the current treasury value', async () => {
     expect(await critter.treasury()).to.eq(dislikeFee);
   });
 });

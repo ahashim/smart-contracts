@@ -37,12 +37,9 @@ describe('transferFrom', () => {
     return { critter, squeakId };
   };
 
-  beforeEach(
-    'load deployed contract fixture, ahmed creates an account & posts a squeak then approves barbie to transfer it',
-    async () => {
-      ({ critter, squeakId } = await loadFixture(transferFromFixture));
-    }
-  );
+  beforeEach('load deployed contract fixture', async () => {
+    ({ critter, squeakId } = await loadFixture(transferFromFixture));
+  });
 
   it('lets an owner transfer a token to another user', async () => {
     await critter.transferFrom(ahmed.address, barbie.address, squeakId);
