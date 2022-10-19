@@ -1,19 +1,21 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { Status, Relation } from '../enums';
 
 // types
-import type { ContractTransaction, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { ContractTransaction } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('updateRelationship', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet,
-    ahmed: Wallet,
-    barbie: Wallet,
-    carlos: Wallet,
-    daphne: Wallet;
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    daphne: SignerWithAddress,
+    evan: SignerWithAddress,
+    owner: SignerWithAddress;
   let txs: {
     block?: ContractTransaction;
     follow?: ContractTransaction;
@@ -21,25 +23,13 @@ describe('updateRelationship', () => {
     unblock?: ContractTransaction;
   } = {};
 
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie, carlos, daphne] = await (
-      ethers as any
-    ).getSigners();
-    loadFixture = waffle.createFixtureLoader([
-      owner,
-      ahmed,
-      barbie,
-      carlos,
-      daphne,
-    ]);
-  });
-
   const updateRelationshipFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie, carlos, daphne, evan] =
+      await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
-    // create accounts
-    await run('create-accounts', {
+    // create accounts (except evan)
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie, carlos, daphne],
       contract: critter,
     });
@@ -84,6 +74,9 @@ describe('updateRelationship', () => {
       Relation.Unblock
     );
 
+    // owner bans daphne
+    await critter.connect(owner).updateStatus(daphne.address, Status.Banned);
+
     return {
       critter,
       txs,
@@ -111,7 +104,7 @@ describe('updateRelationship', () => {
         critter
           .connect(barbie)
           .updateRelationship(ahmed.address, Relation.Follow)
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'AlreadyFollowing');
     });
   });
 
@@ -130,7 +123,7 @@ describe('updateRelationship', () => {
     it('reverts if the user is not being followed', async () => {
       await expect(
         critter.updateRelationship(barbie.address, Relation.Unfollow)
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'NotFollowing');
     });
   });
 
@@ -154,8 +147,9 @@ describe('updateRelationship', () => {
     });
 
     it('reverts if the user is already being blocked', async () => {
-      await expect(critter.updateRelationship(carlos.address, Relation.Block))
-        .to.be.reverted;
+      await expect(
+        critter.updateRelationship(carlos.address, Relation.Block)
+      ).to.be.revertedWithCustomError(critter, 'AlreadyBlocked');
     });
   });
 
@@ -174,14 +168,21 @@ describe('updateRelationship', () => {
     it('reverts if the user has not been blocked', async () => {
       await expect(
         critter.updateRelationship(barbie.address, Relation.Unblock)
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(critter, 'NotBlocked');
     });
   });
 
   describe('Reverted', () => {
     it('reverts when trying to update a relationship with themselves', async () => {
-      await expect(critter.updateRelationship(ahmed.address, Relation.Follow))
-        .to.be.reverted;
+      await expect(
+        critter.updateRelationship(ahmed.address, Relation.Follow)
+      ).to.be.revertedWithCustomError(critter, 'InvalidRelationship');
+    });
+
+    it('reverts when trying to update a relationship with themselves', async () => {
+      await expect(
+        critter.updateRelationship(ahmed.address, Relation.Follow)
+      ).to.be.revertedWithCustomError(critter, 'InvalidRelationship');
     });
 
     it('reverts if the user acted upon is not an active account', async () => {
@@ -190,13 +191,25 @@ describe('updateRelationship', () => {
         .connect(owner)
         .updateStatus(barbie.address, Status.Suspended);
 
-      await expect(critter.updateRelationship(barbie.address, Relation.Follow))
-        .to.be.reverted;
+      await expect(
+        critter.updateRelationship(barbie.address, Relation.Follow)
+      ).to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
     });
 
-    it('reverts if Relation value is invalid', async () => {
-      await expect(critter.updateRelationship(barbie.address, 420)).to.be
-        .reverted;
+    it('reverts if the user updating the relationship does not have an account', async () => {
+      await expect(
+        critter
+          .connect(evan)
+          .updateRelationship(barbie.address, Relation.Follow)
+      ).to.be.revertedWithCustomError(critter, 'InvalidAccount');
+    });
+
+    it('reverts if the status of the user updating the relationship is not active', async () => {
+      await expect(
+        critter
+          .connect(daphne)
+          .updateRelationship(barbie.address, Relation.Follow)
+      ).to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
     });
   });
 });
