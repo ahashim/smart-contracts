@@ -1,27 +1,24 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 
 // types
-import type { ContractTransaction, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { ContractTransaction } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('setApprovalForAll', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet;
-  let tx: ContractTransaction;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
-  });
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    critter: Critter,
+    tx: ContractTransaction;
 
   const setApprovalForAllFixture = async () => {
-    // deploy contracts
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // everybody creates an account
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
@@ -56,7 +53,8 @@ describe('setApprovalForAll', () => {
   });
 
   it('reverts if the owner and operator are the same address', async () => {
-    await expect(critter.setApprovalForAll(ahmed.address, true)).to.be
-      .reverted;
+    await expect(
+      critter.setApprovalForAll(ahmed.address, true)
+    ).to.be.revertedWithCustomError(critter, 'ApproveToCaller');
   });
 });
