@@ -1,14 +1,13 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 
 // types
-import { Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { Critter } from '../typechain-types/contracts';
 
 describe('totalSupply', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
+  let ahmed: SignerWithAddress, critter: Critter;
 
   // test variables
   const squeaks = [
@@ -18,14 +17,9 @@ describe('totalSupply', () => {
     'A surpise to be sure, but a welcome one.',
   ];
 
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
-
   const totalSupplyFixture = async () => {
-    // deploy contract
-    const critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await hardhat.ethers.getSigners();
+    const critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
@@ -34,7 +28,7 @@ describe('totalSupply', () => {
     squeaks.forEach(async (content) => await critter.createSqueak(content));
 
     // ahmed burns the first created squeak at tokenId 0
-    await run('delete-squeak', {
+    await hardhat.run('delete-squeak', {
       contract: critter,
       signer: ahmed,
       squeakId: 0,
@@ -43,14 +37,11 @@ describe('totalSupply', () => {
     return critter;
   };
 
-  beforeEach(
-    'load deployed contract fixture, and ahmed creates a squeak',
-    async () => {
-      critter = await loadFixture(totalSupplyFixture);
-    }
-  );
+  beforeEach('load deployed contract fixture', async () => {
+    critter = await loadFixture(totalSupplyFixture);
+  });
 
-  it('returns the number of squeaks currently in circulation (not including burned)', async () => {
+  it('returns the number of unburned squeaks in circulation', async () => {
     expect(await critter.totalSupply()).to.eq(squeaks.length - 1);
   });
 });
