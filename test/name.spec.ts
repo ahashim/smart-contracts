@@ -9,8 +9,9 @@ import type { Critter } from '../typechain-types/contracts';
 describe('name', () => {
   let critter: Critter;
 
+  const nameFixture = async () => await hardhat.run('deploy-contract');
+
   before('load deployed contract fixture', async () => {
-    const nameFixture = async () => await hardhat.run('deploy-contract');
     critter = await loadFixture(nameFixture);
   });
 
