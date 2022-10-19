@@ -5,16 +5,16 @@ export const BASE_TOKEN_URI = 'https://critter.fyi/token/';
 export const CONTRACT_NAME = 'Critter';
 export const CONTRACT_SYMBOL = 'CRTTR';
 
+// fees (in wei)
+export const PLATFORM_FEE = utils.parseEther('0.00005');
+export const PLATFORM_TAKE_RATE = 10;
+
 // role ID's
 export const OPERATOR_ROLE = 'OPERATOR_ROLE';
 export const MINTER_ROLE = 'MINTER_ROLE';
 export const MODERATOR_ROLE = 'MODERATOR_ROLE';
 export const TREASURER_ROLE = 'TREASURER_ROLE';
 export const UPGRADER_ROLE = 'UPGRADER_ROLE';
-
-// fees (in wei)
-export const PLATFORM_FEE = utils.parseEther('0.00005');
-export const PLATFORM_TAKE_RATE = 10;
 
 // scouts
 export const SCOUT_BONUS = 3;
