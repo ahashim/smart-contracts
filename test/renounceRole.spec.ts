@@ -47,7 +47,7 @@ describe('renounceRole', () => {
       .withArgs(ID_MINTER_ROLE, ahmed.address, ahmed.address);
   });
 
-  it('reverts when trying to renounce another users role', async () => {
+  it('reverts when trying to renounce another addresses role', async () => {
     await expect(
       critter.renounceRole(ID_UPGRADER_ROLE, owner.address)
     ).to.be.revertedWith('AccessControl: can only renounce roles for self');

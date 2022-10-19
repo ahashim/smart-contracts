@@ -1,33 +1,31 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 import { MINTER_ROLE } from '../constants';
 
 // types
-import { Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { Critter } from '../typechain-types/contracts';
 
 describe('revokeRole', () => {
   let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
+  let ahmed: SignerWithAddress, barbie: SignerWithAddress;
 
   // test variables
-  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
-
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+  const ID_MINTER_ROLE = hardhat.ethers.utils.id(MINTER_ROLE);
 
   const revokeRoleFixture = async () => {
-    // deploy contract
-    const critter = await run('deploy-contract');
+    [, ahmed, barbie] = await hardhat.ethers.getSigners();
+    const critter = await hardhat.run('deploy-contract');
 
     // everybody creates an account
-    await run('create-accounts', {
-      accounts: [owner, ahmed],
+    await hardhat.run('create-accounts', {
+      accounts: [ahmed, barbie],
       contract: critter,
     });
+
+    // owner revokes ahmed's minter role
+    await critter.revokeRole(ID_MINTER_ROLE, ahmed.address);
 
     return critter;
   };
@@ -37,14 +35,16 @@ describe('revokeRole', () => {
   });
 
   it('lets a role-admin revoke a users role', async () => {
-    await critter.revokeRole(ID_MINTER_ROLE, ahmed.address);
-
     expect(await critter.hasRole(ID_MINTER_ROLE, ahmed.address)).to.be.false;
   });
 
   it('reverts if a user other than the role-admin tries to revoke a role', async () => {
     await expect(
-      critter.connect(ahmed).revokeRole(ID_MINTER_ROLE, ahmed.address)
-    ).to.be.reverted;
+      critter.connect(ahmed).revokeRole(ID_MINTER_ROLE, barbie.address)
+    ).to.be.revertedWith(
+      `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${
+        hardhat.ethers.constants.HashZero
+      }`
+    );
   });
 });
