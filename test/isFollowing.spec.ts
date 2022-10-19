@@ -1,27 +1,21 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
-
-// types
-import type { Wallet } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import hardhat from 'hardhat';
 import { Relation } from '../enums';
 
-describe('isFollowing', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet;
+// types
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { Critter } from '../typechain-types/contracts';
 
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
-  });
+describe('isFollowing', () => {
+  let ahmed: SignerWithAddress, barbie: SignerWithAddress, critter: Critter;
 
   const isFollowingFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
@@ -39,5 +33,10 @@ describe('isFollowing', () => {
   it('returns true if user one is following user two', async () => {
     expect(await critter.isFollowing(ahmed.address, barbie.address)).to.be
       .true;
+  });
+
+  it('returns false if user one is not following user two', async () => {
+    expect(await critter.isFollowing(barbie.address, ahmed.address)).to.be
+      .false;
   });
 });

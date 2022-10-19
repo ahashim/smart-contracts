@@ -33,4 +33,8 @@ describe('isBlocked', () => {
   it('returns true if user one has blocked user two', async () => {
     expect(await critter.isBlocked(ahmed.address, barbie.address)).to.be.true;
   });
+
+  it('returns false if user one has not blocked user two', async () => {
+    expect(await critter.isBlocked(barbie.address, ahmed.address)).to.be.false;
+  });
 });
