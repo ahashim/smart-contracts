@@ -1,33 +1,29 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
-import { ADMIN_ROLE, OVERFLOW } from '../constants';
+import hardhat from 'hardhat';
+import { OPERATOR_ROLE } from '../constants';
 import { Configuration } from '../enums';
 
 // types
-import type { Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { Critter } from '../typechain-types/contracts';
 
 describe('updateConfiguration', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
-
-  // test variables
   const newMaxLevel = 100;
 
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    critter: Critter,
+    owner: SignerWithAddress;
 
   const updateConfigurationFixture = async () => {
-    // deploy contract
-    critter = (await run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie] = await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // the owner grants ahmed the ADMIN_ROLE
     await critter
       .connect(owner)
-      .grantRole(ethers.utils.id(ADMIN_ROLE), ahmed.address);
+      .grantRole(hardhat.ethers.utils.id(OPERATOR_ROLE), ahmed.address);
 
     // ahmed increases the max level for scouts (note: A Critter account is not
     // required to update configuration)
@@ -49,13 +45,15 @@ describe('updateConfiguration', () => {
     );
   });
 
-  it('reverts when given an invalid configuration key', async () => {
-    await expect(critter.config(69)).to.be.reverted;
-  });
-
-  it('reverts when the config amount is out of bounds', async () => {
+  it('reverts when someone other than the operator tries to update a contract configuration value', async () => {
     await expect(
-      critter.updateConfiguration(Configuration.PoolPayoutThreshold, OVERFLOW)
-    ).to.be.reverted;
+      critter
+        .connect(barbie)
+        .updateConfiguration(Configuration.ScoutMaxLevel, 69)
+    ).to.be.revertedWith(
+      `AccessControl: account ${barbie.address.toLowerCase()} is missing role ${hardhat.ethers.utils.id(
+        OPERATOR_ROLE
+      )}`
+    );
   });
 });
