@@ -1,41 +1,37 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
+import hardhat from 'hardhat';
 
 // types
-import { BigNumber, Wallet } from 'ethers';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { BigNumber } from 'ethers';
 import type { Critter } from '../typechain-types/contracts';
-import type { Squeak } from '../types';
 
-describe('transferFrom', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet, barbie: Wallet;
-  let squeak: Squeak;
-  let squeakId: BigNumber;
-
-  before('create fixture loader', async () => {
-    [owner, ahmed, barbie] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed, barbie]);
-  });
+describe.only('transferFrom', () => {
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    critter: Critter,
+    owner: SignerWithAddress,
+    squeakId: BigNumber;
 
   const transferFromFixture = async () => {
-    // deploy contract
-    const critter = (await run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie] = await hardhat.ethers.getSigners();
+    const critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
     // everybody creates an account
-    await run('create-accounts', {
+    await hardhat.run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
 
-    // ahmed posts a squeak
-    ({ squeakId } = await run('create-squeak', {
+    // ahmed creates a squeak
+    ({ squeakId } = await hardhat.run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
     }));
 
-    // approve barbie to transfer it
+    // ahmed approve barbie to transfer it
     await critter.approve(barbie.address, squeakId);
 
     return { critter, squeakId };
@@ -61,36 +57,35 @@ describe('transferFrom', () => {
   });
 
   it('reassigns squeak ownership once the token has been transferred', async () => {
-    // transfer ownership
     await critter.transferFrom(ahmed.address, barbie.address, squeakId);
-    squeak = await critter.squeaks(squeakId);
 
-    expect(squeak.owner).to.eq(barbie.address);
+    expect((await critter.squeaks(squeakId)).owner).to.eq(barbie.address);
   });
 
   it('reverts if transferring from a zero address', async () => {
     await expect(
       critter.transferFrom(
-        ethers.constants.AddressZero,
+        hardhat.ethers.constants.AddressZero,
         barbie.address,
         squeakId
       )
-    ).to.be.reverted;
+    ).to.be.revertedWithCustomError(critter, 'TransferFromIncorrectOwner');
   });
 
   it('reverts if transferring to a zero address', async () => {
     await expect(
       critter.transferFrom(
         ahmed.address,
-        ethers.constants.AddressZero,
+        hardhat.ethers.constants.AddressZero,
         squeakId
       )
-    ).to.be.reverted;
+    ).to.be.revertedWithCustomError(critter, 'TransferToZeroAddress');
   });
 
   it('reverts if the squeak is not owned by the "from" address', async () => {
-    await expect(critter.transferFrom(owner.address, barbie.address, squeakId))
-      .to.be.reverted;
+    await expect(
+      critter.transferFrom(owner.address, barbie.address, squeakId)
+    ).to.be.revertedWithCustomError(critter, 'TransferFromIncorrectOwner');
   });
 
   it('reverts if the caller is not approved or an owner of the squeak being transferred', async () => {
@@ -98,6 +93,9 @@ describe('transferFrom', () => {
       critter
         .connect(owner)
         .transferFrom(ahmed.address, barbie.address, squeakId)
-    ).to.be.reverted;
+    ).to.be.revertedWithCustomError(
+      critter,
+      'TransferCallerNotOwnerNorApproved'
+    );
   });
 });
