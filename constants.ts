@@ -6,7 +6,7 @@ export const CONTRACT_NAME = 'Critter';
 export const CONTRACT_SYMBOL = 'CRTTR';
 
 // role ID's
-export const ADMIN_ROLE = 'ADMIN_ROLE';
+export const OPERATOR_ROLE = 'OPERATOR_ROLE';
 export const MINTER_ROLE = 'MINTER_ROLE';
 export const MODERATOR_ROLE = 'MODERATOR_ROLE';
 export const TREASURER_ROLE = 'TREASURER_ROLE';

@@ -1,38 +1,62 @@
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers, run, waffle } from 'hardhat';
-import { MINTER_ROLE, TREASURER_ROLE, UPGRADER_ROLE } from '../constants';
+import hardhat from 'hardhat';
+import {
+  MINTER_ROLE,
+  MODERATOR_ROLE,
+  OPERATOR_ROLE,
+  TREASURER_ROLE,
+  UPGRADER_ROLE,
+} from '../constants';
 
 // types
-import { Wallet } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import type { Critter } from '../typechain-types/contracts';
 
-describe('roles', () => {
-  let critter: Critter;
-  let loadFixture: ReturnType<typeof waffle.createFixtureLoader>;
-  let owner: Wallet, ahmed: Wallet;
+describe.only('hasRole', () => {
+  const ID_DEFAULT_ADMIN_ROLE = hardhat.ethers.constants.HashZero;
+  const ID_MINTER_ROLE = hardhat.ethers.utils.id(MINTER_ROLE);
+  const ID_MODERATOR_ROLE = hardhat.ethers.utils.id(MODERATOR_ROLE);
+  const ID_OPERATOR_ROLE = hardhat.ethers.utils.id(OPERATOR_ROLE);
+  const ID_TREASURER_ROLE = hardhat.ethers.utils.id(TREASURER_ROLE);
+  const ID_UPGRADER_ROLE = hardhat.ethers.utils.id(UPGRADER_ROLE);
 
-  // test variables
-  const ID_DEFAULT_ADMIN_ROLE = ethers.constants.HashZero;
-  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
-  const ID_TREASURER_ROLE = ethers.utils.id(TREASURER_ROLE);
-  const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    carlos: SignerWithAddress,
+    critter: Critter,
+    daphne: SignerWithAddress,
+    evan: SignerWithAddress,
+    owner: SignerWithAddress,
+    users: {
+      [key: string]: boolean;
+    };
 
-  before('create fixture loader', async () => {
-    [owner, ahmed] = await (ethers as any).getSigners();
-    loadFixture = waffle.createFixtureLoader([owner, ahmed]);
-  });
+  const hasRoleFixture = async () => {
+    [owner, ahmed, barbie, carlos, daphne, evan] =
+      await hardhat.ethers.getSigners();
+    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
 
-  const rolesFixture = async () => {
-    critter = (await run('deploy-contract')).connect(ahmed);
+    // creates accounts
+    await hardhat.run('create-accounts', {
+      accounts: [ahmed, barbie, carlos, daphne, evan],
+      contract: critter,
+    });
 
-    // ahmed creates an account and is assigned the minter role
-    await critter.createAccount('ahmed');
-
-    return critter;
+    return {
+      critter,
+      users: {
+        ahmed: await critter.hasRole(ID_MINTER_ROLE, ahmed.address),
+        barbie: await critter.hasRole(ID_MINTER_ROLE, barbie.address),
+        carlos: await critter.hasRole(ID_MINTER_ROLE, carlos.address),
+        daphne: await critter.hasRole(ID_MINTER_ROLE, daphne.address),
+        evan: await critter.hasRole(ID_MINTER_ROLE, evan.address),
+      },
+    };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(rolesFixture);
+    ({ critter, users } = await loadFixture(hasRoleFixture));
   });
 
   it('grants the contract owner the DEFAULT_ADMIN_ROLE', async () => {
@@ -44,6 +68,14 @@ describe('roles', () => {
     expect(await critter.hasRole(ID_MINTER_ROLE, owner.address)).to.be.true;
   });
 
+  it('grants the contract owner the OPERATOR_ROLE', async () => {
+    expect(await critter.hasRole(ID_OPERATOR_ROLE, owner.address)).to.be.true;
+  });
+
+  it('grants the contract owner the MODERATOR_ROLE', async () => {
+    expect(await critter.hasRole(ID_MODERATOR_ROLE, owner.address)).to.be.true;
+  });
+
   it('grants the contract owner the TREASURER_ROLE', async () => {
     expect(await critter.hasRole(ID_TREASURER_ROLE, owner.address)).to.be.true;
   });
@@ -52,7 +84,9 @@ describe('roles', () => {
     expect(await critter.hasRole(ID_UPGRADER_ROLE, owner.address)).to.be.true;
   });
 
-  it('grants every new account the MINTER_ROLE', async () => {
-    expect(await critter.hasRole(ID_MINTER_ROLE, ahmed.address)).to.be.true;
+  it('grants every new user the MINTER_ROLE', async () => {
+    for (const minter in users) {
+      expect(users[minter]).to.be.true;
+    }
   });
 });

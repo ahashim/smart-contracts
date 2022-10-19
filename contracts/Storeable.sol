@@ -65,11 +65,6 @@ contract Storeable is Initializable, IStoreable {
     }
 
     /**
-     * @dev ADMIN_ROLE has priviledges to update contract configuration amounts.
-     */
-    bytes32 internal constant ADMIN_ROLE = keccak256('ADMIN_ROLE');
-
-    /**
      * @dev MINTER_ROLE has priviledges to mint tokens.
      */
     bytes32 internal constant MINTER_ROLE = keccak256('MINTER_ROLE');
@@ -78,6 +73,12 @@ contract Storeable is Initializable, IStoreable {
      * @dev MODERATOR_ROLE has priviledges to update a users account status.
      */
     bytes32 internal constant MODERATOR_ROLE = keccak256('MODERATOR_ROLE');
+
+    /**
+     * @dev OPERATOR_ROLE has priviledges to update the contract configuration
+     * values.
+     */
+    bytes32 internal constant OPERATOR_ROLE = keccak256('OPERATOR_ROLE');
 
     /**
      * @dev TREASURER_ROLE has priviledges to withdraw funds and update fees.

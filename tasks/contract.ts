@@ -20,7 +20,6 @@ import type {
   ContractReceipt,
   ContractTransaction,
   Event,
-  Wallet,
 } from 'ethers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type { Result } from '@ethersproject/abi';
@@ -32,13 +31,13 @@ import type {
 // tasks
 task(
   'create-accounts',
-  'Create accounts from Wallets',
+  'Create accounts from Signers',
   async ({
     accounts,
     contract,
   }: {
     contract: Contract;
-    accounts: Wallet[];
+    accounts: SignerWithAddress[];
   }): Promise<void> => {
     accounts.forEach(async (account, index) => {
       await contract.connect(account).createAccount(index.toString());

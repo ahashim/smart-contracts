@@ -96,7 +96,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
      */
     function updateConfiguration(Configuration configuration, uint256 amount)
         external
-        onlyRole(ADMIN_ROLE)
+        onlyRole(OPERATOR_ROLE)
     {
         config[configuration] = amount;
     }
