@@ -1,14 +1,13 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { PLATFORM_TAKE_RATE, SCOUT_BONUS } from '../constants';
 import { Interaction } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
-import type { BigNumberObject, PoolInfo } from '../types';
+import type {
+  BigNumberObject,
+  BigNumber,
+  Critter,
+  PoolInfo,
+  SignerWithAddress,
+} from '../types';
 
 describe('interact viral', () => {
   let ahmed: SignerWithAddress,
@@ -29,17 +28,17 @@ describe('interact viral', () => {
   const viralityThreshold = 60;
 
   const interactViralFixture = async () => {
-    [, ahmed, barbie, carlos, daphne] = await hardhat.ethers.getSigners();
+    [, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await hardhat.run('deploy-contract', {
-        scoutPoolThreshold: hardhat.ethers.utils.parseEther('0.000004'),
+      await run('deploy-contract', {
+        scoutPoolThreshold: ethers.utils.parseEther('0.000004'),
         viralityThreshold,
       })
     ).connect(ahmed);
 
     // creates accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos, daphne],
       contract: critter,
     });
@@ -57,7 +56,7 @@ describe('interact viral', () => {
 
     // ahmed posts a squeak
     // current virality score: 0
-    ({ squeakId } = await hardhat.run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,

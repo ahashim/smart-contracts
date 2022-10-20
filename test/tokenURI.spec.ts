@@ -1,12 +1,6 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { BASE_TOKEN_URI } from '../constants';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import type { BigNumber, Critter, SignerWithAddress } from '../types';
 
 describe('tokenURI', () => {
   let ahmed: SignerWithAddress,
@@ -15,14 +9,14 @@ describe('tokenURI', () => {
     tokenURI: string;
 
   const tokenURIFixture = async () => {
-    [, ahmed] = await hardhat.ethers.getSigners();
-    const critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await ethers.getSigners();
+    const critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
 
     // ahmed posts a squeak
-    ({ squeakId } = await hardhat.run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,

@@ -1,13 +1,11 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { MODERATOR_ROLE } from '../constants';
 import { Status } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { ContractTransaction } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import type {
+  ContractTransaction,
+  Critter,
+  SignerWithAddress,
+} from '../types';
 
 describe('updateStatus', () => {
   let ahmed: SignerWithAddress,
@@ -18,11 +16,11 @@ describe('updateStatus', () => {
     tx: ContractTransaction;
 
   const updateStatusFixture = async () => {
-    [owner, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
-    critter = await hardhat.run('deploy-contract');
+    [owner, ahmed, barbie, carlos] = await ethers.getSigners();
+    critter = await run('deploy-contract');
 
     // everybody creates an account
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
@@ -86,7 +84,7 @@ describe('updateStatus', () => {
     await expect(
       critter.connect(ahmed).updateStatus(barbie.address, Status.Unknown)
     ).to.be.revertedWith(
-      `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${hardhat.ethers.utils.id(
+      `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${ethers.utils.id(
         MODERATOR_ROLE
       )}`
     );

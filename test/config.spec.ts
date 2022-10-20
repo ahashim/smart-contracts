@@ -1,24 +1,19 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { expect, loadFixture, run } from './setup';
 import {
-  SCOUT_MAX_LEVEL,
   PLATFORM_TAKE_RATE,
-  SCOUT_POOL_THRESHOLD,
   SCOUT_BONUS,
+  SCOUT_MAX_LEVEL,
+  SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
 import { Configuration } from '../enums';
-
-// types
-import type { Config } from '../types';
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter, Config } from '../types';
 
 describe('config', () => {
   let config: Config, critter: Critter;
 
   const configFixture = async () => {
-    critter = await hardhat.run('deploy-contract');
+    critter = await run('deploy-contract');
 
     return {
       config: {

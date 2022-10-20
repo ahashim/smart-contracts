@@ -1,6 +1,4 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import {
   MINTER_ROLE,
   MODERATOR_ROLE,
@@ -8,18 +6,15 @@ import {
   TREASURER_ROLE,
   UPGRADER_ROLE,
 } from '../constants';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter, SignerWithAddress } from '../types';
 
 describe('hasRole', () => {
-  const ID_DEFAULT_ADMIN_ROLE = hardhat.ethers.constants.HashZero;
-  const ID_MINTER_ROLE = hardhat.ethers.utils.id(MINTER_ROLE);
-  const ID_MODERATOR_ROLE = hardhat.ethers.utils.id(MODERATOR_ROLE);
-  const ID_OPERATOR_ROLE = hardhat.ethers.utils.id(OPERATOR_ROLE);
-  const ID_TREASURER_ROLE = hardhat.ethers.utils.id(TREASURER_ROLE);
-  const ID_UPGRADER_ROLE = hardhat.ethers.utils.id(UPGRADER_ROLE);
+  const ID_DEFAULT_ADMIN_ROLE = ethers.constants.HashZero;
+  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
+  const ID_MODERATOR_ROLE = ethers.utils.id(MODERATOR_ROLE);
+  const ID_OPERATOR_ROLE = ethers.utils.id(OPERATOR_ROLE);
+  const ID_TREASURER_ROLE = ethers.utils.id(TREASURER_ROLE);
+  const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
 
   let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
@@ -33,12 +28,11 @@ describe('hasRole', () => {
     };
 
   const hasRoleFixture = async () => {
-    [owner, ahmed, barbie, carlos, daphne, evan] =
-      await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie, carlos, daphne, evan] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos, daphne, evan],
       contract: critter,
     });

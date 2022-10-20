@@ -1,12 +1,11 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, upgrades } from './setup';
 import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { ContractFactory, Contract } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import type {
+  Contract,
+  ContractFactory,
+  Critter,
+  SignerWithAddress,
+} from '../types';
 
 describe('upgradeTo', () => {
   let ahmed: SignerWithAddress,
@@ -15,18 +14,15 @@ describe('upgradeTo', () => {
     upgradedContract: Contract;
 
   const upgradeToFixture = async () => {
-    [, ahmed] = await hardhat.ethers.getSigners();
-    factory = await hardhat.ethers.getContractFactory(CONTRACT_NAME);
-    critter = (await hardhat.upgrades.deployProxy(
+    [, ahmed] = await ethers.getSigners();
+    factory = await ethers.getContractFactory(CONTRACT_NAME);
+    critter = (await upgrades.deployProxy(
       factory,
       CONTRACT_INITIALIZER
     )) as Critter;
 
     // owner upgrades the contract
-    upgradedContract = await hardhat.upgrades.upgradeProxy(
-      critter.address,
-      factory
-    );
+    upgradedContract = await upgrades.upgradeProxy(critter.address, factory);
 
     return { critter, factory, upgradedContract };
   };

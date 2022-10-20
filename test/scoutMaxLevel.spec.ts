@@ -1,12 +1,6 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { Interaction } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import type { BigNumber, Critter, SignerWithAddress } from '../types';
 
 describe('scoutMaxLevel', () => {
   const scoutMaxLevel = 2;
@@ -17,10 +11,10 @@ describe('scoutMaxLevel', () => {
   let scoutLevel: BigNumber, squeakId: BigNumber;
 
   const scoutMaxlevelFixture = async () => {
-    [, ahmed] = await hardhat.ethers.getSigners();
+    [, ahmed] = await ethers.getSigners();
     // deploy contract with a lower virality threshold to test scout max level
     critter = (
-      await hardhat.run('deploy-contract', {
+      await run('deploy-contract', {
         viralityThreshold,
         scoutMaxLevel,
       })
@@ -30,14 +24,14 @@ describe('scoutMaxLevel', () => {
     await critter.createAccount('ahmed');
 
     // ahmed creates a squeak
-    ({ squeakId } = await hardhat.run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
     }));
 
     // ahmed likes it
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: ahmed,
@@ -45,7 +39,7 @@ describe('scoutMaxLevel', () => {
     });
 
     // ahmed resqueaks it into virality
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Resqueak,
       signer: ahmed,
@@ -70,14 +64,14 @@ describe('scoutMaxLevel', () => {
 
   it('stays at max level when scouting new viral squeaks', async () => {
     // ahmed creates another squeak
-    const { squeakId } = await hardhat.run('create-squeak', {
+    const { squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
     });
 
     // ahmed likes it
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: ahmed,
@@ -85,7 +79,7 @@ describe('scoutMaxLevel', () => {
     });
 
     // ahmed resqueaks it into virality
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Resqueak,
       signer: ahmed,

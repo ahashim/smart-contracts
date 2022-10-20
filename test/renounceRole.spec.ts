@@ -1,16 +1,14 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { MINTER_ROLE, UPGRADER_ROLE } from '../constants';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { ContractTransaction } from 'ethers';
-import { Critter } from '../typechain-types/contracts';
+import type {
+  ContractTransaction,
+  Critter,
+  SignerWithAddress,
+} from '../types';
 
 describe('renounceRole', () => {
-  const ID_MINTER_ROLE = hardhat.ethers.utils.id(MINTER_ROLE);
-  const ID_UPGRADER_ROLE = hardhat.ethers.utils.id(UPGRADER_ROLE);
+  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
+  const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
 
   let ahmed: SignerWithAddress,
     critter: Critter,
@@ -18,8 +16,8 @@ describe('renounceRole', () => {
     tx: ContractTransaction;
 
   const renounceRoleFixture = async () => {
-    [owner, ahmed] = await hardhat.ethers.getSigners();
-    const critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [owner, ahmed] = await ethers.getSigners();
+    const critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');

@@ -1,16 +1,11 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { MINTER_ROLE, TREASURER_ROLE, UPGRADER_ROLE } from '../constants';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter, SignerWithAddress } from '../types';
 
 describe('getRoleAdmin', () => {
-  const ID_MINTER_ROLE = hardhat.ethers.utils.id(MINTER_ROLE);
-  const ID_TREASURER_ROLE = hardhat.ethers.utils.id(TREASURER_ROLE);
-  const ID_UPGRADER_ROLE = hardhat.ethers.utils.id(UPGRADER_ROLE);
+  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
+  const ID_TREASURER_ROLE = ethers.utils.id(TREASURER_ROLE);
+  const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
 
   let critter: Critter;
   let owner: SignerWithAddress;
@@ -19,7 +14,7 @@ describe('getRoleAdmin', () => {
   };
 
   const getRoleAdminFixture = async () => {
-    critter = await hardhat.run('deploy-contract');
+    critter = await run('deploy-contract');
 
     return {
       critter,
@@ -32,7 +27,7 @@ describe('getRoleAdmin', () => {
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    [owner] = await hardhat.ethers.getSigners();
+    [owner] = await ethers.getSigners();
     ({ critter, roleAdmins } = await loadFixture(getRoleAdminFixture));
   });
 

@@ -1,20 +1,18 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { MODERATOR_ROLE } from '../constants';
 import { Status } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber, ContractReceipt, ContractTransaction } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
-import type { Squeak } from '../types';
+import type {
+  BigNumber,
+  ContractReceipt,
+  ContractTransaction,
+  Critter,
+  SignerWithAddress,
+  Squeak,
+} from '../types';
 
 describe('createSqueak', () => {
   const content = 'hello blockchain!';
-  const rawContent = hardhat.ethers.utils.hexlify(
-    hardhat.ethers.utils.toUtf8Bytes(content)
-  );
+  const rawContent = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(content));
   let accountBalance: BigNumber,
     ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
@@ -27,8 +25,8 @@ describe('createSqueak', () => {
     tx: ContractTransaction;
 
   const createSqueakFixture = async () => {
-    [owner, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie, carlos] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
@@ -36,10 +34,10 @@ describe('createSqueak', () => {
     // contract owner grants ahmed the moderator role
     await critter
       .connect(owner)
-      .grantRole(hardhat.ethers.utils.id(MODERATOR_ROLE), ahmed.address);
+      .grantRole(ethers.utils.id(MODERATOR_ROLE), ahmed.address);
 
     // ahmed creates a squeak
-    ({ receipt, squeakId, tx } = await hardhat.run('create-squeak', {
+    ({ receipt, squeakId, tx } = await run('create-squeak', {
       content,
       contract: critter,
       signer: ahmed,

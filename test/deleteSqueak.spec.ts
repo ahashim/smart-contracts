@@ -1,14 +1,14 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { EMPTY_BYTE_STRING } from '../constants';
 import { Status, Interaction } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber, ContractTransaction } from 'ethers';
-import type { SentimentCounts, Squeak } from '../types';
-import type { Critter } from '../typechain-types/contracts';
+import type {
+  BigNumber,
+  ContractTransaction,
+  Critter,
+  SentimentCounts,
+  SignerWithAddress,
+  Squeak,
+} from '../types';
 
 describe('deleteSqueak', () => {
   let ahmed: SignerWithAddress,
@@ -25,24 +25,24 @@ describe('deleteSqueak', () => {
     tx: ContractTransaction;
 
   const deleteSqueakFixture = async () => {
-    [owner, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie, carlos] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed, barbie, and carlos all create accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
 
     // ahmed creates a squeak
-    ({ squeakId } = await hardhat.run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain',
       contract: critter,
       signer: ahmed,
     }));
 
     // barbie likes the squeak
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: barbie,
@@ -50,7 +50,7 @@ describe('deleteSqueak', () => {
     });
 
     // carlos dislikes the squeak
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Dislike,
       signer: barbie,
@@ -61,14 +61,14 @@ describe('deleteSqueak', () => {
     treasuryBalance = await critter.treasury();
 
     // ahmed deletes the squeak
-    ({ deleteFee, tx } = await hardhat.run('delete-squeak', {
+    ({ deleteFee, tx } = await run('delete-squeak', {
       contract: critter,
       signer: ahmed,
       squeakId,
     }));
 
     // barbie creates a squeak
-    ({ squeakId: barbieSqueak } = await hardhat.run('create-squeak', {
+    ({ squeakId: barbieSqueak } = await run('create-squeak', {
       content: 'come on barbie, lets go party',
       contract: critter,
       signer: barbie,
@@ -105,8 +105,8 @@ describe('deleteSqueak', () => {
 
   it('removes all squeak information upon deletion', async () => {
     expect(squeak.blockNumber).to.eq(0);
-    expect(squeak.author).to.eq(hardhat.ethers.constants.AddressZero);
-    expect(squeak.owner).to.eq(hardhat.ethers.constants.AddressZero);
+    expect(squeak.author).to.eq(ethers.constants.AddressZero);
+    expect(squeak.owner).to.eq(ethers.constants.AddressZero);
     expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 

@@ -1,16 +1,10 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { TREASURER_ROLE, PLATFORM_FEE } from '../constants';
 import { Interaction } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import type { BigNumber, Critter, SignerWithAddress } from '../types';
 
 describe('updateInteractionFee', () => {
-  const updatedFee = hardhat.ethers.utils.parseEther('0.0001');
+  const updatedFee = ethers.utils.parseEther('0.0001');
 
   let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
@@ -19,26 +13,23 @@ describe('updateInteractionFee', () => {
     squeakId: BigNumber;
 
   const updateInteractionFeeFixture = async () => {
-    [, ahmed, barbie] = await hardhat.ethers.getSigners();
-    critter = await hardhat.run('deploy-contract');
+    [, ahmed, barbie] = await ethers.getSigners();
+    critter = await run('deploy-contract');
 
     // everybody creates an account
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
 
     // the owner grants ahmed the TREASURER_ROLE
-    await critter.grantRole(
-      hardhat.ethers.utils.id(TREASURER_ROLE),
-      ahmed.address
-    );
+    await critter.grantRole(ethers.utils.id(TREASURER_ROLE), ahmed.address);
 
     // ahmed increases the interaction fee for "like"
     await critter.updateInteractionFee(Interaction.Like, updatedFee);
 
     // barbie posts a squeak
-    ({ squeakId } = await hardhat.run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: barbie,

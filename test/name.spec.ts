@@ -1,15 +1,11 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { expect, loadFixture, run } from './setup';
 import { CONTRACT_NAME } from '../constants';
-
-// types
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter } from '../types';
 
 describe('name', () => {
   let critter: Critter;
 
-  const nameFixture = async () => await hardhat.run('deploy-contract');
+  const nameFixture = async () => await run('deploy-contract');
 
   before('load deployed contract fixture', async () => {
     critter = await loadFixture(nameFixture);

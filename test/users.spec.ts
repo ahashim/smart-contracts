@@ -1,12 +1,6 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { Status } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
-import type { User } from '../types';
+import type { Critter, SignerWithAddress, User } from '../types';
 
 describe('users', () => {
   const username = 'ahmed';
@@ -17,8 +11,8 @@ describe('users', () => {
     nullUser: User;
 
   const usersFixture = async () => {
-    [, ahmed] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount(username);
@@ -56,7 +50,7 @@ describe('users', () => {
   });
 
   it('returns zero values for an unknown account', () => {
-    expect(nullUser.account).to.eq(hardhat.ethers.constants.AddressZero);
+    expect(nullUser.account).to.eq(ethers.constants.AddressZero);
     expect(nullUser.status).to.eq(Status.Unknown);
     expect(nullUser.scoutLevel).to.eq(0);
     expect(nullUser.username).to.be.empty;

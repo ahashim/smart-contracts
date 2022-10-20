@@ -1,14 +1,12 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { PLATFORM_FEE, PLATFORM_TAKE_RATE } from '../constants';
 import { Status, Interaction, Relation } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
-import type { BigNumberObject } from '../types';
+import type {
+  BigNumberObject,
+  BigNumber,
+  Critter,
+  SignerWithAddress,
+} from '../types';
 
 describe('interact basic', () => {
   // the values below should be the same for all interactions (except delete),
@@ -30,17 +28,17 @@ describe('interact basic', () => {
     treasuryBalance: BigNumber;
 
   const interactBasicFixture = async () => {
-    [owner, ahmed, barbie, carlos, daphne] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos, daphne],
       contract: critter,
     });
 
     // daphne posts a squeak
-    ({ squeakId: daphneSqueakId } = await hardhat.run('create-squeak', {
+    ({ squeakId: daphneSqueakId } = await run('create-squeak', {
       content: 'is this thing on?',
       contract: critter,
       signer: daphne,
@@ -50,7 +48,7 @@ describe('interact basic', () => {
     await critter.updateRelationship(daphne.address, Relation.Block);
 
     // ahmed posts a squeak
-    ({ squeakId: ahmedSqueakId } = await hardhat.run('create-squeak', {
+    ({ squeakId: ahmedSqueakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,

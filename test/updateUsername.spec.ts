@@ -1,18 +1,16 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { Status } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { ContractTransaction } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import type {
+  ContractTransaction,
+  Critter,
+  SignerWithAddress,
+} from '../types';
 
 describe('updateUsername', () => {
   const longUsername =
     'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?';
   const oldUsername = 'ahmed';
-  const newUsername = 'a-rock';
+  const newUsername = 'anakin';
 
   let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
@@ -22,8 +20,8 @@ describe('updateUsername', () => {
     tx: ContractTransaction;
 
   const updateUsernameFixture = async () => {
-    [owner, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie, carlos] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount(oldUsername);
@@ -75,7 +73,7 @@ describe('updateUsername', () => {
 
   it('reverts when the address already has an account', async () => {
     await expect(
-      critter.updateUsername('a-rock')
+      critter.updateUsername(newUsername)
     ).to.be.revertedWithCustomError(critter, 'UsernameUnavailable');
   });
 

@@ -1,16 +1,12 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { expect, loadFixture, run } from './setup';
 import { CONTRACT_SYMBOL } from '../constants';
-
-// types
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter } from '../types';
 
 describe('symbol', () => {
   let critter: Critter, symbol: string;
 
   const symbolFixture = async () => {
-    critter = await hardhat.run('deploy-contract');
+    critter = await run('deploy-contract');
 
     return await critter.symbol();
   };

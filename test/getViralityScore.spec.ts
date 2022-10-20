@@ -1,12 +1,6 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { Interaction } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import type { BigNumber, Critter, SignerWithAddress } from '../types';
 
 describe('getViralityScore', () => {
   let ahmed: SignerWithAddress,
@@ -20,17 +14,17 @@ describe('getViralityScore', () => {
     viralSqueakId: BigNumber;
 
   const getViralityScoreFixture = async () => {
-    [, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie, carlos] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
 
     // ahmed posts a squeak
-    ({ squeakId: viralSqueakId } = await hardhat.run('create-squeak', {
+    ({ squeakId: viralSqueakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -38,7 +32,7 @@ describe('getViralityScore', () => {
 
     // everybody likes it
     [ahmed, barbie, carlos].forEach(async (signer) => {
-      await hardhat.run('interact', {
+      await run('interact', {
         contract: critter,
         interaction: Interaction.Like,
         signer,
@@ -48,7 +42,7 @@ describe('getViralityScore', () => {
 
     // everybody resqueaks it
     [ahmed, barbie, carlos].forEach(async (signer) => {
-      await hardhat.run('interact', {
+      await run('interact', {
         contract: critter,
         interaction: Interaction.Resqueak,
         signer,
@@ -57,7 +51,7 @@ describe('getViralityScore', () => {
     });
 
     // barbie posts a squeak that nobody interacts with
-    ({ squeakId: nonViralSqueakId } = await hardhat.run('create-squeak', {
+    ({ squeakId: nonViralSqueakId } = await run('create-squeak', {
       content: 'come on barbie, lets go party',
       contract: critter,
       signer: ahmed,
@@ -91,8 +85,7 @@ describe('getViralityScore', () => {
     let { dislikes, likes, resqueaks } = sentiment;
 
     // calculate blockDelta for the viral squeak
-    const latestBlock = (await hardhat.ethers.provider.getBlock('latest'))
-      .number;
+    const latestBlock = (await ethers.provider.getBlock('latest')).number;
     const publishedBlock = (
       await critter.squeaks(viralSqueakId)
     ).blockNumber.toNumber();

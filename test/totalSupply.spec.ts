@@ -1,10 +1,5 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
+import { ethers, expect, loadFixture, run } from './setup';
+import type { Critter, SignerWithAddress } from '../types';
 
 describe('totalSupply', () => {
   let ahmed: SignerWithAddress, critter: Critter;
@@ -18,8 +13,8 @@ describe('totalSupply', () => {
   ];
 
   const totalSupplyFixture = async () => {
-    [, ahmed] = await hardhat.ethers.getSigners();
-    const critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await ethers.getSigners();
+    const critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
@@ -28,7 +23,7 @@ describe('totalSupply', () => {
     squeaks.forEach(async (content) => await critter.createSqueak(content));
 
     // ahmed burns the first created squeak at tokenId 0
-    await hardhat.run('delete-squeak', {
+    await run('delete-squeak', {
       contract: critter,
       signer: ahmed,
       squeakId: 0,

@@ -1,21 +1,16 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { Relation } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter, SignerWithAddress } from '../types';
 
 describe('isFollowing', () => {
   let ahmed: SignerWithAddress, barbie: SignerWithAddress, critter: Critter;
 
   const isFollowingFixture = async () => {
-    [, ahmed, barbie] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });

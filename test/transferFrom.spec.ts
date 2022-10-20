@@ -1,11 +1,5 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import { ethers, expect, loadFixture, run } from './setup';
+import type { BigNumber, Critter, SignerWithAddress } from '../types';
 
 describe('transferFrom', () => {
   let ahmed: SignerWithAddress,
@@ -15,17 +9,17 @@ describe('transferFrom', () => {
     squeakId: BigNumber;
 
   const transferFromFixture = async () => {
-    [owner, ahmed, barbie] = await hardhat.ethers.getSigners();
-    const critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie] = await ethers.getSigners();
+    const critter = (await run('deploy-contract')).connect(ahmed);
 
     // everybody creates an account
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
 
     // ahmed creates a squeak
-    ({ squeakId } = await hardhat.run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -62,7 +56,7 @@ describe('transferFrom', () => {
   it('reverts if transferring from a zero address', async () => {
     await expect(
       critter.transferFrom(
-        hardhat.ethers.constants.AddressZero,
+        ethers.constants.AddressZero,
         barbie.address,
         squeakId
       )
@@ -73,7 +67,7 @@ describe('transferFrom', () => {
     await expect(
       critter.transferFrom(
         ahmed.address,
-        hardhat.ethers.constants.AddressZero,
+        ethers.constants.AddressZero,
         squeakId
       )
     ).to.be.revertedWithCustomError(critter, 'TransferToZeroAddress');

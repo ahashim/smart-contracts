@@ -1,11 +1,5 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumberObject } from '../types';
-import type { Critter } from '../typechain-types/contracts';
+import { ethers, expect, loadFixture, run } from './setup';
+import type { BigNumberObject, Critter, SignerWithAddress } from '../types';
 
 describe('balanceOf', () => {
   let ahmed: SignerWithAddress,
@@ -14,14 +8,14 @@ describe('balanceOf', () => {
     critter: Critter;
 
   const balanceOfFixture = async () => {
-    [, ahmed, barbie] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
 
     // ahmed creates a squeak
-    await hardhat.run('create-squeak', {
+    await run('create-squeak', {
       content: 'hello blockchain',
       contract: critter,
       signer: ahmed,
@@ -50,7 +44,7 @@ describe('balanceOf', () => {
 
   it('reverts when getting the balance of the zero address', async () => {
     await expect(
-      critter.balanceOf(hardhat.ethers.constants.AddressZero)
+      critter.balanceOf(ethers.constants.AddressZero)
     ).to.be.revertedWithCustomError(critter, 'BalanceQueryForZeroAddress');
   });
 });

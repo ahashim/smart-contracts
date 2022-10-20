@@ -1,25 +1,20 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { MINTER_ROLE } from '../constants';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter, SignerWithAddress } from '../types';
 
 describe('revokeRole', () => {
   let critter: Critter;
   let ahmed: SignerWithAddress, barbie: SignerWithAddress;
 
   // test variables
-  const ID_MINTER_ROLE = hardhat.ethers.utils.id(MINTER_ROLE);
+  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
 
   const revokeRoleFixture = async () => {
-    [, ahmed, barbie] = await hardhat.ethers.getSigners();
-    const critter = await hardhat.run('deploy-contract');
+    [, ahmed, barbie] = await ethers.getSigners();
+    const critter = await run('deploy-contract');
 
     // everybody creates an account
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });
@@ -43,7 +38,7 @@ describe('revokeRole', () => {
       critter.connect(ahmed).revokeRole(ID_MINTER_ROLE, barbie.address)
     ).to.be.revertedWith(
       `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${
-        hardhat.ethers.constants.HashZero
+        ethers.constants.HashZero
       }`
     );
   });

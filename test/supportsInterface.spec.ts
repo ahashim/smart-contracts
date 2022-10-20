@@ -1,9 +1,5 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
-
-// types
-import type { Critter } from '../typechain-types/contracts';
+import { expect, loadFixture, run } from './setup';
+import type { Critter } from '../types';
 
 describe('supportsInterface', () => {
   let critter: Critter;
@@ -12,7 +8,7 @@ describe('supportsInterface', () => {
   };
 
   const supportsInterfaceFixture = async () => {
-    critter = await hardhat.run('deploy-contract');
+    critter = await run('deploy-contract');
 
     return {
       critter,

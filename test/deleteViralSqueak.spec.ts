@@ -1,14 +1,15 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { EMPTY_BYTE_STRING } from '../constants';
 import { Interaction } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { PoolInfo, Scout, SentimentCounts, Squeak } from '../types';
-import type { Critter } from '../typechain-types/contracts';
+import type {
+  BigNumber,
+  Critter,
+  PoolInfo,
+  Scout,
+  SentimentCounts,
+  SignerWithAddress,
+  Squeak,
+} from '../types';
 
 describe('deleteViralSqueak', () => {
   let amount: BigNumber,
@@ -26,24 +27,24 @@ describe('deleteViralSqueak', () => {
     squeak: Squeak;
 
   const deleteViralSqueakFixture = async () => {
-    [, ahmed, barbie, carlos, daphne] = await hardhat.ethers.getSigners();
+    [, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
     // deploy contract with a lower virality & scout pool threshold for testing
     critter = (
-      await hardhat.run('deploy-contract', {
-        scoutPoolThreshold: hardhat.ethers.utils.parseEther('0.000002'),
+      await run('deploy-contract', {
+        scoutPoolThreshold: ethers.utils.parseEther('0.000002'),
         viralityThreshold: 60,
       })
     ).connect(ahmed);
 
     // everybody creates an account
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos, daphne],
       contract: critter,
     });
 
     // ahmed creates a squeak
     // current virality score: 0
-    ({ squeakId } = await hardhat.run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -52,7 +53,7 @@ describe('deleteViralSqueak', () => {
     // ahmed & barbie resqueak it
     // current virality score: 0
     [ahmed, barbie].forEach(async (signer) => {
-      await hardhat.run('interact', {
+      await run('interact', {
         contract: critter,
         interaction: Interaction.Resqueak,
         signer,
@@ -62,7 +63,7 @@ describe('deleteViralSqueak', () => {
 
     // carlos likes it and makes it eligible for virality
     // current virality score: 58
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: carlos,
@@ -71,7 +72,7 @@ describe('deleteViralSqueak', () => {
 
     // daphne likes it and brings the score past the virality threshold
     // current virality score: 63
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: daphne,
@@ -90,7 +91,7 @@ describe('deleteViralSqueak', () => {
     const { amount } = await critter.getPoolInfo(squeakId);
 
     // ahmed deletes the viral squeak
-    ({ deleteFee } = await hardhat.run('delete-squeak', {
+    ({ deleteFee } = await run('delete-squeak', {
       contract: critter,
       signer: ahmed,
       squeakId,
@@ -123,8 +124,8 @@ describe('deleteViralSqueak', () => {
 
   it('deletes the viral squeak', () => {
     expect(squeak.blockNumber).to.eq(0);
-    expect(squeak.author).to.eq(hardhat.ethers.constants.AddressZero);
-    expect(squeak.owner).to.eq(hardhat.ethers.constants.AddressZero);
+    expect(squeak.author).to.eq(ethers.constants.AddressZero);
+    expect(squeak.owner).to.eq(ethers.constants.AddressZero);
     expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 

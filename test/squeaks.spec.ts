@@ -1,19 +1,16 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { EMPTY_BYTE_STRING } from '../constants';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber, ContractReceipt } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
-import type { Squeak } from '../types';
+import type {
+  BigNumber,
+  ContractReceipt,
+  Critter,
+  SignerWithAddress,
+  Squeak,
+} from '../types';
 
 describe('squeaks', () => {
   const content = 'hello blockchain!';
-  const rawContent = hardhat.ethers.utils.hexlify(
-    hardhat.ethers.utils.toUtf8Bytes(content)
-  );
+  const rawContent = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(content));
 
   let critter: Critter,
     ahmed: SignerWithAddress,
@@ -22,14 +19,14 @@ describe('squeaks', () => {
     squeak: Squeak;
 
   const squeaksFixture = async () => {
-    [, ahmed] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');
 
     // ahmed creates a squeak
-    ({ receipt, squeakId } = await hardhat.run('create-squeak', {
+    ({ receipt, squeakId } = await run('create-squeak', {
       content,
       contract: critter,
       signer: ahmed,
@@ -62,8 +59,8 @@ describe('squeaks', () => {
     squeak = await critter.squeaks(420);
 
     expect(squeak.blockNumber).to.eq(0);
-    expect(squeak.author).to.eq(hardhat.ethers.constants.AddressZero);
-    expect(squeak.owner).to.eq(hardhat.ethers.constants.AddressZero);
+    expect(squeak.author).to.eq(ethers.constants.AddressZero);
+    expect(squeak.owner).to.eq(ethers.constants.AddressZero);
     expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 });

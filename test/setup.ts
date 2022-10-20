@@ -1,3 +1,3 @@
 export { expect } from 'chai';
-export { ethers, run } from 'hardhat';
+export { ethers, run, upgrades } from 'hardhat';
 export { loadFixture } from '@nomicfoundation/hardhat-network-helpers';

@@ -1,19 +1,14 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { TREASURER_ROLE } from '../constants';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter, SignerWithAddress } from '../types';
 
 describe('grantRole', () => {
-  const ID_TREASURER_ROLE = hardhat.ethers.utils.id(TREASURER_ROLE);
+  const ID_TREASURER_ROLE = ethers.utils.id(TREASURER_ROLE);
   let ahmed: SignerWithAddress, critter: Critter;
 
   const grantRoleFixture = async () => {
-    [, ahmed] = await hardhat.ethers.getSigners();
-    critter = await hardhat.run('deploy-contract');
+    [, ahmed] = await ethers.getSigners();
+    critter = await run('deploy-contract');
 
     // granting ahmed the treasurer role
     await critter.grantRole(ID_TREASURER_ROLE, ahmed.address);

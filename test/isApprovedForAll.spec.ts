@@ -1,20 +1,15 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
+import { ethers, expect, loadFixture, run } from './setup';
+import type { Critter, SignerWithAddress } from '../types';
 
 describe('isApprovedForAll', () => {
   let ahmed: SignerWithAddress, barbie: SignerWithAddress, critter: Critter;
 
   const isApprovedForAllFixture = async () => {
-    [, ahmed, barbie] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie],
       contract: critter,
     });

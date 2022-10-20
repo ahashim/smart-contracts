@@ -1,12 +1,6 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { Interaction } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
+import type { BigNumber, Critter, SignerWithAddress } from '../types';
 
 describe('isViral', () => {
   let ahmed: SignerWithAddress,
@@ -17,22 +11,22 @@ describe('isViral', () => {
     viralSqueakId: BigNumber;
 
   const isViralFixture = async () => {
-    [, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
+    [, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await hardhat.run('deploy-contract', {
+      await run('deploy-contract', {
         viralityThreshold: 1,
       })
     ).connect(ahmed);
 
     // creates accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
 
     // ahmed creates a squeak
-    ({ squeakId: viralSqueakId } = await hardhat.run('create-squeak', {
+    ({ squeakId: viralSqueakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -40,7 +34,7 @@ describe('isViral', () => {
 
     // ahmed & barbie resqueak it
     [ahmed, barbie].forEach(async (signer) => {
-      await hardhat.run('interact', {
+      await run('interact', {
         contract: critter,
         interaction: Interaction.Resqueak,
         signer,
@@ -49,14 +43,14 @@ describe('isViral', () => {
     });
 
     // carlos likes it, and thus makes it eligible for virality
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: carlos,
       squeakId: viralSqueakId,
     });
 
-    ({ squeakId: nonViralSqueakId } = await hardhat.run('create-squeak', {
+    ({ squeakId: nonViralSqueakId } = await run('create-squeak', {
       content: 'i like turtles',
       contract: critter,
       signer: carlos,

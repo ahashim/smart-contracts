@@ -1,18 +1,13 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { expect, loadFixture, run } from './setup';
 import { PLATFORM_FEE } from '../constants';
 import { Interaction } from '../enums';
-
-// types
-import type { Critter } from '../typechain-types/contracts';
-import type { BigNumberObject } from '../types';
+import type { BigNumberObject, Critter } from '../types';
 
 describe('fees', () => {
   let critter: Critter, fees: BigNumberObject;
 
   const feesFixture = async () => {
-    critter = await hardhat.run('deploy-contract');
+    critter = await run('deploy-contract');
 
     return {
       critter,

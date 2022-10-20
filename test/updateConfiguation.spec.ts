@@ -1,12 +1,7 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { OPERATOR_ROLE } from '../constants';
 import { Configuration } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter, SignerWithAddress } from '../types';
 
 describe('updateConfiguration', () => {
   const newMaxLevel = 100;
@@ -17,13 +12,13 @@ describe('updateConfiguration', () => {
     owner: SignerWithAddress;
 
   const updateConfigurationFixture = async () => {
-    [owner, ahmed, barbie] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [owner, ahmed, barbie] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // the owner grants ahmed the ADMIN_ROLE
     await critter
       .connect(owner)
-      .grantRole(hardhat.ethers.utils.id(OPERATOR_ROLE), ahmed.address);
+      .grantRole(ethers.utils.id(OPERATOR_ROLE), ahmed.address);
 
     // ahmed increases the max level for scouts (note: A Critter account is not
     // required to update configuration)
@@ -51,7 +46,7 @@ describe('updateConfiguration', () => {
         .connect(barbie)
         .updateConfiguration(Configuration.ScoutMaxLevel, 69)
     ).to.be.revertedWith(
-      `AccessControl: account ${barbie.address.toLowerCase()} is missing role ${hardhat.ethers.utils.id(
+      `AccessControl: account ${barbie.address.toLowerCase()} is missing role ${ethers.utils.id(
         OPERATOR_ROLE
       )}`
     );

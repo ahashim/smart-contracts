@@ -1,15 +1,11 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { expect, loadFixture, run } from './setup';
 import { BASE_TOKEN_URI } from '../constants';
-
-// types
-import type { Critter } from '../typechain-types/contracts';
+import type { Critter } from '../types';
 
 describe('baseTokenURI', () => {
   let critter: Critter;
 
-  const baseTokenURIFixture = async () => await hardhat.run('deploy-contract');
+  const baseTokenURIFixture = async () => await run('deploy-contract');
 
   it('returns the base token URI', async () => {
     critter = await loadFixture(baseTokenURIFixture);

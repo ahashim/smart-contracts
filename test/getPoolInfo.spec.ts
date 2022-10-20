@@ -1,14 +1,12 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { PLATFORM_FEE, PLATFORM_TAKE_RATE, SCOUT_BONUS } from '../constants';
 import { Interaction } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
-import type { PoolInfo } from '../types';
+import type {
+  BigNumber,
+  Critter,
+  PoolInfo,
+  SignerWithAddress,
+} from '../types';
 
 describe('getPoolInfo', () => {
   let ahmed: SignerWithAddress,
@@ -20,22 +18,22 @@ describe('getPoolInfo', () => {
     squeakId: BigNumber;
 
   const getPoolInfoFixture = async () => {
-    [, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
+    [, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await hardhat.run('deploy-contract', {
+      await run('deploy-contract', {
         viralityThreshold: 1,
       })
     ).connect(ahmed);
 
     // creates accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
 
     // ahmed posts a squeak
-    ({ squeakId } = await hardhat.run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
@@ -43,7 +41,7 @@ describe('getPoolInfo', () => {
 
     // ahmed & barbie resqueak it
     [ahmed, barbie].forEach(async (signer) => {
-      await hardhat.run('interact', {
+      await run('interact', {
         contract: critter,
         interaction: Interaction.Resqueak,
         signer,
@@ -52,7 +50,7 @@ describe('getPoolInfo', () => {
     });
 
     // carlos likes it, and thus makes it eligible for virality
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: carlos,

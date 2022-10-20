@@ -1,41 +1,39 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
+import { ethers, expect, loadFixture, run } from './setup';
 import { Interaction } from '../enums';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { BigNumber } from 'ethers';
-import type { Critter } from '../typechain-types/contracts';
-import type { SentimentCounts } from '../types';
+import type {
+  BigNumber,
+  Critter,
+  SentimentCounts,
+  SignerWithAddress,
+} from '../types';
 
 describe('getSentimentCounts', () => {
-  let critter: Critter;
-  let ahmed: SignerWithAddress,
+  let critter: Critter,
+    ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
-    carlos: SignerWithAddress;
-  let sentimentCounts: SentimentCounts;
-  let squeakId: BigNumber;
+    carlos: SignerWithAddress,
+    sentimentCounts: SentimentCounts,
+    squeakId: BigNumber;
 
   const getSentimentCountsFixture = async () => {
-    [, ahmed, barbie, carlos] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed, barbie, carlos] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // creates accounts
-    await hardhat.run('create-accounts', {
+    await run('create-accounts', {
       accounts: [ahmed, barbie, carlos],
       contract: critter,
     });
 
     // ahmed posts a squeak
-    ({ squeakId } = await hardhat.run('create-squeak', {
+    ({ squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',
       contract: critter,
       signer: ahmed,
     }));
 
     // ahmed resqueaks it
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Resqueak,
       signer: ahmed,
@@ -43,7 +41,7 @@ describe('getSentimentCounts', () => {
     });
 
     // barbie likes it
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: barbie,
@@ -51,7 +49,7 @@ describe('getSentimentCounts', () => {
     });
 
     // carlos dislikes it
-    await hardhat.run('interact', {
+    await run('interact', {
       contract: critter,
       interaction: Interaction.Dislike,
       signer: carlos,
@@ -74,15 +72,15 @@ describe('getSentimentCounts', () => {
     }
   );
 
-  it('gets the dislike count of a squeak', async () => {
+  it('gets the dislike count of a squeak', () => {
     expect(sentimentCounts.dislikes).to.equal(1);
   });
 
-  it('gets the like count of a squeak', async () => {
+  it('gets the like count of a squeak', () => {
     expect(sentimentCounts.likes).to.equal(1);
   });
 
-  it('gets the resqueak count of a squeak', async () => {
+  it('gets the resqueak count of a squeak', () => {
     expect(sentimentCounts.resqueaks).to.equal(1);
   });
 
