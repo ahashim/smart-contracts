@@ -1,5 +1,11 @@
-import { BigNumber } from 'ethers';
+// imports
 import { Status } from './enums';
+import type { BigNumber } from 'ethers';
+
+// exports
+export type { BigNumber };
+export type { Critter } from './typechain-types/contracts';
+export type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 export type BigNumberObject = {
   [key: string]: BigNumber;

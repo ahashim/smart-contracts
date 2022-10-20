@@ -1,18 +1,13 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
-import hardhat from 'hardhat';
-
-// types
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Critter } from '../typechain-types/contracts';
+import { ethers, expect, loadFixture, run } from './setup';
+import type { Critter, SignerWithAddress } from '../types';
 
 describe('addresses', () => {
   const username = 'ahmed';
   let ahmed: SignerWithAddress, critter: Critter;
 
   const addressesFixture = async () => {
-    [, ahmed] = await hardhat.ethers.getSigners();
-    critter = (await hardhat.run('deploy-contract')).connect(ahmed);
+    [, ahmed] = await ethers.getSigners();
+    critter = (await run('deploy-contract')).connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount(username);
@@ -30,7 +25,7 @@ describe('addresses', () => {
 
   it('returns the zero address for an unknown account', async () => {
     expect(await critter.addresses('R2-D2')).to.eq(
-      hardhat.ethers.constants.AddressZero
+      ethers.constants.AddressZero
     );
   });
 });
