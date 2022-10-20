@@ -15,6 +15,7 @@ describe('squeaks', () => {
   let critter: Critter,
     ahmed: SignerWithAddress,
     receipt: ContractReceipt,
+    invalidSqueak: Squeak,
     squeakId: BigNumber,
     squeak: Squeak;
 
@@ -35,6 +36,8 @@ describe('squeaks', () => {
     return {
       critter,
       receipt,
+      invalidSqueak: await critter.squeaks(420),
+      squeak: await critter.squeaks(squeakId),
       squeakId,
     };
   };
@@ -42,25 +45,22 @@ describe('squeaks', () => {
   beforeEach(
     'load deployed contract fixture, and ahmed creates an account',
     async () => {
-      ({ critter, receipt, squeakId } = await loadFixture(squeaksFixture));
+      ({ critter, receipt, invalidSqueak, squeak, squeakId } =
+        await loadFixture(squeaksFixture));
     }
   );
 
-  it('returns a squeak using a squeakId', async () => {
-    squeak = await critter.squeaks(squeakId);
-
+  it('returns a squeak using a squeakId', () => {
     expect(squeak.blockNumber).to.eq(receipt.blockNumber);
     expect(squeak.author).to.eq(ahmed.address);
     expect(squeak.owner).to.eq(ahmed.address);
     expect(squeak.content).to.eq(rawContent);
   });
 
-  it('returns an empty squeak for an unknown squeakId', async () => {
-    squeak = await critter.squeaks(420);
-
-    expect(squeak.blockNumber).to.eq(0);
-    expect(squeak.author).to.eq(ethers.constants.AddressZero);
-    expect(squeak.owner).to.eq(ethers.constants.AddressZero);
-    expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
+  it('returns an empty squeak for an unknown squeakId', () => {
+    expect(invalidSqueak.blockNumber).to.eq(0);
+    expect(invalidSqueak.author).to.eq(ethers.constants.AddressZero);
+    expect(invalidSqueak.owner).to.eq(ethers.constants.AddressZero);
+    expect(invalidSqueak.content).to.eq(EMPTY_BYTE_STRING);
   });
 });

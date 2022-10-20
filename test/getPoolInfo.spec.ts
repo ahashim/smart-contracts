@@ -67,7 +67,7 @@ describe('getPoolInfo', () => {
     ({ poolInfo, invalidPool } = await loadFixture(getPoolInfoFixture));
   });
 
-  it('returns the funds available in the scout pool', async () => {
+  it('returns the funds available in the scout pool', () => {
     // carlos' interaction fee will be split & added to the pool
     const interactionTake = PLATFORM_FEE.mul(PLATFORM_TAKE_RATE).div(100);
     const expectedAmount = PLATFORM_FEE.sub(interactionTake).div(2);
@@ -75,18 +75,18 @@ describe('getPoolInfo', () => {
     expect(poolInfo.amount).to.eq(expectedAmount);
   });
 
-  it('returns the total number of shares in the scout pool', async () => {
+  it('returns the total number of shares in the scout pool', () => {
     // each scout levels up to 2, plus carlos' scout bonus
     const expectedShares = 3 * 2 + SCOUT_BONUS;
     expect(poolInfo.shares).to.eq(expectedShares);
   });
 
-  it('returns the count of members in the scout pool', async () => {
+  it('returns the count of members in the scout pool', () => {
     // ahmed, barbie, and carlos are all in the pool
     expect(poolInfo.memberCount).to.eq(3);
   });
 
-  it('returns zero values for an unknown pool', async () => {
+  it('returns zero values for an unknown pool', () => {
     expect(invalidPool.amount).to.eq(0);
     expect(invalidPool.shares).to.eq(0);
     expect(invalidPool.memberCount).to.eq(0);

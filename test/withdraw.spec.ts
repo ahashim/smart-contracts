@@ -97,7 +97,7 @@ describe('withdraw', () => {
     );
   });
 
-  it('emits both FundsWithdrawn and FundsTransferred events', async () => {
+  it('emits both FundsWithdrawn and FundsTransferred events', () => {
     expect(withdrawTx)
       .to.emit(critter, 'FundsWithdrawn')
       .withArgs(coldStorage.address, treasuryBalance)

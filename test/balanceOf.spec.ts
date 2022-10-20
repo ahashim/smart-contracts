@@ -34,11 +34,11 @@ describe('balanceOf', () => {
     ({ balances, critter } = await loadFixture(balanceOfFixture));
   });
 
-  it('lets a user get a balance of their squeaks', async () => {
+  it('lets a user get a balance of their squeaks', () => {
     expect(balances.ahmed).to.eq(1);
   });
 
-  it('returns zero when looking up the balance of an unknown account', async () => {
+  it('returns zero when looking up the balance of an unknown account', () => {
     expect(balances.barbie).to.eq(0);
   });
 

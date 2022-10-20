@@ -81,7 +81,7 @@ describe('ejectFromPool', () => {
     ));
   });
 
-  it('ejects the user from a scout pool', async () => {
+  it('ejects the user from a scout pool', () => {
     const accounts = scouts.map((s) => s.account);
 
     expect(scouts.length).to.eq(1);

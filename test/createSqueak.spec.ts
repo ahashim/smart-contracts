@@ -64,14 +64,14 @@ describe('createSqueak', () => {
     ));
   });
 
-  it('lets a user create a squeak', async () => {
+  it('lets a user create a squeak', () => {
     expect(squeak.blockNumber).to.eq(receipt.blockNumber);
     expect(squeak.author).to.eq(ahmed.address);
     expect(squeak.owner).to.eq(ahmed.address);
     expect(squeak.content).to.eq(rawContent);
   });
 
-  it('mints an NFT of the squeak content to the creators account', async () => {
+  it('mints an NFT of the squeak content to the creators account', () => {
     expect(accountBalance).to.eq(1);
   });
 

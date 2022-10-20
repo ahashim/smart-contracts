@@ -129,13 +129,13 @@ describe('deleteViralSqueak', () => {
     expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 
-  it("deletes the viral squeak's associated sentiment", async () => {
+  it("deletes the viral squeak's associated sentiment", () => {
     expect(sentimentCounts.likes).to.eq(0);
     expect(sentimentCounts.dislikes).to.eq(0);
     expect(sentimentCounts.resqueaks).to.eq(0);
   });
 
-  it("deletes the viral squeak's scout information", async () => {
+  it("deletes the viral squeak's scout information", () => {
     expect(scouts).to.be.empty;
     expect(poolInfo.amount).to.eq(0);
     expect(poolInfo.shares).to.eq(0);

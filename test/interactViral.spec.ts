@@ -178,7 +178,7 @@ describe('interact viral', () => {
     );
   });
 
-  it('deposits part of the interaction fee into the scout pool', async () => {
+  it('deposits part of the interaction fee into the scout pool', () => {
     expect(poolInfo.amount).to.eq(transferAmount);
   });
 

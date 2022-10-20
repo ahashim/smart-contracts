@@ -34,7 +34,7 @@ describe('createAccount', () => {
     ({ address, critter, tx, user } = await loadFixture(createAccountFixture));
   });
 
-  it('lets a user create an account with a valid username', async () => {
+  it('lets a user create an account with a valid username', () => {
     expect(user.username).to.eq(username);
     expect(address).to.eq(ahmed.address);
   });

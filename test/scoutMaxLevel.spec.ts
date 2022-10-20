@@ -56,7 +56,7 @@ describe('scoutMaxLevel', () => {
     ({ critter, scoutLevel } = await loadFixture(scoutMaxlevelFixture));
   });
 
-  it('does not level up a scout past max level', async () => {
+  it('does not level up a scout past max level', () => {
     // ahmed propelled the squeak to virality, so they get a scout bonus level
     // up of 3, however max level prevents them from getting there
     expect(scoutLevel).to.eq(scoutMaxLevel);

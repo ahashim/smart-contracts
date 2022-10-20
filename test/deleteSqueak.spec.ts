@@ -103,14 +103,14 @@ describe('deleteSqueak', () => {
     expect(await critter.balanceOf(ahmed.address)).to.equal(0);
   });
 
-  it('removes all squeak information upon deletion', async () => {
+  it('removes all squeak information upon deletion', () => {
     expect(squeak.blockNumber).to.eq(0);
     expect(squeak.author).to.eq(ethers.constants.AddressZero);
     expect(squeak.owner).to.eq(ethers.constants.AddressZero);
     expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 
-  it('removes all associated sentiment for the squeak', async () => {
+  it('removes all associated sentiment for the squeak', () => {
     expect(sentiment.dislikes).to.eq(0);
     expect(sentiment.likes).to.eq(0);
     expect(sentiment.resqueaks).to.eq(0);

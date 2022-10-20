@@ -76,13 +76,13 @@ describe('getScouts', () => {
     ({ addresses, levels, scouts } = await loadFixture(getScoutsFixture));
   });
 
-  it('returns the addresses for all scouts in the pool', async () => {
+  it('returns the addresses for all scouts in the pool', () => {
     [ahmed, barbie, carlos].forEach((user) => {
       expect(addresses.includes(user.address)).to.be.true;
     });
   });
 
-  it('returns the amount of shares every scout in the pool has at the time of virality', async () => {
+  it('returns the amount of shares every scout in the pool has at the time of virality', () => {
     [ahmed, barbie, carlos].forEach((user) => {
       expect(scouts.find((s) => s.account === user.address)?.shares).to.eq(
         levels[user.address]

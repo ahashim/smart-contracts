@@ -78,7 +78,7 @@ describe('hasRole', () => {
     expect(await critter.hasRole(ID_UPGRADER_ROLE, owner.address)).to.be.true;
   });
 
-  it('grants every new user the MINTER_ROLE', async () => {
+  it('grants every new user the MINTER_ROLE', () => {
     for (const minter in users) {
       expect(users[minter]).to.be.true;
     }

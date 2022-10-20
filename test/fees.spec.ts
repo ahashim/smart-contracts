@@ -27,31 +27,31 @@ describe('fees', () => {
     ({ critter, fees } = await loadFixture(feesFixture));
   });
 
-  it('gets the base delete fee', async () => {
+  it('gets the base delete fee', () => {
     expect(fees.delete).to.eq(PLATFORM_FEE);
   });
 
-  it('gets the dislike fee', async () => {
+  it('gets the dislike fee', () => {
     expect(fees.dislike).to.eq(PLATFORM_FEE);
   });
 
-  it('gets the like fee', async () => {
+  it('gets the like fee', () => {
     expect(fees.like).to.eq(PLATFORM_FEE);
   });
 
-  it('gets the resqueak fee', async () => {
+  it('gets the resqueak fee', () => {
     expect(fees.resqueak).to.eq(PLATFORM_FEE);
   });
 
-  it('gets the undo dislike fee', async () => {
+  it('gets the undo dislike fee', () => {
     expect(fees.undoDislike).to.eq(PLATFORM_FEE);
   });
 
-  it('gets the undo like fee', async () => {
+  it('gets the undo like fee', () => {
     expect(fees.undoLike).to.eq(PLATFORM_FEE);
   });
 
-  it('gets the undo resqueak fee', async () => {
+  it('gets the undo resqueak fee', () => {
     expect(fees.UndoResqueak).to.eq(PLATFORM_FEE);
   });
 });

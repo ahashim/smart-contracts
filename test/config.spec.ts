@@ -37,23 +37,23 @@ describe('config', () => {
     ({ config, critter } = await loadFixture(configFixture));
   });
 
-  it('gets the platform take rate for interactions', async () => {
+  it('gets the platform take rate for interactions', () => {
     expect(config.platformTakeRate).to.eq(PLATFORM_TAKE_RATE);
   });
 
-  it('gets the scout pool payout threshold', async () => {
+  it('gets the scout pool payout threshold', () => {
     expect(config.poolPayoutThreshold).to.eq(SCOUT_POOL_THRESHOLD);
   });
 
-  it('gets the max level a scout can reach', async () => {
+  it('gets the max level a scout can reach', () => {
     expect(config.scoutMaxLevel).to.eq(SCOUT_MAX_LEVEL);
   });
 
-  it('gets the bonus level increase a scout receives for propelling a squeak into virality', async () => {
+  it('gets the bonus level increase a scout receives for propelling a squeak into virality', () => {
     expect(config.scoutViralityBonus).to.eq(SCOUT_BONUS);
   });
 
-  it('gets the virality threshold for a squeak', async () => {
+  it('gets the virality threshold for a squeak', () => {
     expect(config.viralityThreshold).to.eq(VIRALITY_THRESHOLD);
   });
 });
