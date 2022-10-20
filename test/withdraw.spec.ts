@@ -115,9 +115,7 @@ describe('withdraw', () => {
     await expect(
       critter.connect(ahmed).withdraw(coldStorage.address, treasuryFee)
     ).to.be.revertedWith(
-      `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${ethers.utils.id(
-        TREASURER_ROLE
-      )}`
+      `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${TREASURER_ROLE}`
     );
   });
 });

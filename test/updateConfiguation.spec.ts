@@ -16,9 +16,7 @@ describe('updateConfiguration', () => {
     critter = (await run('deploy-contract')).connect(ahmed);
 
     // the owner grants ahmed the ADMIN_ROLE
-    await critter
-      .connect(owner)
-      .grantRole(ethers.utils.id(OPERATOR_ROLE), ahmed.address);
+    await critter.connect(owner).grantRole(OPERATOR_ROLE, ahmed.address);
 
     // ahmed increases the max level for scouts (note: A Critter account is not
     // required to update configuration)
@@ -46,9 +44,7 @@ describe('updateConfiguration', () => {
         .connect(barbie)
         .updateConfiguration(Configuration.ScoutMaxLevel, 69)
     ).to.be.revertedWith(
-      `AccessControl: account ${barbie.address.toLowerCase()} is missing role ${ethers.utils.id(
-        OPERATOR_ROLE
-      )}`
+      `AccessControl: account ${barbie.address.toLowerCase()} is missing role ${OPERATOR_ROLE}`
     );
   });
 });

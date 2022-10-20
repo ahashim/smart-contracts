@@ -84,9 +84,7 @@ describe('updateStatus', () => {
     await expect(
       critter.connect(ahmed).updateStatus(barbie.address, Status.Unknown)
     ).to.be.revertedWith(
-      `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${ethers.utils.id(
-        MODERATOR_ROLE
-      )}`
+      `AccessControl: account ${ahmed.address.toLowerCase()} is missing role ${MODERATOR_ROLE}`
     );
   });
 });

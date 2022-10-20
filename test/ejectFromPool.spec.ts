@@ -36,9 +36,7 @@ describe('ejectFromPool', () => {
     });
 
     // the owner grants ahmed the MODERATOR_ROLE
-    await critter
-      .connect(owner)
-      .grantRole(ethers.utils.id(MODERATOR_ROLE), ahmed.address);
+    await critter.connect(owner).grantRole(MODERATOR_ROLE, ahmed.address);
 
     // ahmed posts a squeak
     ({ squeakId } = await run('create-squeak', {

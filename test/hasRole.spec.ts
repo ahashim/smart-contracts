@@ -9,12 +9,7 @@ import {
 import type { Critter, SignerWithAddress } from '../types';
 
 describe('hasRole', () => {
-  const ID_DEFAULT_ADMIN_ROLE = ethers.constants.HashZero;
-  const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
-  const ID_MODERATOR_ROLE = ethers.utils.id(MODERATOR_ROLE);
-  const ID_OPERATOR_ROLE = ethers.utils.id(OPERATOR_ROLE);
-  const ID_TREASURER_ROLE = ethers.utils.id(TREASURER_ROLE);
-  const ID_UPGRADER_ROLE = ethers.utils.id(UPGRADER_ROLE);
+  const DEFAULT_ADMIN_ROLE = ethers.constants.HashZero;
 
   let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
@@ -40,11 +35,11 @@ describe('hasRole', () => {
     return {
       critter,
       users: {
-        ahmed: await critter.hasRole(ID_MINTER_ROLE, ahmed.address),
-        barbie: await critter.hasRole(ID_MINTER_ROLE, barbie.address),
-        carlos: await critter.hasRole(ID_MINTER_ROLE, carlos.address),
-        daphne: await critter.hasRole(ID_MINTER_ROLE, daphne.address),
-        evan: await critter.hasRole(ID_MINTER_ROLE, evan.address),
+        ahmed: await critter.hasRole(MINTER_ROLE, ahmed.address),
+        barbie: await critter.hasRole(MINTER_ROLE, barbie.address),
+        carlos: await critter.hasRole(MINTER_ROLE, carlos.address),
+        daphne: await critter.hasRole(MINTER_ROLE, daphne.address),
+        evan: await critter.hasRole(MINTER_ROLE, evan.address),
       },
     };
   };
@@ -54,28 +49,28 @@ describe('hasRole', () => {
   });
 
   it('grants the contract owner the DEFAULT_ADMIN_ROLE', async () => {
-    expect(await critter.hasRole(ID_DEFAULT_ADMIN_ROLE, owner.address)).to.be
+    expect(await critter.hasRole(DEFAULT_ADMIN_ROLE, owner.address)).to.be
       .true;
   });
 
   it('grants the contract owner the MINTER_ROLE', async () => {
-    expect(await critter.hasRole(ID_MINTER_ROLE, owner.address)).to.be.true;
+    expect(await critter.hasRole(MINTER_ROLE, owner.address)).to.be.true;
   });
 
   it('grants the contract owner the OPERATOR_ROLE', async () => {
-    expect(await critter.hasRole(ID_OPERATOR_ROLE, owner.address)).to.be.true;
+    expect(await critter.hasRole(OPERATOR_ROLE, owner.address)).to.be.true;
   });
 
   it('grants the contract owner the MODERATOR_ROLE', async () => {
-    expect(await critter.hasRole(ID_MODERATOR_ROLE, owner.address)).to.be.true;
+    expect(await critter.hasRole(MODERATOR_ROLE, owner.address)).to.be.true;
   });
 
   it('grants the contract owner the TREASURER_ROLE', async () => {
-    expect(await critter.hasRole(ID_TREASURER_ROLE, owner.address)).to.be.true;
+    expect(await critter.hasRole(TREASURER_ROLE, owner.address)).to.be.true;
   });
 
   it('grants the contract owner the UPGRADER_ROLE', async () => {
-    expect(await critter.hasRole(ID_UPGRADER_ROLE, owner.address)).to.be.true;
+    expect(await critter.hasRole(UPGRADER_ROLE, owner.address)).to.be.true;
   });
 
   it('grants every new user the MINTER_ROLE', () => {
