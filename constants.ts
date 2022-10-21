@@ -6,7 +6,7 @@ export const CONTRACT_NAME = 'Critter';
 export const CONTRACT_SYMBOL = 'CRTTR';
 
 // fees (in wei)
-export const PLATFORM_FEE = utils.parseEther('0.00005');
+export const PLATFORM_FEE = utils.parseEther('0.00008');
 export const PLATFORM_TAKE_RATE = 10;
 
 // role ID's
