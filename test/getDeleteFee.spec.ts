@@ -1,5 +1,5 @@
 import { ethers, expect, loadFixture, run } from './setup';
-import { Interaction } from '../enums';
+import { Configuration } from '../enums';
 import type { BigNumber, Critter, SignerWithAddress } from '../types';
 
 describe('getDeleteFee', () => {
@@ -37,7 +37,7 @@ describe('getDeleteFee', () => {
     ({ number: latestBlock } = await ethers.provider.getBlock('latest'));
     expectedFee =
       (latestBlock + defaultConfirmationThreshold - blockCreated.toNumber()) *
-      (await critter.fees(Interaction.Delete)).toNumber();
+      (await critter.config(Configuration.DeleteRate)).toNumber();
 
     expect(await critter.getDeleteFee(squeakId)).to.eq(expectedFee);
   });

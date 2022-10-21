@@ -6,6 +6,7 @@ export const enum Status {
 }
 
 export const enum Configuration {
+  DeleteRate,
   PlatformTakeRate,
   PoolPayoutThreshold,
   ScoutMaxLevel,
@@ -14,7 +15,6 @@ export const enum Configuration {
 }
 
 export const enum Interaction {
-  Delete,
   Dislike,
   Like,
   Resqueak,

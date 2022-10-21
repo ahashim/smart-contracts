@@ -108,7 +108,8 @@ contract Bankable is Validateable, IBankable {
     {
         return
             ((block.number + confirmationThreshold) -
-                squeaks[tokenId].blockNumber) * fees[Interaction.Delete];
+                squeaks[tokenId].blockNumber) *
+            config[Configuration.DeleteRate];
     }
 
     /**

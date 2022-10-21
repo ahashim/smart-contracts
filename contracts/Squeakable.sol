@@ -125,7 +125,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         // refund any excess funds
         if (remainder > 0) _transferFunds(msg.sender, remainder);
 
-        emit SqueakInteraction(tokenId, msg.sender, Interaction.Delete);
+        emit SqueakDeleted(tokenId, msg.sender);
     }
 
     /**

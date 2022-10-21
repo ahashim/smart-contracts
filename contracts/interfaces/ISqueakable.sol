@@ -39,6 +39,13 @@ interface ISqueakable is IStoreable {
     );
 
     /**
+     * @dev Emitted after deleting a squeak.
+     * @param tokenId ID of the squeak.
+     * @param deletedBy Account that deleted the squeak.
+     */
+    event SqueakDeleted(uint256 tokenId, address deletedBy);
+
+    /**
      * @dev Emitted after an interaction.
      * @param tokenId ID of the squeak.
      * @param sender Account that resqueaked.

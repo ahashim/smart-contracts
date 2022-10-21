@@ -12,7 +12,6 @@ describe('fees', () => {
     return {
       critter,
       fees: {
-        delete: await critter.fees(Interaction.Delete),
         dislike: await critter.fees(Interaction.Dislike),
         like: await critter.fees(Interaction.Like),
         resqueak: await critter.fees(Interaction.Resqueak),
@@ -25,10 +24,6 @@ describe('fees', () => {
 
   beforeEach('load deployed contract fixture', async () => {
     ({ critter, fees } = await loadFixture(feesFixture));
-  });
-
-  it('gets the base delete fee', () => {
-    expect(fees.delete).to.eq(PLATFORM_FEE);
   });
 
   it('gets the dislike fee', () => {

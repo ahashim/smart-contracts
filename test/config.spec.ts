@@ -1,5 +1,6 @@
 import { expect, loadFixture, run } from './setup';
 import {
+  PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
   SCOUT_BONUS,
   SCOUT_MAX_LEVEL,
@@ -17,6 +18,7 @@ describe('config', () => {
 
     return {
       config: {
+        deleteRate: await critter.config(Configuration.DeleteRate),
         platformTakeRate: await critter.config(Configuration.PlatformTakeRate),
         poolPayoutThreshold: await critter.config(
           Configuration.PoolPayoutThreshold
@@ -35,6 +37,10 @@ describe('config', () => {
 
   beforeEach('load deployed contract fixture', async () => {
     ({ config, critter } = await loadFixture(configFixture));
+  });
+
+  it('gets the squeak delete rate', () => {
+    expect(config.deleteRate).to.eq(PLATFORM_FEE);
   });
 
   it('gets the platform take rate for interactions', () => {

@@ -48,6 +48,7 @@ contract Storeable is Initializable, IStoreable {
         baseTokenURI = baseURI;
 
         // set contract config values
+        config[Configuration.DeleteRate] = platformFee;
         config[Configuration.PlatformTakeRate] = platformTakeRate;
         config[Configuration.ScoutMaxLevel] = scoutMaxLevel;
         config[Configuration.PoolPayoutThreshold] = poolPayoutThreshold;
@@ -55,7 +56,6 @@ contract Storeable is Initializable, IStoreable {
         config[Configuration.ViralityThreshold] = viralityThreshold;
 
         // set default interaction fees
-        fees[Interaction.Delete] = platformFee;
         fees[Interaction.Dislike] = platformFee;
         fees[Interaction.Like] = platformFee;
         fees[Interaction.Resqueak] = platformFee;

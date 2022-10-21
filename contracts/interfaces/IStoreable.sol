@@ -34,6 +34,7 @@ enum Status {
  * @dev Set of Configuration keys for the contract.
  */
 enum Configuration {
+    DeleteRate,
     PlatformTakeRate,
     PoolPayoutThreshold,
     ScoutMaxLevel,
@@ -45,7 +46,6 @@ enum Configuration {
  * @dev Set of interactions for a squeak.
  */
 enum Interaction {
-    Delete,
     Dislike,
     Like,
     Resqueak,

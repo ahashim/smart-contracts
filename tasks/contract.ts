@@ -10,7 +10,7 @@ import {
   SCOUT_BONUS,
   SCOUT_MAX_LEVEL,
 } from '../constants';
-import { Interaction } from '../enums';
+import { Configuration, Interaction } from '../enums';
 
 // types
 import type {
@@ -112,7 +112,7 @@ task(
     // get the actual cost of deleting the squeak without the quoted buffer
     const deleteFee = ethers.BigNumber.from((await tx.wait()).blockNumber)
       .sub(blockAuthored)
-      .mul(await contract.fees(Interaction.Delete));
+      .mul(await contract.config(Configuration.DeleteRate));
 
     return { deleteFee, tx };
   }
