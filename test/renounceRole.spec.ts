@@ -1,10 +1,10 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { MINTER_ROLE, UPGRADER_ROLE } from '../constants';
 import type {
   ContractTransaction,
   Critter,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('renounceRole', () => {
   let ahmed: SignerWithAddress,

@@ -1,4 +1,3 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { EMPTY_BYTE_STRING } from '../constants';
 import type {
   BigNumber,
@@ -7,6 +6,7 @@ import type {
   SignerWithAddress,
   Squeak,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('squeaks', () => {
   const content = 'hello blockchain!';

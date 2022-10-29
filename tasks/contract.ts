@@ -1,18 +1,5 @@
-import { task } from 'hardhat/config';
-import {
-  CONTRACT_NAME,
-  CONTRACT_SYMBOL,
-  BASE_TOKEN_URI,
-  PLATFORM_FEE,
-  PLATFORM_TAKE_RATE,
-  SCOUT_POOL_THRESHOLD,
-  VIRALITY_THRESHOLD,
-  SCOUT_BONUS,
-  SCOUT_MAX_LEVEL,
-} from '../constants';
-import { Configuration, Interaction } from '../enums';
-
-// types
+import type { Result } from '@ethersproject/abi';
+import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type {
   BigNumber,
   Contract,
@@ -21,14 +8,25 @@ import type {
   ContractTransaction,
   Event,
 } from 'ethers';
-import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import type { Result } from '@ethersproject/abi';
+import { task } from 'hardhat/config';
+
+import {
+  BASE_TOKEN_URI,
+  CONTRACT_NAME,
+  CONTRACT_SYMBOL,
+  PLATFORM_FEE,
+  PLATFORM_TAKE_RATE,
+  SCOUT_BONUS,
+  SCOUT_MAX_LEVEL,
+  SCOUT_POOL_THRESHOLD,
+  VIRALITY_THRESHOLD,
+} from '../constants';
+import { Configuration, Interaction } from '../enums';
 import type {
   ContractInitializer,
   ContractInitializerOverrides,
 } from '../types';
 
-// tasks
 task(
   'create-accounts',
   'Create accounts from Signers',

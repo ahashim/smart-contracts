@@ -1,6 +1,6 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { Relation } from '../enums';
 import type { Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('isBlocked', () => {
   let ahmed: SignerWithAddress, barbie: SignerWithAddress, critter: Critter;

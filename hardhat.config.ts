@@ -1,16 +1,15 @@
 // environment variables
 import 'dotenv/config';
-
-// hardhat
-import type { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
 import '@openzeppelin/hardhat-upgrades';
 import 'hardhat-contract-sizer';
 import 'hardhat-watcher';
-
 // task files
 import './tasks/contract';
 import './tasks/network';
+
+// hardhat
+import type { HardhatUserConfig } from 'hardhat/config';
 
 const config: HardhatUserConfig = {
   contractSizer: {

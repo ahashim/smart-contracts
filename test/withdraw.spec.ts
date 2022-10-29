@@ -1,4 +1,3 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { PLATFORM_TAKE_RATE, TREASURER_ROLE } from '../constants';
 import { Interaction } from '../enums';
 import type {
@@ -7,6 +6,7 @@ import type {
   Critter,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('withdraw', () => {
   let ahmed: SignerWithAddress,

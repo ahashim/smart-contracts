@@ -1,5 +1,5 @@
-import { expect, loadFixture, run } from './setup';
 import type { Critter } from '../types';
+import { expect, loadFixture, run } from './setup';
 
 describe('supportsInterface', () => {
   let critter: Critter;

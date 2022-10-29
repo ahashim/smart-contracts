@@ -1,5 +1,5 @@
-import { expect, loadFixture, run } from './setup';
 import type { Critter } from '../types';
+import { expect, loadFixture, run } from './setup';
 
 describe('proxiableUUID', () => {
   let critter: Critter;

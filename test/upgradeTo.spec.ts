@@ -1,11 +1,11 @@
-import { ethers, expect, loadFixture, upgrades } from './setup';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+import { CONTRACT_INITIALIZER, CONTRACT_NAME } from '../constants';
 import type {
   Contract,
   ContractFactory,
   Critter,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, upgrades } from './setup';
 
 describe('upgradeTo', () => {
   let ahmed: SignerWithAddress,

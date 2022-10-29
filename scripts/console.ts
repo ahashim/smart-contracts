@@ -1,5 +1,6 @@
-import repl from 'repl';
 import hardhat from 'hardhat';
+import repl from 'repl';
+
 import { CONTRACT_SYMBOL } from '../constants';
 
 async function main() {

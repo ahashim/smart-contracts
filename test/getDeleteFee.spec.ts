@@ -1,6 +1,6 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { Configuration } from '../enums';
 import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('getDeleteFee', () => {
   let ahmed: SignerWithAddress,

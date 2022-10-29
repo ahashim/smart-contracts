@@ -1,9 +1,9 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import type {
   ContractTransaction,
   Critter,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('setApprovalForAll', () => {
   let ahmed: SignerWithAddress,

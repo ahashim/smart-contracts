@@ -1,4 +1,3 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { EMPTY_BYTE_STRING } from '../constants';
 import { Interaction } from '../enums';
 import type {
@@ -10,6 +9,7 @@ import type {
   SignerWithAddress,
   Squeak,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('deleteViralSqueak', () => {
   let amount: BigNumber,

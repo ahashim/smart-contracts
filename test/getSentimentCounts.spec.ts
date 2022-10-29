@@ -1,4 +1,3 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { Interaction } from '../enums';
 import type {
   BigNumber,
@@ -6,6 +5,7 @@ import type {
   SentimentCounts,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('getSentimentCounts', () => {
   let critter: Critter,

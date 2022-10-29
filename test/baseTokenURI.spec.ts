@@ -1,6 +1,6 @@
-import { expect, loadFixture, run } from './setup';
 import { BASE_TOKEN_URI } from '../constants';
 import type { Critter } from '../types';
+import { expect, loadFixture, run } from './setup';
 
 describe('baseTokenURI', () => {
   let critter: Critter;

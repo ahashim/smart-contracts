@@ -1,5 +1,4 @@
-import { ethers, expect, loadFixture, run } from './setup';
-import { PLATFORM_TAKE_RATE, MODERATOR_ROLE } from '../constants';
+import { MODERATOR_ROLE, PLATFORM_TAKE_RATE } from '../constants';
 import { Interaction } from '../enums';
 import type {
   BigNumber,
@@ -8,6 +7,7 @@ import type {
   Scout,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('ejectFromPool', () => {
   let ahmed: SignerWithAddress,

@@ -1,4 +1,3 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { MODERATOR_ROLE } from '../constants';
 import { Status } from '../enums';
 import type {
@@ -9,6 +8,7 @@ import type {
   SignerWithAddress,
   Squeak,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('createSqueak', () => {
   const content = 'hello blockchain!';

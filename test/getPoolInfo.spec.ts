@@ -1,4 +1,3 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { PLATFORM_FEE, PLATFORM_TAKE_RATE, SCOUT_BONUS } from '../constants';
 import { Interaction } from '../enums';
 import type {
@@ -7,6 +6,7 @@ import type {
   PoolInfo,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('getPoolInfo', () => {
   let ahmed: SignerWithAddress,

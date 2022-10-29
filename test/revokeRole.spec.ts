@@ -1,6 +1,6 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { MINTER_ROLE } from '../constants';
 import type { Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('revokeRole', () => {
   let critter: Critter;

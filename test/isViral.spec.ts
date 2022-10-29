@@ -1,6 +1,6 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { Interaction } from '../enums';
 import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('isViral', () => {
   let ahmed: SignerWithAddress,

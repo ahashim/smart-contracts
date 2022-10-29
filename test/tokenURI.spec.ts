@@ -1,6 +1,6 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { BASE_TOKEN_URI } from '../constants';
 import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('tokenURI', () => {
   let ahmed: SignerWithAddress,

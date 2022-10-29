@@ -1,4 +1,3 @@
-import { expect, loadFixture, run } from './setup';
 import {
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
@@ -8,7 +7,8 @@ import {
   VIRALITY_THRESHOLD,
 } from '../constants';
 import { Configuration } from '../enums';
-import type { Critter, Config } from '../types';
+import type { Config, Critter } from '../types';
+import { expect, loadFixture, run } from './setup';
 
 describe('config', () => {
   let config: Config, critter: Critter;

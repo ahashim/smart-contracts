@@ -1,5 +1,5 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import type { BigNumberObject, Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('balanceOf', () => {
   let ahmed: SignerWithAddress,

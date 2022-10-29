@@ -1,7 +1,7 @@
-import { ethers, expect, loadFixture, run } from './setup';
-import { TREASURER_ROLE, PLATFORM_FEE } from '../constants';
+import { PLATFORM_FEE, TREASURER_ROLE } from '../constants';
 import { Interaction } from '../enums';
 import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('updateInteractionFee', () => {
   const updatedFee = ethers.utils.parseEther('0.0001');

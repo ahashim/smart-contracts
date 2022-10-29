@@ -1,6 +1,6 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { TREASURER_ROLE } from '../constants';
 import type { Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('grantRole', () => {
   const ID_TREASURER_ROLE = ethers.utils.id(TREASURER_ROLE);

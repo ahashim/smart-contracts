@@ -1,4 +1,3 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { MODERATOR_ROLE } from '../constants';
 import { Status } from '../enums';
 import type {
@@ -6,6 +5,7 @@ import type {
   Critter,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('updateStatus', () => {
   let ahmed: SignerWithAddress,

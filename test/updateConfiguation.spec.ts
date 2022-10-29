@@ -1,7 +1,7 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { OPERATOR_ROLE } from '../constants';
 import { Configuration } from '../enums';
 import type { Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('updateConfiguration', () => {
   const newMaxLevel = 100;

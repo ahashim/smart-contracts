@@ -1,10 +1,8 @@
 // We require the Hardhat Runtime Environment explicitly here. This is optional
 // but useful for running the script in a standalone fashion through `node <script>`.
-//
-// When running the script with `npx hardhat run <script>` you'll find the Hardhat
-// Runtime Environment's members available in the global scope.
 import { ethers, upgrades } from 'hardhat';
-import { CONTRACT_NAME, CONTRACT_INITIALIZER } from '../constants';
+
+import { CONTRACT_INITIALIZER, CONTRACT_NAME } from '../constants';
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command

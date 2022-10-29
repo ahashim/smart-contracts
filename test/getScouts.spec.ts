@@ -1,12 +1,12 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { Interaction } from '../enums';
 import type {
-  BigNumberObject,
   BigNumber,
+  BigNumberObject,
   Critter,
   Scout,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('getScouts', () => {
   let addresses: string[],

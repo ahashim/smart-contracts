@@ -1,4 +1,4 @@
-import { constants, BigNumber, utils } from 'ethers';
+import { BigNumber, constants, utils } from 'ethers';
 
 // contract
 export const BASE_TOKEN_URI = 'https://critter.fyi/token/';

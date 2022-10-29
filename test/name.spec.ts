@@ -1,6 +1,6 @@
-import { expect, loadFixture, run } from './setup';
 import { CONTRACT_NAME } from '../constants';
 import type { Critter } from '../types';
+import { expect, loadFixture, run } from './setup';
 
 describe('name', () => {
   let critter: Critter;

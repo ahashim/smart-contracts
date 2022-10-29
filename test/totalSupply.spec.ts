@@ -1,5 +1,5 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import type { Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('totalSupply', () => {
   let ahmed: SignerWithAddress, critter: Critter;

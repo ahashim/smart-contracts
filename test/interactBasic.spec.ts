@@ -1,12 +1,12 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { PLATFORM_FEE, PLATFORM_TAKE_RATE } from '../constants';
-import { Status, Interaction, Relation } from '../enums';
+import { Interaction, Relation, Status } from '../enums';
 import type {
-  BigNumberObject,
   BigNumber,
+  BigNumberObject,
   Critter,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('interact basic', () => {
   // the values below should be the same for all interactions (except delete),

@@ -1,10 +1,10 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { Status } from '../enums';
 import type {
   ContractTransaction,
   Critter,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('updateUsername', () => {
   const longUsername =

@@ -1,13 +1,13 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { PLATFORM_TAKE_RATE, SCOUT_BONUS } from '../constants';
 import { Interaction } from '../enums';
 import type {
-  BigNumberObject,
   BigNumber,
+  BigNumberObject,
   Critter,
   PoolInfo,
   SignerWithAddress,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('interact viral', () => {
   let ahmed: SignerWithAddress,

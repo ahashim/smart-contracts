@@ -1,7 +1,7 @@
-import { expect, loadFixture, run } from './setup';
 import { PLATFORM_FEE } from '../constants';
 import { Interaction } from '../enums';
 import type { BigNumberObject, Critter } from '../types';
+import { expect, loadFixture, run } from './setup';
 
 describe('fees', () => {
   let critter: Critter, fees: BigNumberObject;

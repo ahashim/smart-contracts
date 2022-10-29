@@ -5,7 +5,7 @@ module.exports = {
     mocha: true,
     node: true,
   },
-  plugins: ['chai-friendly', '@typescript-eslint'],
+  plugins: ['chai-friendly', 'simple-import-sort', '@typescript-eslint'],
   extends: [
     'standard',
     'plugin:chai-friendly/recommended',
@@ -30,5 +30,7 @@ module.exports = {
     ],
     'no-unused-vars': 'off', // prefer tyepscript rules
     '@typescript-eslint/no-unused-vars': 'error',
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
   },
 };

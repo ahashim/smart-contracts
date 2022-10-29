@@ -1,6 +1,5 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { EMPTY_BYTE_STRING } from '../constants';
-import { Status, Interaction } from '../enums';
+import { Interaction, Status } from '../enums';
 import type {
   BigNumber,
   ContractTransaction,
@@ -9,6 +8,7 @@ import type {
   SignerWithAddress,
   Squeak,
 } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('deleteSqueak', () => {
   let ahmed: SignerWithAddress,

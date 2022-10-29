@@ -1,4 +1,3 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import {
   MINTER_ROLE,
   MODERATOR_ROLE,
@@ -7,6 +6,7 @@ import {
   UPGRADER_ROLE,
 } from '../constants';
 import type { Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('hasRole', () => {
   const DEFAULT_ADMIN_ROLE = ethers.constants.HashZero;

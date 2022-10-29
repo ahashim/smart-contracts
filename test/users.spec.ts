@@ -1,6 +1,6 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { Status } from '../enums';
 import type { Critter, SignerWithAddress, User } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('users', () => {
   const username = 'ahmed';

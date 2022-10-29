@@ -29,6 +29,7 @@ specifiers:
   eslint-plugin-node: ^11.1.0
   eslint-plugin-prettier: ^4.2.1
   eslint-plugin-promise: ^6.1.1
+  eslint-plugin-simple-import-sort: ^8.0.0
   ethers: ^5.7.2
   hardhat: ^2.12.0
   hardhat-contract-sizer: ^2.6.1
@@ -72,6 +73,7 @@ devDependencies:
   eslint-plugin-node: 11.1.0_eslint@8.25.0
   eslint-plugin-prettier: 4.2.1_hvbqyfstm4urdpm6ffpwfka4e4
   eslint-plugin-promise: 6.1.1_eslint@8.25.0
+  eslint-plugin-simple-import-sort: 8.0.0_eslint@8.25.0
   ethers: 5.7.2
   hardhat: 2.12.0_mwhvu7sfp6vq5ryuwb6hlbjfka
   hardhat-contract-sizer: 2.6.1_hardhat@2.12.0
@@ -2615,6 +2617,14 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0
+    dependencies:
+      eslint: 8.25.0
+    dev: true
+
+  /eslint-plugin-simple-import-sort/8.0.0_eslint@8.25.0:
+    resolution: {integrity: sha512-bXgJQ+lqhtQBCuWY/FUWdB27j4+lqcvXv5rUARkzbeWLwea+S5eBZEQrhnO+WgX3ZoJHVj0cn943iyXwByHHQw==}
+    peerDependencies:
+      eslint: '>=5.0.0'
     dependencies:
       eslint: 8.25.0
     dev: true

@@ -1,6 +1,6 @@
-import { ethers, expect, loadFixture, run } from './setup';
 import { MINTER_ROLE, TREASURER_ROLE, UPGRADER_ROLE } from '../constants';
 import type { Critter, SignerWithAddress } from '../types';
+import { ethers, expect, loadFixture, run } from './setup';
 
 describe('getRoleAdmin', () => {
   const ID_MINTER_ROLE = ethers.utils.id(MINTER_ROLE);
