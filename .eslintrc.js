@@ -5,12 +5,18 @@ module.exports = {
     mocha: true,
     node: true,
   },
-  plugins: ['chai-friendly', 'simple-import-sort', '@typescript-eslint'],
+  plugins: [
+    'chai-friendly',
+    'simple-import-sort',
+    'sonarjs',
+    '@typescript-eslint',
+  ],
   extends: [
     'standard',
     'plugin:chai-friendly/recommended',
-    'plugin:prettier/recommended',
     'plugin:node/recommended',
+    'plugin:prettier/recommended',
+    'plugin:sonarjs/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
