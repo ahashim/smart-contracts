@@ -9,7 +9,7 @@ import type {
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
-describe('ejectFromPool', () => {
+describe('leavePool', () => {
   let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
@@ -20,7 +20,7 @@ describe('ejectFromPool', () => {
     squeakId: BigNumber,
     treasuryBalance: BigNumber;
 
-  const ejectFromPoolFixture = async () => {
+  const leavePoolFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
@@ -63,7 +63,7 @@ describe('ejectFromPool', () => {
     });
 
     // barbie ejects from the pool
-    await critter.connect(barbie)['ejectFromPool(uint256)'](squeakId);
+    await critter.connect(barbie)['leavePool(uint256)'](squeakId);
 
     return {
       critter,
@@ -75,7 +75,7 @@ describe('ejectFromPool', () => {
 
   beforeEach('load deployed contract fixture', async () => {
     ({ critter, poolInfo, scouts, treasuryBalance } = await loadFixture(
-      ejectFromPoolFixture
+      leavePoolFixture
     ));
   });
 
@@ -102,7 +102,7 @@ describe('ejectFromPool', () => {
     expect(memberCount).to.eq(1);
 
     // remaining member ejects
-    await critter.connect(carlos)['ejectFromPool(uint256)'](squeakId);
+    await critter.connect(carlos)['leavePool(uint256)'](squeakId);
     ({ amount, shares, memberCount } = await critter.getPoolInfo(squeakId));
 
     expect(amount).to.eq(0);
@@ -116,7 +116,7 @@ describe('ejectFromPool', () => {
 
   it('allows a moderator to eject a member from the pool', async () => {
     // moderator ejects the last member
-    await critter['ejectFromPool(uint256,address)'](squeakId, carlos.address);
+    await critter['leavePool(uint256,address)'](squeakId, carlos.address);
     const { amount, shares, memberCount } = await critter.getPoolInfo(
       squeakId
     );
@@ -129,13 +129,13 @@ describe('ejectFromPool', () => {
 
   it('reverts when the user is not a part of the pool', async () => {
     await expect(
-      critter['ejectFromPool(uint256)'](squeakId)
+      critter['leavePool(uint256)'](squeakId)
     ).to.be.revertedWithCustomError(critter, 'NotInPool');
   });
 
   it('reverts when the pool does not exist', async () => {
     await expect(
-      critter['ejectFromPool(uint256)'](420)
+      critter['leavePool(uint256)'](420)
     ).to.be.revertedWithCustomError(critter, 'PoolDoesNotExist');
   });
 });

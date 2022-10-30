@@ -36,20 +36,20 @@ contract Poolable is Bankable, IPoolable {
     function __Poolable_init() internal view onlyInitializing {}
 
     /**
-     * @dev See {IPoolable-ejectFromPool}.
+     * @dev See {IPoolable-leavePool}.
      */
-    function ejectFromPool(uint256 tokenId) external {
-        _ejectFromPool(tokenId, msg.sender);
+    function leavePool(uint256 tokenId) external {
+        _leavePool(tokenId, msg.sender);
     }
 
     /**
-     * @dev See {IPoolable-ejectFromPool}.
+     * @dev See {IPoolable-leavePool}.
      */
-    function ejectFromPool(uint256 tokenId, address account)
+    function leavePool(uint256 tokenId, address account)
         external
         onlyRole(MODERATOR_ROLE)
     {
-        _ejectFromPool(tokenId, account);
+        _leavePool(tokenId, account);
     }
 
     /**
@@ -129,7 +129,7 @@ contract Poolable is Bankable, IPoolable {
      * @param tokenId ID of the viral squeak associated with the pool.
      * @param account Address of the account.
      */
-    function _ejectFromPool(uint256 tokenId, address account) private {
+    function _leavePool(uint256 tokenId, address account) private {
         // validate that a pool exists for the squeak
         if (!viralSqueaks.contains(tokenId)) revert PoolDoesNotExist();
 

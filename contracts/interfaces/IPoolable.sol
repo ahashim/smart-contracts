@@ -29,7 +29,7 @@ interface IPoolable is IStoreable {
      * @param tokenId ID of the viral squeak associated with the pool.
      * @notice Sender must be a member of the pool.
      */
-    function ejectFromPool(uint256 tokenId) external;
+    function leavePool(uint256 tokenId) external;
 
     /**
      * @dev Ejects the account from a scout pool.
@@ -37,7 +37,7 @@ interface IPoolable is IStoreable {
      * @param account Address of the account.
      * @notice Only callable by MODERATOR_ROLE.
      */
-    function ejectFromPool(uint256 tokenId, address account) external;
+    function leavePool(uint256 tokenId, address account) external;
 
     /**
      * @dev Gets the pool amount & number of shares.
