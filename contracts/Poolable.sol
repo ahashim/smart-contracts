@@ -105,7 +105,7 @@ contract Poolable is Bankable, IPoolable {
      * @param user User to add to the pool.
      * @param pool pointer to a {Pool}.
      */
-    function _addPoolPass(User storage user, Pool storage pool) internal {
+    function _createPoolPass(User storage user, Pool storage pool) internal {
         // upgrade the users level
         _increaseLevel(user, 1);
 
