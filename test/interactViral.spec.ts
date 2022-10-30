@@ -1,10 +1,11 @@
-import { PLATFORM_TAKE_RATE, BONUS } from '../constants';
+import { BONUS, PLATFORM_TAKE_RATE } from '../constants';
 import { Interaction } from '../enums';
 import type {
   BigNumber,
   BigNumberObject,
   Critter,
   PoolInfo,
+  Scout,
   SignerWithAddress,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
@@ -141,23 +142,25 @@ describe('interact viral', () => {
     // all accounts start off at level 1
     const initialLevel = 1;
 
-    // daphne positively interacted with the squeak, so they get a default
-    // increase of 1 scout level when the squeak goes viral (along with the
-    // other positive interactors)
-    const basicScoutIncrease = 1;
+    // daphne positively interacted with the squeak, so they get a default level
+    // increase of 1 when the squeak goes viral (along with the other positive
+    // interactors)
+    const basicLevelIncrease = 1;
 
     // daphne is also the person that propelled the squeak into virality (in
     // addition to being a positive interactor), so the additional scout bonus
     // is applied to their account
     expect((await critter.users(daphne.address)).level).to.equal(
-      initialLevel + basicScoutIncrease + BONUS
+      initialLevel + basicLevelIncrease + BONUS
     );
   });
 
   it('adds all positive interactors to the scout pool', async () => {
     // everybody who either liked or resqueaked the viral squeak
     const interactors = [ahmed, barbie, carlos, daphne];
-    const scouts = (await critter.getPoolMembers(squeakId)).map((s) => s.account);
+    const scouts = (await critter.getPoolMembers(squeakId)).map(
+      (s: Scout) => s.account
+    );
 
     interactors.forEach((account) => {
       expect(scouts.includes(account.address)).to.be.true;
