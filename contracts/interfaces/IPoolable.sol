@@ -50,7 +50,7 @@ interface IPoolable is IStoreable {
         returns (PoolInfo memory);
 
     /**
-     * @dev Gets a list of scouts for a viral squeak.
+     * @dev Gets a list of pool passes for a viral squeak.
      * @param tokenId ID of the viral squeak.
      * @return Array of {PoolPass}'s.
      */

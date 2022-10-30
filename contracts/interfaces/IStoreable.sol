@@ -80,8 +80,7 @@ interface IStoreable {
     }
 
     /**
-     * @dev Pool tracks detailed fund & member information for scouts of
-     *      a viral squeak.
+     * @dev Pool tracks fund information for members of a viral squeak pool.
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
      * @param members Enumerable map of addresses <=> share amount.
@@ -148,8 +147,8 @@ interface IStoreable {
      * @dev User is a registered Critter account.
      * @param account Address of the account.
      * @param status A value from the Status enum.
-     * @param level Level of "scout" the user has achieved based on their
-     *       squeak and interaction history.
+     * @param level The level a user has achieved based on their squeak and
+     *        interaction history.
      * @param username The accounts username.
      */
     struct User {

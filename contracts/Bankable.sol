@@ -162,7 +162,7 @@ contract Bankable is Validateable, IBankable {
             if (viralSqueaks.contains(tokenId)) {
                 Pool storage pool = pools[tokenId];
 
-                // split remainder between scouts & the squeak owner
+                // split remainder between pool members & the squeak owner
                 uint256 amount = remainder / 2;
 
                 // add funds to the pool (unchecked because pool payouts will

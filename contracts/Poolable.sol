@@ -76,22 +76,22 @@ contract Poolable is Bankable, IPoolable {
         Pool storage pool = pools[tokenId];
         uint256 memberCount = pool.members.length();
 
-        // initialize scouts array based on the number of pool members
-        PoolPass[] memory scouts = new PoolPass[](memberCount);
+        // initialize array based on the number of pool members
+        PoolPass[] memory passes = new PoolPass[](memberCount);
 
         // populate the array with member addresses from the pool
         for (uint256 i = 0; i < memberCount; i++) {
             (address account, uint256 shares) = pool.members.at(i);
-            scouts[i] = PoolPass(account, shares);
+            passes[i] = PoolPass(account, shares);
         }
 
-        return scouts;
+        return passes;
     }
 
     /**
-     * @dev Increases the level for a user, and adds them to the scout
-     *      pool for the viral squeak.
-     * @param user User to add to scouts list.
+     * @dev Increases the level for a user, and adds them to the pool for the
+     *      viral squeak.
+     * @param user User to add to the pool.
      * @param pool pointer to a {Pool}.
      */
     function _addPoolPass(User storage user, Pool storage pool) internal {
@@ -104,7 +104,7 @@ contract Poolable is Bankable, IPoolable {
     }
 
     /**
-     * @dev Increases a scouts level until they hit the maximum.
+     * @dev Increases a users level until they hit the maximum.
      * @param user {User} to modify.
      * @param amount Number of levels to increase by.
      */

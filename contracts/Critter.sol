@@ -41,8 +41,8 @@ import './interfaces/ICritter.sol';
  *      - Deleting a squeak costs a fee of `time elapsed x fixed delete fee`.
  *      - Every squeak has a "virality" score that is calculated on-chain.
  *      - When a squeak goes "viral", future profits from that point on are
- *        split among the owner and its scouts (i.e., those who propelled it to
- *        virality via likes & resqueaks).
+ *        split among the owner and its positive interactors (i.e., those who
+ *        propelled it to virality via likes & resqueaks).
  */
 contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
     /* solhint-disable func-name-mixedcase, no-empty-blocks */
