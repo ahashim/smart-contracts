@@ -62,7 +62,7 @@ describe('leavePool', () => {
       squeakId,
     });
 
-    // barbie ejects from the pool
+    // barbie leaves the pool
     await critter.connect(barbie)['leavePool(uint256)'](squeakId);
 
     return {
@@ -79,7 +79,7 @@ describe('leavePool', () => {
     ));
   });
 
-  it('ejects the user from a scout pool', () => {
+  it('lets a user leave the pool', () => {
     const accounts = scouts.map((s) => s.account);
 
     expect(scouts.length).to.eq(1);
@@ -87,7 +87,7 @@ describe('leavePool', () => {
     expect(accounts.includes(carlos.address)).to.be.true;
   });
 
-  it('deletes the pool & removes it from virality when all members eject', async () => {
+  it('deletes the pool & removes it from virality when all members leave', async () => {
     let { amount, shares, memberCount } = poolInfo;
 
     // get expected pool amount after Carlos propels the squeak to virality
@@ -101,7 +101,7 @@ describe('leavePool', () => {
     expect(shares).to.eq(5);
     expect(memberCount).to.eq(1);
 
-    // remaining member ejects
+    // remaining member leaves
     await critter.connect(carlos)['leavePool(uint256)'](squeakId);
     ({ amount, shares, memberCount } = await critter.getPoolInfo(squeakId));
 
