@@ -106,7 +106,7 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
 
             if (pool.amount > 0) {
                 // pay out any remaining pool funds
-                _makeScoutPayments(tokenId, pool);
+                _makePoolDividends(tokenId, pool);
 
                 // deposit remaining dust into treasury
                 _deposit(pool.amount);

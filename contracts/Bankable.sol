@@ -176,7 +176,7 @@ contract Bankable is Validateable, IBankable {
                 // determine if we need to payout
                 uint256 sharePrice = _getPoolSharePrice(pool);
                 if (sharePrice >= config[Configuration.PoolPayoutThreshold])
-                    _makeScoutPayments(tokenId, pool, sharePrice);
+                    _makePoolDividends(tokenId, pool, sharePrice);
 
                 // any dust from odd division goes to the owner
                 remainder -= amount;
@@ -196,10 +196,10 @@ contract Bankable is Validateable, IBankable {
      * @param tokenId ID of viral squeak.
      * @param pool Pool of the viral squeak.
      */
-    function _makeScoutPayments(uint256 tokenId, Pool storage pool) internal {
+    function _makePoolDividends(uint256 tokenId, Pool storage pool) internal {
         uint256 sharePrice = _getPoolSharePrice(pool);
 
-        if (sharePrice > 0) _makeScoutPayments(tokenId, pool, sharePrice);
+        if (sharePrice > 0) _makePoolDividends(tokenId, pool, sharePrice);
     }
 
     /**
@@ -208,7 +208,7 @@ contract Bankable is Validateable, IBankable {
      * @param pool Pointer to the Pool of the viral squeak.
      * @param sharePrice Price of each share at the time of payment.
      */
-    function _makeScoutPayments(
+    function _makePoolDividends(
         uint256 tokenId,
         Pool storage pool,
         uint256 sharePrice
