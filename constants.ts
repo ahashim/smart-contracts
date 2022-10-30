@@ -21,7 +21,7 @@ export const BONUS = 3;
 export const SCOUT_MAX_LEVEL = 50;
 
 // thresholds
-export const SCOUT_POOL_THRESHOLD = utils.parseEther('0.1');
+export const POOL_THRESHOLD = utils.parseEther('0.1');
 export const VIRALITY_THRESHOLD = 95;
 
 // initializer
@@ -31,7 +31,7 @@ export const CONTRACT_INITIALIZER = [
   BASE_TOKEN_URI,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
-  SCOUT_POOL_THRESHOLD,
+  POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
   BONUS,
   SCOUT_MAX_LEVEL,

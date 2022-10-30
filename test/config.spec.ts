@@ -3,7 +3,7 @@ import {
   PLATFORM_TAKE_RATE,
   BONUS,
   SCOUT_MAX_LEVEL,
-  SCOUT_POOL_THRESHOLD,
+  POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
 import { Configuration } from '../enums';
@@ -48,7 +48,7 @@ describe('config', () => {
   });
 
   it('gets the scout pool payout threshold', () => {
-    expect(config.poolPayoutThreshold).to.eq(SCOUT_POOL_THRESHOLD);
+    expect(config.poolPayoutThreshold).to.eq(POOL_THRESHOLD);
   });
 
   it('gets the max level a scout can reach', () => {

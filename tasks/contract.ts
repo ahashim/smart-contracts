@@ -18,7 +18,7 @@ import {
   PLATFORM_TAKE_RATE,
   BONUS,
   SCOUT_MAX_LEVEL,
-  SCOUT_POOL_THRESHOLD,
+  POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
 import { Configuration, Interaction } from '../enums';
@@ -146,7 +146,7 @@ task(
         index: 4,
       },
       PoolThreshold: {
-        value: SCOUT_POOL_THRESHOLD,
+        value: POOL_THRESHOLD,
         index: 5,
       },
       viralityThreshold: {

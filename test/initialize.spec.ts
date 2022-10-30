@@ -6,7 +6,7 @@ import {
   PLATFORM_TAKE_RATE,
   BONUS,
   SCOUT_MAX_LEVEL,
-  SCOUT_POOL_THRESHOLD,
+  POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
 import type { Critter } from '../types';
@@ -29,7 +29,7 @@ describe('initialize', () => {
         BASE_TOKEN_URI,
         PLATFORM_FEE,
         PLATFORM_TAKE_RATE,
-        SCOUT_POOL_THRESHOLD,
+        POOL_THRESHOLD,
         VIRALITY_THRESHOLD,
         BONUS,
         SCOUT_MAX_LEVEL
