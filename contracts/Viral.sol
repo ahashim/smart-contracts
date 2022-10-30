@@ -19,14 +19,14 @@
 pragma solidity 0.8.16;
 
 import 'abdk-libraries-solidity/ABDKMath64x64.sol';
-import './Scoutable.sol';
+import './Poolable.sol';
 import './interfaces/IViral.sol';
 
 /**
  * @title Viral
  * @dev A contract to handle virality for squeaks.
  */
-contract Viral is Scoutable, IViral {
+contract Viral is Poolable, IViral {
     using ABDKMath64x64 for uint256;
     using ABDKMath64x64 for int128;
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;

@@ -19,13 +19,13 @@
 pragma solidity 0.8.16;
 
 import './Bankable.sol';
-import './interfaces/IScoutable.sol';
+import './interfaces/IPoolable.sol';
 
 /**
- * @title Scoutable
+ * @title Poolable
  * @dev A contract to handle scout logic.
  */
-contract Scoutable is Bankable, IScoutable {
+contract Poolable is Bankable, IPoolable {
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
@@ -33,17 +33,17 @@ contract Scoutable is Bankable, IScoutable {
      * @dev Upgradeable constructor.
      */
     // solhint-disable-next-line func-name-mixedcase, no-empty-blocks
-    function __Scoutable_init() internal view onlyInitializing {}
+    function __Poolable_init() internal view onlyInitializing {}
 
     /**
-     * @dev See {IScoutable-ejectFromPool}.
+     * @dev See {IPoolable-ejectFromPool}.
      */
     function ejectFromPool(uint256 tokenId) external {
         _ejectFromPool(tokenId, msg.sender);
     }
 
     /**
-     * @dev See {IScoutable-ejectFromPool}.
+     * @dev See {IPoolable-ejectFromPool}.
      */
     function ejectFromPool(uint256 tokenId, address account)
         external
@@ -53,7 +53,7 @@ contract Scoutable is Bankable, IScoutable {
     }
 
     /**
-     * @dev See {IScoutable-getPoolInfo}.
+     * @dev See {IPoolable-getPoolInfo}.
      */
     function getPoolInfo(uint256 tokenId)
         external
@@ -66,7 +66,7 @@ contract Scoutable is Bankable, IScoutable {
     }
 
     /**
-     * @dev See {IScoutable-getScouts}.
+     * @dev See {IPoolable-getScouts}.
      */
     function getScouts(uint256 tokenId)
         external

@@ -21,9 +21,9 @@ pragma solidity 0.8.16;
 import './IStoreable.sol';
 
 /**
- * @dev Interface for Scoutable.
+ * @dev Interface for Poolable.
  */
-interface IScoutable is IStoreable {
+interface IPoolable is IStoreable {
     /**
      * @dev Ejects the sender from a scout pool they belong to.
      * @param tokenId ID of the viral squeak associated with the pool.
