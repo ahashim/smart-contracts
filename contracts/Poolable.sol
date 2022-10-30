@@ -94,7 +94,7 @@ contract Poolable is Bankable, IPoolable {
      * @param user User to add to scouts list.
      * @param pool pointer to a {Pool}.
      */
-    function _addScout(User storage user, Pool storage pool) internal {
+    function _addPoolMember(User storage user, Pool storage pool) internal {
         // upgrade the users scout level
         _increaseLevel(user, 1);
 

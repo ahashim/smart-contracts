@@ -136,14 +136,14 @@ contract Viral is Poolable, IViral {
         for (uint256 i = 0; i < upperBound; i++) {
             if (i < likesCount)
                 // add all likers
-                _addScout(users[sentiment.likes.at(i)], pool);
+                _addPoolMember(users[sentiment.likes.at(i)], pool);
 
             if (
                 i < resqueaksCount &&
                 !pool.members.contains(sentiment.resqueaks.at(i))
             )
                 // add all resqueakers who aren't likers
-                _addScout(users[sentiment.resqueaks.at(i)], pool);
+                _addPoolMember(users[sentiment.resqueaks.at(i)], pool);
         }
     }
 }
