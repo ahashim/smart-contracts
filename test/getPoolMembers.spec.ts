@@ -8,7 +8,7 @@ import type {
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
-describe('getScouts', () => {
+describe('getPoolMembers', () => {
   let addresses: string[],
     ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
@@ -18,7 +18,7 @@ describe('getScouts', () => {
     scouts: Scout[],
     squeakId: BigNumber;
 
-  const getScoutsFixture = async () => {
+  const getPoolMembersFixture = async () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
@@ -59,7 +59,7 @@ describe('getScouts', () => {
     });
 
     // get scouts
-    scouts = await critter.getScouts(squeakId);
+    scouts = await critter.getPoolMembers(squeakId);
 
     return {
       addresses: scouts.map((s) => s.account),
@@ -73,7 +73,7 @@ describe('getScouts', () => {
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ addresses, levels, scouts } = await loadFixture(getScoutsFixture));
+    ({ addresses, levels, scouts } = await loadFixture(getPoolMembersFixture));
   });
 
   it('returns the addresses for all scouts in the pool', () => {

@@ -66,9 +66,9 @@ contract Poolable is Bankable, IPoolable {
     }
 
     /**
-     * @dev See {IPoolable-getScouts}.
+     * @dev See {IPoolable-getPoolMembers}.
      */
-    function getScouts(uint256 tokenId)
+    function getPoolMembers(uint256 tokenId)
         external
         view
         returns (Scout[] memory)

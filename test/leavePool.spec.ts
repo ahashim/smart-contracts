@@ -68,7 +68,7 @@ describe('leavePool', () => {
     return {
       critter,
       poolInfo: await critter.getPoolInfo(squeakId),
-      scouts: await critter.getScouts(squeakId),
+      scouts: await critter.getPoolMembers(squeakId),
       treasuryBalance: await critter.treasury(),
     };
   };

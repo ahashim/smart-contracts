@@ -157,7 +157,7 @@ describe('interact viral', () => {
   it('adds all positive interactors to the scout pool', async () => {
     // everybody who either liked or resqueaked the viral squeak
     const interactors = [ahmed, barbie, carlos, daphne];
-    const scouts = (await critter.getScouts(squeakId)).map((s) => s.account);
+    const scouts = (await critter.getPoolMembers(squeakId)).map((s) => s.account);
 
     interactors.forEach((account) => {
       expect(scouts.includes(account.address)).to.be.true;
