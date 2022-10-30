@@ -20,10 +20,7 @@ describe('updateConfiguration', () => {
 
     // ahmed increases the max level for scouts (note: A Critter account is not
     // required to update configuration)
-    await critter.updateConfiguration(
-      Configuration.MaxLevel,
-      newMaxLevel
-    );
+    await critter.updateConfiguration(Configuration.MaxLevel, newMaxLevel);
 
     return critter;
   };
@@ -33,16 +30,12 @@ describe('updateConfiguration', () => {
   });
 
   it('updates a contract configuration value', async () => {
-    expect(await critter.config(Configuration.MaxLevel)).to.eq(
-      newMaxLevel
-    );
+    expect(await critter.config(Configuration.MaxLevel)).to.eq(newMaxLevel);
   });
 
   it('reverts when someone other than the operator tries to update a contract configuration value', async () => {
     await expect(
-      critter
-        .connect(barbie)
-        .updateConfiguration(Configuration.MaxLevel, 69)
+      critter.connect(barbie).updateConfiguration(Configuration.MaxLevel, 69)
     ).to.be.revertedWith(
       `AccessControl: account ${barbie.address.toLowerCase()} is missing role ${OPERATOR_ROLE}`
     );

@@ -196,9 +196,7 @@ contract Bankable is Validateable, IBankable {
      * @param tokenId ID of viral squeak.
      * @param pool Pool of the viral squeak.
      */
-    function _makeScoutPayments(uint256 tokenId, Pool storage pool)
-        internal
-    {
+    function _makeScoutPayments(uint256 tokenId, Pool storage pool) internal {
         uint256 sharePrice = _getPoolSharePrice(pool);
 
         if (sharePrice > 0) _makeScoutPayments(tokenId, pool, sharePrice);

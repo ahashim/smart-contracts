@@ -123,10 +123,7 @@ contract Viral is Scoutable, IViral {
 
         // give the user who propelled the squeak into virality a bonus upgrade
         // to their scout level.
-        _increaseLevel(
-            users[msg.sender],
-            config[Configuration.ViralityBonus]
-        );
+        _increaseLevel(users[msg.sender], config[Configuration.ViralityBonus]);
 
         // iterate over both sets & add all unique addresses to the scout pool
         uint256 likesCount = sentiment.likes.length();

@@ -24,9 +24,7 @@ describe('config', () => {
           Configuration.PoolPayoutThreshold
         ),
         maxLevel: await critter.config(Configuration.MaxLevel),
-        viralityBonus: await critter.config(
-          Configuration.ViralityBonus
-        ),
+        viralityBonus: await critter.config(Configuration.ViralityBonus),
         viralityThreshold: await critter.config(
           Configuration.ViralityThreshold
         ),

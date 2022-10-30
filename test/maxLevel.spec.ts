@@ -86,8 +86,6 @@ describe('maxLevel', () => {
       squeakId,
     });
 
-    expect((await critter.users(ahmed.address)).level).to.eq(
-      maxLevel
-    );
+    expect((await critter.users(ahmed.address)).level).to.eq(maxLevel);
   });
 });
