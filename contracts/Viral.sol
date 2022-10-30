@@ -109,7 +109,7 @@ contract Viral is Poolable, IViral {
 
     /**
      * @dev Adds a squeak to the list of viral squeaks, and all of its positive
-     *      interactors to a scout pool while upgrading their scout levels.
+     *      interactors to a pool while upgrading their levels.
      * @param tokenId ID of the squeak.
      * @param sentiment Pointer to the {Sentiment} of the squeak.
      */
@@ -121,11 +121,10 @@ contract Viral is Poolable, IViral {
         // add squeak to the list of viral squeaks
         viralSqueaks.add(tokenId);
 
-        // give the user who propelled the squeak into virality a bonus upgrade
-        // to their scout level.
+        // give the user who propelled the squeak into virality a bonus level.
         _increaseLevel(users[msg.sender], config[Configuration.ViralityBonus]);
 
-        // iterate over both sets & add all unique addresses to the scout pool
+        // iterate over both sets & add all unique addresses to the pool
         uint256 likesCount = sentiment.likes.length();
         uint256 resqueaksCount = sentiment.resqueaks.length();
         uint256 upperBound = likesCount > resqueaksCount

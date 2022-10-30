@@ -32,12 +32,12 @@ interface ICritter is IStoreable {
      * @param platformFee Default amount in wei to charge per interaction.
      * @param takeRate Percentage of the interactio fee deposited into the
      *      treasury.
-     * @param poolThreshold Minimum amount required to pay out a scout pool.
+     * @param poolThreshold Minimum amount required to pay out pool dividends.
      * @param viralThreshold Minimum score that a squeak must have to achieve
      *      virality.
-     * @param bonus Number of levels a scout increases when they propel a
+     * @param bonus Number of levels a user increases when they propel a
      *      squeak to virality.
-     * @param maxLevel The maximum scout level a user can reach.
+     * @param maxLevel The maximum level a user can reach.
      */
     function initialize(
         string calldata name,

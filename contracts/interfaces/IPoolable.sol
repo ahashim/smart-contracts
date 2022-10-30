@@ -25,14 +25,14 @@ import './IStoreable.sol';
  */
 interface IPoolable is IStoreable {
     /**
-     * @dev Ejects the sender from a scout pool they belong to.
+     * @dev Removes the sender from a pool they belong to.
      * @param tokenId ID of the viral squeak associated with the pool.
      * @notice Sender must be a member of the pool.
      */
     function leavePool(uint256 tokenId) external;
 
     /**
-     * @dev Ejects the account from a scout pool.
+     * @dev Removes the account from a pool.
      * @param tokenId ID of the viral squeak associated with the pool.
      * @param account Address of the account.
      * @notice Only callable by MODERATOR_ROLE.
@@ -54,5 +54,8 @@ interface IPoolable is IStoreable {
      * @param tokenId ID of the viral squeak.
      * @return Array of {PoolPass}'s.
      */
-    function getPoolPasses(uint256 tokenId) external view returns (PoolPass[] memory);
+    function getPoolPasses(uint256 tokenId)
+        external
+        view
+        returns (PoolPass[] memory);
 }

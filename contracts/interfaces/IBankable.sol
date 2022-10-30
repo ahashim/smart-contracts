@@ -52,14 +52,14 @@ interface IBankable is IStoreable {
     event InteractionFeeUpdated(Interaction interaction, uint256 amount);
 
     /**
-     * @dev Emitted when the fee for a viral squeak is added to its scout pool.
+     * @dev Emitted when the fee for a viral squeak is added to its pool.
      * @param tokenId ID of the viral squeak.
      * @param amount Amount of the funds in wei.
      */
     event FundsAddedToPool(uint256 tokenId, uint256 amount);
 
     /**
-     * @dev Emitted when funds in a scout pool are paid out to its members.
+     * @dev Emitted when funds in a pool are paid out to its members.
      * @param tokenId ID of the viral squeak.
      */
     event PoolPayout(uint256 tokenId);

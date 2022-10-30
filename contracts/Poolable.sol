@@ -23,7 +23,7 @@ import './interfaces/IPoolable.sol';
 
 /**
  * @title Poolable
- * @dev A contract to handle scout logic.
+ * @dev A contract to handle pool logic.
  */
 contract Poolable is Bankable, IPoolable {
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
@@ -89,13 +89,13 @@ contract Poolable is Bankable, IPoolable {
     }
 
     /**
-     * @dev Increases the scout level for a user, and adds them to the scout
+     * @dev Increases the level for a user, and adds them to the scout
      *      pool for the viral squeak.
      * @param user User to add to scouts list.
      * @param pool pointer to a {Pool}.
      */
     function _addPoolPass(User storage user, Pool storage pool) internal {
-        // upgrade the users scout level
+        // upgrade the users level
         _increaseLevel(user, 1);
 
         // add them to the pool & increase its share count
@@ -125,7 +125,7 @@ contract Poolable is Bankable, IPoolable {
     }
 
     /**
-     * @dev Ejects the account from a scout pool.
+     * @dev Removes the account from a pool.
      * @param tokenId ID of the viral squeak associated with the pool.
      * @param account Address of the account.
      */
@@ -138,7 +138,7 @@ contract Poolable is Bankable, IPoolable {
         // validate that the account is in the pool
         if (!pool.members.contains(account)) revert NotInPool();
 
-        // remove the scout & their shares from the pool
+        // remove the member & their shares from the pool
         pool.shares -= pool.members.get(account);
         pool.members.remove(account);
 

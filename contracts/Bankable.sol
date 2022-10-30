@@ -23,7 +23,7 @@ import './interfaces/IBankable.sol';
 
 /**
  * @title Bankable
- * @dev A contract to handle payments for squeak interactions, scout pools, and
+ * @dev A contract to handle payments for squeak interactions, pools, and
  *      the treasury.
  */
 contract Bankable is Validateable, IBankable {
@@ -113,7 +113,7 @@ contract Bankable is Validateable, IBankable {
     }
 
     /**
-     * @dev Gets the price of a single share of funds in a squeaks scout pool.
+     * @dev Gets the price of a single share of funds in a squeaks pool.
      * @param pool Pool of the viral squeak.
      * @return amount of each pool unit in wei.
      */
@@ -192,7 +192,7 @@ contract Bankable is Validateable, IBankable {
     }
 
     /**
-     * @dev Pays out scout pool funds to its members.
+     * @dev Pays out pool funds to its members.
      * @param tokenId ID of viral squeak.
      * @param pool Pool of the viral squeak.
      */
