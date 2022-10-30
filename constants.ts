@@ -17,7 +17,7 @@ export const TREASURER_ROLE = utils.id('TREASURER_ROLE');
 export const UPGRADER_ROLE = utils.id('UPGRADER_ROLE');
 
 // scouts
-export const SCOUT_BONUS = 3;
+export const BONUS = 3;
 export const SCOUT_MAX_LEVEL = 50;
 
 // thresholds
@@ -33,7 +33,7 @@ export const CONTRACT_INITIALIZER = [
   PLATFORM_TAKE_RATE,
   SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
-  SCOUT_BONUS,
+  BONUS,
   SCOUT_MAX_LEVEL,
 ];
 

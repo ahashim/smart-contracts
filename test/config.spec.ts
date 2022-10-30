@@ -1,7 +1,7 @@
 import {
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
-  SCOUT_BONUS,
+  BONUS,
   SCOUT_MAX_LEVEL,
   SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
@@ -56,7 +56,7 @@ describe('config', () => {
   });
 
   it('gets the bonus level increase a scout receives for propelling a squeak into virality', () => {
-    expect(config.viralityBonus).to.eq(SCOUT_BONUS);
+    expect(config.viralityBonus).to.eq(BONUS);
   });
 
   it('gets the virality threshold for a squeak', () => {

@@ -1,4 +1,4 @@
-import { PLATFORM_TAKE_RATE, SCOUT_BONUS } from '../constants';
+import { PLATFORM_TAKE_RATE, BONUS } from '../constants';
 import { Interaction } from '../enums';
 import type {
   BigNumber,
@@ -150,7 +150,7 @@ describe('interact viral', () => {
     // addition to being a positive interactor), so the additional scout bonus
     // is applied to their account
     expect((await critter.users(daphne.address)).scoutLevel).to.equal(
-      initialScoutLevel + basicScoutIncrease + SCOUT_BONUS
+      initialScoutLevel + basicScoutIncrease + BONUS
     );
   });
 

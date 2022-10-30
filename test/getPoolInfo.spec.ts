@@ -1,4 +1,4 @@
-import { PLATFORM_FEE, PLATFORM_TAKE_RATE, SCOUT_BONUS } from '../constants';
+import { PLATFORM_FEE, PLATFORM_TAKE_RATE, BONUS } from '../constants';
 import { Interaction } from '../enums';
 import type {
   BigNumber,
@@ -77,7 +77,7 @@ describe('getPoolInfo', () => {
 
   it('returns the total number of shares in the scout pool', () => {
     // each scout levels up to 2, plus carlos' scout bonus
-    const expectedShares = 3 * 2 + SCOUT_BONUS;
+    const expectedShares = 3 * 2 + BONUS;
     expect(poolInfo.shares).to.eq(expectedShares);
   });
 

@@ -16,7 +16,7 @@ import {
   CONTRACT_SYMBOL,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
-  SCOUT_BONUS,
+  BONUS,
   SCOUT_MAX_LEVEL,
   SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
@@ -153,8 +153,8 @@ task(
         value: VIRALITY_THRESHOLD,
         index: 6,
       },
-      scoutBonus: {
-        value: SCOUT_BONUS,
+      bonus: {
+        value: BONUS,
         index: 7,
       },
       maxLevel: {

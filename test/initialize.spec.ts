@@ -4,7 +4,7 @@ import {
   CONTRACT_SYMBOL,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
-  SCOUT_BONUS,
+  BONUS,
   SCOUT_MAX_LEVEL,
   SCOUT_POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
@@ -31,7 +31,7 @@ describe('initialize', () => {
         PLATFORM_TAKE_RATE,
         SCOUT_POOL_THRESHOLD,
         VIRALITY_THRESHOLD,
-        SCOUT_BONUS,
+        BONUS,
         SCOUT_MAX_LEVEL
       )
     ).to.be.reverted;

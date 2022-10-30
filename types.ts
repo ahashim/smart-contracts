@@ -34,7 +34,7 @@ export type ContractInitializerOverrides = {
   takeRate: number;
   PoolThreshold: BigNumber;
   viralityThreshold: number;
-  scoutBonus: number;
+  bonus: number;
   maxLevel: number;
 };
 

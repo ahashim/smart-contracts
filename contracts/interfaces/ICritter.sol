@@ -35,7 +35,7 @@ interface ICritter is IStoreable {
      * @param poolThreshold Minimum amount required to pay out a scout pool.
      * @param viralThreshold Minimum score that a squeak must have to achieve
      *      virality.
-     * @param scoutBonus Number of levels a scout increases when they propel a
+     * @param bonus Number of levels a scout increases when they propel a
      *      squeak to virality.
      * @param maxLevel The maximum scout level a user can reach.
      */
@@ -47,7 +47,7 @@ interface ICritter is IStoreable {
         uint256 takeRate,
         uint256 poolThreshold,
         uint256 viralThreshold,
-        uint256 scoutBonus,
+        uint256 bonus,
         uint256 maxLevel
     ) external;
 
