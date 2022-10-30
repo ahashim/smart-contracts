@@ -52,7 +52,7 @@ interface IPoolable is IStoreable {
     /**
      * @dev Gets a list of scouts for a viral squeak.
      * @param tokenId ID of the viral squeak.
-     * @return Array of {Scout}'s.
+     * @return Array of {PoolPass}'s.
      */
-    function getPoolMembers(uint256 tokenId) external view returns (Scout[] memory);
+    function getPoolPasses(uint256 tokenId) external view returns (PoolPass[] memory);
 }

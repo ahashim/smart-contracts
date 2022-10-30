@@ -57,7 +57,7 @@ export type SentimentCounts = {
   resqueaks: BigNumber;
 };
 
-export type Scout = {
+export type PoolPass = {
   account: string;
   shares: BigNumber;
 };

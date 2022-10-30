@@ -70,11 +70,11 @@ enum Relation {
  */
 interface IStoreable {
     /**
-     * @dev Scout a user that belongs to a Pool for a viral squeak.
+     * @dev PoolPass a user that belongs to a Pool for a viral squeak.
      * @param account Address of the user.
      * @param shares Total number of shares.
      */
-    struct Scout {
+    struct PoolPass {
         address account;
         uint256 shares;
     }

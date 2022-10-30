@@ -4,7 +4,7 @@ import type {
   BigNumber,
   Critter,
   PoolInfo,
-  Scout,
+  PoolPass,
   SignerWithAddress,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
@@ -16,7 +16,7 @@ describe('leavePool', () => {
     critter: Critter,
     owner: SignerWithAddress,
     poolInfo: PoolInfo,
-    scouts: Scout[],
+    scouts: PoolPass[],
     squeakId: BigNumber,
     treasuryBalance: BigNumber;
 
@@ -68,7 +68,7 @@ describe('leavePool', () => {
     return {
       critter,
       poolInfo: await critter.getPoolInfo(squeakId),
-      scouts: await critter.getPoolMembers(squeakId),
+      scouts: await critter.getPoolPasses(squeakId),
       treasuryBalance: await critter.treasury(),
     };
   };

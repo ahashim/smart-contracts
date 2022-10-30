@@ -3,22 +3,22 @@ import type {
   BigNumber,
   BigNumberObject,
   Critter,
-  Scout,
+  PoolPass,
   SignerWithAddress,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
-describe('getPoolMembers', () => {
+describe('getPoolPasses', () => {
   let addresses: string[],
     ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
     critter: Critter,
     levels: BigNumberObject,
-    scouts: Scout[],
+    scouts: PoolPass[],
     squeakId: BigNumber;
 
-  const getPoolMembersFixture = async () => {
+  const getPoolPassesFixture = async () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
@@ -59,7 +59,7 @@ describe('getPoolMembers', () => {
     });
 
     // get scouts
-    scouts = await critter.getPoolMembers(squeakId);
+    scouts = await critter.getPoolPasses(squeakId);
 
     return {
       addresses: scouts.map((s) => s.account),
@@ -73,7 +73,7 @@ describe('getPoolMembers', () => {
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ addresses, levels, scouts } = await loadFixture(getPoolMembersFixture));
+    ({ addresses, levels, scouts } = await loadFixture(getPoolPassesFixture));
   });
 
   it('returns the addresses for all scouts in the pool', () => {

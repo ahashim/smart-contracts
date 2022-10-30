@@ -5,7 +5,7 @@ import type {
   BigNumberObject,
   Critter,
   PoolInfo,
-  Scout,
+  PoolPass,
   SignerWithAddress,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
@@ -158,8 +158,8 @@ describe('interact viral', () => {
   it('adds all positive interactors to the scout pool', async () => {
     // everybody who either liked or resqueaked the viral squeak
     const interactors = [ahmed, barbie, carlos, daphne];
-    const scouts = (await critter.getPoolMembers(squeakId)).map(
-      (s: Scout) => s.account
+    const scouts = (await critter.getPoolPasses(squeakId)).map(
+      (p: PoolPass) => p.account
     );
 
     interactors.forEach((account) => {

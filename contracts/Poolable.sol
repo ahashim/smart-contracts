@@ -66,23 +66,23 @@ contract Poolable is Bankable, IPoolable {
     }
 
     /**
-     * @dev See {IPoolable-getPoolMembers}.
+     * @dev See {IPoolable-getPoolPasses}.
      */
-    function getPoolMembers(uint256 tokenId)
+    function getPoolPasses(uint256 tokenId)
         external
         view
-        returns (Scout[] memory)
+        returns (PoolPass[] memory)
     {
         Pool storage pool = pools[tokenId];
         uint256 memberCount = pool.members.length();
 
         // initialize scouts array based on the number of pool members
-        Scout[] memory scouts = new Scout[](memberCount);
+        PoolPass[] memory scouts = new PoolPass[](memberCount);
 
         // populate the array with member addresses from the pool
         for (uint256 i = 0; i < memberCount; i++) {
             (address account, uint256 shares) = pool.members.at(i);
-            scouts[i] = Scout(account, shares);
+            scouts[i] = PoolPass(account, shares);
         }
 
         return scouts;
@@ -94,7 +94,7 @@ contract Poolable is Bankable, IPoolable {
      * @param user User to add to scouts list.
      * @param pool pointer to a {Pool}.
      */
-    function _addPoolMember(User storage user, Pool storage pool) internal {
+    function _addPoolPass(User storage user, Pool storage pool) internal {
         // upgrade the users scout level
         _increaseLevel(user, 1);
 
