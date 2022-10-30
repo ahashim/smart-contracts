@@ -56,13 +56,13 @@ interface IBankable is IStoreable {
      * @param tokenId ID of the viral squeak.
      * @param amount Amount of the funds in wei.
      */
-    event FundsAddedToScoutPool(uint256 tokenId, uint256 amount);
+    event FundsAddedToPool(uint256 tokenId, uint256 amount);
 
     /**
      * @dev Emitted when funds in a scout pool are paid out to its members.
      * @param tokenId ID of the viral squeak.
      */
-    event ScoutPoolPayout(uint256 tokenId);
+    event PoolPayout(uint256 tokenId);
 
     /**
      * @dev Gets the price of deleting a squeak.

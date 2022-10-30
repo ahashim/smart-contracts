@@ -58,11 +58,11 @@ contract Scoutable is Bankable, IScoutable {
     function getPoolInfo(uint256 tokenId)
         external
         view
-        returns (ScoutPoolInfo memory)
+        returns (PoolInfo memory)
     {
-        ScoutPool storage pool = pools[tokenId];
+        Pool storage pool = pools[tokenId];
 
-        return ScoutPoolInfo(pool.amount, pool.shares, pool.members.length());
+        return PoolInfo(pool.amount, pool.shares, pool.members.length());
     }
 
     /**
@@ -73,7 +73,7 @@ contract Scoutable is Bankable, IScoutable {
         view
         returns (Scout[] memory)
     {
-        ScoutPool storage pool = pools[tokenId];
+        Pool storage pool = pools[tokenId];
         uint256 memberCount = pool.members.length();
 
         // initialize scouts array based on the number of pool members
@@ -92,9 +92,9 @@ contract Scoutable is Bankable, IScoutable {
      * @dev Increases the scout level for a user, and adds them to the scout
      *      pool for the viral squeak.
      * @param user User to add to scouts list.
-     * @param pool pointer to a {ScoutPool}.
+     * @param pool pointer to a {Pool}.
      */
-    function _addScout(User storage user, ScoutPool storage pool) internal {
+    function _addScout(User storage user, Pool storage pool) internal {
         // upgrade the users scout level
         _increaseLevel(user, 1);
 
@@ -131,12 +131,12 @@ contract Scoutable is Bankable, IScoutable {
      */
     function _ejectFromPool(uint256 tokenId, address account) private {
         // validate that a pool exists for the squeak
-        if (!viralSqueaks.contains(tokenId)) revert ScoutPoolDoesNotExist();
+        if (!viralSqueaks.contains(tokenId)) revert PoolDoesNotExist();
 
-        ScoutPool storage pool = pools[tokenId];
+        Pool storage pool = pools[tokenId];
 
         // validate that the account is in the pool
-        if (!pool.members.contains(account)) revert NotInScoutPool();
+        if (!pool.members.contains(account)) revert NotInPool();
 
         // remove the scout & their shares from the pool
         pool.shares -= pool.members.get(account);

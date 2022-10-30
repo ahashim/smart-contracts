@@ -130,12 +130,12 @@ describe('ejectFromPool', () => {
   it('reverts when the user is not a part of the pool', async () => {
     await expect(
       critter['ejectFromPool(uint256)'](squeakId)
-    ).to.be.revertedWithCustomError(critter, 'NotInScoutPool');
+    ).to.be.revertedWithCustomError(critter, 'NotInPool');
   });
 
   it('reverts when the pool does not exist', async () => {
     await expect(
       critter['ejectFromPool(uint256)'](420)
-    ).to.be.revertedWithCustomError(critter, 'ScoutPoolDoesNotExist');
+    ).to.be.revertedWithCustomError(critter, 'PoolDoesNotExist');
   });
 });

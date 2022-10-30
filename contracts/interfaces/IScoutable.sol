@@ -42,12 +42,12 @@ interface IScoutable is IStoreable {
     /**
      * @dev Gets the pool amount & number of shares.
      * @param tokenId ID of the viral squeak.
-     * @return A {ScoutPoolInfo}.
+     * @return A {PoolInfo}.
      */
     function getPoolInfo(uint256 tokenId)
         external
         view
-        returns (ScoutPoolInfo memory);
+        returns (PoolInfo memory);
 
     /**
      * @dev Gets a list of scouts for a viral squeak.

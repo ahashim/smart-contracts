@@ -70,7 +70,7 @@ enum Relation {
  */
 interface IStoreable {
     /**
-     * @dev Scout a user that belongs to a ScoutPool for a viral squeak.
+     * @dev Scout a user that belongs to a Pool for a viral squeak.
      * @param account Address of the user.
      * @param shares Total number of shares.
      */
@@ -80,25 +80,25 @@ interface IStoreable {
     }
 
     /**
-     * @dev ScoutPool tracks detailed fund & member information for scouts of
+     * @dev Pool tracks detailed fund & member information for scouts of
      *      a viral squeak.
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
      * @param members Enumerable map of addresses <=> share amount.
      */
-    struct ScoutPool {
+    struct Pool {
         uint256 amount;
         uint256 shares;
         EnumerableMapUpgradeable.AddressToUintMap members;
     }
 
     /**
-     * @dev ScoutPoolInfo keeps a succint overview of a ScoutPool.
+     * @dev PoolInfo keeps a succint overview of a Pool.
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
      * @param memberCount Count of the members in the share.
      */
-    struct ScoutPoolInfo {
+    struct PoolInfo {
         uint256 amount;
         uint256 shares;
         uint256 memberCount;

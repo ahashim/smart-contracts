@@ -116,7 +116,7 @@ contract Viral is Scoutable, IViral {
     function _markViral(uint256 tokenId, Sentiment storage sentiment)
         internal
     {
-        ScoutPool storage pool = pools[tokenId];
+        Pool storage pool = pools[tokenId];
 
         // add squeak to the list of viral squeaks
         viralSqueaks.add(tokenId);

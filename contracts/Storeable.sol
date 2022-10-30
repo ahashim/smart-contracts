@@ -137,9 +137,9 @@ contract Storeable is Initializable, IStoreable {
     mapping(address => EnumerableSetUpgradeable.AddressSet) internal followers;
 
     /**
-     * @dev Mapping of tokenId <=> ScoutPool.
+     * @dev Mapping of tokenId <=> Pool.
      */
-    mapping(uint256 => ScoutPool) internal pools;
+    mapping(uint256 => Pool) internal pools;
 
     /**
      * @dev Mapping of tokenId <=> Sentiment.

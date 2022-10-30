@@ -114,10 +114,10 @@ contract Bankable is Validateable, IBankable {
 
     /**
      * @dev Gets the price of a single share of funds in a squeaks scout pool.
-     * @param pool ScoutPool of the viral squeak.
+     * @param pool Pool of the viral squeak.
      * @return amount of each pool unit in wei.
      */
-    function _getPoolSharePrice(ScoutPool storage pool)
+    function _getPoolSharePrice(Pool storage pool)
         internal
         view
         returns (uint256)
@@ -160,7 +160,7 @@ contract Bankable is Validateable, IBankable {
             _deposit(interactionTake);
 
             if (viralSqueaks.contains(tokenId)) {
-                ScoutPool storage pool = pools[tokenId];
+                Pool storage pool = pools[tokenId];
 
                 // split remainder between scouts & the squeak owner
                 uint256 amount = remainder / 2;
@@ -171,7 +171,7 @@ contract Bankable is Validateable, IBankable {
                     pool.amount += amount;
                 }
 
-                emit FundsAddedToScoutPool(tokenId, amount);
+                emit FundsAddedToPool(tokenId, amount);
 
                 // determine if we need to payout
                 uint256 sharePrice = _getPoolSharePrice(pool);
@@ -194,9 +194,9 @@ contract Bankable is Validateable, IBankable {
     /**
      * @dev Pays out scout pool funds to its members.
      * @param tokenId ID of viral squeak.
-     * @param pool ScoutPool of the viral squeak.
+     * @param pool Pool of the viral squeak.
      */
-    function _makeScoutPayments(uint256 tokenId, ScoutPool storage pool)
+    function _makeScoutPayments(uint256 tokenId, Pool storage pool)
         internal
     {
         uint256 sharePrice = _getPoolSharePrice(pool);
@@ -207,12 +207,12 @@ contract Bankable is Validateable, IBankable {
     /**
      * @dev Pays out scout pool funds to its members.
      * @param tokenId ID of viral squeak.
-     * @param pool Pointer to the ScoutPool of the viral squeak.
+     * @param pool Pointer to the Pool of the viral squeak.
      * @param sharePrice Price of each share at the time of payment.
      */
     function _makeScoutPayments(
         uint256 tokenId,
-        ScoutPool storage pool,
+        Pool storage pool,
         uint256 sharePrice
     ) internal {
         // get number of scouts in the pool
@@ -229,7 +229,7 @@ contract Bankable is Validateable, IBankable {
             _transferFunds(scout, payout);
         }
 
-        emit ScoutPoolPayout(tokenId);
+        emit PoolPayout(tokenId);
     }
 
     /**
