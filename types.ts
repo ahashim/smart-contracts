@@ -22,7 +22,7 @@ export type Config = {
   platformTakeRate: BigNumber;
   poolPayoutThreshold: BigNumber;
   maxLevel: BigNumber;
-  scoutViralityBonus: BigNumber;
+  viralityBonus: BigNumber;
   viralityThreshold: BigNumber;
 };
 

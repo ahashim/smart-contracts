@@ -42,7 +42,7 @@ contract Storeable is Initializable, IStoreable {
         uint256 platformTakeRate,
         uint256 poolPayoutThreshold,
         uint256 maxLevel,
-        uint256 scoutViralityBonus,
+        uint256 viralityBonus,
         uint256 viralityThreshold
     ) internal onlyInitializing {
         baseTokenURI = baseURI;
@@ -52,7 +52,7 @@ contract Storeable is Initializable, IStoreable {
         config[Configuration.PlatformTakeRate] = platformTakeRate;
         config[Configuration.MaxLevel] = maxLevel;
         config[Configuration.PoolPayoutThreshold] = poolPayoutThreshold;
-        config[Configuration.ScoutViralityBonus] = scoutViralityBonus;
+        config[Configuration.ViralityBonus] = viralityBonus;
         config[Configuration.ViralityThreshold] = viralityThreshold;
 
         // set default interaction fees

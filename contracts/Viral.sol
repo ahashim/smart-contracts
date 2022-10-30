@@ -125,7 +125,7 @@ contract Viral is Scoutable, IViral {
         // to their scout level.
         _increaseScoutLevel(
             users[msg.sender],
-            config[Configuration.ScoutViralityBonus]
+            config[Configuration.ViralityBonus]
         );
 
         // iterate over both sets & add all unique addresses to the scout pool

@@ -62,7 +62,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
         uint256 platformTakeRate,
         uint256 poolPayoutThreshold,
         uint256 viralityThreshold,
-        uint256 scoutViralityBonus,
+        uint256 viralityBonus,
         uint256 maxLevel
     ) public initializerERC721A initializer {
         // 3rd party
@@ -78,7 +78,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
             platformTakeRate,
             poolPayoutThreshold,
             maxLevel,
-            scoutViralityBonus,
+            viralityBonus,
             viralityThreshold
         );
 

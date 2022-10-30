@@ -10,7 +10,7 @@ export const enum Configuration {
   PlatformTakeRate,
   PoolPayoutThreshold,
   MaxLevel,
-  ScoutViralityBonus,
+  ViralityBonus,
   ViralityThreshold,
 }
 
