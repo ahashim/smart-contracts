@@ -31,7 +31,7 @@ describe('deleteViralSqueak', () => {
     // deploy contract with a lower virality & scout pool threshold for testing
     critter = (
       await run('deploy-contract', {
-        scoutPoolThreshold: ethers.utils.parseEther('0.000002'),
+        PoolThreshold: ethers.utils.parseEther('0.000002'),
         viralityThreshold: 60,
       })
     ).connect(ahmed);

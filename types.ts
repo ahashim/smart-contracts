@@ -32,7 +32,7 @@ export type ContractInitializerOverrides = {
   baseTokenURI: string;
   platformFee: BigNumber;
   takeRate: number;
-  scoutPoolThreshold: BigNumber;
+  PoolThreshold: BigNumber;
   viralityThreshold: number;
   scoutBonus: number;
   maxLevel: number;

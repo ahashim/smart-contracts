@@ -145,7 +145,7 @@ task(
         value: PLATFORM_TAKE_RATE,
         index: 4,
       },
-      scoutPoolThreshold: {
+      PoolThreshold: {
         value: SCOUT_POOL_THRESHOLD,
         index: 5,
       },
