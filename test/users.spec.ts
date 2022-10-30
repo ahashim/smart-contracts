@@ -33,23 +33,23 @@ describe('users', () => {
     }
   );
 
-  it('returns a username of an account', () => {
+  it('returns a username of a user', () => {
     expect(validUser.username).to.eq(username);
   });
 
-  it('returns a default active status for an account', () => {
+  it('returns a default active status for a user', () => {
     expect(validUser.status).to.eq(Status.Active);
   });
 
-  it('returns a default scout level of 0 for an account', () => {
+  it('returns a default level of 1 for a user', () => {
     expect(validUser.level).to.eq(1);
   });
 
-  it('returns the address for an account', () => {
+  it('returns the address for a user', () => {
     expect(validUser.account).to.eq(ahmed.address);
   });
 
-  it('returns zero values for an unknown account', () => {
+  it('returns zero values for an unknown user', () => {
     expect(nullUser.account).to.eq(ethers.constants.AddressZero);
     expect(nullUser.status).to.eq(Status.Unknown);
     expect(nullUser.level).to.eq(0);

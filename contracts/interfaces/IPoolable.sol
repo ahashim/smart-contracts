@@ -32,14 +32,6 @@ interface IPoolable is IStoreable {
     function leavePool(uint256 tokenId) external;
 
     /**
-     * @dev Removes the account from a pool.
-     * @param tokenId ID of the viral squeak associated with the pool.
-     * @param account Address of the account.
-     * @notice Only callable by MODERATOR_ROLE.
-     */
-    function leavePool(uint256 tokenId, address account) external;
-
-    /**
      * @dev Gets the pool amount & number of shares.
      * @param tokenId ID of the viral squeak.
      * @return A {PoolInfo}.

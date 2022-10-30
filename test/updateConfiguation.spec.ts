@@ -18,7 +18,7 @@ describe('updateConfiguration', () => {
     // the owner grants ahmed the ADMIN_ROLE
     await critter.connect(owner).grantRole(OPERATOR_ROLE, ahmed.address);
 
-    // ahmed increases the max level for scouts (note: A Critter account is not
+    // ahmed increases the max level for users (note: A Critter account is not
     // required to update configuration)
     await critter.updateConfiguration(Configuration.MaxLevel, newMaxLevel);
 

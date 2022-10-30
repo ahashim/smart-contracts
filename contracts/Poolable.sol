@@ -39,17 +39,28 @@ contract Poolable is Bankable, IPoolable {
      * @dev See {IPoolable-leavePool}.
      */
     function leavePool(uint256 tokenId) external {
-        _leavePool(tokenId, msg.sender);
-    }
+        // validate that a pool exists for the squeak
+        if (!viralSqueaks.contains(tokenId)) revert PoolDoesNotExist();
 
-    /**
-     * @dev See {IPoolable-leavePool}.
-     */
-    function leavePool(uint256 tokenId, address account)
-        external
-        onlyRole(MODERATOR_ROLE)
-    {
-        _leavePool(tokenId, account);
+        Pool storage pool = pools[tokenId];
+
+        // validate that the account is in the pool
+        if (!pool.members.contains(msg.sender)) revert NotInPool();
+
+        // remove the member & their shares from the pool
+        pool.shares -= pool.members.get(msg.sender);
+        pool.members.remove(msg.sender);
+
+        if (pool.members.length() == 0) {
+            // drain the funds
+            if (pool.amount > 0) _deposit(pool.amount);
+
+            // delete the pool
+            delete pools[tokenId];
+
+            // remove the squeak from the viral squeaks list
+            viralSqueaks.remove(tokenId);
+        }
     }
 
     /**
@@ -121,36 +132,6 @@ contract Poolable is Bankable, IPoolable {
 
             // increase the users level
             user.level = newLevel < maxLevel ? newLevel : maxLevel;
-        }
-    }
-
-    /**
-     * @dev Removes the account from a pool.
-     * @param tokenId ID of the viral squeak associated with the pool.
-     * @param account Address of the account.
-     */
-    function _leavePool(uint256 tokenId, address account) private {
-        // validate that a pool exists for the squeak
-        if (!viralSqueaks.contains(tokenId)) revert PoolDoesNotExist();
-
-        Pool storage pool = pools[tokenId];
-
-        // validate that the account is in the pool
-        if (!pool.members.contains(account)) revert NotInPool();
-
-        // remove the member & their shares from the pool
-        pool.shares -= pool.members.get(account);
-        pool.members.remove(account);
-
-        if (pool.members.length() == 0) {
-            // drain the funds
-            if (pool.amount > 0) _deposit(pool.amount);
-
-            // delete the pool
-            delete pools[tokenId];
-
-            // remove the squeak from the viral squeaks list
-            viralSqueaks.remove(tokenId);
         }
     }
 }
