@@ -2,8 +2,8 @@ import { Interaction } from '../enums';
 import type { BigNumber, Critter, SignerWithAddress } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
-describe('scoutMaxLevel', () => {
-  const scoutMaxLevel = 2;
+describe('maxLevel', () => {
+  const maxLevel = 2;
   const viralityThreshold = 1;
 
   let critter: Critter;
@@ -16,7 +16,7 @@ describe('scoutMaxLevel', () => {
     critter = (
       await run('deploy-contract', {
         viralityThreshold,
-        scoutMaxLevel,
+        maxLevel,
       })
     ).connect(ahmed);
 
@@ -59,7 +59,7 @@ describe('scoutMaxLevel', () => {
   it('does not level up a scout past max level', () => {
     // ahmed propelled the squeak to virality, so they get a scout bonus level
     // up of 3, however max level prevents them from getting there
-    expect(scoutLevel).to.eq(scoutMaxLevel);
+    expect(scoutLevel).to.eq(maxLevel);
   });
 
   it('stays at max level when scouting new viral squeaks', async () => {
@@ -87,7 +87,7 @@ describe('scoutMaxLevel', () => {
     });
 
     expect((await critter.users(ahmed.address)).scoutLevel).to.eq(
-      scoutMaxLevel
+      maxLevel
     );
   });
 });

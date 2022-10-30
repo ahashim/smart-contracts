@@ -23,7 +23,7 @@ describe('config', () => {
         poolPayoutThreshold: await critter.config(
           Configuration.PoolPayoutThreshold
         ),
-        scoutMaxLevel: await critter.config(Configuration.ScoutMaxLevel),
+        maxLevel: await critter.config(Configuration.MaxLevel),
         scoutViralityBonus: await critter.config(
           Configuration.ScoutViralityBonus
         ),
@@ -52,7 +52,7 @@ describe('config', () => {
   });
 
   it('gets the max level a scout can reach', () => {
-    expect(config.scoutMaxLevel).to.eq(SCOUT_MAX_LEVEL);
+    expect(config.maxLevel).to.eq(SCOUT_MAX_LEVEL);
   });
 
   it('gets the bonus level increase a scout receives for propelling a squeak into virality', () => {

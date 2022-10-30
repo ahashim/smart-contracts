@@ -21,7 +21,7 @@ export type BigNumberObject = {
 export type Config = {
   platformTakeRate: BigNumber;
   poolPayoutThreshold: BigNumber;
-  scoutMaxLevel: BigNumber;
+  maxLevel: BigNumber;
   scoutViralityBonus: BigNumber;
   viralityThreshold: BigNumber;
 };
@@ -35,7 +35,7 @@ export type ContractInitializerOverrides = {
   scoutPoolThreshold: BigNumber;
   viralityThreshold: number;
   scoutBonus: number;
-  scoutMaxLevel: number;
+  maxLevel: number;
 };
 
 export type ContractInitializer = (string | number | BigNumber)[];

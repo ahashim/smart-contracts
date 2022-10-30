@@ -41,7 +41,7 @@ contract Storeable is Initializable, IStoreable {
         uint256 platformFee,
         uint256 platformTakeRate,
         uint256 poolPayoutThreshold,
-        uint256 scoutMaxLevel,
+        uint256 maxLevel,
         uint256 scoutViralityBonus,
         uint256 viralityThreshold
     ) internal onlyInitializing {
@@ -50,7 +50,7 @@ contract Storeable is Initializable, IStoreable {
         // set contract config values
         config[Configuration.DeleteRate] = platformFee;
         config[Configuration.PlatformTakeRate] = platformTakeRate;
-        config[Configuration.ScoutMaxLevel] = scoutMaxLevel;
+        config[Configuration.MaxLevel] = maxLevel;
         config[Configuration.PoolPayoutThreshold] = poolPayoutThreshold;
         config[Configuration.ScoutViralityBonus] = scoutViralityBonus;
         config[Configuration.ViralityThreshold] = viralityThreshold;

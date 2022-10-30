@@ -109,12 +109,12 @@ contract Scoutable is Bankable, IScoutable {
      * @param amount Number of levels to increase by.
      */
     function _increaseScoutLevel(User storage user, uint256 amount) internal {
-        uint256 maxLevel = config[Configuration.ScoutMaxLevel];
+        uint256 maxLevel = config[Configuration.MaxLevel];
 
         if (user.scoutLevel < maxLevel) {
             uint256 newLevel;
 
-            // determine the new level (unchecked due to scoutMaxLevel limit)
+            // determine the new level (unchecked due to maxLevel limit)
             unchecked {
                 newLevel = user.scoutLevel + amount;
             }

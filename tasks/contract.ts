@@ -157,7 +157,7 @@ task(
         value: SCOUT_BONUS,
         index: 7,
       },
-      scoutMaxLevel: {
+      maxLevel: {
         value: SCOUT_MAX_LEVEL,
         index: 8,
       },
