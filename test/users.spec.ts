@@ -42,7 +42,7 @@ describe('users', () => {
   });
 
   it('returns a default scout level of 0 for an account', () => {
-    expect(validUser.scoutLevel).to.eq(1);
+    expect(validUser.level).to.eq(1);
   });
 
   it('returns the address for an account', () => {
@@ -52,7 +52,7 @@ describe('users', () => {
   it('returns zero values for an unknown account', () => {
     expect(nullUser.account).to.eq(ethers.constants.AddressZero);
     expect(nullUser.status).to.eq(Status.Unknown);
-    expect(nullUser.scoutLevel).to.eq(0);
+    expect(nullUser.level).to.eq(0);
     expect(nullUser.username).to.be.empty;
   });
 });

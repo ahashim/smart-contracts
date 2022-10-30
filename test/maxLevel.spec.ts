@@ -8,7 +8,7 @@ describe('maxLevel', () => {
 
   let critter: Critter;
   let ahmed: SignerWithAddress;
-  let scoutLevel: BigNumber, squeakId: BigNumber;
+  let level: BigNumber, squeakId: BigNumber;
 
   const scoutMaxlevelFixture = async () => {
     [, ahmed] = await ethers.getSigners();
@@ -48,18 +48,18 @@ describe('maxLevel', () => {
 
     return {
       critter,
-      scoutLevel: (await critter.users(ahmed.address)).scoutLevel,
+      level: (await critter.users(ahmed.address)).level,
     };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, scoutLevel } = await loadFixture(scoutMaxlevelFixture));
+    ({ critter, level } = await loadFixture(scoutMaxlevelFixture));
   });
 
   it('does not level up a scout past max level', () => {
     // ahmed propelled the squeak to virality, so they get a scout bonus level
     // up of 3, however max level prevents them from getting there
-    expect(scoutLevel).to.eq(maxLevel);
+    expect(level).to.eq(maxLevel);
   });
 
   it('stays at max level when scouting new viral squeaks', async () => {
@@ -86,7 +86,7 @@ describe('maxLevel', () => {
       squeakId,
     });
 
-    expect((await critter.users(ahmed.address)).scoutLevel).to.eq(
+    expect((await critter.users(ahmed.address)).level).to.eq(
       maxLevel
     );
   });

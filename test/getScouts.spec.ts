@@ -64,9 +64,9 @@ describe('getScouts', () => {
     return {
       addresses: scouts.map((s) => s.account),
       levels: {
-        [ahmed.address]: (await critter.users(ahmed.address)).scoutLevel,
-        [barbie.address]: (await critter.users(barbie.address)).scoutLevel,
-        [carlos.address]: (await critter.users(carlos.address)).scoutLevel,
+        [ahmed.address]: (await critter.users(ahmed.address)).level,
+        [barbie.address]: (await critter.users(barbie.address)).level,
+        [carlos.address]: (await critter.users(carlos.address)).level,
       },
       scouts,
     };

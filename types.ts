@@ -72,6 +72,6 @@ export type Squeak = {
 export type User = {
   account: string;
   status: Status;
-  scoutLevel: BigNumber;
+  level: BigNumber;
   username: string;
 };

@@ -123,7 +123,7 @@ contract Viral is Scoutable, IViral {
 
         // give the user who propelled the squeak into virality a bonus upgrade
         // to their scout level.
-        _increaseScoutLevel(
+        _increaseLevel(
             users[msg.sender],
             config[Configuration.ViralityBonus]
         );

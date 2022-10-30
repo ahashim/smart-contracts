@@ -96,11 +96,11 @@ contract Scoutable is Bankable, IScoutable {
      */
     function _addScout(User storage user, ScoutPool storage pool) internal {
         // upgrade the users scout level
-        _increaseScoutLevel(user, 1);
+        _increaseLevel(user, 1);
 
         // add them to the pool & increase its share count
-        pool.members.set(user.account, user.scoutLevel);
-        pool.shares += user.scoutLevel;
+        pool.members.set(user.account, user.level);
+        pool.shares += user.level;
     }
 
     /**
@@ -108,19 +108,19 @@ contract Scoutable is Bankable, IScoutable {
      * @param user {User} to modify.
      * @param amount Number of levels to increase by.
      */
-    function _increaseScoutLevel(User storage user, uint256 amount) internal {
+    function _increaseLevel(User storage user, uint256 amount) internal {
         uint256 maxLevel = config[Configuration.MaxLevel];
 
-        if (user.scoutLevel < maxLevel) {
+        if (user.level < maxLevel) {
             uint256 newLevel;
 
             // determine the new level (unchecked due to maxLevel limit)
             unchecked {
-                newLevel = user.scoutLevel + amount;
+                newLevel = user.level + amount;
             }
 
             // increase the users level
-            user.scoutLevel = newLevel < maxLevel ? newLevel : maxLevel;
+            user.level = newLevel < maxLevel ? newLevel : maxLevel;
         }
     }
 

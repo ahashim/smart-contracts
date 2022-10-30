@@ -133,13 +133,13 @@ describe('interact viral', () => {
     const interactors = [ahmed, barbie, carlos];
 
     interactors.forEach(async (account) => {
-      expect((await critter.users(account.address)).scoutLevel).to.eq(2);
+      expect((await critter.users(account.address)).level).to.eq(2);
     });
   });
 
   it('increases the scout level of the viral-propeller by an extra amount', async () => {
     // all accounts start off at level 1
-    const initialScoutLevel = 1;
+    const initialLevel = 1;
 
     // daphne positively interacted with the squeak, so they get a default
     // increase of 1 scout level when the squeak goes viral (along with the
@@ -149,8 +149,8 @@ describe('interact viral', () => {
     // daphne is also the person that propelled the squeak into virality (in
     // addition to being a positive interactor), so the additional scout bonus
     // is applied to their account
-    expect((await critter.users(daphne.address)).scoutLevel).to.equal(
-      initialScoutLevel + basicScoutIncrease + BONUS
+    expect((await critter.users(daphne.address)).level).to.equal(
+      initialLevel + basicScoutIncrease + BONUS
     );
   });
 
@@ -221,16 +221,16 @@ describe('interact viral', () => {
 
     // pool members are paid based on their scout level
     expect((await carlos.getBalance()).sub(balances.carlos)).to.eq(
-      sharePrice.mul((await critter.users(carlos.address)).scoutLevel)
+      sharePrice.mul((await critter.users(carlos.address)).level)
     );
     expect((await daphne.getBalance()).sub(balances.daphne)).to.eq(
-      sharePrice.mul((await critter.users(daphne.address)).scoutLevel)
+      sharePrice.mul((await critter.users(daphne.address)).level)
     );
 
     // squeak owner gets transferAmount in addition to pool payout
     expect((await ahmed.getBalance()).sub(balances.ahmed)).to.eq(
       sharePrice
-        .mul((await critter.users(ahmed.address)).scoutLevel)
+        .mul((await critter.users(ahmed.address)).level)
         .add(transferAmount)
     );
   });

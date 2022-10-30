@@ -148,14 +148,14 @@ interface IStoreable {
      * @dev User is a registered Critter account.
      * @param account Address of the account.
      * @param status A value from the Status enum.
-     * @param scoutLevel Level of "scout" the user has achieved based on their
+     * @param level Level of "scout" the user has achieved based on their
      *       squeak and interaction history.
      * @param username The accounts username.
      */
     struct User {
         address account;
         Status status;
-        uint256 scoutLevel;
+        uint256 level;
         string username;
     }
 }
