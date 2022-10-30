@@ -203,7 +203,7 @@ contract Bankable is Validateable, IBankable {
     }
 
     /**
-     * @dev Pays out scout pool funds to its members.
+     * @dev Pays out pool funds to its members.
      * @param tokenId ID of viral squeak.
      * @param pool Pointer to the Pool of the viral squeak.
      * @param sharePrice Price of each share at the time of payment.
@@ -213,18 +213,18 @@ contract Bankable is Validateable, IBankable {
         Pool storage pool,
         uint256 sharePrice
     ) internal {
-        // get number of scouts in the pool
+        // get number of members in the pool
         uint256 memberCount = pool.members.length();
 
         // TODO: move this unbounded loop off-chain
         for (uint256 i = 0; i < memberCount; i++) {
-            // calculate the scouts payout based on the number of shares & price
-            (address scout, uint256 shares) = pool.members.at(i);
+            // calculate the member payout based on the number of shares & price
+            (address user, uint256 shares) = pool.members.at(i);
             uint256 payout = sharePrice * shares;
 
-            // subtract funds from the pool & pay out to the scout
+            // subtract funds from the pool & pay out to the user
             pool.amount -= payout;
-            _transferFunds(scout, payout);
+            _transferFunds(user, payout);
         }
 
         emit PoolPayout(tokenId);
