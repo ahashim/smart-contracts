@@ -16,7 +16,7 @@ export const MODERATOR_ROLE = utils.id('MODERATOR_ROLE');
 export const TREASURER_ROLE = utils.id('TREASURER_ROLE');
 export const UPGRADER_ROLE = utils.id('UPGRADER_ROLE');
 
-// scouts
+// levels
 export const BONUS = 3;
 export const MAX_LEVEL = 50;
 
