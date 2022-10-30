@@ -2,7 +2,7 @@ import {
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
   BONUS,
-  SCOUT_MAX_LEVEL,
+  MAX_LEVEL,
   POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
@@ -52,7 +52,7 @@ describe('config', () => {
   });
 
   it('gets the max level a scout can reach', () => {
-    expect(config.maxLevel).to.eq(SCOUT_MAX_LEVEL);
+    expect(config.maxLevel).to.eq(MAX_LEVEL);
   });
 
   it('gets the bonus level increase a scout receives for propelling a squeak into virality', () => {

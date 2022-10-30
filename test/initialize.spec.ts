@@ -5,7 +5,7 @@ import {
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
   BONUS,
-  SCOUT_MAX_LEVEL,
+  MAX_LEVEL,
   POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
@@ -32,7 +32,7 @@ describe('initialize', () => {
         POOL_THRESHOLD,
         VIRALITY_THRESHOLD,
         BONUS,
-        SCOUT_MAX_LEVEL
+        MAX_LEVEL
       )
     ).to.be.reverted;
   });

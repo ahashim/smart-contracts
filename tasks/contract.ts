@@ -17,7 +17,7 @@ import {
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
   BONUS,
-  SCOUT_MAX_LEVEL,
+  MAX_LEVEL,
   POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
@@ -158,7 +158,7 @@ task(
         index: 7,
       },
       maxLevel: {
-        value: SCOUT_MAX_LEVEL,
+        value: MAX_LEVEL,
         index: 8,
       },
     };

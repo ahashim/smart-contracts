@@ -18,7 +18,7 @@ export const UPGRADER_ROLE = utils.id('UPGRADER_ROLE');
 
 // scouts
 export const BONUS = 3;
-export const SCOUT_MAX_LEVEL = 50;
+export const MAX_LEVEL = 50;
 
 // thresholds
 export const POOL_THRESHOLD = utils.parseEther('0.1');
@@ -34,7 +34,7 @@ export const CONTRACT_INITIALIZER = [
   POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
   BONUS,
-  SCOUT_MAX_LEVEL,
+  MAX_LEVEL,
 ];
 
 // test variables
