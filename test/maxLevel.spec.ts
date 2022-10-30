@@ -10,9 +10,9 @@ describe('maxLevel', () => {
   let ahmed: SignerWithAddress;
   let level: BigNumber, squeakId: BigNumber;
 
-  const scoutMaxlevelFixture = async () => {
+  const maxLevelFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    // deploy contract with a lower virality threshold to test scout max level
+    // deploy contract with a lower virality threshold to test max level
     critter = (
       await run('deploy-contract', {
         viralityThreshold,
@@ -53,16 +53,16 @@ describe('maxLevel', () => {
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, level } = await loadFixture(scoutMaxlevelFixture));
+    ({ critter, level } = await loadFixture(maxLevelFixture));
   });
 
-  it('does not level up a scout past max level', () => {
-    // ahmed propelled the squeak to virality, so they get a scout bonus level
-    // up of 3, however max level prevents them from getting there
+  it('does not level up a past max level', () => {
+    // ahmed propelled the squeak to virality, so they get a level-up bonus of
+    // 3, however max level prevents them from getting there
     expect(level).to.eq(maxLevel);
   });
 
-  it('stays at max level when scouting new viral squeaks', async () => {
+  it('stays at max level when discovering a new viral squeak', async () => {
     // ahmed creates another squeak
     const { squeakId } = await run('create-squeak', {
       content: 'hello blockchain!',

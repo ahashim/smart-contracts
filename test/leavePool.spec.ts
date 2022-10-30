@@ -53,8 +53,8 @@ describe('leavePool', () => {
       squeakId,
     });
 
-    // carlos resqueaks it and propel it into virality, adding themselves and
-    // barbie to the scout pool
+    // carlos resqueaks it and propels it into virality, thus adding themselves
+    // and barbie to the pool
     await run('interact', {
       contract: critter,
       interaction: Interaction.Resqueak,
@@ -68,26 +68,23 @@ describe('leavePool', () => {
     return {
       critter,
       poolInfo: await critter.getPoolInfo(squeakId),
-      scouts: await critter.getPoolPasses(squeakId),
+      poolPasses: await critter.getPoolPasses(squeakId),
       treasuryBalance: await critter.treasury(),
     };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({
-      critter,
-      poolInfo,
-      scouts: poolPasses,
-      treasuryBalance,
-    } = await loadFixture(leavePoolFixture));
+    ({ critter, poolInfo, poolPasses, treasuryBalance } = await loadFixture(
+      leavePoolFixture
+    ));
   });
 
   it('lets a user leave the pool', () => {
-    const accounts = poolPasses.map((s) => s.account);
+    const users = poolPasses.map((p) => p.account);
 
     expect(poolPasses.length).to.eq(1);
-    expect(accounts.includes(barbie.address)).to.be.false;
-    expect(accounts.includes(carlos.address)).to.be.true;
+    expect(users.includes(barbie.address)).to.be.false;
+    expect(users.includes(carlos.address)).to.be.true;
   });
 
   it('deletes the pool & removes it from virality when all members leave', async () => {

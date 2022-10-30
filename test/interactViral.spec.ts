@@ -138,7 +138,7 @@ describe('interact viral', () => {
     });
   });
 
-  it('increases the scout level of the viral-propeller by an extra amount', async () => {
+  it('increases the user level of the viral-propeller by an extra amount', async () => {
     // all accounts start off at level 1
     const initialLevel = 1;
 
@@ -148,27 +148,27 @@ describe('interact viral', () => {
     const basicLevelIncrease = 1;
 
     // daphne is also the person that propelled the squeak into virality (in
-    // addition to being a positive interactor), so the additional scout bonus
+    // addition to being a positive interactor), so the additional level bonus
     // is applied to their account
     expect((await critter.users(daphne.address)).level).to.equal(
       initialLevel + basicLevelIncrease + BONUS
     );
   });
 
-  it('adds all positive interactors to the scout pool', async () => {
+  it('adds all positive interactors to the pool', async () => {
     // everybody who either liked or resqueaked the viral squeak
     const interactors = [ahmed, barbie, carlos, daphne];
-    const scouts = (await critter.getPoolPasses(squeakId)).map(
+    const passes = (await critter.getPoolPasses(squeakId)).map(
       (p: PoolPass) => p.account
     );
 
     interactors.forEach((account) => {
-      expect(scouts.includes(account.address)).to.be.true;
+      expect(passes.includes(account.address)).to.be.true;
     });
   });
 
-  it('sums the scout levels of all positive interactors as the pool level total', async () => {
-    // 3 scouts at level 2 + 1 scout at level 5
+  it('sums the levels of all positive interactors as the pool level total', async () => {
+    // 3 users at level 2 + 1 user at level 5
     const expectedShares = 2 * 3 + 5;
     const [, shares] = await critter.getPoolInfo(squeakId);
 
@@ -181,7 +181,7 @@ describe('interact viral', () => {
     );
   });
 
-  it('deposits part of the interaction fee into the scout pool', () => {
+  it('deposits part of the interaction fee into the pool', () => {
     expect(poolInfo.amount).to.eq(transferAmount);
   });
 
@@ -201,7 +201,7 @@ describe('interact viral', () => {
     );
   });
 
-  it('pays out scout funds to members of the pool when it hits the threshold', async () => {
+  it('pays out funds to users in the pool when it hits the threshold', async () => {
     // update ahmeds & treasury balances to after the squeak went viral & before
     // the pool payout interaction
     balances.ahmed = await ahmed.getBalance();
@@ -222,7 +222,7 @@ describe('interact viral', () => {
     // (making it impractical to test). Fix this in future versions by moving
     // the payout loop off-chain, and replacing it with an O(1) bitmap.
 
-    // pool members are paid based on their scout level
+    // users are paid based on their level
     expect((await carlos.getBalance()).sub(balances.carlos)).to.eq(
       sharePrice.mul((await critter.users(carlos.address)).level)
     );

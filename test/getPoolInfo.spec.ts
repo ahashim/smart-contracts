@@ -1,4 +1,4 @@
-import { PLATFORM_FEE, PLATFORM_TAKE_RATE, BONUS } from '../constants';
+import { BONUS, PLATFORM_FEE, PLATFORM_TAKE_RATE } from '../constants';
 import { Interaction } from '../enums';
 import type {
   BigNumber,
@@ -67,7 +67,7 @@ describe('getPoolInfo', () => {
     ({ poolInfo, invalidPool } = await loadFixture(getPoolInfoFixture));
   });
 
-  it('returns the funds available in the scout pool', () => {
+  it('returns the funds available in the pool', () => {
     // carlos' interaction fee will be split & added to the pool
     const interactionTake = PLATFORM_FEE.mul(PLATFORM_TAKE_RATE).div(100);
     const expectedAmount = PLATFORM_FEE.sub(interactionTake).div(2);
@@ -75,13 +75,13 @@ describe('getPoolInfo', () => {
     expect(poolInfo.amount).to.eq(expectedAmount);
   });
 
-  it('returns the total number of shares in the scout pool', () => {
-    // each scout levels up to 2, plus carlos' scout bonus
+  it('returns the total number of shares in the pool', () => {
+    // each user levels up to 2, plus carlos' level bonus
     const expectedShares = 3 * 2 + BONUS;
     expect(poolInfo.shares).to.eq(expectedShares);
   });
 
-  it('returns the count of members in the scout pool', () => {
+  it('returns the number of users in the pool', () => {
     // ahmed, barbie, and carlos are all in the pool
     expect(poolInfo.memberCount).to.eq(3);
   });

@@ -15,7 +15,7 @@ describe('getPoolPasses', () => {
     carlos: SignerWithAddress,
     critter: Critter,
     levels: BigNumberObject,
-    scouts: PoolPass[],
+    passes: PoolPass[],
     squeakId: BigNumber;
 
   const getPoolPassesFixture = async () => {
@@ -58,33 +58,33 @@ describe('getPoolPasses', () => {
       squeakId,
     });
 
-    // get scouts
-    scouts = await critter.getPoolPasses(squeakId);
+    // get passes
+    passes = await critter.getPoolPasses(squeakId);
 
     return {
-      addresses: scouts.map((s) => s.account),
+      addresses: passes.map((s) => s.account),
       levels: {
         [ahmed.address]: (await critter.users(ahmed.address)).level,
         [barbie.address]: (await critter.users(barbie.address)).level,
         [carlos.address]: (await critter.users(carlos.address)).level,
       },
-      scouts,
+      passes,
     };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ addresses, levels, scouts } = await loadFixture(getPoolPassesFixture));
+    ({ addresses, levels, passes } = await loadFixture(getPoolPassesFixture));
   });
 
-  it('returns the addresses for all scouts in the pool', () => {
+  it('returns the addresses for all users in the pool', () => {
     [ahmed, barbie, carlos].forEach((user) => {
       expect(addresses.includes(user.address)).to.be.true;
     });
   });
 
-  it('returns the amount of shares every scout in the pool has at the time of virality', () => {
+  it('returns the amount of shares every user in the pool has at the time of virality', () => {
     [ahmed, barbie, carlos].forEach((user) => {
-      expect(scouts.find((s) => s.account === user.address)?.shares).to.eq(
+      expect(passes.find((s) => s.account === user.address)?.shares).to.eq(
         levels[user.address]
       );
     });

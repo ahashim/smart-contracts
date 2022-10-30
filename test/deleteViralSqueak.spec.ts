@@ -23,12 +23,12 @@ describe('deleteViralSqueak', () => {
     daphne: SignerWithAddress,
     poolInfo: PoolInfo,
     sentimentCounts: SentimentCounts,
-    scouts: PoolPass[],
+    passes: PoolPass[],
     squeak: Squeak;
 
   const deleteViralSqueakFixture = async () => {
     [, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
-    // deploy contract with a lower virality & scout pool threshold for testing
+    // deploy contract with a lower virality & pool threshold for testing
     critter = (
       await run('deploy-contract', {
         PoolThreshold: ethers.utils.parseEther('0.000002'),
@@ -86,8 +86,8 @@ describe('deleteViralSqueak', () => {
     treasuryBalance = await critter.treasury();
 
     // NOTE: the `amount` here is the remaining dust in the pool before being
-    // deposited into the treasury due to scouts already being paid out in the
-    // previous transaction because of the lower scout pool threshold.
+    // deposited into the treasury due to users already being paid out in the
+    // previous transaction because of the lower pool threshold.
     const { amount } = await critter.getPoolInfo(squeakId);
 
     // ahmed deletes the viral squeak
@@ -103,7 +103,7 @@ describe('deleteViralSqueak', () => {
       deleteFee,
       poolInfo: await critter.getPoolInfo(squeakId),
       sentimentCounts: await critter.getSentimentCounts(squeakId),
-      scouts: await critter.getPoolPasses(squeakId),
+      passes: await critter.getPoolPasses(squeakId),
       squeak: await critter.squeaks(squeakId),
       treasuryBalance,
     };
@@ -116,7 +116,7 @@ describe('deleteViralSqueak', () => {
       deleteFee,
       poolInfo,
       sentimentCounts,
-      scouts,
+      passes,
       squeak,
       treasuryBalance,
     } = await loadFixture(deleteViralSqueakFixture));
@@ -135,15 +135,15 @@ describe('deleteViralSqueak', () => {
     expect(sentimentCounts.resqueaks).to.eq(0);
   });
 
-  it("deletes the viral squeak's scout information", () => {
-    expect(scouts).to.be.empty;
+  it("deletes the viral squeak's pool information", () => {
+    expect(passes).to.be.empty;
     expect(poolInfo.amount).to.eq(0);
     expect(poolInfo.shares).to.eq(0);
   });
 
   it('deposits the delete fee into the treasury', async () => {
     // subtracting `amount` because it's the remaining dust that was deposited
-    // into the treasury when deleting the scout pool for the viral squeak
+    // into the treasury when deleting the pool for the viral squeak
     expect((await critter.treasury()).sub(treasuryBalance).sub(amount)).to.eq(
       deleteFee
     );
