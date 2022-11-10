@@ -41,20 +41,20 @@ interface IRelatable is IStoreable {
      * @param userOne Address of user one.
      * @param userTwo Address of user two.
      */
-    function isBlocked(address userOne, address userTwo)
-        external
-        view
-        returns (bool);
+    function isBlocked(
+        address userOne,
+        address userTwo
+    ) external view returns (bool);
 
     /**
      * @dev Checks whether user one is following user two.
      * @param userOne Address of user one.
      * @param userTwo Address of user two.
      */
-    function isFollowing(address userOne, address userTwo)
-        external
-        view
-        returns (bool);
+    function isFollowing(
+        address userOne,
+        address userTwo
+    ) external view returns (bool);
 
     /**
      * @dev Updates the relationship between the sender and another account.

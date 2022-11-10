@@ -78,8 +78,10 @@ interface IBankable is IStoreable {
      * @param amount Value of the updated fee in wei.
      * @notice Only callable by TREASURER_ROLE.
      */
-    function updateInteractionFee(Interaction interaction, uint256 amount)
-        external;
+    function updateInteractionFee(
+        Interaction interaction,
+        uint256 amount
+    ) external;
 
     /**
      * @dev Transfers out funds from the treasury.

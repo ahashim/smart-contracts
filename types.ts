@@ -43,7 +43,7 @@ export type ContractInitializer = (string | number | BigNumber)[];
 export type PoolInfo = {
   amount: BigNumber;
   shares: BigNumber;
-  memberCount: BigNumber;
+  passCount: BigNumber;
 };
 
 export type RelationshipCounts = {

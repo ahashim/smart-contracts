@@ -83,12 +83,12 @@ describe('getPoolInfo', () => {
 
   it('returns the number of users in the pool', () => {
     // ahmed, barbie, and carlos are all in the pool
-    expect(poolInfo.memberCount).to.eq(3);
+    expect(poolInfo.passCount).to.eq(3);
   });
 
   it('returns zero values for an unknown pool', () => {
     expect(invalidPool.amount).to.eq(0);
     expect(invalidPool.shares).to.eq(0);
-    expect(invalidPool.memberCount).to.eq(0);
+    expect(invalidPool.passCount).to.eq(0);
   });
 });

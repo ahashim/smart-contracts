@@ -51,8 +51,7 @@ interface IValidateable {
     /**
      * @dev See {IERC721AUpgradeable-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        external
-        view
-        returns (bool);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external view returns (bool);
 }

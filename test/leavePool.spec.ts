@@ -88,7 +88,7 @@ describe('leavePool', () => {
   });
 
   it('deletes the pool & removes it from virality when all members leave', async () => {
-    let { amount, shares, memberCount } = poolInfo;
+    let { amount, shares, passCount } = poolInfo;
 
     // get expected pool amount after Carlos propels the squeak to virality
     const interactionFee = await critter.fees(Interaction.Like);
@@ -99,15 +99,15 @@ describe('leavePool', () => {
     expect(await critter.isViral(squeakId)).to.be.true;
     expect(amount).to.eq(expectedPoolAmount);
     expect(shares).to.eq(5);
-    expect(memberCount).to.eq(1);
+    expect(passCount).to.eq(1);
 
     // remaining member leaves
     await critter.connect(carlos).leavePool(squeakId);
-    ({ amount, shares, memberCount } = await critter.getPoolInfo(squeakId));
+    ({ amount, shares, passCount } = await critter.getPoolInfo(squeakId));
 
     expect(amount).to.eq(0);
     expect(shares).to.eq(0);
-    expect(memberCount).to.eq(0);
+    expect(passCount).to.eq(0);
     expect(await critter.isViral(squeakId)).to.be.false;
     expect((await critter.treasury()).sub(treasuryBalance)).to.eq(
       expectedPoolAmount

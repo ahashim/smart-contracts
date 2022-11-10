@@ -76,17 +76,17 @@ interface ISqueakable is IStoreable {
      * @param tokenId ID of the squeak.
      * @return {SentimentCounts}
      */
-    function getSentimentCounts(uint256 tokenId)
-        external
-        view
-        returns (SentimentCounts memory);
+    function getSentimentCounts(
+        uint256 tokenId
+    ) external view returns (SentimentCounts memory);
 
     /**
      * @dev Interacts with a squeak.
      * @param tokenId ID of the squeak.
      * @param interaction An {Interaction} value.
      */
-    function interact(uint256 tokenId, Interaction interaction)
-        external
-        payable;
+    function interact(
+        uint256 tokenId,
+        Interaction interaction
+    ) external payable;
 }

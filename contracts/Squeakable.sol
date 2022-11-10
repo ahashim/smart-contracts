@@ -39,11 +39,9 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     /**
      * @dev See {ISqueakable-createSqueak}.
      */
-    function createSqueak(string calldata content)
-        external
-        hasActiveAccount
-        onlyRole(MINTER_ROLE)
-    {
+    function createSqueak(
+        string calldata content
+    ) external hasActiveAccount onlyRole(MINTER_ROLE) {
         // convert to bytes
         bytes memory rawContent = bytes(content);
 
@@ -70,13 +68,9 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     /**
      * @dev See {ISqueakable-deleteSqueak}.
      */
-    function deleteSqueak(uint256 tokenId)
-        external
-        payable
-        hasActiveAccount
-        squeakExists(tokenId)
-        nonReentrant
-    {
+    function deleteSqueak(
+        uint256 tokenId
+    ) external payable hasActiveAccount squeakExists(tokenId) nonReentrant {
         address owner = ownerOf(tokenId);
 
         // validate squeak ownership
@@ -131,11 +125,9 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     /**
      * @dev See {ISqueakable-getSentimentCounts}.
      */
-    function getSentimentCounts(uint256 tokenId)
-        external
-        view
-        returns (SentimentCounts memory)
-    {
+    function getSentimentCounts(
+        uint256 tokenId
+    ) external view returns (SentimentCounts memory) {
         Sentiment storage sentiment = sentiments[tokenId];
 
         return
@@ -149,13 +141,10 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
     /**
      * @dev See {ISqueakable-interact}.
      */
-    function interact(uint256 tokenId, Interaction interaction)
-        external
-        payable
-        hasActiveAccount
-        squeakExists(tokenId)
-        nonReentrant
-    {
+    function interact(
+        uint256 tokenId,
+        Interaction interaction
+    ) external payable hasActiveAccount squeakExists(tokenId) nonReentrant {
         // validate required fee amount
         if (msg.value < fees[interaction]) revert InsufficientFunds();
 

@@ -95,10 +95,10 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
     /**
      * @dev See {ICritter-updateConfiguration}.
      */
-    function updateConfiguration(Configuration configuration, uint256 amount)
-        external
-        onlyRole(OPERATOR_ROLE)
-    {
+    function updateConfiguration(
+        Configuration configuration,
+        uint256 amount
+    ) external onlyRole(OPERATOR_ROLE) {
         config[configuration] = amount;
     }
 
@@ -106,12 +106,9 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
     /**
      * @dev Reverts when caller isn't authorized to upgrade the contract.
      */
-    function _authorizeUpgrade(address)
-        internal
-        view
-        override
-        onlyRole(UPGRADER_ROLE)
-    {}
+    function _authorizeUpgrade(
+        address
+    ) internal view override onlyRole(UPGRADER_ROLE) {}
 
     /* solhint-enable no-empty-blocks */
 

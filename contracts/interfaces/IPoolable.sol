@@ -36,18 +36,16 @@ interface IPoolable is IStoreable {
      * @param tokenId ID of the viral squeak.
      * @return A {PoolInfo}.
      */
-    function getPoolInfo(uint256 tokenId)
-        external
-        view
-        returns (PoolInfo memory);
+    function getPoolInfo(
+        uint256 tokenId
+    ) external view returns (PoolInfo memory);
 
     /**
      * @dev Gets a list of pool passes for a viral squeak.
      * @param tokenId ID of the viral squeak.
      * @return Array of {PoolPass}'s.
      */
-    function getPoolPasses(uint256 tokenId)
-        external
-        view
-        returns (PoolPass[] memory);
+    function getPoolPasses(
+        uint256 tokenId
+    ) external view returns (PoolPass[] memory);
 }

@@ -39,12 +39,9 @@ contract Bankable is Validateable, IBankable {
     /**
      * @dev See {IBankable-getDeleteFee}.
      */
-    function getDeleteFee(uint256 tokenId)
-        external
-        view
-        squeakExists(tokenId)
-        returns (uint256)
-    {
+    function getDeleteFee(
+        uint256 tokenId
+    ) external view squeakExists(tokenId) returns (uint256) {
         // defaulting confirmation threshold to 6
         return _getDeleteFee(tokenId, 6);
     }
@@ -52,10 +49,10 @@ contract Bankable is Validateable, IBankable {
     /**
      * @dev See {IBankable-updateInteractionFee}.
      */
-    function updateInteractionFee(Interaction interaction, uint256 amount)
-        external
-        onlyRole(TREASURER_ROLE)
-    {
+    function updateInteractionFee(
+        Interaction interaction,
+        uint256 amount
+    ) external onlyRole(TREASURER_ROLE) {
         fees[interaction] = amount;
 
         emit InteractionFeeUpdated(interaction, amount);
@@ -64,11 +61,10 @@ contract Bankable is Validateable, IBankable {
     /**
      * @dev See {IBankable-withdraw}.
      */
-    function withdraw(address to, uint256 amount)
-        external
-        payable
-        onlyRole(TREASURER_ROLE)
-    {
+    function withdraw(
+        address to,
+        uint256 amount
+    ) external payable onlyRole(TREASURER_ROLE) {
         // validate the amount
         if (amount > treasury) revert InvalidAmount();
 
@@ -101,11 +97,10 @@ contract Bankable is Validateable, IBankable {
      * @return Price of deleting the squeak in wei.
      * @notice The token must exist.
      */
-    function _getDeleteFee(uint256 tokenId, uint256 confirmationThreshold)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getDeleteFee(
+        uint256 tokenId,
+        uint256 confirmationThreshold
+    ) internal view returns (uint256) {
         return
             ((block.number + confirmationThreshold) -
                 squeaks[tokenId].blockNumber) *
@@ -117,11 +112,9 @@ contract Bankable is Validateable, IBankable {
      * @param pool Pool of the viral squeak.
      * @return amount of each pool unit in wei.
      */
-    function _getPoolSharePrice(Pool storage pool)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getPoolSharePrice(
+        Pool storage pool
+    ) internal view returns (uint256) {
         return pool.amount / pool.shares;
     }
 
@@ -213,13 +206,13 @@ contract Bankable is Validateable, IBankable {
         Pool storage pool,
         uint256 sharePrice
     ) internal {
-        // get number of members in the pool
-        uint256 memberCount = pool.members.length();
+        // get number of passes in the pool
+        uint256 passes = pool.passes.length();
 
         // TODO: move this unbounded loop off-chain
-        for (uint256 i = 0; i < memberCount; i++) {
+        for (uint256 i = 0; i < passes; i++) {
             // calculate the member payout based on the number of shares & price
-            (address user, uint256 shares) = pool.members.at(i);
+            (address user, uint256 shares) = pool.passes.at(i);
             uint256 payout = sharePrice * shares;
 
             // subtract funds from the pool & pay out to the user

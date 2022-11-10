@@ -43,10 +43,9 @@ contract Accountable is Relatable, IAccountable {
     /**
      * @dev See {IAccountable-createAccount}.
      */
-    function createAccount(string calldata username)
-        external
-        isValidUsername(username)
-    {
+    function createAccount(
+        string calldata username
+    ) external isValidUsername(username) {
         // ensure account does not already exist
         if (users[msg.sender].status != Status.Unknown)
             revert AlreadyRegistered();
@@ -66,10 +65,10 @@ contract Accountable is Relatable, IAccountable {
     /**
      * @dev See {IAccountable-updateStatus}.
      */
-    function updateStatus(address account, Status status)
-        external
-        onlyRole(MODERATOR_ROLE)
-    {
+    function updateStatus(
+        address account,
+        Status status
+    ) external onlyRole(MODERATOR_ROLE) {
         // cannot set a status to unknown
         if (status == Status.Unknown) revert InvalidAccountStatus();
 
@@ -90,11 +89,9 @@ contract Accountable is Relatable, IAccountable {
     /**
      * @dev See {IAccountable-updateUsername}.
      */
-    function updateUsername(string calldata newUsername)
-        external
-        hasActiveAccount
-        isValidUsername(newUsername)
-    {
+    function updateUsername(
+        string calldata newUsername
+    ) external hasActiveAccount isValidUsername(newUsername) {
         User storage user = users[msg.sender];
 
         // clear the current username

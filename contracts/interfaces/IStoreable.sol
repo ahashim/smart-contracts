@@ -70,7 +70,7 @@ enum Relation {
  */
 interface IStoreable {
     /**
-     * @dev PoolPass a user that belongs to a Pool for a viral squeak.
+     * @dev PoolPass a pass that belongs to a Pool for a viral squeak.
      * @param account Address of the user.
      * @param shares Total number of shares.
      */
@@ -83,24 +83,24 @@ interface IStoreable {
      * @dev Pool tracks fund information for members of a viral squeak pool.
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
-     * @param members Enumerable map of addresses <=> share amount.
+     * @param passes Enumerable map of addresses <=> share amount.
      */
     struct Pool {
         uint256 amount;
         uint256 shares;
-        EnumerableMapUpgradeable.AddressToUintMap members;
+        EnumerableMapUpgradeable.AddressToUintMap passes;
     }
 
     /**
      * @dev PoolInfo keeps a succint overview of a Pool.
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
-     * @param memberCount Count of the members in the share.
+     * @param passCount Count of the pool passes belonging to the pool.
      */
     struct PoolInfo {
         uint256 amount;
         uint256 shares;
-        uint256 memberCount;
+        uint256 passCount;
     }
 
     /**

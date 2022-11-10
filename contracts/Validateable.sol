@@ -92,7 +92,9 @@ contract Validateable is
     /**
      * @dev See {IERC721AUpgradeable-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         override(AccessControlUpgradeable, ERC721AUpgradeable, IValidateable)

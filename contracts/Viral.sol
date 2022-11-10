@@ -42,12 +42,9 @@ contract Viral is Poolable, IViral {
     /**
      * @dev See {IViral-getViralityScore}.
      */
-    function getViralityScore(uint256 tokenId)
-        public
-        view
-        squeakExists(tokenId)
-        returns (uint64)
-    {
+    function getViralityScore(
+        uint256 tokenId
+    ) public view squeakExists(tokenId) returns (uint64) {
         Sentiment storage sentiment = sentiments[tokenId];
 
         uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
@@ -98,12 +95,9 @@ contract Viral is Poolable, IViral {
     /**
      * @dev See {IViral-isViral}.
      */
-    function isViral(uint256 tokenId)
-        external
-        view
-        squeakExists(tokenId)
-        returns (bool)
-    {
+    function isViral(
+        uint256 tokenId
+    ) external view squeakExists(tokenId) returns (bool) {
         return viralSqueaks.contains(tokenId);
     }
 
@@ -113,9 +107,10 @@ contract Viral is Poolable, IViral {
      * @param tokenId ID of the squeak.
      * @param sentiment Pointer to the {Sentiment} of the squeak.
      */
-    function _markViral(uint256 tokenId, Sentiment storage sentiment)
-        internal
-    {
+    function _markViral(
+        uint256 tokenId,
+        Sentiment storage sentiment
+    ) internal {
         Pool storage pool = pools[tokenId];
 
         // add squeak to the list of viral squeaks
@@ -139,7 +134,7 @@ contract Viral is Poolable, IViral {
 
             if (
                 i < resqueaksCount &&
-                !pool.members.contains(sentiment.resqueaks.at(i))
+                !pool.passes.contains(sentiment.resqueaks.at(i))
             )
                 // add all resqueakers who aren't likers
                 _createPoolPass(users[sentiment.resqueaks.at(i)], pool);

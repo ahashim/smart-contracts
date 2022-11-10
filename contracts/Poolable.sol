@@ -45,13 +45,13 @@ contract Poolable is Bankable, IPoolable {
         Pool storage pool = pools[tokenId];
 
         // validate that the account is in the pool
-        if (!pool.members.contains(msg.sender)) revert NotInPool();
+        if (!pool.passes.contains(msg.sender)) revert NotInPool();
 
         // remove the member & their shares from the pool
-        pool.shares -= pool.members.get(msg.sender);
-        pool.members.remove(msg.sender);
+        pool.shares -= pool.passes.get(msg.sender);
+        pool.passes.remove(msg.sender);
 
-        if (pool.members.length() == 0) {
+        if (pool.passes.length() == 0) {
             // drain the funds
             if (pool.amount > 0) _deposit(pool.amount);
 
@@ -66,33 +66,29 @@ contract Poolable is Bankable, IPoolable {
     /**
      * @dev See {IPoolable-getPoolInfo}.
      */
-    function getPoolInfo(uint256 tokenId)
-        external
-        view
-        returns (PoolInfo memory)
-    {
+    function getPoolInfo(
+        uint256 tokenId
+    ) external view returns (PoolInfo memory) {
         Pool storage pool = pools[tokenId];
 
-        return PoolInfo(pool.amount, pool.shares, pool.members.length());
+        return PoolInfo(pool.amount, pool.shares, pool.passes.length());
     }
 
     /**
      * @dev See {IPoolable-getPoolPasses}.
      */
-    function getPoolPasses(uint256 tokenId)
-        external
-        view
-        returns (PoolPass[] memory)
-    {
+    function getPoolPasses(
+        uint256 tokenId
+    ) external view returns (PoolPass[] memory) {
         Pool storage pool = pools[tokenId];
-        uint256 memberCount = pool.members.length();
+        uint256 passCount = pool.passes.length();
 
         // initialize array based on the number of pool members
-        PoolPass[] memory passes = new PoolPass[](memberCount);
+        PoolPass[] memory passes = new PoolPass[](passCount);
 
         // populate the array with member addresses from the pool
-        for (uint256 i = 0; i < memberCount; i++) {
-            (address account, uint256 shares) = pool.members.at(i);
+        for (uint256 i = 0; i < passCount; i++) {
+            (address account, uint256 shares) = pool.passes.at(i);
             passes[i] = PoolPass(account, shares);
         }
 
@@ -110,7 +106,7 @@ contract Poolable is Bankable, IPoolable {
         _increaseLevel(user, 1);
 
         // add them to the pool & increase its share count
-        pool.members.set(user.account, user.level);
+        pool.passes.set(user.account, user.level);
         pool.shares += user.level;
     }
 

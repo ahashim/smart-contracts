@@ -37,32 +37,30 @@ contract Relatable is Validateable, IRelatable {
     /**
      * @dev See {IRelatable-isBlocked}.
      */
-    function isBlocked(address userOne, address userTwo)
-        external
-        view
-        returns (bool)
-    {
+    function isBlocked(
+        address userOne,
+        address userTwo
+    ) external view returns (bool) {
         return blocked[userOne].contains(userTwo);
     }
 
     /**
      * @dev See {IRelatable-isFollowing}.
      */
-    function isFollowing(address userOne, address userTwo)
-        external
-        view
-        returns (bool)
-    {
+    function isFollowing(
+        address userOne,
+        address userTwo
+    ) external view returns (bool) {
         return followers[userTwo].contains(userOne);
     }
 
     /**
      * @dev See {IRelatable-updateRelationship}.
      */
-    function updateRelationship(address account, Relation action)
-        external
-        hasActiveAccount
-    {
+    function updateRelationship(
+        address account,
+        Relation action
+    ) external hasActiveAccount {
         // sender cannot update a relationship to themselves
         if (account == msg.sender) revert InvalidRelationship();
 

@@ -55,6 +55,8 @@ interface ICritter is IStoreable {
      * @dev Updates the value of a {Configuration} item.
      * @notice Only callable by ADMIN_ROLE.
      */
-    function updateConfiguration(Configuration configuration, uint256 amount)
-        external;
+    function updateConfiguration(
+        Configuration configuration,
+        uint256 amount
+    ) external;
 }
