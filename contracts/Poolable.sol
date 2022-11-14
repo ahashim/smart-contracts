@@ -107,19 +107,22 @@ contract Poolable is Bankable, IPoolable {
      * @dev Increases the level for a user, and adds them to the pool for the
      *      viral squeak.
      * @param user User to add to the pool.
-     * @param pool pointer to a {Pool}.
+     * @param poolShareCount Total number of shares of the pool.
+     * @param tokenId ID of the viral squeak.
      */
     function _createPoolPass(
         User storage user,
-        Pool storage pool,
-        EnumerableMapUpgradeable.AddressToUintMap storage passes
-    ) internal {
+        uint256 poolShareCount,
+        uint256 tokenId
+    ) internal returns (uint256) {
         // upgrade the users level
         _increaseLevel(user, 1);
 
         // add them to the pool & increase its share count
-        passes.set(user.account, user.level);
-        pool.shares += user.level;
+        poolPasses[tokenId].set(user.account, user.level);
+        poolShareCount += user.level;
+
+        return poolShareCount;
     }
 
     /**

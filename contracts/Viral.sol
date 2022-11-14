@@ -106,16 +106,13 @@ contract Viral is Poolable, IViral {
      *      interactors to a pool while upgrading their levels.
      * @param tokenId ID of the squeak.
      * @param sentiment Pointer to the {Sentiment} of the squeak.
+     * @param viralityScore Virality score of the squeak.
      */
     function _markViral(
         uint256 tokenId,
-        Sentiment storage sentiment
+        Sentiment storage sentiment,
+        uint64 viralityScore
     ) internal {
-        Pool storage pool = pools[tokenId];
-        EnumerableMapUpgradeable.AddressToUintMap storage passes = poolPasses[
-            tokenId
-        ];
-
         // add squeak to the list of viral squeaks
         viralSqueaks.add(tokenId);
 
@@ -129,22 +126,37 @@ contract Viral is Poolable, IViral {
             ? likesCount
             : resqueaksCount;
 
+        // initialize pool details
+        uint256 shareCount = 0;
+
         // TODO: move this unbounded loop off-chain
         for (uint256 i = 0; i < upperBound; i++) {
             if (i < likesCount)
                 // add all likers
-                _createPoolPass(users[sentiment.likes.at(i)], pool, passes);
+                shareCount = _createPoolPass(
+                    users[sentiment.likes.at(i)],
+                    shareCount,
+                    tokenId
+                );
 
             if (
                 i < resqueaksCount &&
                 !poolPasses[tokenId].contains(sentiment.resqueaks.at(i))
             )
                 // add all resqueakers who aren't likers
-                _createPoolPass(
+                shareCount = _createPoolPass(
                     users[sentiment.resqueaks.at(i)],
-                    pool,
-                    passes
+                    shareCount,
+                    tokenId
                 );
         }
+
+        // save pool to storage
+        pools[tokenId] = Pool(
+            0, // amount
+            shareCount,
+            block.timestamp, // solhint-disable-line not-rely-on-time
+            viralityScore
+        );
     }
 }

@@ -89,7 +89,7 @@ interface IStoreable {
         uint256 amount;
         uint256 shares;
         uint256 created;
-        uint8 viralityScore;
+        uint64 viralityScore;
     }
 
     /**

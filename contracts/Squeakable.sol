@@ -213,12 +213,13 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
         emit SqueakInteraction(tokenId, msg.sender, interaction);
 
         // check virality
+        uint64 score = getViralityScore(tokenId);
+
         if (
             !viralSqueaks.contains(tokenId) &&
-            getViralityScore(tokenId) >=
-            config[Configuration.ViralityThreshold]
+            score >= config[Configuration.ViralityThreshold]
         ) {
-            _markViral(tokenId, sentiment);
+            _markViral(tokenId, sentiment, score);
         }
 
         _makePayment(tokenId, interaction);
