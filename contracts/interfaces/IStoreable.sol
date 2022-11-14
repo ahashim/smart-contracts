@@ -70,16 +70,6 @@ enum Relation {
  */
 interface IStoreable {
     /**
-     * @dev PoolPassInfo a pass that belongs to a Pool for a viral squeak.
-     * @param account Address of the user.
-     * @param shares Total number of shares.
-     */
-    struct PoolPassInfo {
-        address account;
-        uint256 shares;
-    }
-
-    /**
      * @dev Pool tracks fund information for members of a viral squeak pool.
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
@@ -110,17 +100,13 @@ interface IStoreable {
     }
 
     /**
-     * @dev Squeak is the primary Critter message.
-     * @param blockNumber Block in which the squeak was created.
-     * @param author Address of the original author of the squeak.
-     * @param owner Address of the current owner of the squeak.
-     * @param content Message content of the squeak.
+     * @dev PoolPassInfo a pass that belongs to a Pool for a viral squeak.
+     * @param account Address of the user.
+     * @param shares Total number of shares.
      */
-    struct Squeak {
-        uint256 blockNumber;
-        address author;
-        address owner;
-        bytes content;
+    struct PoolPassInfo {
+        address account;
+        uint256 shares;
     }
 
     /**
@@ -147,6 +133,20 @@ interface IStoreable {
         uint256 dislikes;
         uint256 likes;
         uint256 resqueaks;
+    }
+
+    /**
+     * @dev Squeak is the primary Critter message.
+     * @param blockNumber Block in which the squeak was created.
+     * @param author Address of the original author of the squeak.
+     * @param owner Address of the current owner of the squeak.
+     * @param content Message content of the squeak.
+     */
+    struct Squeak {
+        uint256 blockNumber;
+        address author;
+        address owner;
+        bytes content;
     }
 
     /**
