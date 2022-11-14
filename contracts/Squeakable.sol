@@ -109,8 +109,9 @@ contract Squeakable is ReentrancyGuardUpgradeable, Viral, ISqueakable {
                 pool.amount = 0;
             }
 
-            // delete the pool
+            // delete the pool & passes
             delete pools[tokenId];
+            delete poolPasses[tokenId];
 
             // remove the squeak from the viral squeaks list
             viralSqueaks.remove(tokenId);

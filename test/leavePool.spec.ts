@@ -4,7 +4,7 @@ import type {
   BigNumber,
   Critter,
   PoolInfo,
-  PoolPass,
+  PoolPassInfo,
   SignerWithAddress,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
@@ -16,7 +16,7 @@ describe('leavePool', () => {
     critter: Critter,
     owner: SignerWithAddress,
     poolInfo: PoolInfo,
-    poolPasses: PoolPass[],
+    poolPasses: PoolPassInfo[],
     squeakId: BigNumber,
     treasuryBalance: BigNumber;
 

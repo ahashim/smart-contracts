@@ -42,21 +42,26 @@ contract Poolable is Bankable, IPoolable {
         // validate that a pool exists for the squeak
         if (!viralSqueaks.contains(tokenId)) revert PoolDoesNotExist();
 
-        Pool storage pool = pools[tokenId];
+        EnumerableMapUpgradeable.AddressToUintMap storage passes = poolPasses[
+            tokenId
+        ];
 
         // validate that the account is in the pool
-        if (!pool.passes.contains(msg.sender)) revert NotInPool();
+        if (!passes.contains(msg.sender)) revert NotInPool();
+
+        Pool storage pool = pools[tokenId];
 
         // remove the member & their shares from the pool
-        pool.shares -= pool.passes.get(msg.sender);
-        pool.passes.remove(msg.sender);
+        pool.shares -= passes.get(msg.sender);
+        passes.remove(msg.sender);
 
-        if (pool.passes.length() == 0) {
+        if (passes.length() == 0) {
             // drain the funds
             if (pool.amount > 0) _deposit(pool.amount);
 
             // delete the pool
             delete pools[tokenId];
+            delete poolPasses[tokenId];
 
             // remove the squeak from the viral squeaks list
             viralSqueaks.remove(tokenId);
@@ -71,7 +76,8 @@ contract Poolable is Bankable, IPoolable {
     ) external view returns (PoolInfo memory) {
         Pool storage pool = pools[tokenId];
 
-        return PoolInfo(pool.amount, pool.shares, pool.passes.length());
+        return
+            PoolInfo(pool.amount, pool.shares, poolPasses[tokenId].length());
     }
 
     /**
@@ -79,20 +85,22 @@ contract Poolable is Bankable, IPoolable {
      */
     function getPoolPasses(
         uint256 tokenId
-    ) external view returns (PoolPass[] memory) {
-        Pool storage pool = pools[tokenId];
-        uint256 passCount = pool.passes.length();
+    ) external view returns (PoolPassInfo[] memory) {
+        EnumerableMapUpgradeable.AddressToUintMap storage passes = poolPasses[
+            tokenId
+        ];
+        uint256 passCount = passes.length();
 
-        // initialize array based on the number of pool members
-        PoolPass[] memory passes = new PoolPass[](passCount);
+        // initialize array based on the number of pool passes
+        PoolPassInfo[] memory poolPassInfo = new PoolPassInfo[](passCount);
 
         // populate the array with member addresses from the pool
         for (uint256 i = 0; i < passCount; i++) {
-            (address account, uint256 shares) = pool.passes.at(i);
-            passes[i] = PoolPass(account, shares);
+            (address account, uint256 shares) = passes.at(i);
+            poolPassInfo[i] = PoolPassInfo(account, shares);
         }
 
-        return passes;
+        return poolPassInfo;
     }
 
     /**
@@ -101,12 +109,16 @@ contract Poolable is Bankable, IPoolable {
      * @param user User to add to the pool.
      * @param pool pointer to a {Pool}.
      */
-    function _createPoolPass(User storage user, Pool storage pool) internal {
+    function _createPoolPass(
+        User storage user,
+        Pool storage pool,
+        EnumerableMapUpgradeable.AddressToUintMap storage passes
+    ) internal {
         // upgrade the users level
         _increaseLevel(user, 1);
 
         // add them to the pool & increase its share count
-        pool.passes.set(user.account, user.level);
+        passes.set(user.account, user.level);
         pool.shares += user.level;
     }
 

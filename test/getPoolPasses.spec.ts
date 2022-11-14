@@ -3,7 +3,7 @@ import type {
   BigNumber,
   BigNumberObject,
   Critter,
-  PoolPass,
+  PoolPassInfo,
   SignerWithAddress,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
@@ -15,7 +15,7 @@ describe('getPoolPasses', () => {
     carlos: SignerWithAddress,
     critter: Critter,
     levels: BigNumberObject,
-    passes: PoolPass[],
+    passes: PoolPassInfo[],
     squeakId: BigNumber;
 
   const getPoolPassesFixture = async () => {

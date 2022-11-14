@@ -4,7 +4,7 @@ import type {
   BigNumber,
   Critter,
   PoolInfo,
-  PoolPass,
+  PoolPassInfo,
   SentimentCounts,
   SignerWithAddress,
   Squeak,
@@ -23,7 +23,7 @@ describe('deleteViralSqueak', () => {
     daphne: SignerWithAddress,
     poolInfo: PoolInfo,
     sentimentCounts: SentimentCounts,
-    passes: PoolPass[],
+    passes: PoolPassInfo[],
     squeak: Squeak;
 
   const deleteViralSqueakFixture = async () => {

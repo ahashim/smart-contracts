@@ -112,6 +112,9 @@ contract Viral is Poolable, IViral {
         Sentiment storage sentiment
     ) internal {
         Pool storage pool = pools[tokenId];
+        EnumerableMapUpgradeable.AddressToUintMap storage passes = poolPasses[
+            tokenId
+        ];
 
         // add squeak to the list of viral squeaks
         viralSqueaks.add(tokenId);
@@ -130,14 +133,18 @@ contract Viral is Poolable, IViral {
         for (uint256 i = 0; i < upperBound; i++) {
             if (i < likesCount)
                 // add all likers
-                _createPoolPass(users[sentiment.likes.at(i)], pool);
+                _createPoolPass(users[sentiment.likes.at(i)], pool, passes);
 
             if (
                 i < resqueaksCount &&
-                !pool.passes.contains(sentiment.resqueaks.at(i))
+                !poolPasses[tokenId].contains(sentiment.resqueaks.at(i))
             )
                 // add all resqueakers who aren't likers
-                _createPoolPass(users[sentiment.resqueaks.at(i)], pool);
+                _createPoolPass(
+                    users[sentiment.resqueaks.at(i)],
+                    pool,
+                    passes
+                );
         }
     }
 }

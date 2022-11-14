@@ -142,6 +142,12 @@ contract Storeable is Initializable, IStoreable {
     mapping(uint256 => Pool) internal pools;
 
     /**
+     * @dev Mapping of tokenId <=> (address <=> shares).
+     */
+    mapping(uint256 => EnumerableMapUpgradeable.AddressToUintMap)
+        internal poolPasses;
+
+    /**
      * @dev Mapping of tokenId <=> Sentiment.
      */
     mapping(uint256 => Sentiment) internal sentiments;

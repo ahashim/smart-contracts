@@ -206,13 +206,14 @@ contract Bankable is Validateable, IBankable {
         Pool storage pool,
         uint256 sharePrice
     ) internal {
-        // get number of passes in the pool
-        uint256 passes = pool.passes.length();
+        EnumerableMapUpgradeable.AddressToUintMap storage passes = poolPasses[
+            tokenId
+        ];
 
         // TODO: move this unbounded loop off-chain
-        for (uint256 i = 0; i < passes; i++) {
+        for (uint256 i = 0; i < passes.length(); i++) {
             // calculate the member payout based on the number of shares & price
-            (address user, uint256 shares) = pool.passes.at(i);
+            (address user, uint256 shares) = passes.at(i);
             uint256 payout = sharePrice * shares;
 
             // subtract funds from the pool & pay out to the user

@@ -70,11 +70,11 @@ enum Relation {
  */
 interface IStoreable {
     /**
-     * @dev PoolPass a pass that belongs to a Pool for a viral squeak.
+     * @dev PoolPassInfo a pass that belongs to a Pool for a viral squeak.
      * @param account Address of the user.
      * @param shares Total number of shares.
      */
-    struct PoolPass {
+    struct PoolPassInfo {
         address account;
         uint256 shares;
     }
@@ -88,7 +88,8 @@ interface IStoreable {
     struct Pool {
         uint256 amount;
         uint256 shares;
-        EnumerableMapUpgradeable.AddressToUintMap passes;
+        uint256 created;
+        uint8 viralityScore;
     }
 
     /**

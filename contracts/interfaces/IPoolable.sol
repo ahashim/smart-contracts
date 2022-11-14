@@ -47,5 +47,5 @@ interface IPoolable is IStoreable {
      */
     function getPoolPasses(
         uint256 tokenId
-    ) external view returns (PoolPass[] memory);
+    ) external view returns (PoolPassInfo[] memory);
 }

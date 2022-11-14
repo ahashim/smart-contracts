@@ -5,7 +5,7 @@ import type {
   BigNumberObject,
   Critter,
   PoolInfo,
-  PoolPass,
+  PoolPassInfo,
   SignerWithAddress,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
@@ -159,7 +159,7 @@ describe('interact viral', () => {
     // everybody who either liked or resqueaked the viral squeak
     const interactors = [ahmed, barbie, carlos, daphne];
     const passes = (await critter.getPoolPasses(squeakId)).map(
-      (p: PoolPass) => p.account
+      (p: PoolPassInfo) => p.account
     );
 
     interactors.forEach((account) => {
