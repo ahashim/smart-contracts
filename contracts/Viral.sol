@@ -155,7 +155,7 @@ contract Viral is Poolable, IViral {
         pools[tokenId] = Pool(
             0, // amount
             shareCount,
-            block.timestamp, // solhint-disable-line not-rely-on-time
+            block.number,
             viralityScore
         );
     }

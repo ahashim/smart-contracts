@@ -83,13 +83,14 @@ interface IStoreable {
      * @dev Pool tracks fund information for members of a viral squeak pool.
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
-     * @param passes Enumerable map of addresses <=> share amount.
+     * @param blockNumber When the pool was created.
+     * @param score Virality score of the associatd squeak.
      */
     struct Pool {
         uint256 amount;
         uint256 shares;
-        uint256 created;
-        uint64 viralityScore;
+        uint256 blockNumber;
+        uint64 score;
     }
 
     /**
@@ -97,11 +98,15 @@ interface IStoreable {
      * @param amount Total pool funds in wei.
      * @param shares Total number of shares.
      * @param passCount Count of the pool passes belonging to the pool.
+     * @param blockNumber When the pool was created.
+     * @param score Virality score of the associatd squeak.
      */
     struct PoolInfo {
         uint256 amount;
         uint256 shares;
         uint256 passCount;
+        uint256 blockNumber;
+        uint64 score;
     }
 
     /**

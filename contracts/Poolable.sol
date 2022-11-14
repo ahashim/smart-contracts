@@ -77,7 +77,13 @@ contract Poolable is Bankable, IPoolable {
         Pool storage pool = pools[tokenId];
 
         return
-            PoolInfo(pool.amount, pool.shares, poolPasses[tokenId].length());
+            PoolInfo(
+                pool.amount,
+                pool.shares,
+                poolPasses[tokenId].length(),
+                pool.blockNumber,
+                pool.score
+            );
     }
 
     /**

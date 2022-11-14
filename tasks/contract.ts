@@ -1,4 +1,5 @@
 import type { Result } from '@ethersproject/abi';
+import { TransactionReceipt } from '@ethersproject/providers';
 import type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import type {
   BigNumber,
@@ -12,12 +13,12 @@ import { task } from 'hardhat/config';
 
 import {
   BASE_TOKEN_URI,
+  BONUS,
   CONTRACT_NAME,
   CONTRACT_SYMBOL,
+  MAX_LEVEL,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
-  BONUS,
-  MAX_LEVEL,
   POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
@@ -201,8 +202,8 @@ task(
     interaction: Interaction;
     signer: SignerWithAddress;
     squeakId: BigNumber;
-  }): Promise<void> => {
-    await contract.connect(signer).interact(squeakId, interaction, {
+  }): Promise<ContractTransaction> => {
+    return await contract.connect(signer).interact(squeakId, interaction, {
       value: await contract.fees(interaction),
     });
   }

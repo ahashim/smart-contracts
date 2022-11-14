@@ -44,6 +44,8 @@ export type PoolInfo = {
   amount: BigNumber;
   shares: BigNumber;
   passCount: BigNumber;
+  blockNumber: BigNumber;
+  score: BigNumber;
 };
 
 export type RelationshipCounts = {

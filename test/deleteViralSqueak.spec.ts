@@ -139,6 +139,9 @@ describe('deleteViralSqueak', () => {
     expect(passes).to.be.empty;
     expect(poolInfo.amount).to.eq(0);
     expect(poolInfo.shares).to.eq(0);
+    expect(poolInfo.score).to.eq(0);
+    expect(poolInfo.blockNumber).to.eq(0);
+    expect(poolInfo.passCount).to.eq(0);
   });
 
   it('deposits the delete fee into the treasury', async () => {

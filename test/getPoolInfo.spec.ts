@@ -2,6 +2,7 @@ import { BONUS, PLATFORM_FEE, PLATFORM_TAKE_RATE } from '../constants';
 import { Interaction } from '../enums';
 import type {
   BigNumber,
+  ContractTransaction,
   Critter,
   PoolInfo,
   SignerWithAddress,
@@ -15,7 +16,8 @@ describe('getPoolInfo', () => {
     critter: Critter,
     invalidPool: PoolInfo,
     poolInfo: PoolInfo,
-    squeakId: BigNumber;
+    squeakId: BigNumber,
+    tx: ContractTransaction;
 
   const getPoolInfoFixture = async () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
@@ -50,7 +52,7 @@ describe('getPoolInfo', () => {
     });
 
     // carlos likes it, and thus makes it eligible for virality
-    await run('interact', {
+    tx = await run('interact', {
       contract: critter,
       interaction: Interaction.Like,
       signer: carlos,
@@ -60,11 +62,12 @@ describe('getPoolInfo', () => {
     return {
       poolInfo: await critter.getPoolInfo(squeakId),
       invalidPool: await critter.getPoolInfo(420),
+      tx,
     };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ poolInfo, invalidPool } = await loadFixture(getPoolInfoFixture));
+    ({ poolInfo, invalidPool, tx } = await loadFixture(getPoolInfoFixture));
   });
 
   it('returns the funds available in the pool', () => {
@@ -84,6 +87,16 @@ describe('getPoolInfo', () => {
   it('returns the number of users in the pool', () => {
     // ahmed, barbie, and carlos are all in the pool
     expect(poolInfo.passCount).to.eq(3);
+  });
+
+  it('returns the number of the block in which the pool was created', () => {
+    // ahmed, barbie, and carlos are all in the pool
+    expect(poolInfo.blockNumber).to.eq(tx.blockNumber);
+  });
+
+  it('returns the virality score of the squeak associated with the pool', () => {
+    // ahmed, barbie, and carlos are all in the pool
+    expect(poolInfo.score).to.eq(58);
   });
 
   it('returns zero values for an unknown pool', () => {

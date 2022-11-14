@@ -2,6 +2,7 @@ import { MODERATOR_ROLE, PLATFORM_TAKE_RATE } from '../constants';
 import { Interaction } from '../enums';
 import type {
   BigNumber,
+  ContractTransaction,
   Critter,
   PoolInfo,
   PoolPassInfo,
@@ -18,7 +19,8 @@ describe('leavePool', () => {
     poolInfo: PoolInfo,
     poolPasses: PoolPassInfo[],
     squeakId: BigNumber,
-    treasuryBalance: BigNumber;
+    treasuryBalance: BigNumber,
+    tx: ContractTransaction;
 
   const leavePoolFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
@@ -55,7 +57,7 @@ describe('leavePool', () => {
 
     // carlos resqueaks it and propels it into virality, thus adding themselves
     // and barbie to the pool
-    await run('interact', {
+    tx = await run('interact', {
       contract: critter,
       interaction: Interaction.Resqueak,
       signer: carlos,
@@ -70,13 +72,13 @@ describe('leavePool', () => {
       poolInfo: await critter.getPoolInfo(squeakId),
       poolPasses: await critter.getPoolPasses(squeakId),
       treasuryBalance: await critter.treasury(),
+      tx,
     };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, poolInfo, poolPasses, treasuryBalance } = await loadFixture(
-      leavePoolFixture
-    ));
+    ({ critter, poolInfo, poolPasses, treasuryBalance, tx } =
+      await loadFixture(leavePoolFixture));
   });
 
   it('lets a user leave the pool', () => {
@@ -88,7 +90,7 @@ describe('leavePool', () => {
   });
 
   it('deletes the pool & removes it from virality when all members leave', async () => {
-    let { amount, shares, passCount } = poolInfo;
+    let { amount, blockNumber, passCount, shares, score } = poolInfo;
 
     // get expected pool amount after Carlos propels the squeak to virality
     const interactionFee = await critter.fees(Interaction.Like);
@@ -98,16 +100,21 @@ describe('leavePool', () => {
     // squeak is still viral, and pool exists
     expect(await critter.isViral(squeakId)).to.be.true;
     expect(amount).to.eq(expectedPoolAmount);
+    expect(blockNumber).to.eq(tx.blockNumber);
     expect(shares).to.eq(5);
     expect(passCount).to.eq(1);
+    expect(score).to.eq(83);
 
     // remaining member leaves
     await critter.connect(carlos).leavePool(squeakId);
-    ({ amount, shares, passCount } = await critter.getPoolInfo(squeakId));
+    ({ amount, blockNumber, shares, passCount, score } =
+      await critter.getPoolInfo(squeakId));
 
     expect(amount).to.eq(0);
+    expect(blockNumber).to.eq(0);
     expect(shares).to.eq(0);
     expect(passCount).to.eq(0);
+    expect(score).to.eq(0);
     expect(await critter.isViral(squeakId)).to.be.false;
     expect((await critter.treasury()).sub(treasuryBalance)).to.eq(
       expectedPoolAmount
