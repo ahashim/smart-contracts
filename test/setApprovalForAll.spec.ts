@@ -49,10 +49,4 @@ describe('setApprovalForAll', () => {
       .to.emit(critter, 'ApprovalForAll')
       .withArgs(ahmed.address, barbie.address, true);
   });
-
-  it('reverts if the owner and operator are the same address', async () => {
-    await expect(
-      critter.setApprovalForAll(ahmed.address, true)
-    ).to.be.revertedWithCustomError(critter, 'ApproveToCaller');
-  });
 });
