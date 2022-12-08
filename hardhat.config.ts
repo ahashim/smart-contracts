@@ -2,6 +2,7 @@
 import 'dotenv/config';
 import '@nomicfoundation/hardhat-toolbox';
 import '@openzeppelin/hardhat-upgrades';
+import '@symblox/hardhat-abi-gen';
 import 'hardhat-contract-sizer';
 import 'hardhat-watcher';
 // task files
@@ -12,6 +13,9 @@ import './tasks/network';
 import type { HardhatUserConfig } from 'hardhat/config';
 
 const config: HardhatUserConfig = {
+  abiExporter: {
+    clear: true,
+  },
   contractSizer: {
     strict: true,
   },

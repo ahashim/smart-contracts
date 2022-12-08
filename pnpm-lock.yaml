@@ -9,6 +9,7 @@ specifiers:
   '@nomiclabs/hardhat-ethers': ^2.2.1
   '@openzeppelin/contracts-upgradeable': ^4.8.0
   '@openzeppelin/hardhat-upgrades': ^1.21.0
+  '@symblox/hardhat-abi-gen': ^0.2.0
   '@typechain/ethers-v5': ^10.1.1
   '@typechain/hardhat': ^6.1.4
   '@types/chai': ^4.3.4
@@ -54,6 +55,7 @@ devDependencies:
   '@nomiclabs/hardhat-ethers': 2.2.1_gsql6crh4t5imixi2nhgp37drm
   '@openzeppelin/contracts-upgradeable': 4.8.0
   '@openzeppelin/hardhat-upgrades': 1.21.0_zsghc7akyueggztikmiy47hpry
+  '@symblox/hardhat-abi-gen': 0.2.0_hardhat@2.12.3
   '@typechain/ethers-v5': 10.1.1_smufkffb6t7im2kajasb2dheve
   '@typechain/hardhat': 6.1.4_dyvvmzk3e44kiaxai7tx45odfy
   '@types/chai': 4.3.4
@@ -1024,6 +1026,15 @@ packages:
     resolution: {integrity: sha512-6dKnHZn7fg/iQATVEzqyUOyEidbn05q7YA2mQ9hC0MMXhhV3/JrsxmFSYZAcr7j1yUP700LLhTruvJ3MiQmjJg==}
     dependencies:
       antlr4ts: 0.5.0-alpha.4
+    dev: true
+
+  /@symblox/hardhat-abi-gen/0.2.0_hardhat@2.12.3:
+    resolution: {integrity: sha512-M1+/hxiaLLUSMCf9pPBhzZdWlS1NcxpbwdQjDTYu6taN1nRNBhtUi+sC4iHBwUU112ewXgmAVxYm3LG7PdADhQ==}
+    engines: {node: '>=12.10.0'}
+    peerDependencies:
+      hardhat: ^2.0.0
+    dependencies:
+      hardhat: 2.12.3_2dtigtkb225m7ii7q45utxqwgi
     dev: true
 
   /@tsconfig/node10/1.0.8:
