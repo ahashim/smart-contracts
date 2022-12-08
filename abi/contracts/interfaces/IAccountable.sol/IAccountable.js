@@ -1,103 +1,103 @@
 export default [
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "string",
-        "name": "username",
-        "type": "string"
-      }
+        indexed: true,
+        internalType: 'bytes32',
+        name: 'username',
+        type: 'bytes32',
+      },
     ],
-    "name": "AccountCreated",
-    "type": "event"
+    name: 'AccountCreated',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        indexed: false,
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "string",
-        "name": "newUsername",
-        "type": "string"
-      }
+        indexed: false,
+        internalType: 'string',
+        name: 'newUsername',
+        type: 'string',
+      },
     ],
-    "name": "AccountUsernameUpdated",
-    "type": "event"
+    name: 'AccountUsernameUpdated',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        indexed: false,
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "enum Status",
-        "name": "status",
-        "type": "uint8"
-      }
+        indexed: false,
+        internalType: 'enum Status',
+        name: 'status',
+        type: 'uint8',
+      },
     ],
-    "name": "StatusUpdated",
-    "type": "event"
+    name: 'StatusUpdated',
+    type: 'event',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "string",
-        "name": "username",
-        "type": "string"
-      }
+        internalType: 'string',
+        name: 'username',
+        type: 'string',
+      },
     ],
-    "name": "createAccount",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'createAccount',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
       },
       {
-        "internalType": "enum Status",
-        "name": "status",
-        "type": "uint8"
-      }
+        internalType: 'enum Status',
+        name: 'status',
+        type: 'uint8',
+      },
     ],
-    "name": "updateStatus",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'updateStatus',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "string",
-        "name": "newUsername",
-        "type": "string"
-      }
+        internalType: 'string',
+        name: 'newUsername',
+        type: 'string',
+      },
     ],
-    "name": "updateUsername",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
+    name: 'updateUsername',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ];

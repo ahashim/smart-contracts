@@ -1,157 +1,157 @@
 export default [
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "author",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'author',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "blockNumber",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'blockNumber',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "string",
-        "name": "content",
-        "type": "string"
-      }
+        indexed: false,
+        internalType: 'string',
+        name: 'content',
+        type: 'string',
+      },
     ],
-    "name": "SqueakCreated",
-    "type": "event"
+    name: 'SqueakCreated',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "deletedBy",
-        "type": "address"
-      }
+        indexed: false,
+        internalType: 'address',
+        name: 'deletedBy',
+        type: 'address',
+      },
     ],
-    "name": "SqueakDeleted",
-    "type": "event"
+    name: 'SqueakDeleted',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
+        indexed: false,
+        internalType: 'address',
+        name: 'sender',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "enum Interaction",
-        "name": "interaction",
-        "type": "uint8"
-      }
+        indexed: false,
+        internalType: 'enum Interaction',
+        name: 'interaction',
+        type: 'uint8',
+      },
     ],
-    "name": "SqueakInteraction",
-    "type": "event"
+    name: 'SqueakInteraction',
+    type: 'event',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "string",
-        "name": "content",
-        "type": "string"
-      }
+        internalType: 'string',
+        name: 'content',
+        type: 'string',
+      },
     ],
-    "name": "createSqueak",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'createSqueak',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
     ],
-    "name": "deleteSqueak",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
+    name: 'deleteSqueak',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
     ],
-    "name": "getSentimentCounts",
-    "outputs": [
+    name: 'getSentimentCounts',
+    outputs: [
       {
-        "components": [
+        components: [
           {
-            "internalType": "uint256",
-            "name": "dislikes",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'dislikes',
+            type: 'uint256',
           },
           {
-            "internalType": "uint256",
-            "name": "likes",
-            "type": "uint256"
+            internalType: 'uint256',
+            name: 'likes',
+            type: 'uint256',
           },
           {
-            "internalType": "uint256",
-            "name": "resqueaks",
-            "type": "uint256"
-          }
+            internalType: 'uint256',
+            name: 'resqueaks',
+            type: 'uint256',
+          },
         ],
-        "internalType": "struct IStoreable.SentimentCounts",
-        "name": "",
-        "type": "tuple"
-      }
+        internalType: 'struct IStoreable.SentimentCounts',
+        name: '',
+        type: 'tuple',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
       },
       {
-        "internalType": "enum Interaction",
-        "name": "interaction",
-        "type": "uint8"
-      }
+        internalType: 'enum Interaction',
+        name: 'interaction',
+        type: 'uint8',
+      },
     ],
-    "name": "interact",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  }
+    name: 'interact',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
 ];
