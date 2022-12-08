@@ -42,7 +42,10 @@ describe('createAccount', () => {
   it('emits an AccountCreated event', async () => {
     await expect(tx)
       .to.emit(critter, 'AccountCreated')
-      .withArgs(ahmed.address, user.username);
+      .withArgs(
+        ahmed.address,
+        ethers.utils.formatBytes32String(user.username)
+      );
   });
 
   it('reverts when the username is empty', async () => {

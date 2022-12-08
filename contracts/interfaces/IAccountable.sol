@@ -29,7 +29,7 @@ interface IAccountable is IStoreable {
      * @param account Address of the account.
      * @param username Username of the account.
      */
-    event AccountCreated(address account, string username);
+    event AccountCreated(address indexed account, bytes32 indexed username);
 
     /**
      * @dev Emitted after updating an account status.

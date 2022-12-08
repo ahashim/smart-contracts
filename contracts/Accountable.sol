@@ -50,6 +50,9 @@ contract Accountable is Relatable, IAccountable {
         if (users[msg.sender].status != Status.Unknown)
             revert AlreadyRegistered();
 
+        // convert to bytes
+        bytes memory rawUsername = bytes(username);
+
         // create an active User for the account
         users[msg.sender] = User(msg.sender, Status.Active, 1, username);
 
@@ -59,7 +62,7 @@ contract Accountable is Relatable, IAccountable {
         // bypassing the admin-check on grantRole so each user can mint squeaks
         _grantRole(MINTER_ROLE, msg.sender);
 
-        emit AccountCreated(msg.sender, username);
+        emit AccountCreated(msg.sender, bytes32(rawUsername));
     }
 
     /**
