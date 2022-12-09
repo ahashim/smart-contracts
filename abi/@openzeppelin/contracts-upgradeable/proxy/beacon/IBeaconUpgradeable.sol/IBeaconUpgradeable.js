@@ -1,15 +1,15 @@
 export default [
   {
-    inputs: [],
-    name: 'implementation',
-    outputs: [
+    "inputs": [],
+    "name": "implementation",
+    "outputs": [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    stateMutability: 'view',
-    type: 'function',
-  },
+    "stateMutability": "view",
+    "type": "function"
+  }
 ];
