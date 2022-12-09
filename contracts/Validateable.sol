@@ -63,12 +63,15 @@ contract Validateable is
      * @param username Text of the username.
      */
     modifier isValidUsername(string calldata username) {
+        // convert to bytes in order to check length
+        bytes memory rawUsername = bytes(username);
+
         // validate existence
-        if (bytes(username).length == 0) {
+        if (rawUsername.length == 0) {
             revert UsernameEmpty();
         }
         // validate length
-        if (bytes(username).length > 32) {
+        if (rawUsername.length > 32) {
             revert UsernameTooLong();
         }
         // validate availability
