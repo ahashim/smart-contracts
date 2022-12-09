@@ -1,166 +1,166 @@
 export default [
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "version",
-        "type": "uint8"
-      }
+        indexed: false,
+        internalType: 'uint8',
+        name: 'version',
+        type: 'uint8',
+      },
     ],
-    "name": "Initialized",
-    "type": "event"
+    name: 'Initialized',
+    type: 'event',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
     ],
-    "name": "addresses",
-    "outputs": [
+    name: 'addresses',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "baseTokenURI",
-    "outputs": [
+    inputs: [],
+    name: 'baseTokenURI',
+    outputs: [
       {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "enum Configuration",
-        "name": "",
-        "type": "uint8"
-      }
+        internalType: 'enum Configuration',
+        name: '',
+        type: 'uint8',
+      },
     ],
-    "name": "config",
-    "outputs": [
+    name: 'config',
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "enum Interaction",
-        "name": "",
-        "type": "uint8"
-      }
+        internalType: 'enum Interaction',
+        name: '',
+        type: 'uint8',
+      },
     ],
-    "name": "fees",
-    "outputs": [
+    name: 'fees',
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "name": "squeaks",
-    "outputs": [
+    name: 'squeaks',
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "blockNumber",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'blockNumber',
+        type: 'uint256',
       },
       {
-        "internalType": "address",
-        "name": "author",
-        "type": "address"
+        internalType: 'address',
+        name: 'author',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
       },
       {
-        "internalType": "bytes",
-        "name": "content",
-        "type": "bytes"
-      }
+        internalType: 'bytes',
+        name: 'content',
+        type: 'bytes',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "treasury",
-    "outputs": [
+    inputs: [],
+    name: 'treasury',
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "name": "users",
-    "outputs": [
+    name: 'users',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
       },
       {
-        "internalType": "enum Status",
-        "name": "status",
-        "type": "uint8"
+        internalType: 'enum Status',
+        name: 'status',
+        type: 'uint8',
       },
       {
-        "internalType": "uint256",
-        "name": "level",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'level',
+        type: 'uint256',
       },
       {
-        "internalType": "string",
-        "name": "username",
-        "type": "string"
-      }
+        internalType: 'string',
+        name: 'username',
+        type: 'string',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+    stateMutability: 'view',
+    type: 'function',
+  },
 ];

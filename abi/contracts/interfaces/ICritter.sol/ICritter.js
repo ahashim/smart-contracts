@@ -1,73 +1,73 @@
 export default [
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
+        internalType: 'string',
+        name: 'name',
+        type: 'string',
       },
       {
-        "internalType": "string",
-        "name": "symbol",
-        "type": "string"
+        internalType: 'string',
+        name: 'symbol',
+        type: 'string',
       },
       {
-        "internalType": "string",
-        "name": "baseURI",
-        "type": "string"
+        internalType: 'string',
+        name: 'baseURI',
+        type: 'string',
       },
       {
-        "internalType": "uint256",
-        "name": "platformFee",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'platformFee',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "takeRate",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'takeRate',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "poolThreshold",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'poolThreshold',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "viralThreshold",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'viralThreshold',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "bonus",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: 'bonus',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "maxLevel",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: 'maxLevel',
+        type: 'uint256',
+      },
     ],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "enum Configuration",
-        "name": "configuration",
-        "type": "uint8"
+        internalType: 'enum Configuration',
+        name: 'configuration',
+        type: 'uint8',
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
     ],
-    "name": "updateConfiguration",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
+    name: 'updateConfiguration',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ];
