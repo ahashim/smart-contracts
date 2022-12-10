@@ -5,6 +5,7 @@ import { Status } from './enums';
 
 // exports
 export type { Critter } from './typechain-types/contracts';
+export type { Result } from '@ethersproject/abi';
 export type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 export type {
   BigNumber,
@@ -12,6 +13,7 @@ export type {
   ContractFactory,
   ContractReceipt,
   ContractTransaction,
+  Event,
 } from 'ethers';
 
 export type BigNumberObject = {
