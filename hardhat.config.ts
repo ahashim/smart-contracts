@@ -15,6 +15,7 @@ import type { HardhatUserConfig } from 'hardhat/config';
 const config: HardhatUserConfig = {
   abiExporter: {
     clear: true,
+    only: ['Critter.sol'],
   },
   contractSizer: {
     strict: true,
