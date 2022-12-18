@@ -16,7 +16,7 @@
    limitations under the License.
 
 */
-pragma solidity 0.8.16;
+pragma solidity 0.8.17;
 
 import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 
