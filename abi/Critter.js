@@ -1071,11 +1071,6 @@ export default [
     inputs: [
       {
         internalType: 'uint256',
-        name: 'platformTakeRate',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
         name: 'poolPayoutThreshold',
         type: 'uint256',
       },

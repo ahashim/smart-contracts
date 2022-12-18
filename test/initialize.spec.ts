@@ -1,7 +1,6 @@
 import {
   BONUS,
   MAX_LEVEL,
-  PLATFORM_TAKE_RATE,
   POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
@@ -19,13 +18,7 @@ describe('initialize', () => {
 
   it('reverts when trying to initialize the contract more than once', async () => {
     await expect(
-      critter.initialize(
-        PLATFORM_TAKE_RATE,
-        POOL_THRESHOLD,
-        VIRALITY_THRESHOLD,
-        BONUS,
-        MAX_LEVEL
-      )
+      critter.initialize(POOL_THRESHOLD, VIRALITY_THRESHOLD, BONUS, MAX_LEVEL)
     ).to.be.reverted;
   });
 });

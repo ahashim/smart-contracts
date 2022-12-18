@@ -3,11 +3,6 @@ export default [
     inputs: [
       {
         internalType: 'uint256',
-        name: 'takeRate',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
         name: 'poolThreshold',
         type: 'uint256',
       },

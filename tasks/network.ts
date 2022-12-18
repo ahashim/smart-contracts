@@ -44,25 +44,21 @@ task(
   ): Promise<Contract> => {
     const initializer: ContractInitializer = [];
     const defaults = {
-      takeRate: {
-        value: PLATFORM_TAKE_RATE,
-        index: 0,
-      },
       PoolThreshold: {
         value: POOL_THRESHOLD,
-        index: 1,
+        index: 0,
       },
       viralityThreshold: {
         value: VIRALITY_THRESHOLD,
-        index: 2,
+        index: 1,
       },
       bonus: {
         value: BONUS,
-        index: 3,
+        index: 2,
       },
       maxLevel: {
         value: MAX_LEVEL,
-        index: 4,
+        index: 3,
       },
     };
 
