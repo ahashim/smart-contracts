@@ -56,8 +56,8 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
      */
     function initialize(
         uint256 dividendThreshold,
-        uint256 viralityThreshold,
-        uint256 maxLevel
+        uint256 maxLevel,
+        uint256 viralityThreshold
     ) public initializerERC721A initializer {
         // 3rd party
         __AccessControl_init();

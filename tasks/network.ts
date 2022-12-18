@@ -1,13 +1,9 @@
 import { task } from 'hardhat/config';
 
 import {
-  BASE_TOKEN_URI,
-  BONUS,
   CONTRACT_NAME,
   MAX_LEVEL,
-  PLATFORM_FEE,
-  PLATFORM_TAKE_RATE,
-  POOL_THRESHOLD,
+  DIVIDEND_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
 import type {
@@ -45,15 +41,15 @@ task(
     const initializer: ContractInitializer = [];
     const defaults = {
       dividendThreshold: {
-        value: POOL_THRESHOLD,
+        value: DIVIDEND_THRESHOLD,
         index: 0,
-      },
-      viralityThreshold: {
-        value: VIRALITY_THRESHOLD,
-        index: 1,
       },
       maxLevel: {
         value: MAX_LEVEL,
+        index: 1,
+      },
+      viralityThreshold: {
+        value: VIRALITY_THRESHOLD,
         index: 2,
       },
     };

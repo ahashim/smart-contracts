@@ -1076,12 +1076,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "viralityThreshold",
+        "name": "maxLevel",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "maxLevel",
+        "name": "viralityThreshold",
         "type": "uint256"
       }
     ],

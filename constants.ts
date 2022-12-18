@@ -21,14 +21,14 @@ export const BONUS = 3;
 export const MAX_LEVEL = 50;
 
 // thresholds
-export const POOL_THRESHOLD = utils.parseEther('0.1');
+export const DIVIDEND_THRESHOLD = utils.parseEther('0.1');
 export const VIRALITY_THRESHOLD = 95;
 
 // initializer
 export const CONTRACT_INITIALIZER = [
-  POOL_THRESHOLD,
-  VIRALITY_THRESHOLD,
+  DIVIDEND_THRESHOLD,
   MAX_LEVEL,
+  VIRALITY_THRESHOLD,
 ];
 
 // test variables

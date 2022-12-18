@@ -3,7 +3,7 @@ import {
   MAX_LEVEL,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
-  POOL_THRESHOLD,
+  DIVIDEND_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
 import { Configuration } from '../enums';
@@ -46,7 +46,7 @@ describe('config', () => {
   });
 
   it('gets the pool payout threshold', () => {
-    expect(config.dividendThreshold).to.eq(POOL_THRESHOLD);
+    expect(config.dividendThreshold).to.eq(DIVIDEND_THRESHOLD);
   });
 
   it('gets the max level a user can reach', () => {

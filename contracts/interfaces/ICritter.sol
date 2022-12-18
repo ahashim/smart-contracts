@@ -26,15 +26,16 @@ import './IStoreable.sol';
 interface ICritter is IStoreable {
     /**
      * @dev Upgradeable "constructor" function to initialize sub-contracts.
-     * @param dividendThreshold Minimum amount required to pay out pool dividends.
+     * @param dividendThreshold Minimum amount required to pay out pool
+     *      dividends.
+     * @param maxLevel The maximum level a user can reach.
      * @param viralThreshold Minimum score that a squeak must have to achieve
      *      virality.
-     * @param maxLevel The maximum level a user can reach.
      */
     function initialize(
         uint256 dividendThreshold,
-        uint256 viralThreshold,
-        uint256 maxLevel
+        uint256 maxLevel,
+        uint256 viralThreshold
     ) external;
 
     /**

@@ -30,8 +30,8 @@ export type Config = {
 
 export type ContractInitializerOverrides = {
   dividendThreshold: BigNumber;
-  viralityThreshold: number;
   maxLevel: number;
+  viralityThreshold: number;
 };
 
 export type ContractInitializer = (string | number | BigNumber)[];

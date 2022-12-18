@@ -1,4 +1,8 @@
-import { MAX_LEVEL, POOL_THRESHOLD, VIRALITY_THRESHOLD } from '../constants';
+import {
+  DIVIDEND_THRESHOLD,
+  MAX_LEVEL,
+  VIRALITY_THRESHOLD,
+} from '../constants';
 import type { Critter } from '../types';
 import { expect, loadFixture, run } from './setup';
 
@@ -13,7 +17,7 @@ describe('initialize', () => {
 
   it('reverts when trying to initialize the contract more than once', async () => {
     await expect(
-      critter.initialize(POOL_THRESHOLD, VIRALITY_THRESHOLD, MAX_LEVEL)
+      critter.initialize(DIVIDEND_THRESHOLD, MAX_LEVEL, VIRALITY_THRESHOLD)
     ).to.be.reverted;
   });
 });
