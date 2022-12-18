@@ -37,7 +37,7 @@ contract Storeable is Initializable, IStoreable {
      */
     // solhint-disable-next-line func-name-mixedcase
     function __Storeable_init(
-        uint256 poolPayoutThreshold,
+        uint256 dividendThreshold,
         uint256 maxLevel,
         uint256 viralityThreshold
     ) internal onlyInitializing {
@@ -51,7 +51,7 @@ contract Storeable is Initializable, IStoreable {
         config[Configuration.DeleteRate] = platformFee;
         config[Configuration.PlatformTakeRate] = 10; // percent of platform fee
         config[Configuration.MaxLevel] = maxLevel;
-        config[Configuration.PoolPayoutThreshold] = poolPayoutThreshold;
+        config[Configuration.PoolPayoutThreshold] = dividendThreshold;
         config[Configuration.ViralityBonus] = 3; // levels
         config[Configuration.ViralityThreshold] = viralityThreshold;
 

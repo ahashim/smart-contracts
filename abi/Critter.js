@@ -1071,7 +1071,7 @@ export default [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "poolPayoutThreshold",
+        "name": "dividendThreshold",
         "type": "uint256"
       },
       {

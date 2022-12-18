@@ -22,7 +22,7 @@ export type BigNumberObject = {
 
 export type Config = {
   platformTakeRate: BigNumber;
-  poolPayoutThreshold: BigNumber;
+  dividendThreshold: BigNumber;
   maxLevel: BigNumber;
   viralityBonus: BigNumber;
   viralityThreshold: BigNumber;

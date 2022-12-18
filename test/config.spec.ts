@@ -20,7 +20,7 @@ describe('config', () => {
       config: {
         deleteRate: await critter.config(Configuration.DeleteRate),
         platformTakeRate: await critter.config(Configuration.PlatformTakeRate),
-        poolPayoutThreshold: await critter.config(
+        dividendThreshold: await critter.config(
           Configuration.PoolPayoutThreshold
         ),
         maxLevel: await critter.config(Configuration.MaxLevel),
@@ -46,7 +46,7 @@ describe('config', () => {
   });
 
   it('gets the pool payout threshold', () => {
-    expect(config.poolPayoutThreshold).to.eq(POOL_THRESHOLD);
+    expect(config.dividendThreshold).to.eq(POOL_THRESHOLD);
   });
 
   it('gets the max level a user can reach', () => {

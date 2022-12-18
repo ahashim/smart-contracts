@@ -55,7 +55,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
      * @dev See {ICritter-initialize}.
      */
     function initialize(
-        uint256 poolPayoutThreshold,
+        uint256 dividendThreshold,
         uint256 viralityThreshold,
         uint256 maxLevel
     ) public initializerERC721A initializer {
@@ -66,7 +66,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
         __UUPSUpgradeable_init();
 
         // Storage
-        __Storeable_init(poolPayoutThreshold, maxLevel, viralityThreshold);
+        __Storeable_init(dividendThreshold, maxLevel, viralityThreshold);
 
         // Logic
         __Accountable_init();
