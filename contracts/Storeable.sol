@@ -37,7 +37,7 @@ contract Storeable is Initializable, IStoreable {
      */
     // solhint-disable-next-line func-name-mixedcase
     function __Storeable_init(
-        string calldata baseURI,
+        string memory baseURI,
         uint256 platformFee,
         uint256 platformTakeRate,
         uint256 poolPayoutThreshold,

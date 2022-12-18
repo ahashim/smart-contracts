@@ -55,7 +55,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
      * @dev See {ICritter-initialize}.
      */
     function initialize(
-        string calldata baseURI,
         uint256 platformFee,
         uint256 platformTakeRate,
         uint256 poolPayoutThreshold,
@@ -71,7 +70,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
 
         // Storage
         __Storeable_init(
-            baseURI,
+            'https://critter.fyi/token/',
             platformFee,
             platformTakeRate,
             poolPayoutThreshold,

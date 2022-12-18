@@ -1070,11 +1070,6 @@ export default [
   {
     inputs: [
       {
-        internalType: 'string',
-        name: 'baseURI',
-        type: 'string',
-      },
-      {
         internalType: 'uint256',
         name: 'platformFee',
         type: 'uint256',

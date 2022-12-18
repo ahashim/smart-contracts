@@ -29,7 +29,6 @@ export type Config = {
 };
 
 export type ContractInitializerOverrides = {
-  baseTokenURI: string;
   platformFee: BigNumber;
   takeRate: number;
   PoolThreshold: BigNumber;
