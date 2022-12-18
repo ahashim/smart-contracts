@@ -4,7 +4,6 @@ import {
   BASE_TOKEN_URI,
   BONUS,
   CONTRACT_NAME,
-  CONTRACT_SYMBOL,
   MAX_LEVEL,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
@@ -45,41 +44,33 @@ task(
   ): Promise<Contract> => {
     const initializer: ContractInitializer = [];
     const defaults = {
-      name: {
-        value: CONTRACT_NAME,
-        index: 0,
-      },
-      symbol: {
-        value: CONTRACT_SYMBOL,
-        index: 1,
-      },
       baseTokenURI: {
         value: BASE_TOKEN_URI,
-        index: 2,
+        index: 0,
       },
       platformFee: {
         value: PLATFORM_FEE,
-        index: 3,
+        index: 1,
       },
       takeRate: {
         value: PLATFORM_TAKE_RATE,
-        index: 4,
+        index: 2,
       },
       PoolThreshold: {
         value: POOL_THRESHOLD,
-        index: 5,
+        index: 3,
       },
       viralityThreshold: {
         value: VIRALITY_THRESHOLD,
-        index: 6,
+        index: 4,
       },
       bonus: {
         value: BONUS,
-        index: 7,
+        index: 5,
       },
       maxLevel: {
         value: MAX_LEVEL,
-        index: 8,
+        index: 6,
       },
     };
 
@@ -100,7 +91,7 @@ task(
 
     // get contract factory instance
     const factory: ContractFactory = await ethers.getContractFactory(
-      defaults.name.value
+      CONTRACT_NAME
     );
 
     // deploy contract via upgradeable proxy

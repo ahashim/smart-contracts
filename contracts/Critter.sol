@@ -55,8 +55,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
      * @dev See {ICritter-initialize}.
      */
     function initialize(
-        string calldata name,
-        string calldata symbol,
         string calldata baseURI,
         uint256 platformFee,
         uint256 platformTakeRate,
@@ -67,7 +65,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
     ) public initializerERC721A initializer {
         // 3rd party
         __AccessControl_init();
-        __ERC721A_init(name, symbol);
+        __ERC721A_init('Critter', 'CRTTR');
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
 

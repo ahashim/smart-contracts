@@ -26,8 +26,6 @@ import './IStoreable.sol';
 interface ICritter is IStoreable {
     /**
      * @dev Upgradeable "constructor" function to initialize sub-contracts.
-     * @param name Contract name.
-     * @param symbol Contract symbol.
      * @param baseURI Prefix for all token URI's.
      * @param platformFee Default amount in wei to charge per interaction.
      * @param takeRate Percentage of the interactio fee deposited into the
@@ -40,8 +38,6 @@ interface ICritter is IStoreable {
      * @param maxLevel The maximum level a user can reach.
      */
     function initialize(
-        string calldata name,
-        string calldata symbol,
         string calldata baseURI,
         uint256 platformFee,
         uint256 takeRate,

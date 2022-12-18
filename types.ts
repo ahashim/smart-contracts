@@ -29,8 +29,6 @@ export type Config = {
 };
 
 export type ContractInitializerOverrides = {
-  name: string;
-  symbol: string;
   baseTokenURI: string;
   platformFee: BigNumber;
   takeRate: number;
