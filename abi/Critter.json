@@ -1081,11 +1081,6 @@
       },
       {
         "internalType": "uint256",
-        "name": "viralityBonus",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "maxLevel",
         "type": "uint256"
       }

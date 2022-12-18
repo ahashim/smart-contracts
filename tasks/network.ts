@@ -52,13 +52,9 @@ task(
         value: VIRALITY_THRESHOLD,
         index: 1,
       },
-      bonus: {
-        value: BONUS,
-        index: 2,
-      },
       maxLevel: {
         value: MAX_LEVEL,
-        index: 3,
+        index: 2,
       },
     };
 

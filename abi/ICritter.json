@@ -13,11 +13,6 @@
       },
       {
         "internalType": "uint256",
-        "name": "bonus",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "maxLevel",
         "type": "uint256"
       }

@@ -29,14 +29,11 @@ interface ICritter is IStoreable {
      * @param poolThreshold Minimum amount required to pay out pool dividends.
      * @param viralThreshold Minimum score that a squeak must have to achieve
      *      virality.
-     * @param bonus Number of levels a user increases when they propel a
-     *      squeak to virality.
      * @param maxLevel The maximum level a user can reach.
      */
     function initialize(
         uint256 poolThreshold,
         uint256 viralThreshold,
-        uint256 bonus,
         uint256 maxLevel
     ) external;
 

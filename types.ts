@@ -31,7 +31,6 @@ export type Config = {
 export type ContractInitializerOverrides = {
   PoolThreshold: BigNumber;
   viralityThreshold: number;
-  bonus: number;
   maxLevel: number;
 };
 

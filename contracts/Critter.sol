@@ -57,7 +57,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
     function initialize(
         uint256 poolPayoutThreshold,
         uint256 viralityThreshold,
-        uint256 viralityBonus,
         uint256 maxLevel
     ) public initializerERC721A initializer {
         // 3rd party
@@ -73,7 +72,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
             10,
             poolPayoutThreshold,
             maxLevel,
-            viralityBonus,
+            3,
             viralityThreshold
         );
 
