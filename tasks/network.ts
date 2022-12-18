@@ -100,9 +100,6 @@ subtask(
     );
 
     // deploy
-    const libViralityScore = await viralityScore.deploy();
-    await libViralityScore.deployed();
-
-    return libViralityScore;
+    return await viralityScore.deploy();
   }
 );

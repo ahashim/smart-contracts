@@ -15,7 +15,6 @@ describe('upgradeTo', () => {
     // deploy library
     const libraryFactory = await ethers.getContractFactory(LIB_VIRALITY_SCORE);
     const libViralityScore = await libraryFactory.deploy();
-    await libViralityScore.deployed();
 
     // deploy contract
     const contractFactory = await ethers.getContractFactory(CONTRACT_NAME, {
