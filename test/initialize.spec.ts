@@ -1,7 +1,6 @@
 import {
   BONUS,
   MAX_LEVEL,
-  PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
   POOL_THRESHOLD,
   VIRALITY_THRESHOLD,
@@ -21,7 +20,6 @@ describe('initialize', () => {
   it('reverts when trying to initialize the contract more than once', async () => {
     await expect(
       critter.initialize(
-        PLATFORM_FEE,
         PLATFORM_TAKE_RATE,
         POOL_THRESHOLD,
         VIRALITY_THRESHOLD,

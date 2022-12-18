@@ -29,7 +29,6 @@ export type Config = {
 };
 
 export type ContractInitializerOverrides = {
-  platformFee: BigNumber;
   takeRate: number;
   PoolThreshold: BigNumber;
   viralityThreshold: number;

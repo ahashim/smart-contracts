@@ -1071,11 +1071,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "platformFee",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "platformTakeRate",
         "type": "uint256"
       },

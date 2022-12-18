@@ -26,7 +26,6 @@ import './IStoreable.sol';
 interface ICritter is IStoreable {
     /**
      * @dev Upgradeable "constructor" function to initialize sub-contracts.
-     * @param platformFee Default amount in wei to charge per interaction.
      * @param takeRate Percentage of the interactio fee deposited into the
      *      treasury.
      * @param poolThreshold Minimum amount required to pay out pool dividends.
@@ -37,7 +36,6 @@ interface ICritter is IStoreable {
      * @param maxLevel The maximum level a user can reach.
      */
     function initialize(
-        uint256 platformFee,
         uint256 takeRate,
         uint256 poolThreshold,
         uint256 viralThreshold,
