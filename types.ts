@@ -29,7 +29,7 @@ export type Config = {
 };
 
 export type ContractInitializerOverrides = {
-  PoolThreshold: BigNumber;
+  dividendThreshold: BigNumber;
   viralityThreshold: number;
   maxLevel: number;
 };

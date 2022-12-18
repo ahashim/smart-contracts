@@ -44,7 +44,7 @@ task(
   ): Promise<Contract> => {
     const initializer: ContractInitializer = [];
     const defaults = {
-      PoolThreshold: {
+      dividendThreshold: {
         value: POOL_THRESHOLD,
         index: 0,
       },

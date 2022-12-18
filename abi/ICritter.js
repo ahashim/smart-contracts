@@ -3,7 +3,7 @@ export default [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "poolThreshold",
+        "name": "dividendThreshold",
         "type": "uint256"
       },
       {
