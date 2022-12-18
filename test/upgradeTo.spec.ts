@@ -1,36 +1,50 @@
-import { CONTRACT_INITIALIZER, CONTRACT_NAME } from '../constants';
-import type {
-  Contract,
-  ContractFactory,
-  Critter,
-  SignerWithAddress,
-} from '../types';
+import {
+  CONTRACT_INITIALIZER,
+  CONTRACT_NAME,
+  LIB_VIRALITY_SCORE,
+} from '../constants';
+import type { Contract, Critter, SignerWithAddress } from '../types';
 import { ethers, expect, loadFixture, upgrades } from './setup';
 
 describe('upgradeTo', () => {
-  let ahmed: SignerWithAddress,
-    critter: Critter,
-    factory: ContractFactory,
-    upgradedContract: Contract;
+  let ahmed: SignerWithAddress, critter: Critter, upgradedContract: Contract;
 
   const upgradeToFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    factory = await ethers.getContractFactory(CONTRACT_NAME);
+
+    // deploy library
+    const libraryFactory = await ethers.getContractFactory(LIB_VIRALITY_SCORE);
+    const libViralityScore = await libraryFactory.deploy();
+    await libViralityScore.deployed();
+
+    // deploy contract
+    const contractFactory = await ethers.getContractFactory(CONTRACT_NAME, {
+      libraries: {
+        ViralityScore: libViralityScore.address,
+      },
+    });
     critter = (await upgrades.deployProxy(
-      factory,
-      CONTRACT_INITIALIZER
+      contractFactory,
+      CONTRACT_INITIALIZER,
+      {
+        unsafeAllow: ['external-library-linking'],
+      }
     )) as Critter;
 
     // owner upgrades the contract
-    upgradedContract = await upgrades.upgradeProxy(critter.address, factory);
+    upgradedContract = await upgrades.upgradeProxy(
+      critter.address,
+      contractFactory,
+      {
+        unsafeAllow: ['external-library-linking'],
+      }
+    );
 
-    return { critter, factory, upgradedContract };
+    return { critter, upgradedContract };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, factory, upgradedContract } = await loadFixture(
-      upgradeToFixture
-    ));
+    ({ critter, upgradedContract } = await loadFixture(upgradeToFixture));
   });
 
   it('upgrades the contract', () => {

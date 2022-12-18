@@ -18,17 +18,15 @@
 */
 pragma solidity 0.8.16;
 
-import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 import './Poolable.sol';
 import './interfaces/IViral.sol';
+import './libraries/ViralityScore.sol';
 
 /**
  * @title Viral
  * @dev A contract to handle virality for squeaks.
  */
 contract Viral is Poolable, IViral {
-    using ABDKMath64x64 for uint256;
-    using ABDKMath64x64 for int128;
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
@@ -55,38 +53,12 @@ contract Viral is Poolable, IViral {
 
         // squeak requires 1 like & 1 resqueak to be considered for virality
         if (likes > 0 && resqueaks > 0) {
-            // ensure no division by zero when taking the ratio of likes to
-            // dislikes
-            if (dislikes == 0) dislikes = 1;
-
-            // convert values to signed int128 for 64.64 fixed point
-            // calculations
-            int128 signedLikes = likes.fromUInt();
-            int128 signedDislikes = dislikes.fromUInt();
-            int128 signedResqueaks = resqueaks.fromUInt();
-            int128 signedBlockDelta = blockDelta.fromUInt();
-
-            // calculate each virality component
-            int128 ratio = signedLikes.div(signedDislikes).sqrt();
-            int128 total = signedLikes.add(signedDislikes).ln();
-            int128 amplifier = signedResqueaks.ln().div(signedResqueaks);
-
-            // multiply all components to get the order
-            int128 order = ratio.mul(total).mul(amplifier);
-
-            // determine coefficient based on the order
-            int128 coefficient = order != 0
-                ? uint256(1).fromUInt().div(order)
-                : uint256(0).fromUInt();
-
-            // calculate final virality score
-            int128 numerator = uint256(1000).fromUInt();
-            int128 denominator = signedBlockDelta.add(coefficient).add(
-                uint256(10).fromUInt()
+            score = ViralityScore.calculate(
+                blockDelta,
+                dislikes,
+                likes,
+                resqueaks
             );
-
-            // convert back to uint64
-            score = numerator.div(denominator).toUInt();
         }
 
         return score;

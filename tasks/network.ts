@@ -1,9 +1,10 @@
-import { task } from 'hardhat/config';
+import { subtask, task } from 'hardhat/config';
 
 import {
   CONTRACT_NAME,
-  MAX_LEVEL,
   DIVIDEND_THRESHOLD,
+  LIB_VIRALITY_SCORE,
+  MAX_LEVEL,
   VIRALITY_THRESHOLD,
 } from '../constants';
 import type {
@@ -36,7 +37,7 @@ task(
   'Deploys contracts via an upgradeable proxy from the owner EOA',
   async (
     overrides: ContractInitializerOverrides,
-    { ethers, upgrades }
+    { ethers, run, upgrades }
   ): Promise<Contract> => {
     const initializer: ContractInitializer = [];
     const defaults = {
@@ -69,12 +70,39 @@ task(
       initializer[defaults[key].index] = defaults[key].value;
     }
 
+    // deploy ViralityScore library
+    const libViralityScore: Contract = await run('deploy-library');
+
     // get contract factory instance
-    const factory: ContractFactory = await ethers.getContractFactory(
-      CONTRACT_NAME
+    const critter: ContractFactory = await ethers.getContractFactory(
+      CONTRACT_NAME,
+      {
+        libraries: {
+          ViralityScore: libViralityScore.address,
+        },
+      }
     );
 
     // deploy contract via upgradeable proxy
-    return (await upgrades.deployProxy(factory, initializer)) as Contract;
+    return (await upgrades.deployProxy(critter, initializer, {
+      unsafeAllow: ['external-library-linking'],
+    })) as Contract;
+  }
+);
+
+subtask(
+  'deploy-library',
+  'Deploys libraries required by the smart contract',
+  async (_, { ethers }): Promise<Contract> => {
+    // get virality score library factory instance
+    const viralityScore: ContractFactory = await ethers.getContractFactory(
+      LIB_VIRALITY_SCORE
+    );
+
+    // deploy
+    const libViralityScore = await viralityScore.deploy();
+    await libViralityScore.deployed();
+
+    return libViralityScore;
   }
 );
