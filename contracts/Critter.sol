@@ -66,15 +66,7 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
         __UUPSUpgradeable_init();
 
         // Storage
-        __Storeable_init(
-            'https://critter.fyi/token/',
-            80000000000000,
-            10,
-            poolPayoutThreshold,
-            maxLevel,
-            3,
-            viralityThreshold
-        );
+        __Storeable_init(poolPayoutThreshold, maxLevel, viralityThreshold);
 
         // Logic
         __Accountable_init();

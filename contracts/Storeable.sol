@@ -37,22 +37,22 @@ contract Storeable is Initializable, IStoreable {
      */
     // solhint-disable-next-line func-name-mixedcase
     function __Storeable_init(
-        string memory baseURI,
-        uint256 platformFee,
-        uint256 platformTakeRate,
         uint256 poolPayoutThreshold,
         uint256 maxLevel,
-        uint256 viralityBonus,
         uint256 viralityThreshold
     ) internal onlyInitializing {
-        baseTokenURI = baseURI;
+        // base platform fee in wei
+        uint256 platformFee = 80000000000000;
+
+        // set contract base url
+        baseTokenURI = 'https://critter.fyi/token/';
 
         // set contract config values
         config[Configuration.DeleteRate] = platformFee;
-        config[Configuration.PlatformTakeRate] = platformTakeRate;
+        config[Configuration.PlatformTakeRate] = 10; // percent of platform fee
         config[Configuration.MaxLevel] = maxLevel;
         config[Configuration.PoolPayoutThreshold] = poolPayoutThreshold;
-        config[Configuration.ViralityBonus] = viralityBonus;
+        config[Configuration.ViralityBonus] = 3; // levels
         config[Configuration.ViralityThreshold] = viralityThreshold;
 
         // set default interaction fees
