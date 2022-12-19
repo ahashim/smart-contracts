@@ -18,8 +18,6 @@
 */
 pragma solidity 0.8.17;
 
-import 'hardhat/console.sol';
-
 /**
  * @title UsernameRegex
  * @dev A library to validate Critter usernames via the following regular
