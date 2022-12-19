@@ -41,7 +41,9 @@ error SqueakEmpty();
 error SqueakTooLong();
 error TransferFailed();
 error UsernameEmpty();
+error UsernameInvalid();
 error UsernameTooLong();
+error UsernameTooShort();
 error UsernameUnavailable();
 
 /**

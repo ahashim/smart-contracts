@@ -22,6 +22,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './Storeable.sol';
 import './interfaces/IValidateable.sol';
+import './libraries/UsernameRegex.sol';
 
 /**
  * @title Validateable
@@ -71,8 +72,15 @@ contract Validateable is
             revert UsernameEmpty();
         }
         // validate length
+        if (rawUsername.length < 3) {
+            revert UsernameTooShort();
+        }
         if (rawUsername.length > 32) {
             revert UsernameTooLong();
+        }
+        // valiate content
+        if (!UsernameRegex.matches(rawUsername)) {
+            revert UsernameInvalid();
         }
         // validate availability
         if (addresses[username] != address(0)) {

@@ -171,7 +171,17 @@
   },
   {
     "inputs": [],
+    "name": "UsernameInvalid",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "UsernameTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UsernameTooShort",
     "type": "error"
   },
   {

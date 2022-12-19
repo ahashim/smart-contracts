@@ -22,7 +22,9 @@ task(
     accounts: SignerWithAddress[];
   }): Promise<void> => {
     accounts.forEach(async (account, index) => {
-      await contract.connect(account).createAccount(index.toString());
+      await contract
+        .connect(account)
+        .createAccount('account_' + index.toString());
     });
   }
 );

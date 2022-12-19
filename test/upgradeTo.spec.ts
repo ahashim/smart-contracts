@@ -1,10 +1,6 @@
-import {
-  CONTRACT_INITIALIZER,
-  CONTRACT_NAME,
-  LIB_VIRALITY_SCORE,
-} from '../constants';
+import { CONTRACT_INITIALIZER, CONTRACT_NAME } from '../constants';
 import type { Contract, Critter, SignerWithAddress } from '../types';
-import { ethers, expect, loadFixture, upgrades } from './setup';
+import { ethers, expect, loadFixture, run, upgrades } from './setup';
 
 describe('upgradeTo', () => {
   let ahmed: SignerWithAddress, critter: Critter, upgradedContract: Contract;
@@ -12,13 +8,15 @@ describe('upgradeTo', () => {
   const upgradeToFixture = async () => {
     [, ahmed] = await ethers.getSigners();
 
-    // deploy library
-    const libraryFactory = await ethers.getContractFactory(LIB_VIRALITY_SCORE);
-    const libViralityScore = await libraryFactory.deploy();
+    // deploy librar
+    const { libUsernameRegex, libViralityScore } = await run(
+      'deploy-libraries'
+    );
 
     // deploy contract
     const contractFactory = await ethers.getContractFactory(CONTRACT_NAME, {
       libraries: {
+        UsernameRegex: libUsernameRegex.address,
         ViralityScore: libViralityScore.address,
       },
     });

@@ -7,8 +7,6 @@ import type {
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('updateUsername', () => {
-  const longUsername =
-    'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?';
   const oldUsername = 'ahmed';
   const newUsername = 'anakin';
 
@@ -65,10 +63,31 @@ describe('updateUsername', () => {
     );
   });
 
+  it('reverts when the username is too short', async () => {
+    await expect(critter.updateUsername('0x')).to.be.revertedWithCustomError(
+      critter,
+      'UsernameTooShort'
+    );
+  });
+
   it('reverts when the username is too long', async () => {
     await expect(
-      critter.updateUsername(longUsername)
+      critter.updateUsername(
+        'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?'
+      )
     ).to.be.revertedWithCustomError(critter, 'UsernameTooLong');
+  });
+
+  it('reverts when the username has invalid characters', async () => {
+    await expect(
+      critter.updateUsername('@hmed')
+    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+  });
+
+  it('reverts when the username has spaces', async () => {
+    await expect(
+      critter.updateUsername(' a h m e d ')
+    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
   });
 
   it('reverts when the address already has an account', async () => {

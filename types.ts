@@ -1,5 +1,5 @@
 // imports
-import type { BigNumber } from 'ethers';
+import type { BigNumber, Contract } from 'ethers';
 
 import { Status } from './enums';
 
@@ -36,12 +36,22 @@ export type ContractInitializerOverrides = {
 
 export type ContractInitializer = (string | number | BigNumber)[];
 
+export type LibraryContracts = {
+  libUsernameRegex: Contract;
+  libViralityScore: Contract;
+};
+
 export type PoolInfo = {
   amount: BigNumber;
   shares: BigNumber;
   passCount: BigNumber;
   blockNumber: BigNumber;
   score: BigNumber;
+};
+
+export type PoolPassInfo = {
+  account: string;
+  shares: BigNumber;
 };
 
 export type RelationshipCounts = {
@@ -53,11 +63,6 @@ export type SentimentCounts = {
   dislikes: BigNumber;
   likes: BigNumber;
   resqueaks: BigNumber;
-};
-
-export type PoolPassInfo = {
-  account: string;
-  shares: BigNumber;
 };
 
 export type Squeak = {

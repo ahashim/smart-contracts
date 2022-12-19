@@ -6,6 +6,7 @@ export const CONTRACT_NAME = 'Critter';
 export const CONTRACT_SYMBOL = 'CRTTR';
 
 // libraries
+export const LIB_USERNAME_REGEX = 'UsernameRegex';
 export const LIB_VIRALITY_SCORE = 'ViralityScore';
 
 // fees (in wei)

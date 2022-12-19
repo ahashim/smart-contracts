@@ -3,6 +3,7 @@ import { subtask, task } from 'hardhat/config';
 import {
   CONTRACT_NAME,
   DIVIDEND_THRESHOLD,
+  LIB_USERNAME_REGEX,
   LIB_VIRALITY_SCORE,
   MAX_LEVEL,
   VIRALITY_THRESHOLD,
@@ -12,6 +13,7 @@ import type {
   ContractFactory,
   ContractInitializer,
   ContractInitializerOverrides,
+  LibraryContracts,
 } from '../types';
 
 task('accounts', 'Prints the list of accounts', async (_, hre) => {
@@ -71,13 +73,16 @@ task(
     }
 
     // deploy ViralityScore library
-    const libViralityScore: Contract = await run('deploy-library');
+    const { libUsernameRegex, libViralityScore } = await run(
+      'deploy-libraries'
+    );
 
     // get contract factory instance
     const critter: ContractFactory = await ethers.getContractFactory(
       CONTRACT_NAME,
       {
         libraries: {
+          UsernameRegex: libUsernameRegex.address,
           ViralityScore: libViralityScore.address,
         },
       }
@@ -85,21 +90,27 @@ task(
 
     // deploy contract via upgradeable proxy
     return (await upgrades.deployProxy(critter, initializer, {
+      // necessary due to linking contracts to an UUPS proxy
       unsafeAllow: ['external-library-linking'],
     })) as Contract;
   }
 );
 
 subtask(
-  'deploy-library',
-  'Deploys libraries required by the smart contract',
-  async (_, { ethers }): Promise<Contract> => {
-    // get virality score library factory instance
+  'deploy-libraries',
+  'Deploys libraries required by the main contract',
+  async (_, { ethers }): Promise<LibraryContracts> => {
+    const usernameRegex: ContractFactory = await ethers.getContractFactory(
+      LIB_USERNAME_REGEX
+    );
     const viralityScore: ContractFactory = await ethers.getContractFactory(
       LIB_VIRALITY_SCORE
     );
 
     // deploy
-    return await viralityScore.deploy();
+    return {
+      libUsernameRegex: await usernameRegex.deploy(),
+      libViralityScore: await viralityScore.deploy(),
+    };
   }
 );

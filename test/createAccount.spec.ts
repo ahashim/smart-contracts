@@ -49,18 +49,37 @@ describe('createAccount', () => {
   });
 
   it('reverts when the username is empty', async () => {
-    await expect(critter.createAccount('')).to.be.revertedWithCustomError(
-      critter,
-      'UsernameEmpty'
-    );
+    await expect(
+      critter.connect(barbie).createAccount('')
+    ).to.be.revertedWithCustomError(critter, 'UsernameEmpty');
+  });
+
+  it('reverts when the username is too short', async () => {
+    await expect(
+      critter.connect(barbie).createAccount('0x')
+    ).to.be.revertedWithCustomError(critter, 'UsernameTooShort');
   });
 
   it('reverts when the username is too long', async () => {
     await expect(
-      critter.createAccount(
-        'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?'
-      )
+      critter
+        .connect(barbie)
+        .createAccount(
+          'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?'
+        )
     ).to.be.revertedWithCustomError(critter, 'UsernameTooLong');
+  });
+
+  it('reverts when the username has invalid characters', async () => {
+    await expect(
+      critter.connect(barbie).createAccount('b@rbi3')
+    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+  });
+
+  it('reverts when the username has spaces', async () => {
+    await expect(
+      critter.connect(barbie).createAccount(' b a r b i e ')
+    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
   });
 
   it('reverts when the username has been taken', async () => {
@@ -70,8 +89,9 @@ describe('createAccount', () => {
   });
 
   it('reverts when the address already has an account', async () => {
-    await expect(
-      critter.createAccount('a-rock')
-    ).to.be.revertedWithCustomError(critter, 'AlreadyRegistered');
+    await expect(critter.createAccount('yoda')).to.be.revertedWithCustomError(
+      critter,
+      'AlreadyRegistered'
+    );
   });
 });
