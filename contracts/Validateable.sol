@@ -71,6 +71,10 @@ contract Validateable is
         if (rawUsername.length == 0) {
             revert UsernameEmpty();
         }
+        // validate availability
+        if (addresses[username] != address(0)) {
+            revert UsernameUnavailable();
+        }
         // validate length
         if (rawUsername.length < 3) {
             revert UsernameTooShort();
@@ -81,10 +85,6 @@ contract Validateable is
         // valiate content
         if (!UsernameRegex.matches(rawUsername)) {
             revert UsernameInvalid();
-        }
-        // validate availability
-        if (addresses[username] != address(0)) {
-            revert UsernameUnavailable();
         }
         _;
     }
