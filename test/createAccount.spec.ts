@@ -70,7 +70,13 @@ describe('createAccount', () => {
     ).to.be.revertedWithCustomError(critter, 'UsernameTooLong');
   });
 
-  it('reverts when the username has invalid characters', async () => {
+  it('reverts when the username has uppercase characters', async () => {
+    await expect(
+      critter.connect(barbie).createAccount('Babs')
+    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+  });
+
+  it('reverts when the username has symbols', async () => {
     await expect(
       critter.connect(barbie).createAccount('b@rbi3')
     ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');

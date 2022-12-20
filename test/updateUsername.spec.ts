@@ -78,7 +78,13 @@ describe('updateUsername', () => {
     ).to.be.revertedWithCustomError(critter, 'UsernameTooLong');
   });
 
-  it('reverts when the username has invalid characters', async () => {
+  it('reverts when the username has uppercase characters', async () => {
+    await expect(
+      critter.updateUsername('Ahmed')
+    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+  });
+
+  it('reverts when the username has symbols', async () => {
     await expect(
       critter.updateUsername('@hmed')
     ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');

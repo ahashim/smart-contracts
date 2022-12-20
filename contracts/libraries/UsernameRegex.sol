@@ -21,7 +21,7 @@ pragma solidity 0.8.17;
 /**
  * @title UsernameRegex
  * @dev A library to validate Critter usernames via the following regular
- *      expression: /[a-zA-Z0-9_]/
+ *      expression: /[a-z_0-9]/
  */
 library UsernameRegex {
     function matches(bytes calldata input) public pure returns (bool) {
@@ -32,7 +32,6 @@ library UsernameRegex {
 
             if (
                 (c >= 48 && c <= 57) || // 0-9
-                (c >= 65 && c <= 90) || // A-Z
                 c == 95 || // _
                 (c >= 97 && c <= 122) // a-z
             ) {
