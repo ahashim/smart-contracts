@@ -47,14 +47,7 @@ const config: HardhatUserConfig = {
   },
   watcher: {
     ci: {
-      files: [
-        'constants.ts',
-        'contracts/**/*.sol',
-        'enums.ts',
-        'tasks/**/*.ts',
-        'test/**/*.ts',
-        'types.ts',
-      ],
+      files: ['contracts/**/*.sol', 'test/**/*.ts'],
       tasks: ['test'],
     },
   },
