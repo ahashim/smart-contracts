@@ -19,8 +19,8 @@
 pragma solidity 0.8.17;
 
 import './Relatable.sol';
-import 'hardhat/console.sol';
 import './interfaces/IAccountable.sol';
+import './libraries/Validation.sol';
 
 /**
  * @title Accountable
@@ -39,6 +39,15 @@ contract Accountable is Relatable, IAccountable {
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(TREASURER_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
+    }
+
+    /**
+     * @dev Validates a username.
+     * @param username string.
+     */
+    modifier isValidUsername(string calldata username) {
+        Validation.username(addresses[username], username);
+        _;
     }
 
     /**

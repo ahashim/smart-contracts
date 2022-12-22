@@ -18,13 +18,40 @@
 */
 pragma solidity 0.8.17;
 
+// errors
+error UsernameEmpty();
+error UsernameInvalid();
+error UsernameTooLong();
+error UsernameTooShort();
+error UsernameUnavailable();
+
 /**
- * @title UsernameRegex
- * @dev A library to validate Critter usernames via the following regular
- *      expression: /[a-z_0-9]/
+ * @title Validation
+ * @dev A library to validate Critter data structures.
  */
-library UsernameRegex {
-    function matches(bytes calldata input) public pure returns (bool) {
+library Validation {
+    /**
+     * @dev Validates a username.
+     * @param account Ethereum address of the Critter account.
+     * @param input The username string.
+     */
+    function username(address account, string calldata input) public pure {
+        bytes memory rawInput = bytes(input);
+
+        if (rawInput.length == 0) revert UsernameEmpty();
+        if (account != address(0)) revert UsernameUnavailable();
+        if (rawInput.length < 3) revert UsernameTooShort();
+        if (rawInput.length > 32) revert UsernameTooLong();
+        if (!_matchUsernameRegex(rawInput)) revert UsernameInvalid();
+    }
+
+    /**
+     * @dev Tests a username against the regular expression: /[a-z_0-9]/
+     * @param input The username string.
+     */
+    function _matchUsernameRegex(
+        bytes memory input
+    ) private pure returns (bool) {
         bool isValid = true;
 
         for (uint i = 0; i < input.length; i++) {

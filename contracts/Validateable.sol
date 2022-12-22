@@ -22,7 +22,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './Storeable.sol';
 import './interfaces/IValidateable.sol';
-import './libraries/UsernameRegex.sol';
+import './libraries/Validation.sol';
 
 /**
  * @title Validateable
@@ -55,36 +55,6 @@ contract Validateable is
         // validate active status
         if (account.status != Status.Active) {
             revert InvalidAccountStatus();
-        }
-        _;
-    }
-
-    /**
-     * @dev Ensures a username is available, and isn't empty or too long.
-     * @param username Text of the username.
-     */
-    modifier isValidUsername(string calldata username) {
-        // convert to bytes in order to check length
-        bytes memory rawUsername = bytes(username);
-
-        // validate existence
-        if (rawUsername.length == 0) {
-            revert UsernameEmpty();
-        }
-        // validate availability
-        if (addresses[username] != address(0)) {
-            revert UsernameUnavailable();
-        }
-        // validate length
-        if (rawUsername.length < 3) {
-            revert UsernameTooShort();
-        }
-        if (rawUsername.length > 32) {
-            revert UsernameTooLong();
-        }
-        // valiate content
-        if (!UsernameRegex.matches(rawUsername)) {
-            revert UsernameInvalid();
         }
         _;
     }

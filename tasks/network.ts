@@ -3,7 +3,7 @@ import { subtask, task } from 'hardhat/config';
 import {
   CONTRACT_NAME,
   DIVIDEND_THRESHOLD,
-  LIB_USERNAME_REGEX,
+  LIB_VALIDATION,
   LIB_VIRALITY_SCORE,
   MAX_LEVEL,
   VIRALITY_THRESHOLD,
@@ -13,6 +13,7 @@ import type {
   ContractFactory,
   ContractInitializer,
   ContractInitializerOverrides,
+  CritterContracts,
   LibraryContracts,
 } from '../types';
 
@@ -35,12 +36,12 @@ task(
 );
 
 task(
-  'deploy-contract',
+  'deploy-contracts',
   'Deploys contracts via an upgradeable proxy from the owner EOA',
   async (
     overrides: ContractInitializerOverrides,
     { ethers, run, upgrades }
-  ): Promise<Contract> => {
+  ): Promise<CritterContracts> => {
     const initializer: ContractInitializer = [];
     const defaults = {
       dividendThreshold: {
@@ -73,26 +74,30 @@ task(
     }
 
     // deploy ViralityScore library
-    const { libUsernameRegex, libViralityScore } = await run(
-      'deploy-libraries'
-    );
+    const { libValidation, libViralityScore } = await run('deploy-libraries');
 
     // get contract factory instance
     const critter: ContractFactory = await ethers.getContractFactory(
       CONTRACT_NAME,
       {
         libraries: {
-          UsernameRegex: libUsernameRegex.address,
+          Validation: libValidation.address,
           ViralityScore: libViralityScore.address,
         },
       }
     );
 
     // deploy contract via upgradeable proxy
-    return (await upgrades.deployProxy(critter, initializer, {
-      // necessary due to linking contracts to an UUPS proxy
-      unsafeAllow: ['external-library-linking'],
-    })) as Contract;
+    return {
+      critter: (await upgrades.deployProxy(critter, initializer, {
+        // necessary due to linking contracts to an UUPS proxy
+        unsafeAllow: ['external-library-linking'],
+      })) as Contract,
+      libraries: {
+        libValidation,
+        libViralityScore,
+      },
+    };
   }
 );
 
@@ -100,8 +105,8 @@ subtask(
   'deploy-libraries',
   'Deploys libraries required by the main contract',
   async (_, { ethers }): Promise<LibraryContracts> => {
-    const usernameRegex: ContractFactory = await ethers.getContractFactory(
-      LIB_USERNAME_REGEX
+    const validation: ContractFactory = await ethers.getContractFactory(
+      LIB_VALIDATION
     );
     const viralityScore: ContractFactory = await ethers.getContractFactory(
       LIB_VIRALITY_SCORE
@@ -109,7 +114,7 @@ subtask(
 
     // deploy
     return {
-      libUsernameRegex: await usernameRegex.deploy(),
+      libValidation: await validation.deploy(),
       libViralityScore: await viralityScore.deploy(),
     };
   }

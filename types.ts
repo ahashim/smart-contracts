@@ -37,8 +37,13 @@ export type ContractInitializerOverrides = {
 export type ContractInitializer = (string | number | BigNumber)[];
 
 export type LibraryContracts = {
-  libUsernameRegex: Contract;
+  libValidation: Contract;
   libViralityScore: Contract;
+};
+
+export type CritterContracts = {
+  critter: Contract;
+  libraries: LibraryContracts;
 };
 
 export type PoolInfo = {

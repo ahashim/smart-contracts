@@ -1,6 +1,7 @@
 import type {
   ContractTransaction,
   Critter,
+  LibraryContracts,
   SignerWithAddress,
   User,
 } from '../types';
@@ -12,12 +13,14 @@ describe('createAccount', () => {
     ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     critter: Critter,
+    libraries: LibraryContracts,
     tx: ContractTransaction,
     user: User;
 
   const createAccountFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('deploy-contract')).connect(ahmed);
+    ({ critter, libraries } = await run('deploy-contracts'));
+    critter = critter.connect(ahmed);
 
     // ahmed creates an account
     tx = await critter.createAccount(username);
@@ -25,13 +28,16 @@ describe('createAccount', () => {
     return {
       address: await critter.addresses(username),
       critter,
+      libraries,
       tx,
       user: await critter.users(ahmed.address),
     };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ address, critter, tx, user } = await loadFixture(createAccountFixture));
+    ({ address, critter, libraries, tx, user } = await loadFixture(
+      createAccountFixture
+    ));
   });
 
   it('lets a user create an account with a valid username', () => {
@@ -51,13 +57,16 @@ describe('createAccount', () => {
   it('reverts when the username is empty', async () => {
     await expect(
       critter.connect(barbie).createAccount('')
-    ).to.be.revertedWithCustomError(critter, 'UsernameEmpty');
+    ).to.be.revertedWithCustomError(libraries.libValidation, 'UsernameEmpty');
   });
 
   it('reverts when the username is too short', async () => {
     await expect(
       critter.connect(barbie).createAccount('0x')
-    ).to.be.revertedWithCustomError(critter, 'UsernameTooShort');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameTooShort'
+    );
   });
 
   it('reverts when the username is too long', async () => {
@@ -67,31 +76,46 @@ describe('createAccount', () => {
         .createAccount(
           'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?'
         )
-    ).to.be.revertedWithCustomError(critter, 'UsernameTooLong');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameTooLong'
+    );
   });
 
   it('reverts when the username has uppercase characters', async () => {
     await expect(
       critter.connect(barbie).createAccount('Babs')
-    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
   });
 
   it('reverts when the username has symbols', async () => {
     await expect(
       critter.connect(barbie).createAccount('b@rbi3')
-    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
   });
 
   it('reverts when the username has spaces', async () => {
     await expect(
       critter.connect(barbie).createAccount(' b a r b i e ')
-    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
   });
 
   it('reverts when the username has been taken', async () => {
     await expect(
       critter.connect(barbie).createAccount(username)
-    ).to.be.revertedWithCustomError(critter, 'UsernameUnavailable');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameUnavailable'
+    );
   });
 
   it('reverts when the address already has an account', async () => {

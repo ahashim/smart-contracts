@@ -165,31 +165,6 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "UsernameEmpty",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "UsernameInvalid",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "UsernameTooLong",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "UsernameTooShort",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "UsernameUnavailable",
-    "type": "error"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
