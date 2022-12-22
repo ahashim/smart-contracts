@@ -46,6 +46,10 @@ const config: HardhatUserConfig = {
     version: '0.8.17',
   },
   watcher: {
+    compile: {
+      files: ['contracts/**/*.sol'],
+      tasks: ['compile'],
+    },
     ci: {
       files: ['contracts/**/*.sol', 'test/**/*.ts'],
       tasks: ['test'],

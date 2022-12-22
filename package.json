@@ -14,7 +14,8 @@
     "size": "hardhat size-contracts",
     "test": "REPORT_GAS=1 TS_NODE_TRANSPILE_ONLY=1 hardhat test",
     "typechain": "hardhat clean && hardhat typechain",
-    "watch": "TS_NODE_TRANSPILE_ONLY=1 hardhat watch ci"
+    "watch:compile": "TS_NODE_TRANSPILE_ONLY=1 hardhat watch compile",
+    "watch:ci": "TS_NODE_TRANSPILE_ONLY=1 hardhat watch ci"
   },
   "keywords": [
     "blockchain",
