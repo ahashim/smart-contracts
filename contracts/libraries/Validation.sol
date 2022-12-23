@@ -18,6 +18,8 @@
 */
 pragma solidity 0.8.17;
 
+import {Slice, toSlice} from '@dk1a/solidity-stringutils/src/Slice.sol';
+
 // errors
 error UsernameEmpty();
 error UsernameInvalid();
@@ -25,24 +27,30 @@ error UsernameTooLong();
 error UsernameTooShort();
 error UsernameUnavailable();
 
+// libraries
+using {toSlice} for bytes;
+
 /**
  * @title Validation
  * @dev A library to validate Critter data structures.
  */
 library Validation {
+    // restricted username words
+    bytes public constant BYTES_ADMIN = bytes('admin');
+    bytes public constant BYTES_CRITTER = bytes('critter');
+
     /**
      * @dev Validates a username.
      * @param account Ethereum address of the Critter account.
      * @param input The username string.
      */
-    function username(address account, string calldata input) public pure {
-        bytes memory rawInput = bytes(input);
-
-        if (rawInput.length == 0) revert UsernameEmpty();
+    function username(address account, bytes calldata input) public pure {
+        if (input.length == 0) revert UsernameEmpty();
         if (account != address(0)) revert UsernameUnavailable();
-        if (rawInput.length < 3) revert UsernameTooShort();
-        if (rawInput.length > 32) revert UsernameTooLong();
-        if (!_matchUsernameRegex(rawInput)) revert UsernameInvalid();
+        if (input.length < 3) revert UsernameTooShort();
+        if (input.length > 32) revert UsernameTooLong();
+        if (!_matchUsernameRegex(input) || _containsRestrictedWords(input))
+            revert UsernameInvalid();
     }
 
     /**
@@ -70,5 +78,18 @@ library Validation {
         }
 
         return isValid;
+    }
+
+    /**
+     * @dev Checks if the username contains the string "critter" or "admin"
+     * @param input The username string.
+     */
+    function _containsRestrictedWords(
+        bytes memory input
+    ) private pure returns (bool) {
+        Slice s = input.toSlice();
+
+        return (s.contains(BYTES_CRITTER.toSlice()) ||
+            s.contains(BYTES_ADMIN.toSlice()));
     }
 }

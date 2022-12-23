@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@dk1a/solidity-stringutils': ^0.3.2
   '@ethersproject/abi': ^5.7.0
   '@ethersproject/bytes': ^5.7.0
   '@ethersproject/providers': ^5.7.2
@@ -47,6 +48,7 @@ specifiers:
   typescript: ^4.9.4
 
 devDependencies:
+  '@dk1a/solidity-stringutils': 0.3.2
   '@ethersproject/abi': 5.7.0
   '@ethersproject/bytes': 5.7.0
   '@ethersproject/providers': 5.7.2
@@ -131,6 +133,13 @@ packages:
     engines: { node: '>=12' }
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
+    dev: true
+
+  /@dk1a/solidity-stringutils/0.3.2:
+    resolution:
+      {
+        integrity: sha512-K3PfuBoUQRRU4pFXmTX6wbX2C5QNNCDXvcyy33yhqtrkakQri0BqX5Zo1RPbwfjuYM87FXSvmG6yF2pKIO0/Tg==,
+      }
     dev: true
 
   /@eslint/eslintrc/1.4.0:

@@ -46,22 +46,21 @@ contract Accountable is Relatable, IAccountable {
      * @param username string.
      */
     modifier isValidUsername(string calldata username) {
-        Validation.username(addresses[username], username);
+        Validation.username(addresses[username], bytes(username));
         _;
     }
 
     /**
      * @dev See {IAccountable-createAccount}.
      */
-    function createAccount(
-        string calldata username
-    ) external isValidUsername(username) {
-        // ensure account does not already exist
+    function createAccount(string calldata username) external {
+        // validate account
         if (users[msg.sender].status != Status.Unknown)
             revert AlreadyRegistered();
 
-        // convert to bytes
+        // validate username
         bytes memory rawUsername = bytes(username);
+        Validation.username(addresses[username], rawUsername);
 
         // create an active User for the account
         users[msg.sender] = User(msg.sender, Status.Active, 1, username);

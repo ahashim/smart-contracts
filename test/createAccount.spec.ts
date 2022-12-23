@@ -109,6 +109,24 @@ describe('createAccount', () => {
     );
   });
 
+  it('reverts when the username contains the string `critter`', async () => {
+    await expect(
+      critter.connect(barbie).createAccount('critter_helpdesk')
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
+  });
+
+  it('reverts when the username contains the string `admin`', async () => {
+    await expect(
+      critter.connect(barbie).createAccount('site_admin')
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
+  });
+
   it('reverts when the username has been taken', async () => {
     await expect(
       critter.connect(barbie).createAccount(username)

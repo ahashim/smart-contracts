@@ -112,6 +112,24 @@ describe('updateUsername', () => {
     );
   });
 
+  it('reverts when the username contains the string `critter`', async () => {
+    await expect(
+      critter.updateUsername('critter_founder')
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
+  });
+
+  it('reverts when the username contains the string `admin`', async () => {
+    await expect(
+      critter.updateUsername('the_admin')
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
+  });
+
   it('reverts when the address already has an account', async () => {
     await expect(
       critter.updateUsername(newUsername)

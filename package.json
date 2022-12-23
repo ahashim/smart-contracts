@@ -28,6 +28,7 @@
   "author": "Ahmed Hashim <ahashim@users.noreply.github.com> (https://ahmedhashim.app/)",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@dk1a/solidity-stringutils": "^0.3.2",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
