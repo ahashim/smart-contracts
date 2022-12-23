@@ -42,15 +42,6 @@ contract Accountable is Relatable, IAccountable {
     }
 
     /**
-     * @dev Validates a username.
-     * @param username string.
-     */
-    modifier isValidUsername(string calldata username) {
-        Validation.username(addresses[username], bytes(username));
-        _;
-    }
-
-    /**
      * @dev See {IAccountable-createAccount}.
      */
     function createAccount(string calldata username) external {
@@ -81,12 +72,11 @@ contract Accountable is Relatable, IAccountable {
         address account,
         Status status
     ) external onlyRole(MODERATOR_ROLE) {
-        // cannot set a status to unknown
+        // validate status
         if (status == Status.Unknown) revert InvalidAccountStatus();
 
-        User storage user = users[account];
-
         // ensure the account exists
+        User storage user = users[account];
         if (user.status == Status.Unknown) revert InvalidAccount();
 
         // ensure new status is not the same as the current status
@@ -103,10 +93,12 @@ contract Accountable is Relatable, IAccountable {
      */
     function updateUsername(
         string calldata newUsername
-    ) external hasActiveAccount isValidUsername(newUsername) {
-        User storage user = users[msg.sender];
+    ) external hasActiveAccount {
+        // validate new username
+        Validation.username(addresses[newUsername], bytes(newUsername));
 
         // clear the current username
+        User storage user = users[msg.sender];
         delete addresses[user.username];
 
         // set the new username
