@@ -17,7 +17,7 @@ describe('updateStatus', () => {
 
   const updateStatusFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = await run('deploy-contract');
+    critter = (await run('deploy-contracts')).critter;
 
     // everybody creates an account
     await run('create-accounts', {

@@ -11,7 +11,7 @@ describe('treasury', () => {
 
   const treasuryFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    const critter = (await run('deploy-contract')).connect(ahmed);
+    const critter = (await run('deploy-contracts')).critter.connect(ahmed);
 
     // everybody creates an account
     await run('create-accounts', {

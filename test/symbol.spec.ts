@@ -1,14 +1,11 @@
 import { CONTRACT_SYMBOL } from '../constants';
-import type { Critter } from '../types';
 import { expect, loadFixture, run } from './setup';
 
 describe('symbol', () => {
-  let critter: Critter, symbol: string;
+  let symbol: string;
 
   const symbolFixture = async () => {
-    critter = await run('deploy-contract');
-
-    return await critter.symbol();
+    return await (await run('deploy-contracts')).critter.symbol();
   };
 
   beforeEach('load deployed contract fixture', async () => {

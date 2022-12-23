@@ -13,7 +13,7 @@ describe('setApprovalForAll', () => {
 
   const setApprovalForAllFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('deploy-contract')).connect(ahmed);
+    critter = (await run('deploy-contracts')).critter.connect(ahmed);
 
     // everybody creates an account
     await run('create-accounts', {

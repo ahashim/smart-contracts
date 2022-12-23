@@ -4,7 +4,8 @@ import { expect, loadFixture, run } from './setup';
 describe('proxiableUUID', () => {
   let critter: Critter;
 
-  const proxiableUUIDFixture = async () => await run('deploy-contract');
+  const proxiableUUIDFixture = async () =>
+    (await run('deploy-contracts')).critter;
 
   before('load deployed contract fixture', async () => {
     critter = await loadFixture(proxiableUUIDFixture);

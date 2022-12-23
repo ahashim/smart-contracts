@@ -30,11 +30,11 @@ describe('deleteViralSqueak', () => {
     [, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
     // deploy contract with a lower virality & pool threshold for testing
     critter = (
-      await run('deploy-contract', {
+      await run('deploy-contracts', {
         dividendThreshold: ethers.utils.parseEther('0.000002'),
         viralityThreshold: 60,
       })
-    ).connect(ahmed);
+    ).critter.connect(ahmed);
 
     // everybody creates an account
     await run('create-accounts', {

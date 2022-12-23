@@ -8,7 +8,7 @@ describe('supportsInterface', () => {
   };
 
   const supportsInterfaceFixture = async () => {
-    critter = await run('deploy-contract');
+    critter = (await run('deploy-contracts')).critter;
 
     return {
       critter,

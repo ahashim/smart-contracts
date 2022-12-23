@@ -1,9 +1,9 @@
 import {
   BONUS,
+  DIVIDEND_THRESHOLD,
   MAX_LEVEL,
   PLATFORM_FEE,
   PLATFORM_TAKE_RATE,
-  DIVIDEND_THRESHOLD,
   VIRALITY_THRESHOLD,
 } from '../constants';
 import { Configuration } from '../enums';
@@ -14,7 +14,7 @@ describe('config', () => {
   let config: Config, critter: Critter;
 
   const configFixture = async () => {
-    critter = await run('deploy-contract');
+    critter = (await run('deploy-contracts')).critter;
 
     return {
       config: {

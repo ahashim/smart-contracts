@@ -10,7 +10,7 @@ describe('transferFrom', () => {
 
   const transferFromFixture = async () => {
     [owner, ahmed, barbie] = await ethers.getSigners();
-    const critter = (await run('deploy-contract')).connect(ahmed);
+    const critter = (await run('deploy-contracts')).critter.connect(ahmed);
 
     // everybody creates an account
     await run('create-accounts', {

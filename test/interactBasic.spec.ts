@@ -29,7 +29,7 @@ describe('interact basic', () => {
 
   const interactBasicFixture = async () => {
     [owner, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
-    critter = (await run('deploy-contract')).connect(ahmed);
+    critter = (await run('deploy-contracts')).critter.connect(ahmed);
 
     // creates accounts
     await run('create-accounts', {

@@ -1,10 +1,19 @@
 // imports
-import type { BigNumber, Contract } from 'ethers';
+import type { BigNumber } from 'ethers';
 
 import { Status } from './enums';
+import type { Critter } from './typechain-types/contracts';
+import type {
+  Validation,
+  ViralityScore,
+} from './typechain-types/contracts/libraries';
 
 // exports
 export type { Critter } from './typechain-types/contracts';
+export type {
+  Validation,
+  ViralityScore,
+} from './typechain-types/contracts/libraries';
 export type { Result } from '@ethersproject/abi';
 export type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 export type {
@@ -21,6 +30,7 @@ export type BigNumberObject = {
 };
 
 export type Config = {
+  deleteRate: BigNumber;
   platformTakeRate: BigNumber;
   dividendThreshold: BigNumber;
   maxLevel: BigNumber;
@@ -37,12 +47,12 @@ export type ContractInitializerOverrides = {
 export type ContractInitializer = (string | number | BigNumber)[];
 
 export type LibraryContracts = {
-  libValidation: Contract;
-  libViralityScore: Contract;
+  libValidation: Validation;
+  libViralityScore: ViralityScore;
 };
 
 export type CritterContracts = {
-  critter: Contract;
+  critter: Critter;
   libraries: LibraryContracts;
 };
 

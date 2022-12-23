@@ -7,7 +7,7 @@ describe('addresses', () => {
 
   const addressesFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    critter = (await run('deploy-contract')).connect(ahmed);
+    critter = (await run('deploy-contracts')).critter.connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount(username);

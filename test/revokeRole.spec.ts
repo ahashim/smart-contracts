@@ -11,7 +11,7 @@ describe('revokeRole', () => {
 
   const revokeRoleFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    const critter = await run('deploy-contract');
+    const critter = (await run('deploy-contracts')).critter;
 
     // everybody creates an account
     await run('create-accounts', {

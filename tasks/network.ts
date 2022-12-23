@@ -9,12 +9,14 @@ import {
   VIRALITY_THRESHOLD,
 } from '../constants';
 import type {
-  Contract,
   ContractFactory,
   ContractInitializer,
   ContractInitializerOverrides,
+  Critter,
   CritterContracts,
   LibraryContracts,
+  Validation,
+  ViralityScore,
 } from '../types';
 
 task('accounts', 'Prints the list of accounts', async (_, hre) => {
@@ -92,7 +94,7 @@ task(
       critter: (await upgrades.deployProxy(critter, initializer, {
         // necessary due to linking contracts to an UUPS proxy
         unsafeAllow: ['external-library-linking'],
-      })) as Contract,
+      })) as Critter,
       libraries: {
         libValidation,
         libViralityScore,
@@ -114,8 +116,8 @@ subtask(
 
     // deploy
     return {
-      libValidation: await validation.deploy(),
-      libViralityScore: await viralityScore.deploy(),
+      libValidation: (await validation.deploy()) as Validation,
+      libViralityScore: (await viralityScore.deploy()) as ViralityScore,
     };
   }
 );

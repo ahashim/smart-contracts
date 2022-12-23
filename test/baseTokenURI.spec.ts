@@ -5,7 +5,8 @@ import { expect, loadFixture, run } from './setup';
 describe('baseTokenURI', () => {
   let critter: Critter;
 
-  const baseTokenURIFixture = async () => await run('deploy-contract');
+  const baseTokenURIFixture = async () =>
+    (await run('deploy-contracts')).critter;
 
   it('returns the base token URI', async () => {
     critter = await loadFixture(baseTokenURIFixture);

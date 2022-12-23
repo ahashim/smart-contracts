@@ -2,6 +2,7 @@ import { Status } from '../enums';
 import type {
   ContractTransaction,
   Critter,
+  LibraryContracts,
   SignerWithAddress,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
@@ -14,12 +15,14 @@ describe('updateUsername', () => {
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
     critter: Critter,
+    libraries: LibraryContracts,
     owner: SignerWithAddress,
     tx: ContractTransaction;
 
   const updateUsernameFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = (await run('deploy-contract')).connect(ahmed);
+    ({ critter, libraries } = await run('deploy-contracts'));
+    critter = critter.connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount(oldUsername);
@@ -32,6 +35,7 @@ describe('updateUsername', () => {
 
     return {
       critter,
+      libraries,
       tx,
     };
   };
@@ -58,14 +62,14 @@ describe('updateUsername', () => {
 
   it('reverts when the username is empty', async () => {
     await expect(critter.updateUsername('')).to.be.revertedWithCustomError(
-      critter,
+      libraries.libValidation,
       'UsernameEmpty'
     );
   });
 
   it('reverts when the username is too short', async () => {
     await expect(critter.updateUsername('0x')).to.be.revertedWithCustomError(
-      critter,
+      libraries.libValidation,
       'UsernameTooShort'
     );
   });
@@ -75,31 +79,46 @@ describe('updateUsername', () => {
       critter.updateUsername(
         'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?'
       )
-    ).to.be.revertedWithCustomError(critter, 'UsernameTooLong');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameTooLong'
+    );
   });
 
   it('reverts when the username has uppercase characters', async () => {
     await expect(
       critter.updateUsername('Ahmed')
-    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
   });
 
   it('reverts when the username has symbols', async () => {
     await expect(
       critter.updateUsername('@hmed')
-    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
   });
 
   it('reverts when the username has spaces', async () => {
     await expect(
       critter.updateUsername(' a h m e d ')
-    ).to.be.revertedWithCustomError(critter, 'UsernameInvalid');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameInvalid'
+    );
   });
 
   it('reverts when the address already has an account', async () => {
     await expect(
       critter.updateUsername(newUsername)
-    ).to.be.revertedWithCustomError(critter, 'UsernameUnavailable');
+    ).to.be.revertedWithCustomError(
+      libraries.libValidation,
+      'UsernameUnavailable'
+    );
   });
 
   it('reverts when the user does not have an account', async () => {

@@ -14,11 +14,11 @@ describe('maxLevel', () => {
     [, ahmed] = await ethers.getSigners();
     // deploy contract with a lower virality threshold to test max level
     critter = (
-      await run('deploy-contract', {
+      await run('deploy-contracts', {
         viralityThreshold,
         maxLevel,
       })
-    ).connect(ahmed);
+    ).critter.connect(ahmed);
 
     // ahmed creates an account
     await critter.createAccount('ahmed');

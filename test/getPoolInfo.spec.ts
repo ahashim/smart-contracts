@@ -23,10 +23,10 @@ describe('getPoolInfo', () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await run('deploy-contract', {
+      await run('deploy-contracts', {
         viralityThreshold: 1,
       })
-    ).connect(ahmed);
+    ).critter.connect(ahmed);
 
     // creates accounts
     await run('create-accounts', {

@@ -14,7 +14,7 @@ describe('getRoleAdmin', () => {
   };
 
   const getRoleAdminFixture = async () => {
-    critter = await run('deploy-contract');
+    critter = (await run('deploy-contracts')).critter;
 
     return {
       critter,

@@ -9,7 +9,7 @@ describe('getApproved', () => {
 
   const approveFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('deploy-contract')).connect(ahmed);
+    critter = (await run('deploy-contracts')).critter.connect(ahmed);
 
     // ahmed & barbie create an accounts
     await run('create-accounts', {

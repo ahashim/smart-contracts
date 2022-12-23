@@ -9,7 +9,8 @@ import { expect, loadFixture, run } from './setup';
 describe('initialize', () => {
   let critter: Critter;
 
-  const initializeFixture = async () => await run('deploy-contract');
+  const initializeFixture = async () =>
+    (await run('deploy-contracts')).critter;
 
   beforeEach('load deployed contract fixture', async () => {
     critter = await loadFixture(initializeFixture);
