@@ -9,12 +9,12 @@ describe('upgradeTo', () => {
     [, ahmed] = await ethers.getSigners();
 
     // deploy librar
-    const { libValidation, libViralityScore } = await run('deploy-libraries');
+    const { libAccountable, libViralityScore } = await run('deploy-libraries');
 
     // deploy contract
     const contractFactory = await ethers.getContractFactory(CONTRACT_NAME, {
       libraries: {
-        Validation: libValidation.address,
+        Accountable: libAccountable.address,
         ViralityScore: libViralityScore.address,
       },
     });

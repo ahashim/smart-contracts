@@ -62,14 +62,14 @@ describe('updateUsername', () => {
 
   it('reverts when the username is empty', async () => {
     await expect(critter.updateUsername('')).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameEmpty'
     );
   });
 
   it('reverts when the username is too short', async () => {
     await expect(critter.updateUsername('0x')).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameTooShort'
     );
   });
@@ -80,7 +80,7 @@ describe('updateUsername', () => {
         'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?'
       )
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameTooLong'
     );
   });
@@ -89,7 +89,7 @@ describe('updateUsername', () => {
     await expect(
       critter.updateUsername('Ahmed')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -98,7 +98,7 @@ describe('updateUsername', () => {
     await expect(
       critter.updateUsername('@hmed')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -107,7 +107,7 @@ describe('updateUsername', () => {
     await expect(
       critter.updateUsername(' a h m e d ')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -116,7 +116,7 @@ describe('updateUsername', () => {
     await expect(
       critter.updateUsername('critter_founder')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -125,7 +125,7 @@ describe('updateUsername', () => {
     await expect(
       critter.updateUsername('the_admin')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -134,7 +134,7 @@ describe('updateUsername', () => {
     await expect(
       critter.updateUsername(newUsername)
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameUnavailable'
     );
   });

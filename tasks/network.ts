@@ -9,13 +9,13 @@ import {
   VIRALITY_THRESHOLD,
 } from '../constants';
 import type {
+  Accountable,
   ContractFactory,
   ContractInitializer,
   ContractInitializerOverrides,
   Critter,
   CritterContracts,
   LibraryContracts,
-  Validation,
   ViralityScore,
 } from '../types';
 
@@ -76,14 +76,14 @@ task(
     }
 
     // deploy ViralityScore library
-    const { libValidation, libViralityScore } = await run('deploy-libraries');
+    const { libAccountable, libViralityScore } = await run('deploy-libraries');
 
     // get contract factory instance
     const critter: ContractFactory = await ethers.getContractFactory(
       CONTRACT_NAME,
       {
         libraries: {
-          Validation: libValidation.address,
+          Accountable: libAccountable.address,
           ViralityScore: libViralityScore.address,
         },
       }
@@ -96,7 +96,7 @@ task(
         unsafeAllow: ['external-library-linking'],
       })) as Critter,
       libraries: {
-        libValidation,
+        libAccountable,
         libViralityScore,
       },
     };
@@ -116,7 +116,7 @@ subtask(
 
     // deploy
     return {
-      libValidation: (await validation.deploy()) as Validation,
+      libAccountable: (await validation.deploy()) as Accountable,
       libViralityScore: (await viralityScore.deploy()) as ViralityScore,
     };
   }

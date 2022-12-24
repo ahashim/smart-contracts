@@ -31,10 +31,10 @@ error UsernameUnavailable();
 using {toSlice} for bytes;
 
 /**
- * @title Validation
- * @dev A library to validate Critter data structures.
+ * @title Accountable
+ * @dev A library that handles Critter account logic.
  */
-library Validation {
+library Accountable {
     // restricted username words
     bytes public constant BYTES_ADMIN = bytes('admin');
     bytes public constant BYTES_CRITTER = bytes('critter');
@@ -44,7 +44,10 @@ library Validation {
      * @param account Ethereum address of the Critter account.
      * @param input The username string.
      */
-    function username(address account, bytes calldata input) public pure {
+    function validateUsername(
+        address account,
+        bytes calldata input
+    ) public pure {
         if (input.length == 0) revert UsernameEmpty();
         if (account != address(0)) revert UsernameUnavailable();
         if (input.length < 3) revert UsernameTooShort();

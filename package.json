@@ -80,7 +80,6 @@
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown",
     "**/*.ts": [
-      "tsc --esModuleInterop --noEmit --resolveJsonModule --skipLibCheck",
       "eslint --fix"
     ]
   }

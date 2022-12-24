@@ -28,12 +28,12 @@ import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './interfaces/ICritter.sol';
 
 // libraries
-import './libraries/Validation.sol';
+import './libraries/Accountable.sol';
 import './libraries/ViralityScore.sol';
 
 // types
-using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
+using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
 /**
@@ -246,7 +246,7 @@ contract Critter is
 
         // validate username
         bytes memory rawUsername = bytes(username);
-        Validation.username(addresses[username], rawUsername);
+        Accountable.validateUsername(addresses[username], rawUsername);
 
         // create an active User for the account
         users[msg.sender] = User(msg.sender, Status.Active, 1, username);
@@ -718,7 +718,10 @@ contract Critter is
         string calldata newUsername
     ) external hasActiveAccount {
         // validate new username
-        Validation.username(addresses[newUsername], bytes(newUsername));
+        Accountable.validateUsername(
+            addresses[newUsername],
+            bytes(newUsername)
+        );
 
         // clear the current username
         User storage user = users[msg.sender];

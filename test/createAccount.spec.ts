@@ -57,14 +57,14 @@ describe('createAccount', () => {
   it('reverts when the username is empty', async () => {
     await expect(
       critter.connect(barbie).createAccount('')
-    ).to.be.revertedWithCustomError(libraries.libValidation, 'UsernameEmpty');
+    ).to.be.revertedWithCustomError(libraries.libAccountable, 'UsernameEmpty');
   });
 
   it('reverts when the username is too short', async () => {
     await expect(
       critter.connect(barbie).createAccount('0x')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameTooShort'
     );
   });
@@ -77,7 +77,7 @@ describe('createAccount', () => {
           'hasAnyoneReallyBeenFarEvenAsDecidedToUseEvenGoWantToDoLookMoreLike?'
         )
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameTooLong'
     );
   });
@@ -86,7 +86,7 @@ describe('createAccount', () => {
     await expect(
       critter.connect(barbie).createAccount('Babs')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -95,7 +95,7 @@ describe('createAccount', () => {
     await expect(
       critter.connect(barbie).createAccount('b@rbi3')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -104,7 +104,7 @@ describe('createAccount', () => {
     await expect(
       critter.connect(barbie).createAccount(' b a r b i e ')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -113,7 +113,7 @@ describe('createAccount', () => {
     await expect(
       critter.connect(barbie).createAccount('critter_helpdesk')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -122,7 +122,7 @@ describe('createAccount', () => {
     await expect(
       critter.connect(barbie).createAccount('site_admin')
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameInvalid'
     );
   });
@@ -131,7 +131,7 @@ describe('createAccount', () => {
     await expect(
       critter.connect(barbie).createAccount(username)
     ).to.be.revertedWithCustomError(
-      libraries.libValidation,
+      libraries.libAccountable,
       'UsernameUnavailable'
     );
   });

@@ -4,14 +4,14 @@ import type { BigNumber } from 'ethers';
 import { Status } from './enums';
 import type { Critter } from './typechain-types/contracts';
 import type {
-  Validation,
+  Accountable,
   ViralityScore,
 } from './typechain-types/contracts/libraries';
 
 // exports
 export type { Critter } from './typechain-types/contracts';
 export type {
-  Validation,
+  Accountable,
   ViralityScore,
 } from './typechain-types/contracts/libraries';
 export type { Result } from '@ethersproject/abi';
@@ -47,7 +47,7 @@ export type ContractInitializerOverrides = {
 export type ContractInitializer = (string | number | BigNumber)[];
 
 export type LibraryContracts = {
-  libValidation: Validation;
+  libAccountable: Accountable;
   libViralityScore: ViralityScore;
 };
 
