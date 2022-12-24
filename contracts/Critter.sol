@@ -18,14 +18,20 @@
 */
 pragma solidity 0.8.17;
 
+// 3rd party contracts
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
+
+// interfaces
 import './interfaces/ICritter.sol';
+
+// libraries
 import './libraries/Validation.sol';
 import './libraries/ViralityScore.sol';
 
+// types
 using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
 using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
@@ -123,33 +129,33 @@ contract Critter is
     /**
      * @dev Mapping of address <=> AddressSet of blocked addresses for an user.
      */
-    mapping(address => EnumerableSetUpgradeable.AddressSet) internal blocked;
+    mapping(address => EnumerableSetUpgradeable.AddressSet) private blocked;
 
     /**
      * @dev Mapping of address <=> AddressSet of followers for an user.
      */
-    mapping(address => EnumerableSetUpgradeable.AddressSet) internal followers;
+    mapping(address => EnumerableSetUpgradeable.AddressSet) private followers;
 
     /**
      * @dev Mapping of tokenId <=> Pool.
      */
-    mapping(uint256 => Pool) internal pools;
+    mapping(uint256 => Pool) private pools;
 
     /**
      * @dev Mapping of tokenId <=> (address <=> shares).
      */
     mapping(uint256 => EnumerableMapUpgradeable.AddressToUintMap)
-        internal poolPasses;
+        private poolPasses;
 
     /**
      * @dev Mapping of tokenId <=> Sentiment.
      */
-    mapping(uint256 => Sentiment) internal sentiments;
+    mapping(uint256 => Sentiment) private sentiments;
 
     /**
      * @dev Set of squeak ID's that have gone viral.
      */
-    EnumerableSetUpgradeable.UintSet internal viralSqueaks;
+    EnumerableSetUpgradeable.UintSet private viralSqueaks;
 
     /**
      * @dev Ensures the sender has a Critter account.
@@ -202,10 +208,10 @@ contract Critter is
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
 
-        // set contract base url
+        // set base token url
         baseTokenURI = 'https://critter.fyi/token/';
 
-        // set contract config values
+        // set default config values
         config[Configuration.DeleteRate] = platformFee;
         config[Configuration.PlatformTakeRate] = 10; // percent of platform fee
         config[Configuration.MaxLevel] = maxLevel;
@@ -231,7 +237,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IAccountable-createAccount}.
+     * @dev See {ICritter-createAccount}.
      */
     function createAccount(string calldata username) external {
         // validate account
@@ -255,7 +261,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {ISqueakable-createSqueak}.
+     * @dev See {ICritter-createSqueak}.
      */
     function createSqueak(
         string calldata content
@@ -284,7 +290,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {ISqueakable-deleteSqueak}.
+     * @dev See {ICritter-deleteSqueak}.
      */
     function deleteSqueak(
         uint256 tokenId
@@ -342,7 +348,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IBankable-getDeleteFee}.
+     * @dev See {ICritter-getDeleteFee}.
      */
     function getDeleteFee(
         uint256 tokenId
@@ -352,7 +358,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IPoolable-getPoolInfo}.
+     * @dev See {ICritter-getPoolInfo}.
      */
     function getPoolInfo(
         uint256 tokenId
@@ -370,7 +376,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IPoolable-getPoolPasses}.
+     * @dev See {ICritter-getPoolPasses}.
      */
     function getPoolPasses(
         uint256 tokenId
@@ -393,7 +399,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {ISqueakable-getSentimentCounts}.
+     * @dev See {ICritter-getSentimentCounts}.
      */
     function getSentimentCounts(
         uint256 tokenId
@@ -409,7 +415,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IViral-getViralityScore}.
+     * @dev See {ICritter-getViralityScore}.
      */
     function getViralityScore(
         uint256 tokenId
@@ -436,7 +442,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {ISqueakable-interact}.
+     * @dev See {ICritter-interact}.
      */
     function interact(
         uint256 tokenId,
@@ -522,7 +528,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IAccountable-isBlocked}.
+     * @dev See {ICritter-isBlocked}.
      */
     function isBlocked(
         address userOne,
@@ -532,7 +538,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IAccountable-isFollowing}.
+     * @dev See {ICritter-isFollowing}.
      */
     function isFollowing(
         address userOne,
@@ -542,7 +548,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IViral-isViral}.
+     * @dev See {ICritter-isViral}.
      */
     function isViral(
         uint256 tokenId
@@ -551,7 +557,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IPoolable-leavePool}.
+     * @dev See {ICritter-leavePool}.
      */
     function leavePool(uint256 tokenId) external {
         // validate that a pool exists for the squeak
@@ -600,7 +606,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IBankable-updateInteractionFee}.
+     * @dev See {ICritter-updateInteractionFee}.
      */
     function updateInteractionFee(
         Interaction interaction,
@@ -612,7 +618,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IAccountable-updateRelationship}.
+     * @dev See {ICritter-updateRelationship}.
      */
     function updateRelationship(
         address account,
@@ -683,7 +689,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IAccountable-updateStatus}.
+     * @dev See {ICritter-updateStatus}.
      */
     function updateStatus(
         address account,
@@ -706,7 +712,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IAccountable-updateUsername}.
+     * @dev See {ICritter-updateUsername}.
      */
     function updateUsername(
         string calldata newUsername
@@ -736,7 +742,7 @@ contract Critter is
     }
 
     /**
-     * @dev See {IBankable-withdraw}.
+     * @dev See {ICritter-withdraw}.
      */
     function withdraw(
         address to,
@@ -810,7 +816,7 @@ contract Critter is
         User storage user,
         uint256 poolShareCount,
         uint256 tokenId
-    ) internal returns (uint256) {
+    ) private returns (uint256) {
         // upgrade the users level
         _increaseLevel(user, 1);
 
@@ -825,7 +831,7 @@ contract Critter is
      * @dev Deposits funds into the treasury.
      * @param amount Amount of the funds in wei.
      */
-    function _deposit(uint256 amount) internal {
+    function _deposit(uint256 amount) private {
         unchecked {
             treasury += amount;
         }
@@ -846,7 +852,7 @@ contract Critter is
     function _getDeleteFee(
         uint256 tokenId,
         uint256 confirmationThreshold
-    ) internal view returns (uint256) {
+    ) private view returns (uint256) {
         return
             ((block.number + confirmationThreshold) -
                 squeaks[tokenId].blockNumber) *
@@ -860,7 +866,7 @@ contract Critter is
      */
     function _getPoolSharePrice(
         Pool storage pool
-    ) internal view returns (uint256) {
+    ) private view returns (uint256) {
         return pool.amount / pool.shares;
     }
 
@@ -869,7 +875,7 @@ contract Critter is
      * @param user {User} to modify.
      * @param amount Number of levels to increase by.
      */
-    function _increaseLevel(User storage user, uint256 amount) internal {
+    function _increaseLevel(User storage user, uint256 amount) private {
         uint256 maxLevel = config[Configuration.MaxLevel];
 
         if (user.level < maxLevel) {
@@ -891,7 +897,7 @@ contract Critter is
      * @param tokenId ID of the squeak.
      * @param interaction An {Interaction} value.
      */
-    function _makePayment(uint256 tokenId, Interaction interaction) internal {
+    function _makePayment(uint256 tokenId, Interaction interaction) private {
         uint256 interactionFee = fees[interaction];
         User storage owner = users[ownerOf(tokenId)];
 
@@ -956,7 +962,7 @@ contract Critter is
      * @param tokenId ID of viral squeak.
      * @param pool Pool of the viral squeak.
      */
-    function _makePoolDividends(uint256 tokenId, Pool storage pool) internal {
+    function _makePoolDividends(uint256 tokenId, Pool storage pool) private {
         uint256 sharePrice = _getPoolSharePrice(pool);
 
         if (sharePrice > 0) _makePoolDividends(tokenId, pool, sharePrice);
@@ -972,7 +978,7 @@ contract Critter is
         uint256 tokenId,
         Pool storage pool,
         uint256 sharePrice
-    ) internal {
+    ) private {
         EnumerableMapUpgradeable.AddressToUintMap storage passes = poolPasses[
             tokenId
         ];
@@ -1002,7 +1008,7 @@ contract Critter is
         uint256 tokenId,
         Sentiment storage sentiment,
         uint64 viralityScore
-    ) internal {
+    ) private {
         // add squeak to the list of viral squeaks
         viralSqueaks.add(tokenId);
 
@@ -1055,7 +1061,7 @@ contract Critter is
      * @param to Address of the account.
      * @param amount Amount to transfer in wei.
      */
-    function _transferFunds(address to, uint256 amount) internal {
+    function _transferFunds(address to, uint256 amount) private {
         payable(to).transfer(amount);
 
         emit FundsTransferred(to, amount);
