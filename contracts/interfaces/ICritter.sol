@@ -25,6 +25,39 @@ import './IStoreable.sol';
  */
 interface ICritter is IStoreable {
     /**
+     * @dev Emitted after creating an account.
+     * @param account Address of the account.
+     * @param username Username of the account.
+     */
+    event AccountCreated(address indexed account, bytes32 indexed username);
+
+    /**
+     * @dev Emitted after updating a relationship.
+     * @param sender Address of the sender.
+     * @param relative Address of the account to update relationship with.
+     * @param action A value from the Relations enum.
+     */
+    event RelationshipUpdated(
+        address sender,
+        address relative,
+        Relation action
+    );
+
+    /**
+     * @dev Emitted after updating an account status.
+     * @param account Address of the account.
+     * @param status A value from the Status enum.
+     */
+    event StatusUpdated(address account, Status status);
+
+    /**
+     * @dev Emitted after updating an accounts username.
+     * @param account Address of the account.
+     * @param newUsername Updated username.
+     */
+    event UsernameUpdated(address account, string newUsername);
+
+    /**
      * @dev Upgradeable "constructor" function to initialize sub-contracts.
      * @param dividendThreshold Minimum amount required to pay out pool
      *      dividends.
@@ -37,6 +70,53 @@ interface ICritter is IStoreable {
         uint256 maxLevel,
         uint256 viralThreshold
     ) external;
+
+    /**
+     * @dev Checks whether user one has blocked user two.
+     * @param userOne Address of user one.
+     * @param userTwo Address of user two.
+     */
+    function isBlocked(
+        address userOne,
+        address userTwo
+    ) external view returns (bool);
+
+    /**
+     * @dev Checks whether user one is following user two.
+     * @param userOne Address of user one.
+     * @param userTwo Address of user two.
+     */
+    function isFollowing(
+        address userOne,
+        address userTwo
+    ) external view returns (bool);
+
+    /**
+     * @dev Updates the relationship between the sender and another account.
+     * @param account Address of the account to update relationship with.
+     * @param action A value from the Relations enum.
+     */
+    function updateRelationship(address account, Relation action) external;
+
+    /**
+     * @dev Creates a Critter account.
+     * @param username Username for the account.
+     */
+    function createAccount(string calldata username) external;
+
+    /**
+     * @dev Updates an accounts status.
+     * @param account Address of the account.
+     * @param status A value from the Status enum.
+     * @notice can only be called by MODERATOR_ROLE.
+     */
+    function updateStatus(address account, Status status) external;
+
+    /**
+     * @dev Updates an accounts username.
+     * @param newUsername The new username.
+     */
+    function updateUsername(string calldata newUsername) external;
 
     /**
      * @dev Updates the value of a {Configuration} item.

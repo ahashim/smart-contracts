@@ -22,15 +22,15 @@ import './Bankable.sol';
 import './interfaces/IViral.sol';
 import './libraries/ViralityScore.sol';
 
+using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
+using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+
 /**
  * @title Viral
  * @dev A contract to handle virality for squeaks.
  */
 contract Viral is Bankable, IViral {
-    using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-
     /**
      * @dev Upgradeable constructor.
      */

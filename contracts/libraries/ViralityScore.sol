@@ -20,14 +20,14 @@ pragma solidity 0.8.17;
 
 import 'abdk-libraries-solidity/ABDKMath64x64.sol';
 
+using ABDKMath64x64 for uint256;
+using ABDKMath64x64 for int128;
+
 /**
  * @title ViralityScore
  * @dev A library to calculate the virality score of a squeak.
  */
 library ViralityScore {
-    using ABDKMath64x64 for uint256;
-    using ABDKMath64x64 for int128;
-
     /**
      * @dev See {IViralityScore-calculate}.
      */

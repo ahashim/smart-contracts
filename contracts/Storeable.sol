@@ -21,6 +21,8 @@ pragma solidity 0.8.17;
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import './interfaces/IStoreable.sol';
 
+using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
+
 /**
  * @title Storeable
  * @dev A contract to handle critter storage variables.
@@ -30,8 +32,6 @@ import './interfaces/IStoreable.sol';
  *      collisions & upgradeability: https://tinyurl.com/d424mcpx
  */
 contract Storeable is Initializable, IStoreable {
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-
     /**
      * @dev Upgradeable constructor
      */
