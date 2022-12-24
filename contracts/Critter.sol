@@ -18,14 +18,17 @@
 */
 pragma solidity 0.8.17;
 
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import './Validateable.sol';
+import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
+import './Storeable.sol';
 import './interfaces/ICritter.sol';
+import './libraries/Validation.sol';
 import './libraries/ViralityScore.sol';
 
-using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
 using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
 using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
 /**
@@ -51,10 +54,40 @@ using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
  */
 contract Critter is
     UUPSUpgradeable,
+    AccessControlUpgradeable,
     ReentrancyGuardUpgradeable,
-    Validateable,
+    ERC721AUpgradeable,
+    Storeable,
     ICritter
 {
+    /**
+     * @dev Ensures the sender has a Critter account.
+     */
+    modifier hasActiveAccount() {
+        User storage account = users[msg.sender];
+
+        // validate existence
+        if (account.status == Status.Unknown) {
+            revert InvalidAccount();
+        }
+        // validate active status
+        if (account.status != Status.Active) {
+            revert InvalidAccountStatus();
+        }
+        _;
+    }
+
+    /**
+     * @dev Ensure squeak exists.
+     * @param tokenId ID of the squeak.
+     */
+    modifier squeakExists(uint256 tokenId) {
+        if (!_exists(tokenId)) {
+            revert SqueakDoesNotExist();
+        }
+        _;
+    }
+
     /* solhint-disable func-name-mixedcase, no-empty-blocks */
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -77,9 +110,6 @@ contract Critter is
 
         // Storage
         __Storeable_init(dividendThreshold, maxLevel, viralityThreshold);
-
-        // Logic
-        __Validateable_init();
 
         // grant all roles to contract owner
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -441,6 +471,22 @@ contract Critter is
             // remove the squeak from the viral squeaks list
             viralSqueaks.remove(tokenId);
         }
+    }
+
+    /**
+     * @dev See {IERC721AUpgradeable-supportsInterface}.
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        override(AccessControlUpgradeable, ERC721AUpgradeable, ICritter)
+        returns (bool)
+    {
+        return
+            ERC721AUpgradeable.supportsInterface(interfaceId) ||
+            super.supportsInterface(interfaceId);
     }
 
     /**

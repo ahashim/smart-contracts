@@ -20,6 +20,29 @@ pragma solidity 0.8.17;
 
 import './IStoreable.sol';
 
+// error codes
+error AlreadyBlocked();
+error AlreadyFollowing();
+error AlreadyInteracted();
+error AlreadyRegistered();
+error Blocked();
+error InsufficientFunds();
+error InvalidAccount();
+error InvalidAccountStatus();
+error InvalidAmount();
+error InvalidInteraction();
+error InvalidRelationship();
+error NotApprovedOrOwner();
+error NotBlocked();
+error NotFollowing();
+error NotInPool();
+error NotInteractedYet();
+error PoolDoesNotExist();
+error SqueakDoesNotExist();
+error SqueakEmpty();
+error SqueakTooLong();
+error TransferFailed();
+
 /**
  * @dev Interface for the main Critter contract.
  */
@@ -251,6 +274,13 @@ interface ICritter is IStoreable {
      * @notice Sender must be a member of the pool.
      */
     function leavePool(uint256 tokenId) external;
+
+    /**
+     * @dev See {IERC721AUpgradeable-supportsInterface}.
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external view returns (bool);
 
     /**
      * @dev Updates an interaction fee.
