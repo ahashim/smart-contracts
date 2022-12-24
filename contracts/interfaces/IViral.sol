@@ -18,10 +18,12 @@
 */
 pragma solidity 0.8.17;
 
+import './IStoreable.sol';
+
 /**
  * @dev Interface for Viral.
  */
-interface IViral {
+interface IViral is IStoreable {
     /**
      * @dev Gets the virality score of a squeak.
      * @param tokenId ID of the squeak.
@@ -37,4 +39,29 @@ interface IViral {
      * @notice The token must exist.
      */
     function isViral(uint256 tokenId) external view returns (bool);
+
+    /**
+     * @dev Gets the pool amount & number of shares.
+     * @param tokenId ID of the viral squeak.
+     * @return A {PoolInfo}.
+     */
+    function getPoolInfo(
+        uint256 tokenId
+    ) external view returns (PoolInfo memory);
+
+    /**
+     * @dev Gets a list of pool passes for a viral squeak.
+     * @param tokenId ID of the viral squeak.
+     * @return Array of {PoolPass}'s.
+     */
+    function getPoolPasses(
+        uint256 tokenId
+    ) external view returns (PoolPassInfo[] memory);
+
+    /**
+     * @dev Removes the sender from a pool they belong to.
+     * @param tokenId ID of the viral squeak associated with the pool.
+     * @notice Sender must be a member of the pool.
+     */
+    function leavePool(uint256 tokenId) external;
 }
