@@ -157,17 +157,6 @@ contract Critter is
      */
     EnumerableSetUpgradeable.UintSet private viralSqueaks;
 
-    /**
-     * @dev Ensure squeak exists.
-     * @param tokenId ID of the squeak.
-     */
-    modifier squeakExists(uint256 tokenId) {
-        if (!_exists(tokenId)) {
-            revert SqueakDoesNotExist();
-        }
-        _;
-    }
-
     /* solhint-disable func-name-mixedcase, no-empty-blocks */
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -277,11 +266,10 @@ contract Critter is
     /**
      * @dev See {ICritter-deleteSqueak}.
      */
-    function deleteSqueak(
-        uint256 tokenId
-    ) external payable squeakExists(tokenId) nonReentrant {
+    function deleteSqueak(uint256 tokenId) external payable nonReentrant {
         // validation
         Accountable.hasActiveAccount(users[msg.sender].status);
+        if (!_exists(tokenId)) revert SqueakDoesNotExist();
 
         address owner = ownerOf(tokenId);
 
@@ -338,9 +326,9 @@ contract Critter is
     /**
      * @dev See {ICritter-getDeleteFee}.
      */
-    function getDeleteFee(
-        uint256 tokenId
-    ) external view squeakExists(tokenId) returns (uint256) {
+    function getDeleteFee(uint256 tokenId) external view returns (uint256) {
+        if (!_exists(tokenId)) revert SqueakDoesNotExist();
+
         // defaulting confirmation threshold to 6
         return _getDeleteFee(tokenId, 6);
     }
@@ -405,9 +393,10 @@ contract Critter is
     /**
      * @dev See {ICritter-getViralityScore}.
      */
-    function getViralityScore(
-        uint256 tokenId
-    ) public view squeakExists(tokenId) returns (uint64) {
+    function getViralityScore(uint256 tokenId) public view returns (uint64) {
+        // validation
+        if (!_exists(tokenId)) revert SqueakDoesNotExist();
+
         Sentiment storage sentiment = sentiments[tokenId];
 
         uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
@@ -435,9 +424,10 @@ contract Critter is
     function interact(
         uint256 tokenId,
         Interaction interaction
-    ) external payable squeakExists(tokenId) nonReentrant {
+    ) external payable nonReentrant {
         // validation
         Accountable.hasActiveAccount(users[msg.sender].status);
+        if (!_exists(tokenId)) revert SqueakDoesNotExist();
         if (msg.value < fees[interaction]) revert InsufficientFunds();
 
         address author = squeaks[tokenId].author;
@@ -539,9 +529,9 @@ contract Critter is
     /**
      * @dev See {ICritter-isViral}.
      */
-    function isViral(
-        uint256 tokenId
-    ) external view squeakExists(tokenId) returns (bool) {
+    function isViral(uint256 tokenId) external view returns (bool) {
+        if (!_exists(tokenId)) revert SqueakDoesNotExist();
+
         return viralSqueaks.contains(tokenId);
     }
 
