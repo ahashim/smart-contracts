@@ -142,7 +142,10 @@ describe('updateUsername', () => {
   it('reverts when the user does not have an account', async () => {
     await expect(
       critter.connect(carlos).updateUsername('ahmed')
-    ).to.be.revertedWithCustomError(critter, 'InvalidAccount');
+    ).to.be.revertedWithCustomError(
+      libraries.libAccountable,
+      'InvalidAccount'
+    );
   });
 
   it('reverts when the account status is not active', async () => {
@@ -151,6 +154,9 @@ describe('updateUsername', () => {
 
     await expect(
       critter.updateUsername('ahmed')
-    ).to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
+    ).to.be.revertedWithCustomError(
+      libraries.libAccountable,
+      'InvalidAccountStatus'
+    );
   });
 });

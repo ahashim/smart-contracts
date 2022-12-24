@@ -18,16 +18,22 @@
 */
 pragma solidity 0.8.17;
 
-import {Slice, toSlice} from '@dk1a/solidity-stringutils/src/Slice.sol';
-
 // errors
+error InvalidAccount();
+error InvalidAccountStatus();
 error UsernameEmpty();
 error UsernameInvalid();
 error UsernameTooLong();
 error UsernameTooShort();
 error UsernameUnavailable();
 
+// interfaces
+import '../interfaces/ICritter.sol';
+
 // libraries
+import {Slice, toSlice} from '@dk1a/solidity-stringutils/src/Slice.sol';
+
+// types
 using {toSlice} for bytes;
 
 /**
@@ -35,9 +41,18 @@ using {toSlice} for bytes;
  * @dev A library that handles Critter account logic.
  */
 library Accountable {
-    // restricted username words
+    // restricted username strings
     bytes public constant BYTES_ADMIN = bytes('admin');
     bytes public constant BYTES_CRITTER = bytes('critter');
+
+    /**
+     * @dev Ensures that a Critter account status is active.
+     * @param status A value from the Status enum.
+     */
+    function hasActiveAccount(Status status) public pure {
+        if (status == Status.Unknown) revert InvalidAccount();
+        if (status != Status.Active) revert InvalidAccountStatus();
+    }
 
     /**
      * @dev Validates a username.

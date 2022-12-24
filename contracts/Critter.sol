@@ -158,23 +158,6 @@ contract Critter is
     EnumerableSetUpgradeable.UintSet private viralSqueaks;
 
     /**
-     * @dev Ensures the sender has a Critter account.
-     */
-    modifier hasActiveAccount() {
-        User storage account = users[msg.sender];
-
-        // validate existence
-        if (account.status == Status.Unknown) {
-            revert InvalidAccount();
-        }
-        // validate active status
-        if (account.status != Status.Active) {
-            revert InvalidAccountStatus();
-        }
-        _;
-    }
-
-    /**
      * @dev Ensure squeak exists.
      * @param tokenId ID of the squeak.
      */
@@ -263,9 +246,11 @@ contract Critter is
     /**
      * @dev See {ICritter-createSqueak}.
      */
-    function createSqueak(
-        string calldata content
-    ) external hasActiveAccount onlyRole(MINTER_ROLE) {
+    function createSqueak(string calldata content) external {
+        // validation
+        Accountable.hasActiveAccount(users[msg.sender].status);
+        _checkRole(MINTER_ROLE);
+
         // convert to bytes
         bytes memory rawContent = bytes(content);
 
@@ -294,7 +279,10 @@ contract Critter is
      */
     function deleteSqueak(
         uint256 tokenId
-    ) external payable hasActiveAccount squeakExists(tokenId) nonReentrant {
+    ) external payable squeakExists(tokenId) nonReentrant {
+        // validation
+        Accountable.hasActiveAccount(users[msg.sender].status);
+
         address owner = ownerOf(tokenId);
 
         // validate squeak ownership
@@ -447,8 +435,9 @@ contract Critter is
     function interact(
         uint256 tokenId,
         Interaction interaction
-    ) external payable hasActiveAccount squeakExists(tokenId) nonReentrant {
-        // validate required fee amount
+    ) external payable squeakExists(tokenId) nonReentrant {
+        // validation
+        Accountable.hasActiveAccount(users[msg.sender].status);
         if (msg.value < fees[interaction]) revert InsufficientFunds();
 
         address author = squeaks[tokenId].author;
@@ -620,10 +609,10 @@ contract Critter is
     /**
      * @dev See {ICritter-updateRelationship}.
      */
-    function updateRelationship(
-        address account,
-        Relation action
-    ) external hasActiveAccount {
+    function updateRelationship(address account, Relation action) external {
+        // validation
+        Accountable.hasActiveAccount(users[msg.sender].status);
+
         // sender cannot update a relationship to themselves
         if (account == msg.sender) revert InvalidRelationship();
 
@@ -714,10 +703,9 @@ contract Critter is
     /**
      * @dev See {ICritter-updateUsername}.
      */
-    function updateUsername(
-        string calldata newUsername
-    ) external hasActiveAccount {
-        // validate new username
+    function updateUsername(string calldata newUsername) external {
+        // validation
+        Accountable.hasActiveAccount(users[msg.sender].status);
         Accountable.validateUsername(
             addresses[newUsername],
             bytes(newUsername)

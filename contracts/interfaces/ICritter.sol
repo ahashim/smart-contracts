@@ -18,6 +18,7 @@
 */
 pragma solidity 0.8.17;
 
+// libraries
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeable.sol';
 
 // error codes
@@ -27,8 +28,6 @@ error AlreadyInteracted();
 error AlreadyRegistered();
 error Blocked();
 error InsufficientFunds();
-error InvalidAccount();
-error InvalidAccountStatus();
 error InvalidAmount();
 error InvalidInteraction();
 error InvalidRelationship();

@@ -146,7 +146,7 @@ describe('deleteSqueak', () => {
 
   it('reverts when the user does not have an account', async () => {
     await expect(
-      critter.connect(owner).deleteSqueak(squeakId, { value: deleteFee })
+      critter.connect(owner).deleteSqueak(barbieSqueak, { value: deleteFee })
     ).to.be.revertedWithCustomError(critter, 'InvalidAccount');
   });
 
@@ -155,7 +155,7 @@ describe('deleteSqueak', () => {
     await critter.connect(owner).updateStatus(ahmed.address, Status.Suspended);
 
     await expect(
-      critter.deleteSqueak(squeakId, { value: deleteFee })
+      critter.deleteSqueak(barbieSqueak, { value: deleteFee })
     ).to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
   });
 });
