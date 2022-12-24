@@ -22,7 +22,6 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
-import './Storeable.sol';
 import './interfaces/ICritter.sol';
 import './libraries/Validation.sol';
 import './libraries/ViralityScore.sol';
@@ -57,9 +56,101 @@ contract Critter is
     AccessControlUpgradeable,
     ReentrancyGuardUpgradeable,
     ERC721AUpgradeable,
-    Storeable,
     ICritter
 {
+    /**
+     * @dev MINTER_ROLE has priviledges to mint tokens.
+     */
+    bytes32 internal constant MINTER_ROLE = keccak256('MINTER_ROLE');
+
+    /**
+     * @dev MODERATOR_ROLE has priviledges to update a users account status.
+     */
+    bytes32 internal constant MODERATOR_ROLE = keccak256('MODERATOR_ROLE');
+
+    /**
+     * @dev OPERATOR_ROLE has priviledges to update the contract configuration
+     * values.
+     */
+    bytes32 internal constant OPERATOR_ROLE = keccak256('OPERATOR_ROLE');
+
+    /**
+     * @dev TREASURER_ROLE has priviledges to withdraw funds and update fees.
+     */
+    bytes32 internal constant TREASURER_ROLE = keccak256('TREASURER_ROLE');
+
+    /**
+     * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
+     */
+    bytes32 internal constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
+
+    /**
+     * @dev Token URL prefix used by squeaks.
+     */
+    string public baseTokenURI;
+
+    /**
+     * @dev Contract funds.
+     * @notice Can only be withdrawn by TREASURER_ROLE.
+     */
+    uint256 public treasury;
+
+    /**
+     * @dev Mapping of username <=> account address.
+     */
+    mapping(string => address) public addresses;
+
+    /**
+     * @dev Mapping of a contract Configuration key <=> its amount value.
+     */
+    mapping(Configuration => uint256) public config;
+
+    /**
+     * @dev Mapping of Interaction <=> fee amounts.
+     */
+    mapping(Interaction => uint256) public fees;
+
+    /**
+     * @dev Mapping of tokenId <=> Squeak.
+     */
+    mapping(uint256 => Squeak) public squeaks;
+
+    /**
+     * @dev Mapping of account address <=> User.
+     */
+    mapping(address => User) public users;
+
+    /**
+     * @dev Mapping of address <=> AddressSet of blocked addresses for an user.
+     */
+    mapping(address => EnumerableSetUpgradeable.AddressSet) internal blocked;
+
+    /**
+     * @dev Mapping of address <=> AddressSet of followers for an user.
+     */
+    mapping(address => EnumerableSetUpgradeable.AddressSet) internal followers;
+
+    /**
+     * @dev Mapping of tokenId <=> Pool.
+     */
+    mapping(uint256 => Pool) internal pools;
+
+    /**
+     * @dev Mapping of tokenId <=> (address <=> shares).
+     */
+    mapping(uint256 => EnumerableMapUpgradeable.AddressToUintMap)
+        internal poolPasses;
+
+    /**
+     * @dev Mapping of tokenId <=> Sentiment.
+     */
+    mapping(uint256 => Sentiment) internal sentiments;
+
+    /**
+     * @dev Set of squeak ID's that have gone viral.
+     */
+    EnumerableSetUpgradeable.UintSet internal viralSqueaks;
+
     /**
      * @dev Ensures the sender has a Critter account.
      */
@@ -102,14 +193,33 @@ contract Critter is
         uint256 maxLevel,
         uint256 viralityThreshold
     ) public initializerERC721A initializer {
-        // 3rd party
+        // base platform fee in wei
+        uint256 platformFee = 80000000000000;
+
+        // init 3rd party contracts
         __AccessControl_init();
         __ERC721A_init('Critter', 'CRTTR');
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
 
-        // Storage
-        __Storeable_init(dividendThreshold, maxLevel, viralityThreshold);
+        // set contract base url
+        baseTokenURI = 'https://critter.fyi/token/';
+
+        // set contract config values
+        config[Configuration.DeleteRate] = platformFee;
+        config[Configuration.PlatformTakeRate] = 10; // percent of platform fee
+        config[Configuration.MaxLevel] = maxLevel;
+        config[Configuration.PoolPayoutThreshold] = dividendThreshold;
+        config[Configuration.ViralityBonus] = 3; // levels
+        config[Configuration.ViralityThreshold] = viralityThreshold;
+
+        // set default interaction fees
+        fees[Interaction.Dislike] = platformFee;
+        fees[Interaction.Like] = platformFee;
+        fees[Interaction.Resqueak] = platformFee;
+        fees[Interaction.UndoDislike] = platformFee;
+        fees[Interaction.UndoLike] = platformFee;
+        fees[Interaction.UndoResqueak] = platformFee;
 
         // grant all roles to contract owner
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);

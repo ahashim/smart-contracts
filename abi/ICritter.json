@@ -354,7 +354,7 @@
             "type": "uint64"
           }
         ],
-        "internalType": "struct IStoreable.PoolInfo",
+        "internalType": "struct ICritter.PoolInfo",
         "name": "",
         "type": "tuple"
       }
@@ -385,7 +385,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct IStoreable.PoolPassInfo[]",
+        "internalType": "struct ICritter.PoolPassInfo[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -421,7 +421,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct IStoreable.SentimentCounts",
+        "internalType": "struct ICritter.SentimentCounts",
         "name": "",
         "type": "tuple"
       }
