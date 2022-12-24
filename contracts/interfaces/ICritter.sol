@@ -32,6 +32,46 @@ interface ICritter is IStoreable {
     event AccountCreated(address indexed account, bytes32 indexed username);
 
     /**
+     * @dev Emitted when the fee for a viral squeak is added to its pool.
+     * @param tokenId ID of the viral squeak.
+     * @param amount Amount of the funds in wei.
+     */
+    event FundsAddedToPool(uint256 tokenId, uint256 amount);
+
+    /**
+     * @dev Emitted when funds are deposited into the treasury.
+     * @param amount Amount of the funds in wei.
+     */
+    event FundsDeposited(uint256 amount);
+
+    /**
+     * @dev Emitted when funds are transferred to an account.
+     * @param to Address of the account.
+     * @param amount Amount of the funds in wei.
+     */
+    event FundsTransferred(address indexed to, uint256 amount);
+
+    /**
+     * @dev Emitted when funds are withdrawn from the treasury to an account.
+     * @param to Address of the account.
+     * @param amount Amount of the funds in wei.
+     */
+    event FundsWithdrawn(address indexed to, uint256 amount);
+
+    /**
+     * @dev Emitted when the fee for an interaction is updated.
+     * @param interaction A value from the Interaction enum.
+     * @param amount Amount of the new fee in wei.
+     */
+    event InteractionFeeUpdated(Interaction interaction, uint256 amount);
+
+    /**
+     * @dev Emitted when funds in a pool are paid out to its members.
+     * @param tokenId ID of the viral squeak.
+     */
+    event PoolPayout(uint256 tokenId);
+
+    /**
      * @dev Emitted after updating a relationship.
      * @param sender Address of the sender.
      * @param relative Address of the account to update relationship with.
@@ -109,6 +149,14 @@ interface ICritter is IStoreable {
      * @notice Caller must own the squeak or be an approved account to delete.
      */
     function deleteSqueak(uint256 tokenId) external payable;
+
+    /**
+     * @dev Gets the price of deleting a squeak.
+     * @param tokenId ID of the squeak to delete.
+     * @return Price of deleting the squeak in wei.
+     * @notice The token must exist.
+     */
+    function getDeleteFee(uint256 tokenId) external view returns (uint256);
 
     /**
      * @dev Gets the pool amount & number of shares.
@@ -205,6 +253,17 @@ interface ICritter is IStoreable {
     function leavePool(uint256 tokenId) external;
 
     /**
+     * @dev Updates an interaction fee.
+     * @param interaction A value from the Interaction enum.
+     * @param amount Value of the updated fee in wei.
+     * @notice Only callable by TREASURER_ROLE.
+     */
+    function updateInteractionFee(
+        Interaction interaction,
+        uint256 amount
+    ) external;
+
+    /**
      * @dev Updates the relationship between the sender and another account.
      * @param account Address of the account to update relationship with.
      * @param action A value from the Relations enum.
@@ -233,4 +292,12 @@ interface ICritter is IStoreable {
         Configuration configuration,
         uint256 amount
     ) external;
+
+    /**
+     * @dev Transfers out funds from the treasury.
+     * @param to Address of the account where the funds will go.
+     * @param amount Amount to withdraw in wei.
+     * @notice Only callable by TREASURER_ROLE.
+     */
+    function withdraw(address to, uint256 amount) external payable;
 }
