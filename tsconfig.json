@@ -1,19 +1,21 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "dist",
     "resolveJsonModule": true,
     "strict": true,
-    "target": "es2018",
+    "skipLibCheck": true,
+    "target": "es2020",
     "declaration": true
   },
   "include": [
     "./constants",
     "./enums",
     "./scripts",
-    "./tasks/",
+    "./tasks",
     "./test",
     "./typechain-types",
     "./types"

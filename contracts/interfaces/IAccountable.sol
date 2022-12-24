@@ -32,6 +32,18 @@ interface IAccountable is IStoreable {
     event AccountCreated(address indexed account, bytes32 indexed username);
 
     /**
+     * @dev Emitted after updating a relationship.
+     * @param sender Address of the sender.
+     * @param relative Address of the account to update relationship with.
+     * @param action A value from the Relations enum.
+     */
+    event RelationshipUpdated(
+        address sender,
+        address relative,
+        Relation action
+    );
+
+    /**
      * @dev Emitted after updating an account status.
      * @param account Address of the account.
      * @param status A value from the Status enum.
@@ -43,7 +55,34 @@ interface IAccountable is IStoreable {
      * @param account Address of the account.
      * @param newUsername Updated username.
      */
-    event AccountUsernameUpdated(address account, string newUsername);
+    event UsernameUpdated(address account, string newUsername);
+
+    /**
+     * @dev Checks whether user one has blocked user two.
+     * @param userOne Address of user one.
+     * @param userTwo Address of user two.
+     */
+    function isBlocked(
+        address userOne,
+        address userTwo
+    ) external view returns (bool);
+
+    /**
+     * @dev Checks whether user one is following user two.
+     * @param userOne Address of user one.
+     * @param userTwo Address of user two.
+     */
+    function isFollowing(
+        address userOne,
+        address userTwo
+    ) external view returns (bool);
+
+    /**
+     * @dev Updates the relationship between the sender and another account.
+     * @param account Address of the account to update relationship with.
+     * @param action A value from the Relations enum.
+     */
+    function updateRelationship(address account, Relation action) external;
 
     /**
      * @dev Creates a Critter account.

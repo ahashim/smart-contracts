@@ -54,9 +54,9 @@ describe('updateUsername', () => {
     expect(await critter.addresses(oldUsername)).to.eq(barbie.address);
   });
 
-  it('emits an AccountUsernameUpdated event', async () => {
+  it('emits an UsernameUpdated event', async () => {
     await expect(tx)
-      .to.emit(critter, 'AccountUsernameUpdated')
+      .to.emit(critter, 'UsernameUpdated')
       .withArgs(ahmed.address, newUsername);
   });
 

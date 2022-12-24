@@ -189,25 +189,6 @@ export default [
       {
         indexed: false,
         internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'string',
-        name: 'newUsername',
-        type: 'string',
-      },
-    ],
-    name: 'AccountUsernameUpdated',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
         name: 'previousAdmin',
         type: 'address',
       },
@@ -660,6 +641,25 @@ export default [
       },
     ],
     name: 'Upgraded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'newUsername',
+        type: 'string',
+      },
+    ],
+    name: 'UsernameUpdated',
     type: 'event',
   },
   {

@@ -18,7 +18,7 @@
 */
 pragma solidity 0.8.17;
 
-import './Relatable.sol';
+import './Validateable.sol';
 import './interfaces/IAccountable.sol';
 import './libraries/Validation.sol';
 
@@ -26,7 +26,9 @@ import './libraries/Validation.sol';
  * @title Accountable
  * @dev A contract to handle account management.
  */
-contract Accountable is Relatable, IAccountable {
+contract Accountable is Validateable, IAccountable {
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+
     /**
      * @dev Upgradeable constructor.
      */
@@ -63,6 +65,97 @@ contract Accountable is Relatable, IAccountable {
         _grantRole(MINTER_ROLE, msg.sender);
 
         emit AccountCreated(msg.sender, bytes32(rawUsername));
+    }
+
+    /**
+     * @dev See {IAccountable-isBlocked}.
+     */
+    function isBlocked(
+        address userOne,
+        address userTwo
+    ) external view returns (bool) {
+        return blocked[userOne].contains(userTwo);
+    }
+
+    /**
+     * @dev See {IAccountable-isFollowing}.
+     */
+    function isFollowing(
+        address userOne,
+        address userTwo
+    ) external view returns (bool) {
+        return followers[userTwo].contains(userOne);
+    }
+
+    /**
+     * @dev See {IAccountable-updateRelationship}.
+     */
+    function updateRelationship(
+        address account,
+        Relation action
+    ) external hasActiveAccount {
+        // sender cannot update a relationship to themselves
+        if (account == msg.sender) revert InvalidRelationship();
+
+        // ensure the account is active
+        if (users[account].status != Status.Active)
+            revert InvalidAccountStatus();
+
+        // get the accounts blacklist
+        EnumerableSetUpgradeable.AddressSet storage accountBlacklist = blocked[
+            account
+        ];
+
+        // get the senders blacklist
+        EnumerableSetUpgradeable.AddressSet storage senderBlacklist = blocked[
+            msg.sender
+        ];
+
+        // get the accounts followers
+        EnumerableSetUpgradeable.AddressSet
+            storage accountFollowers = followers[account];
+
+        if (action == Relation.Follow) {
+            // sender cannot follow if account has blocked the sender
+            if (accountBlacklist.contains(msg.sender)) revert Blocked();
+
+            // ensure the relationship doesn't already exist
+            if (accountFollowers.contains(msg.sender))
+                revert AlreadyFollowing();
+
+            // add the sender to the accounts followers
+            accountFollowers.add(msg.sender);
+        } else if (action == Relation.Unfollow) {
+            // ensure account is being followed
+            if (!accountFollowers.contains(msg.sender)) revert NotFollowing();
+
+            // remove the sender from the accounts followers
+            accountFollowers.remove(msg.sender);
+        } else if (action == Relation.Block) {
+            // ensure the account hasn't already been blocked
+            if (senderBlacklist.contains(account)) revert AlreadyBlocked();
+
+            // get the senders followers
+            EnumerableSetUpgradeable.AddressSet
+                storage senderFollowers = followers[msg.sender];
+
+            // break relationship between sender & account
+            if (accountFollowers.contains(msg.sender))
+                accountFollowers.remove(msg.sender);
+            if (senderFollowers.contains(account))
+                senderFollowers.remove(account);
+
+            // add the account to the senders blocked list
+            senderBlacklist.add(account);
+        } else if (action == Relation.Unblock) {
+            // ensure the sender has blocked the account
+            if (!senderBlacklist.contains(account)) revert NotBlocked();
+
+            // unblock the account
+            senderBlacklist.remove(account);
+        }
+
+        emit RelationshipUpdated(msg.sender, account, action);
     }
 
     /**
@@ -105,6 +198,6 @@ contract Accountable is Relatable, IAccountable {
         addresses[newUsername] = msg.sender;
         user.username = newUsername;
 
-        emit AccountUsernameUpdated(msg.sender, newUsername);
+        emit UsernameUpdated(msg.sender, newUsername);
     }
 }

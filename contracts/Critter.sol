@@ -71,7 +71,6 @@ contract Critter is UUPSUpgradeable, Accountable, Squeakable, ICritter {
         // Logic
         __Accountable_init();
         __Bankable_init();
-        __Relatable_init();
         __Squeakable_init();
         __Poolable_init();
         __Validateable_init();
