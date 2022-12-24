@@ -21,10 +21,11 @@ pragma solidity 0.8.17;
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import './Validateable.sol';
-import './Viral.sol';
+import './Bankable.sol';
 import './interfaces/ICritter.sol';
+import './libraries/ViralityScore.sol';
 
-// libraries
+using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
 using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
 
@@ -53,7 +54,7 @@ contract Critter is
     UUPSUpgradeable,
     ReentrancyGuardUpgradeable,
     Validateable,
-    Viral,
+    Bankable,
     ICritter
 {
     /* solhint-disable func-name-mixedcase, no-empty-blocks */
@@ -82,7 +83,6 @@ contract Critter is
         // Logic
         __Bankable_init();
         __Validateable_init();
-        __Viral_init();
 
         // grant all roles to contract owner
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -205,6 +205,47 @@ contract Critter is
     }
 
     /**
+     * @dev See {IPoolable-getPoolInfo}.
+     */
+    function getPoolInfo(
+        uint256 tokenId
+    ) external view returns (PoolInfo memory) {
+        Pool storage pool = pools[tokenId];
+
+        return
+            PoolInfo(
+                pool.amount,
+                pool.shares,
+                poolPasses[tokenId].length(),
+                pool.blockNumber,
+                pool.score
+            );
+    }
+
+    /**
+     * @dev See {IPoolable-getPoolPasses}.
+     */
+    function getPoolPasses(
+        uint256 tokenId
+    ) external view returns (PoolPassInfo[] memory) {
+        EnumerableMapUpgradeable.AddressToUintMap storage passes = poolPasses[
+            tokenId
+        ];
+        uint256 passCount = passes.length();
+
+        // initialize array based on the number of pool passes
+        PoolPassInfo[] memory poolPassInfo = new PoolPassInfo[](passCount);
+
+        // populate the array with member addresses from the pool
+        for (uint256 i = 0; i < passCount; i++) {
+            (address account, uint256 shares) = passes.at(i);
+            poolPassInfo[i] = PoolPassInfo(account, shares);
+        }
+
+        return poolPassInfo;
+    }
+
+    /**
      * @dev See {ISqueakable-getSentimentCounts}.
      */
     function getSentimentCounts(
@@ -218,6 +259,33 @@ contract Critter is
                 sentiment.likes.length(),
                 sentiment.resqueaks.length()
             );
+    }
+
+    /**
+     * @dev See {IViral-getViralityScore}.
+     */
+    function getViralityScore(
+        uint256 tokenId
+    ) public view squeakExists(tokenId) returns (uint64) {
+        Sentiment storage sentiment = sentiments[tokenId];
+
+        uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
+        uint256 dislikes = sentiment.dislikes.length();
+        uint256 likes = sentiment.likes.length();
+        uint256 resqueaks = sentiment.resqueaks.length();
+        uint64 score = 0;
+
+        // squeak requires 1 like & 1 resqueak to be considered for virality
+        if (likes > 0 && resqueaks > 0) {
+            score = ViralityScore.calculate(
+                blockDelta,
+                dislikes,
+                likes,
+                resqueaks
+            );
+        }
+
+        return score;
     }
 
     /**
@@ -324,6 +392,48 @@ contract Critter is
         address userTwo
     ) external view returns (bool) {
         return followers[userTwo].contains(userOne);
+    }
+
+    /**
+     * @dev See {IViral-isViral}.
+     */
+    function isViral(
+        uint256 tokenId
+    ) external view squeakExists(tokenId) returns (bool) {
+        return viralSqueaks.contains(tokenId);
+    }
+
+    /**
+     * @dev See {IPoolable-leavePool}.
+     */
+    function leavePool(uint256 tokenId) external {
+        // validate that a pool exists for the squeak
+        if (!viralSqueaks.contains(tokenId)) revert PoolDoesNotExist();
+
+        EnumerableMapUpgradeable.AddressToUintMap storage passes = poolPasses[
+            tokenId
+        ];
+
+        // validate that the account is in the pool
+        if (!passes.contains(msg.sender)) revert NotInPool();
+
+        Pool storage pool = pools[tokenId];
+
+        // remove the member & their shares from the pool
+        pool.shares -= passes.get(msg.sender);
+        passes.remove(msg.sender);
+
+        if (passes.length() == 0) {
+            // drain the funds
+            if (pool.amount > 0) _deposit(pool.amount);
+
+            // delete the pool
+            delete pools[tokenId];
+            delete poolPasses[tokenId];
+
+            // remove the squeak from the viral squeaks list
+            viralSqueaks.remove(tokenId);
+        }
     }
 
     /**
@@ -450,28 +560,6 @@ contract Critter is
         config[configuration] = amount;
     }
 
-    /* solhint-disable no-empty-blocks */
-    /**
-     * @dev Reverts when caller isn't authorized to upgrade the contract.
-     */
-    function _authorizeUpgrade(
-        address
-    ) internal view override onlyRole(UPGRADER_ROLE) {}
-
-    /* solhint-enable no-empty-blocks */
-
-    /**
-     * @dev See {IERC721AUpgradeable-_baseURI}.
-     */
-    function _baseURI()
-        internal
-        view
-        override(ERC721AUpgradeable)
-        returns (string memory)
-    {
-        return baseTokenURI;
-    }
-
     /**
      * @dev Hook that is called after a set of serially-ordered token ids have
      *      been transferred. This includes minting. And also called after one
@@ -495,5 +583,129 @@ contract Critter is
     ) internal override(ERC721AUpgradeable) {
         super._afterTokenTransfers(from, to, startTokenId, quantity);
         squeaks[startTokenId].owner = to;
+    }
+
+    /* solhint-disable no-empty-blocks */
+    /**
+     * @dev Reverts when caller isn't authorized to upgrade the contract.
+     */
+    function _authorizeUpgrade(
+        address
+    ) internal view override onlyRole(UPGRADER_ROLE) {}
+
+    /* solhint-enable no-empty-blocks */
+
+    /**
+     * @dev See {IERC721AUpgradeable-_baseURI}.
+     */
+    function _baseURI()
+        internal
+        view
+        override(ERC721AUpgradeable)
+        returns (string memory)
+    {
+        return baseTokenURI;
+    }
+
+    /**
+     * @dev Increases the level for a user, and adds them to the pool for the
+     *      viral squeak.
+     * @param user User to add to the pool.
+     * @param poolShareCount Total number of shares of the pool.
+     * @param tokenId ID of the viral squeak.
+     */
+    function _createPoolPass(
+        User storage user,
+        uint256 poolShareCount,
+        uint256 tokenId
+    ) internal returns (uint256) {
+        // upgrade the users level
+        _increaseLevel(user, 1);
+
+        // add them to the pool & increase its share count
+        poolPasses[tokenId].set(user.account, user.level);
+        poolShareCount += user.level;
+
+        return poolShareCount;
+    }
+
+    /**
+     * @dev Increases a users level until they hit the maximum.
+     * @param user {User} to modify.
+     * @param amount Number of levels to increase by.
+     */
+    function _increaseLevel(User storage user, uint256 amount) internal {
+        uint256 maxLevel = config[Configuration.MaxLevel];
+
+        if (user.level < maxLevel) {
+            uint256 newLevel;
+
+            // determine the new level (unchecked due to maxLevel limit)
+            unchecked {
+                newLevel = user.level + amount;
+            }
+
+            // increase the users level
+            user.level = newLevel < maxLevel ? newLevel : maxLevel;
+        }
+    }
+
+    /**
+     * @dev Adds a squeak to the list of viral squeaks, and all of its positive
+     *      interactors to a pool while upgrading their levels.
+     * @param tokenId ID of the squeak.
+     * @param sentiment Pointer to the {Sentiment} of the squeak.
+     * @param viralityScore Virality score of the squeak.
+     */
+    function _markViral(
+        uint256 tokenId,
+        Sentiment storage sentiment,
+        uint64 viralityScore
+    ) internal {
+        // add squeak to the list of viral squeaks
+        viralSqueaks.add(tokenId);
+
+        // give the user who propelled the squeak into virality a bonus level.
+        _increaseLevel(users[msg.sender], config[Configuration.ViralityBonus]);
+
+        // iterate over both sets & add all unique addresses to the pool
+        uint256 likesCount = sentiment.likes.length();
+        uint256 resqueaksCount = sentiment.resqueaks.length();
+        uint256 upperBound = likesCount > resqueaksCount
+            ? likesCount
+            : resqueaksCount;
+
+        // initialize pool details
+        uint256 shareCount = 0;
+
+        // TODO: move this unbounded loop off-chain
+        for (uint256 i = 0; i < upperBound; i++) {
+            if (i < likesCount)
+                // add all likers
+                shareCount = _createPoolPass(
+                    users[sentiment.likes.at(i)],
+                    shareCount,
+                    tokenId
+                );
+
+            if (
+                i < resqueaksCount &&
+                !poolPasses[tokenId].contains(sentiment.resqueaks.at(i))
+            )
+                // add all resqueakers who aren't likers
+                shareCount = _createPoolPass(
+                    users[sentiment.resqueaks.at(i)],
+                    shareCount,
+                    tokenId
+                );
+        }
+
+        // save pool to storage
+        pools[tokenId] = Pool(
+            0, // amount
+            shareCount,
+            block.number,
+            viralityScore
+        );
     }
 }

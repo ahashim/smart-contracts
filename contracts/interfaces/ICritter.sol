@@ -91,6 +91,12 @@ interface ICritter is IStoreable {
     event UsernameUpdated(address account, string newUsername);
 
     /**
+     * @dev Creates a Critter account.
+     * @param username Username for the account.
+     */
+    function createAccount(string calldata username) external;
+
+    /**
      * @dev Creates a squeak.
      * @param content Text content of the squeak.
      * @notice Content must be between 0 and 256 bytes in length.
@@ -105,6 +111,24 @@ interface ICritter is IStoreable {
     function deleteSqueak(uint256 tokenId) external payable;
 
     /**
+     * @dev Gets the pool amount & number of shares.
+     * @param tokenId ID of the viral squeak.
+     * @return A {PoolInfo}.
+     */
+    function getPoolInfo(
+        uint256 tokenId
+    ) external view returns (PoolInfo memory);
+
+    /**
+     * @dev Gets a list of pool passes for a viral squeak.
+     * @param tokenId ID of the viral squeak.
+     * @return Array of {PoolPass}'s.
+     */
+    function getPoolPasses(
+        uint256 tokenId
+    ) external view returns (PoolPassInfo[] memory);
+
+    /**
      * @dev Gets a count of each Sentiment item for a squeak.
      * @param tokenId ID of the squeak.
      * @return {SentimentCounts}
@@ -112,6 +136,14 @@ interface ICritter is IStoreable {
     function getSentimentCounts(
         uint256 tokenId
     ) external view returns (SentimentCounts memory);
+
+    /**
+     * @dev Gets the virality score of a squeak.
+     * @param tokenId ID of the squeak.
+     * @return A value between 0-100 representing the virality of the squeak.
+     * @notice The token must exist.
+     */
+    function getViralityScore(uint256 tokenId) external view returns (uint64);
 
     /**
      * @dev Interacts with a squeak.
@@ -158,17 +190,26 @@ interface ICritter is IStoreable {
     ) external view returns (bool);
 
     /**
+     * @dev Gets the virality status of a squeak.
+     * @param tokenId ID of the squeak.
+     * @return A boolean representing the virality status.
+     * @notice The token must exist.
+     */
+    function isViral(uint256 tokenId) external view returns (bool);
+
+    /**
+     * @dev Removes the sender from a pool they belong to.
+     * @param tokenId ID of the viral squeak associated with the pool.
+     * @notice Sender must be a member of the pool.
+     */
+    function leavePool(uint256 tokenId) external;
+
+    /**
      * @dev Updates the relationship between the sender and another account.
      * @param account Address of the account to update relationship with.
      * @param action A value from the Relations enum.
      */
     function updateRelationship(address account, Relation action) external;
-
-    /**
-     * @dev Creates a Critter account.
-     * @param username Username for the account.
-     */
-    function createAccount(string calldata username) external;
 
     /**
      * @dev Updates an accounts status.
