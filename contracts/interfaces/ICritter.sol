@@ -18,8 +18,8 @@
 */
 pragma solidity 0.8.17;
 
-// libraries
-import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeable.sol';
+// enums
+import '../enums/Enums.sol';
 
 // error codes
 error AlreadyBlocked();
@@ -42,49 +42,8 @@ error SqueakEmpty();
 error SqueakTooLong();
 error TransferFailed();
 
-/**
- * @dev Set of statuses of a critter account.
- */
-enum Status {
-    Unknown,
-    Active,
-    Suspended,
-    Banned
-}
-
-/**
- * @dev Set of Configuration keys for the contract.
- */
-enum Configuration {
-    DeleteRate,
-    PlatformTakeRate,
-    PoolPayoutThreshold,
-    MaxLevel,
-    ViralityBonus,
-    ViralityThreshold
-}
-
-/**
- * @dev Set of interactions for a squeak.
- */
-enum Interaction {
-    Dislike,
-    Like,
-    Resqueak,
-    UndoDislike,
-    UndoLike,
-    UndoResqueak
-}
-
-/**
- * @dev Set of relation actions a user can take upon another user.
- */
-enum Relation {
-    Block,
-    Follow,
-    Unblock,
-    Unfollow
-}
+// libraries
+import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeable.sol';
 
 /**
  * @dev Interface for the main Critter contract.

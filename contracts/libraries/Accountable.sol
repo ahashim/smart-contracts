@@ -18,6 +18,9 @@
 */
 pragma solidity 0.8.17;
 
+// enums
+import '../enums/Enums.sol';
+
 // errors
 error InvalidAccount();
 error InvalidAccountStatus();
@@ -26,9 +29,6 @@ error UsernameInvalid();
 error UsernameTooLong();
 error UsernameTooShort();
 error UsernameUnavailable();
-
-// interfaces
-import '../interfaces/ICritter.sol';
 
 // libraries
 import {Slice, toSlice} from '@dk1a/solidity-stringutils/src/Slice.sol';
