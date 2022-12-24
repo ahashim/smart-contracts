@@ -51,11 +51,77 @@ interface ICritter is IStoreable {
     event StatusUpdated(address account, Status status);
 
     /**
+     * @dev Emitted after creating a squeak.
+     * @param author Account that created the squeak.
+     * @param tokenId ID of the squeak.
+     * @param blockNumber Block in which the squeak was created.
+     * @param content Content of the squeak.
+     */
+    event SqueakCreated(
+        address indexed author,
+        uint256 tokenId,
+        uint256 blockNumber,
+        string content
+    );
+
+    /**
+     * @dev Emitted after deleting a squeak.
+     * @param tokenId ID of the squeak.
+     * @param deletedBy Account that deleted the squeak.
+     */
+    event SqueakDeleted(uint256 tokenId, address deletedBy);
+
+    /**
+     * @dev Emitted after an interaction.
+     * @param tokenId ID of the squeak.
+     * @param sender Account that resqueaked.
+     * @param interaction An {Interaction} value.
+     */
+    event SqueakInteraction(
+        uint256 tokenId,
+        address sender,
+        Interaction interaction
+    );
+
+    /**
      * @dev Emitted after updating an accounts username.
      * @param account Address of the account.
      * @param newUsername Updated username.
      */
     event UsernameUpdated(address account, string newUsername);
+
+    /**
+     * @dev Creates a squeak.
+     * @param content Text content of the squeak.
+     * @notice Content must be between 0 and 256 bytes in length.
+     */
+    function createSqueak(string calldata content) external;
+
+    /**
+     * @dev Deletes a squeak & its associated information.
+     * @param tokenId ID of the squeak.
+     * @notice Caller must own the squeak or be an approved account to delete.
+     */
+    function deleteSqueak(uint256 tokenId) external payable;
+
+    /**
+     * @dev Gets a count of each Sentiment item for a squeak.
+     * @param tokenId ID of the squeak.
+     * @return {SentimentCounts}
+     */
+    function getSentimentCounts(
+        uint256 tokenId
+    ) external view returns (SentimentCounts memory);
+
+    /**
+     * @dev Interacts with a squeak.
+     * @param tokenId ID of the squeak.
+     * @param interaction An {Interaction} value.
+     */
+    function interact(
+        uint256 tokenId,
+        Interaction interaction
+    ) external payable;
 
     /**
      * @dev Upgradeable "constructor" function to initialize sub-contracts.
