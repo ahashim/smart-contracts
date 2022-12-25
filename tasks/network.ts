@@ -4,6 +4,7 @@ import {
   CONTRACT_NAME,
   DIVIDEND_THRESHOLD,
   LIB_ACCOUNTABLE,
+  LIB_BANKABLE,
   LIB_SQUEAKABLE,
   LIB_VIRALITY_SCORE,
   MAX_LEVEL,
@@ -11,6 +12,7 @@ import {
 } from '../constants';
 import type {
   Accountable,
+  Bankable,
   ContractFactory,
   ContractInitializer,
   ContractInitializerOverrides,
@@ -78,9 +80,8 @@ task(
     }
 
     // deploy ViralityScore library
-    const { libAccountable, libSqueakable, libViralityScore } = await run(
-      'deploy-libraries'
-    );
+    const { libAccountable, libBankable, libSqueakable, libViralityScore } =
+      await run('deploy-libraries');
 
     // get contract factory instance
     const critter: ContractFactory = await ethers.getContractFactory(
@@ -88,6 +89,7 @@ task(
       {
         libraries: {
           Accountable: libAccountable.address,
+          Bankable: libBankable.address,
           Squeakable: libSqueakable.address,
           ViralityScore: libViralityScore.address,
         },
@@ -102,6 +104,7 @@ task(
       })) as Critter,
       libraries: {
         libAccountable,
+        libBankable,
         libSqueakable,
         libViralityScore,
       },
@@ -116,6 +119,9 @@ subtask(
     const accountable: ContractFactory = await ethers.getContractFactory(
       LIB_ACCOUNTABLE
     );
+    const bankable: ContractFactory = await ethers.getContractFactory(
+      LIB_BANKABLE
+    );
     const squeakable: ContractFactory = await ethers.getContractFactory(
       LIB_SQUEAKABLE
     );
@@ -126,6 +132,7 @@ subtask(
     // deploy
     return {
       libAccountable: (await accountable.deploy()) as Accountable,
+      libBankable: (await bankable.deploy()) as Bankable,
       libSqueakable: (await squeakable.deploy()) as Squeakable,
       libViralityScore: (await viralityScore.deploy()) as ViralityScore,
     };

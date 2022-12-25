@@ -24,7 +24,7 @@ error SqueakTooLong();
 
 /**
  * @title Squeakable
- * @dev A library that handles Critter account logic.
+ * @dev A library that handles Critter squeak logic.
  */
 library Squeakable {
     /**

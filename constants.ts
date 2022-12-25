@@ -7,6 +7,7 @@ export const CONTRACT_SYMBOL = 'CRTTR';
 
 // libraries
 export const LIB_ACCOUNTABLE = 'Accountable';
+export const LIB_BANKABLE = 'Bankable';
 export const LIB_SQUEAKABLE = 'Squeakable';
 export const LIB_VIRALITY_SCORE = 'ViralityScore';
 

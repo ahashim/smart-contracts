@@ -27,7 +27,6 @@ error AlreadyFollowing();
 error AlreadyInteracted();
 error AlreadyRegistered();
 error Blocked();
-error InsufficientFunds();
 error InvalidAmount();
 error InvalidInteraction();
 error InvalidRelationship();

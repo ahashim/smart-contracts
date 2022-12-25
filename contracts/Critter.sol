@@ -29,6 +29,7 @@ import './interfaces/ICritter.sol';
 
 // libraries
 import './libraries/Accountable.sol';
+import './libraries/Bankable.sol';
 import './libraries/Squeakable.sol';
 import './libraries/ViralityScore.sol';
 
@@ -261,19 +262,17 @@ contract Critter is
         // validation
         Accountable.hasActiveAccount(users[msg.sender].status);
         if (!_exists(tokenId)) revert SqueakDoesNotExist();
-
         address owner = ownerOf(tokenId);
-
-        // validate squeak ownership
         if (msg.sender != owner && !isApprovedForAll(owner, msg.sender))
             revert NotApprovedOrOwner();
 
-        // get the delete fee in this block
-        uint256 deleteFee = _getDeleteFee(tokenId, 0);
-
-        // validate the fee & calculate the remainder to refund
-        if (msg.value < deleteFee) revert InsufficientFunds();
-        uint256 remainder = msg.value - deleteFee;
+        // validate delete fee & calculate refund
+        (uint256 deleteFee, uint256 remainder) = Bankable
+            .getDeleteFeeAndRefundAmount(
+                squeaks[tokenId].blockNumber,
+                0,
+                config[Configuration.DeleteRate]
+            );
 
         // receive payment
         _deposit(deleteFee);
@@ -816,20 +815,19 @@ contract Critter is
     /**
      * @dev Gets the price of deleting a squeak based on its age.
      * @param tokenId ID of the squeak to delete.
-     * @param confirmationThreshold The number of future blocks that the delete
-     *      will potentially occur in. Required to give a mostly correct
-     *      price estimate assuming the transaction will get mined within that
-     *      range. 6 blocks is connsidered a good default.
+     * @param blocksValid The number of future blocks that the delete will
+     *      potentially occur in. Required to give a mostly correct price
+     *      estimate assuming the transaction will get mined within that range.
+     *      6 blocks is connsidered a good default.
      * @return Price of deleting the squeak in wei.
      * @notice The token must exist.
      */
     function _getDeleteFee(
         uint256 tokenId,
-        uint256 confirmationThreshold
+        uint256 blocksValid
     ) private view returns (uint256) {
         return
-            ((block.number + confirmationThreshold) -
-                squeaks[tokenId].blockNumber) *
+            ((block.number + blocksValid) - squeaks[tokenId].blockNumber) *
             config[Configuration.DeleteRate];
     }
 
