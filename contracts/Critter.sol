@@ -67,28 +67,28 @@ contract Critter is
     /**
      * @dev MINTER_ROLE has priviledges to mint tokens.
      */
-    bytes32 internal constant MINTER_ROLE = keccak256('MINTER_ROLE');
+    bytes32 private constant MINTER_ROLE = keccak256('MINTER_ROLE');
 
     /**
      * @dev MODERATOR_ROLE has priviledges to update a users account status.
      */
-    bytes32 internal constant MODERATOR_ROLE = keccak256('MODERATOR_ROLE');
+    bytes32 private constant MODERATOR_ROLE = keccak256('MODERATOR_ROLE');
 
     /**
      * @dev OPERATOR_ROLE has priviledges to update the contract configuration
      * values.
      */
-    bytes32 internal constant OPERATOR_ROLE = keccak256('OPERATOR_ROLE');
+    bytes32 private constant OPERATOR_ROLE = keccak256('OPERATOR_ROLE');
 
     /**
      * @dev TREASURER_ROLE has priviledges to withdraw funds and update fees.
      */
-    bytes32 internal constant TREASURER_ROLE = keccak256('TREASURER_ROLE');
+    bytes32 private constant TREASURER_ROLE = keccak256('TREASURER_ROLE');
 
     /**
      * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
      */
-    bytes32 internal constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
+    bytes32 private constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 
     /**
      * @dev Token URL prefix used by squeaks.
