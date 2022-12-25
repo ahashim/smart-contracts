@@ -155,22 +155,16 @@ export default [
         type: 'address',
       },
       {
+        indexed: true,
+        internalType: 'bytes32',
+        name: 'content',
+        type: 'bytes32',
+      },
+      {
         indexed: false,
         internalType: 'uint256',
         name: 'tokenId',
         type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'blockNumber',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'string',
-        name: 'content',
-        type: 'string',
       },
     ],
     name: 'SqueakCreated',

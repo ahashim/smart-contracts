@@ -83,7 +83,11 @@ describe('createSqueak', () => {
   it('emits a SqueakCreated event', async () => {
     await expect(tx)
       .to.emit(critter, 'SqueakCreated')
-      .withArgs(ahmed.address, squeakId, receipt.blockNumber, content);
+      .withArgs(
+        ahmed.address,
+        ethers.utils.formatBytes32String(content),
+        squeakId
+      );
   });
 
   it('reverts when the squeak content is empty', async () => {

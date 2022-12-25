@@ -251,7 +251,7 @@ contract Critter is
         // mint the NFT
         _mint(msg.sender, 1);
 
-        emit SqueakCreated(msg.sender, tokenId, block.number, content);
+        emit SqueakCreated(msg.sender, bytes32(rawContent), tokenId);
     }
 
     /**

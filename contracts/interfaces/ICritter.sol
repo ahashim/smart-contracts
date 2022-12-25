@@ -211,15 +211,13 @@ interface ICritter {
     /**
      * @dev Emitted after creating a squeak.
      * @param author Account that created the squeak.
-     * @param tokenId ID of the squeak.
-     * @param blockNumber Block in which the squeak was created.
      * @param content Content of the squeak.
+     * @param tokenId ID of the squeak.
      */
     event SqueakCreated(
         address indexed author,
-        uint256 tokenId,
-        uint256 blockNumber,
-        string content
+        bytes32 indexed content,
+        uint256 tokenId
     );
 
     /**
