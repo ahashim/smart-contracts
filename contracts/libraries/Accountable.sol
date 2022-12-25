@@ -57,18 +57,20 @@ library Accountable {
     /**
      * @dev Validates a username.
      * @param account Ethereum address of the Critter account.
-     * @param input The username string.
+     * @param username The username bytes.
      */
     function validateUsername(
         address account,
-        bytes calldata input
+        bytes calldata username
     ) public pure {
-        if (input.length == 0) revert UsernameEmpty();
+        if (username.length == 0) revert UsernameEmpty();
         if (account != address(0)) revert UsernameUnavailable();
-        if (input.length < 3) revert UsernameTooShort();
-        if (input.length > 32) revert UsernameTooLong();
-        if (!_matchUsernameRegex(input) || _containsRestrictedWords(input))
-            revert UsernameInvalid();
+        if (username.length < 3) revert UsernameTooShort();
+        if (username.length > 32) revert UsernameTooLong();
+        if (
+            !_matchUsernameRegex(username) ||
+            _containsRestrictedWords(username)
+        ) revert UsernameInvalid();
     }
 
     /**

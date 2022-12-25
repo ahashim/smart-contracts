@@ -131,16 +131,6 @@ export default [
   },
   {
     inputs: [],
-    name: 'SqueakEmpty',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'SqueakTooLong',
-    type: 'error',
-  },
-  {
-    inputs: [],
     name: 'TransferCallerNotOwnerNorApproved',
     type: 'error',
   },

@@ -6,7 +6,8 @@ export const CONTRACT_NAME = 'Critter';
 export const CONTRACT_SYMBOL = 'CRTTR';
 
 // libraries
-export const LIB_VALIDATION = 'Accountable';
+export const LIB_ACCOUNTABLE = 'Accountable';
+export const LIB_SQUEAKABLE = 'Squeakable';
 export const LIB_VIRALITY_SCORE = 'ViralityScore';
 
 // fees (in wei)

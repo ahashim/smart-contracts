@@ -5,6 +5,7 @@ import { Status } from './enums';
 import type { Critter } from './typechain-types/contracts';
 import type {
   Accountable,
+  Squeakable,
   ViralityScore,
 } from './typechain-types/contracts/libraries';
 
@@ -12,6 +13,7 @@ import type {
 export type { Critter } from './typechain-types/contracts';
 export type {
   Accountable,
+  Squeakable,
   ViralityScore,
 } from './typechain-types/contracts/libraries';
 export type { Result } from '@ethersproject/abi';
@@ -48,6 +50,7 @@ export type ContractInitializer = (string | number | BigNumber)[];
 
 export type LibraryContracts = {
   libAccountable: Accountable;
+  libSqueakable: Squeakable;
   libViralityScore: ViralityScore;
 };
 

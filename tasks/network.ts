@@ -3,7 +3,8 @@ import { subtask, task } from 'hardhat/config';
 import {
   CONTRACT_NAME,
   DIVIDEND_THRESHOLD,
-  LIB_VALIDATION,
+  LIB_ACCOUNTABLE,
+  LIB_SQUEAKABLE,
   LIB_VIRALITY_SCORE,
   MAX_LEVEL,
   VIRALITY_THRESHOLD,
@@ -16,6 +17,7 @@ import type {
   Critter,
   CritterContracts,
   LibraryContracts,
+  Squeakable,
   ViralityScore,
 } from '../types';
 
@@ -76,7 +78,9 @@ task(
     }
 
     // deploy ViralityScore library
-    const { libAccountable, libViralityScore } = await run('deploy-libraries');
+    const { libAccountable, libSqueakable, libViralityScore } = await run(
+      'deploy-libraries'
+    );
 
     // get contract factory instance
     const critter: ContractFactory = await ethers.getContractFactory(
@@ -84,6 +88,7 @@ task(
       {
         libraries: {
           Accountable: libAccountable.address,
+          Squeakable: libSqueakable.address,
           ViralityScore: libViralityScore.address,
         },
       }
@@ -97,6 +102,7 @@ task(
       })) as Critter,
       libraries: {
         libAccountable,
+        libSqueakable,
         libViralityScore,
       },
     };
@@ -107,8 +113,11 @@ subtask(
   'deploy-libraries',
   'Deploys libraries required by the main contract',
   async (_, { ethers }): Promise<LibraryContracts> => {
-    const validation: ContractFactory = await ethers.getContractFactory(
-      LIB_VALIDATION
+    const accountable: ContractFactory = await ethers.getContractFactory(
+      LIB_ACCOUNTABLE
+    );
+    const squeakable: ContractFactory = await ethers.getContractFactory(
+      LIB_SQUEAKABLE
     );
     const viralityScore: ContractFactory = await ethers.getContractFactory(
       LIB_VIRALITY_SCORE
@@ -116,7 +125,8 @@ subtask(
 
     // deploy
     return {
-      libAccountable: (await validation.deploy()) as Accountable,
+      libAccountable: (await accountable.deploy()) as Accountable,
+      libSqueakable: (await squeakable.deploy()) as Squeakable,
       libViralityScore: (await viralityScore.deploy()) as ViralityScore,
     };
   }

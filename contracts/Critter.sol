@@ -29,6 +29,7 @@ import './interfaces/ICritter.sol';
 
 // libraries
 import './libraries/Accountable.sol';
+import './libraries/Squeakable.sol';
 import './libraries/ViralityScore.sol';
 
 // types
@@ -212,21 +213,17 @@ contract Critter is
      * @dev See {ICritter-createAccount}.
      */
     function createAccount(string calldata username) external {
-        // validate account
+        // validation
         if (users[msg.sender].status != Status.Unknown)
             revert AlreadyRegistered();
-
-        // validate username
         bytes memory rawUsername = bytes(username);
         Accountable.validateUsername(addresses[username], rawUsername);
 
         // create an active User for the account
         users[msg.sender] = User(msg.sender, Status.Active, 1, username);
-
-        // set username <-> address mapping
         addresses[username] = msg.sender;
 
-        // bypassing the admin-check on grantRole so each user can mint squeaks
+        // grant them a minter role
         _grantRole(MINTER_ROLE, msg.sender);
 
         emit AccountCreated(msg.sender, bytes32(rawUsername));
@@ -239,17 +236,11 @@ contract Critter is
         // validation
         Accountable.hasActiveAccount(users[msg.sender].status);
         _checkRole(MINTER_ROLE);
-
-        // convert to bytes
         bytes memory rawContent = bytes(content);
-
-        // validate existence & length of the raw content
-        if (rawContent.length == 0) revert SqueakEmpty();
-        else if (rawContent.length > 256) revert SqueakTooLong();
-
-        uint256 tokenId = _nextTokenId();
+        Squeakable.validateSqueak(rawContent);
 
         // save the squeak details to storage
+        uint256 tokenId = _nextTokenId();
         squeaks[tokenId] = Squeak(
             block.number,
             msg.sender,

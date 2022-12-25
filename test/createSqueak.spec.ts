@@ -1,10 +1,11 @@
-import { MODERATOR_ROLE } from '../constants';
+import { MINTER_ROLE, MODERATOR_ROLE } from '../constants';
 import { Status } from '../enums';
 import type {
   BigNumber,
   ContractReceipt,
   ContractTransaction,
   Critter,
+  LibraryContracts,
   SignerWithAddress,
   Squeak,
 } from '../types';
@@ -17,7 +18,9 @@ describe('createSqueak', () => {
     ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
+    daphne: SignerWithAddress,
     critter: Critter,
+    libraries: LibraryContracts,
     owner: SignerWithAddress,
     receipt: ContractReceipt,
     squeak: Squeak,
@@ -25,11 +28,15 @@ describe('createSqueak', () => {
     tx: ContractTransaction;
 
   const createSqueakFixture = async () => {
-    [owner, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = (await run('deploy-contracts')).critter.connect(ahmed);
+    [owner, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
+    ({ critter, libraries } = await run('deploy-contracts'));
+    critter = critter.connect(ahmed);
 
-    // ahmed creates an account
-    await critter.createAccount('ahmed');
+    // ahmed, barbie, and daphne create accounts
+    await run('create-accounts', {
+      accounts: [ahmed, barbie, daphne],
+      contract: critter,
+    });
 
     // contract owner grants ahmed the moderator role
     await critter.connect(owner).grantRole(MODERATOR_ROLE, ahmed.address);
@@ -41,15 +48,16 @@ describe('createSqueak', () => {
       signer: ahmed,
     }));
 
-    // barbie creates an account
-    await critter.connect(barbie).createAccount('barbie');
-
     // ahmed bans barbie
     await critter.updateStatus(barbie.address, Status.Banned);
+
+    // contract owner revokes daphne's minter role
+    await critter.connect(owner).revokeRole(MINTER_ROLE, daphne.address);
 
     return {
       accountBalance: await critter.balanceOf(ahmed.address),
       critter,
+      libraries,
       receipt,
       squeak: await critter.squeaks(squeakId),
       tx,
@@ -57,9 +65,8 @@ describe('createSqueak', () => {
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ accountBalance, critter, receipt, squeak, tx } = await loadFixture(
-      createSqueakFixture
-    ));
+    ({ accountBalance, critter, libraries, receipt, squeak, tx } =
+      await loadFixture(createSqueakFixture));
   });
 
   it('lets a user create a squeak', () => {
@@ -81,7 +88,7 @@ describe('createSqueak', () => {
 
   it('reverts when the squeak content is empty', async () => {
     await expect(critter.createSqueak('')).to.be.revertedWithCustomError(
-      critter,
+      libraries.libSqueakable,
       'SqueakEmpty'
     );
   });
@@ -92,7 +99,15 @@ describe('createSqueak', () => {
     Wise? I thought not. It’s not a story the Jedi would tell you. It’s a Sith
     legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise
     he could use the Force to influence the midichlorians to create life...`)
-    ).to.be.revertedWithCustomError(critter, 'SqueakTooLong');
+    ).to.be.revertedWithCustomError(libraries.libSqueakable, 'SqueakTooLong');
+  });
+
+  it('reverts when the user does not have a minter role', async () => {
+    await expect(
+      critter.connect(daphne).createSqueak(content)
+    ).to.be.revertedWith(
+      `AccessControl: account ${daphne.address.toLowerCase()} is missing role ${MINTER_ROLE.toLowerCase()}`
+    );
   });
 
   it('reverts when the user does not have an account', async () => {

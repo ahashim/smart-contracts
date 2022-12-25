@@ -38,8 +38,6 @@ error NotInPool();
 error NotInteractedYet();
 error PoolDoesNotExist();
 error SqueakDoesNotExist();
-error SqueakEmpty();
-error SqueakTooLong();
 error TransferFailed();
 
 // libraries
