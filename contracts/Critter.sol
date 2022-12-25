@@ -219,11 +219,11 @@ contract Critter is
         bytes memory rawUsername = bytes(username);
         Accountable.validateUsername(addresses[username], rawUsername);
 
-        // create an active User for the account
+        // create an active User
         users[msg.sender] = User(msg.sender, Status.Active, 1, username);
         addresses[username] = msg.sender;
 
-        // grant them a minter role
+        // grant them the ability to mint NFT's
         _grantRole(MINTER_ROLE, msg.sender);
 
         emit AccountCreated(msg.sender, bytes32(rawUsername));
@@ -239,7 +239,7 @@ contract Critter is
         bytes memory rawContent = bytes(content);
         Squeakable.validateSqueak(rawContent);
 
-        // save the squeak details to storage
+        // create a Squeak
         uint256 tokenId = _nextTokenId();
         squeaks[tokenId] = Squeak(
             block.number,
