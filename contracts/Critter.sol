@@ -590,7 +590,11 @@ contract Critter is
     function updateInteractionFee(
         Interaction interaction,
         uint256 amount
-    ) external onlyRole(TREASURER_ROLE) {
+    ) external {
+        // user validation
+        _checkRole(TREASURER_ROLE);
+
+        // update fee
         fees[interaction] = amount;
 
         emit InteractionFeeUpdated(interaction, amount);
@@ -670,11 +674,9 @@ contract Critter is
     /**
      * @dev See {ICritter-updateStatus}.
      */
-    function updateStatus(
-        address account,
-        Status status
-    ) external onlyRole(MODERATOR_ROLE) {
-        // validate status
+    function updateStatus(address account, Status status) external {
+        // validation
+        _checkRole(MODERATOR_ROLE);
         if (status == Status.Unknown) revert InvalidAccountStatus();
 
         // ensure the account exists
@@ -718,18 +720,20 @@ contract Critter is
     function updateConfiguration(
         Configuration configuration,
         uint256 amount
-    ) external onlyRole(OPERATOR_ROLE) {
+    ) external {
+        // validation
+        _checkRole(OPERATOR_ROLE);
+
+        // update config
         config[configuration] = amount;
     }
 
     /**
      * @dev See {ICritter-withdraw}.
      */
-    function withdraw(
-        address to,
-        uint256 amount
-    ) external payable onlyRole(TREASURER_ROLE) {
-        // validate the amount
+    function withdraw(address to, uint256 amount) external payable {
+        // validation
+        _checkRole(TREASURER_ROLE);
         if (amount > treasury) revert InvalidAmount();
 
         // transfer it out of the treasury
@@ -764,15 +768,13 @@ contract Critter is
         squeaks[startTokenId].owner = to;
     }
 
-    /* solhint-disable no-empty-blocks */
     /**
      * @dev Reverts when caller isn't authorized to upgrade the contract.
      */
-    function _authorizeUpgrade(
-        address
-    ) internal view override onlyRole(UPGRADER_ROLE) {}
-
-    /* solhint-enable no-empty-blocks */
+    function _authorizeUpgrade(address) internal view override {
+        // user validation
+        _checkRole(UPGRADER_ROLE);
+    }
 
     /**
      * @dev See {IERC721AUpgradeable-_baseURI}.
