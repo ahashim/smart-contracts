@@ -294,9 +294,6 @@ contract Critter is
 
                 // deposit remaining dust into treasury
                 _deposit(pool.amount);
-
-                // drain the pool
-                pool.amount = 0;
             }
 
             // delete the pool & passes
