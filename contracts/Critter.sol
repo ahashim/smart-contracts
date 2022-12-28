@@ -24,8 +24,8 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 
-// interfaces
-import './interfaces/ICritter.sol';
+// interface
+import './ICritter.sol';
 
 // libraries
 import './libraries/Accountable.sol';
@@ -277,6 +277,9 @@ contract Critter is
         // receive payment
         _deposit(deleteFee);
 
+        // refund any excess
+        if (remainder > 0) _transferFunds(msg.sender, remainder);
+
         // burn the NFT
         _burn(tokenId);
 
@@ -285,10 +288,9 @@ contract Critter is
         delete sentiments[tokenId];
 
         if (viralSqueaks.contains(tokenId)) {
-            // delete associated virality
+            // pay out any remaining pool funds
             Pool storage pool = pools[tokenId];
             if (pool.amount > 0) {
-                // pay out any remaining pool funds
                 _makePoolDividends(tokenId, pool, (pool.amount / pool.shares));
 
                 // deposit remaining dust into treasury
@@ -303,9 +305,6 @@ contract Critter is
             viralSqueaks.remove(tokenId);
         }
 
-        // refund any excess funds
-        if (remainder > 0) _transferFunds(msg.sender, remainder);
-
         emit SqueakDeleted(tokenId, msg.sender);
     }
 
@@ -318,7 +317,7 @@ contract Critter is
         return
             Bankable.getDeleteFee(
                 squeaks[tokenId].blockNumber,
-                6, // defaulting {blocksValid} to 6
+                6, // default {blocksValid} amount
                 config[Configuration.DeleteRate]
             );
     }
