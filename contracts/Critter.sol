@@ -417,7 +417,8 @@ contract Critter is
         // validation
         Accountable.hasActiveAccount(users[msg.sender].status);
         if (!_exists(tokenId)) revert SqueakDoesNotExist();
-        if (msg.value < fees[interaction]) revert InsufficientFunds();
+        uint256 interactionFee = fees[interaction];
+        if (msg.value < interactionFee) revert InsufficientFunds();
 
         address author = squeaks[tokenId].author;
 
@@ -428,9 +429,8 @@ contract Critter is
                 blocked[msg.sender].contains(author))
         ) revert Blocked();
 
-        Sentiment storage sentiment = sentiments[tokenId];
-
         // determine interaction & update sentiment
+        Sentiment storage sentiment = sentiments[tokenId];
         if (interaction == Interaction.Dislike) {
             // ensure the user has not already disliked the squeak
             if (sentiment.dislikes.contains(msg.sender))
@@ -492,7 +492,62 @@ contract Critter is
             _markViral(tokenId, sentiment, score);
         }
 
-        _makePayment(tokenId, interaction);
+        // make payment
+        User storage owner = users[ownerOf(tokenId)];
+        if (
+            // the squeak owner is banned
+            owner.status == Status.Banned ||
+            // negative interaction
+            interaction == Interaction.Dislike ||
+            interaction == Interaction.UndoLike ||
+            interaction == Interaction.UndoResqueak
+        ) {
+            // treasury takes all
+            _deposit(interactionFee);
+        } else if (
+            // positive interaction
+            interaction == Interaction.Like ||
+            interaction == Interaction.Resqueak ||
+            interaction == Interaction.UndoDislike
+        ) {
+            // calculate amounts to deposit & transfer
+            uint256 interactionTake = (interactionFee *
+                config[Configuration.PlatformTakeRate]) / 100;
+            uint256 remainder = interactionFee - interactionTake;
+
+            // deposit fee into treasury
+            _deposit(interactionTake);
+
+            if (viralSqueaks.contains(tokenId)) {
+                Pool storage pool = pools[tokenId];
+
+                // split remainder between pool members & the squeak owner
+                uint256 amount = remainder / 2;
+
+                // add funds to the pool (unchecked because pool payouts will
+                // ensure they get reset to zero)
+                unchecked {
+                    pool.amount += amount;
+                }
+
+                emit FundsAddedToPool(tokenId, amount);
+
+                // determine if we need to payout
+                uint256 sharePrice = pool.amount / pool.shares;
+                if (sharePrice >= config[Configuration.PoolPayoutThreshold])
+                    _makePoolDividends(tokenId, pool, sharePrice);
+
+                // any dust from odd division goes to the owner
+                remainder -= amount;
+            }
+
+            // transfer remaining funds to the squeak owner
+            _transferFunds(owner.account, remainder);
+        }
+
+        // refund any funds excess of the interaction fee
+        if (msg.value > interactionFee)
+            _transferFunds(msg.sender, msg.value - interactionFee);
     }
 
     /**
@@ -830,72 +885,6 @@ contract Critter is
             // increase the users level
             user.level = newLevel < maxLevel ? newLevel : maxLevel;
         }
-    }
-
-    /**
-     * @dev Makes a payment for an interaction from the sender to the squeaks
-     *      owner or the treasury (based on interaction polarity).
-     * @param tokenId ID of the squeak.
-     * @param interaction An {Interaction} value.
-     */
-    function _makePayment(uint256 tokenId, Interaction interaction) private {
-        uint256 interactionFee = fees[interaction];
-        User storage owner = users[ownerOf(tokenId)];
-
-        if (
-            // the squeak owner is banned
-            owner.status == Status.Banned ||
-            // negative interaction
-            interaction == Interaction.Dislike ||
-            interaction == Interaction.UndoLike ||
-            interaction == Interaction.UndoResqueak
-        ) {
-            // treasury takes all
-            _deposit(interactionFee);
-        } else if (
-            // positive interaction
-            interaction == Interaction.Like ||
-            interaction == Interaction.Resqueak ||
-            interaction == Interaction.UndoDislike
-        ) {
-            // calculate amounts to deposit & transfer
-            uint256 interactionTake = (interactionFee *
-                config[Configuration.PlatformTakeRate]) / 100;
-            uint256 remainder = interactionFee - interactionTake;
-
-            // deposit fee into treasury
-            _deposit(interactionTake);
-
-            if (viralSqueaks.contains(tokenId)) {
-                Pool storage pool = pools[tokenId];
-
-                // split remainder between pool members & the squeak owner
-                uint256 amount = remainder / 2;
-
-                // add funds to the pool (unchecked because pool payouts will
-                // ensure they get reset to zero)
-                unchecked {
-                    pool.amount += amount;
-                }
-
-                emit FundsAddedToPool(tokenId, amount);
-
-                // determine if we need to payout
-                uint256 sharePrice = pool.amount / pool.shares;
-                if (sharePrice >= config[Configuration.PoolPayoutThreshold])
-                    _makePoolDividends(tokenId, pool, sharePrice);
-
-                // any dust from odd division goes to the owner
-                remainder -= amount;
-            }
-
-            // transfer remaining funds to the squeak owner
-            _transferFunds(owner.account, remainder);
-        }
-
-        // refund any funds excess of the interaction fee
-        if (msg.value > interactionFee)
-            _transferFunds(msg.sender, msg.value - interactionFee);
     }
 
     /**
