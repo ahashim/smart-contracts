@@ -476,60 +476,61 @@ contract Critter is
 
         emit SqueakInteraction(tokenId, msg.sender, interaction);
 
-        // check virality
-        uint64 score = getViralityScore(tokenId);
-        if (
-            !viralSqueaks.contains(tokenId) &&
-            score >= config[Configuration.ViralityThreshold]
-        ) {
-            // add squeak to the list of viral squeaks
-            viralSqueaks.add(tokenId);
+        if (!viralSqueaks.contains(tokenId)) {
+            // check virality
+            uint64 score = getViralityScore(tokenId);
+            if (score >= config[Configuration.ViralityThreshold]) {
+                // add squeak to the list of viral squeaks
+                viralSqueaks.add(tokenId);
 
-            // give the user who propelled the squeak into virality a bonus level.
-            _increaseLevel(
-                users[msg.sender],
-                config[Configuration.ViralityBonus]
-            );
+                // give the user who propelled the squeak into virality a bonus level.
+                _increaseLevel(
+                    users[msg.sender],
+                    config[Configuration.ViralityBonus]
+                );
 
-            // iterate over both sets & add all unique addresses to the pool
-            uint256 likesCount = sentiment.likes.length();
-            uint256 resqueaksCount = sentiment.resqueaks.length();
-            uint256 upperBound = likesCount > resqueaksCount
-                ? likesCount
-                : resqueaksCount;
+                // iterate over both sets & add all unique addresses to the pool
+                uint256 likesCount = sentiment.likes.length();
+                uint256 resqueaksCount = sentiment.resqueaks.length();
+                uint256 upperBound = likesCount > resqueaksCount
+                    ? likesCount
+                    : resqueaksCount;
 
-            // initialize pool details
-            uint256 shareCount = 0;
+                // initialize pool details
+                uint256 shareCount = 0;
 
-            // TODO: move this unbounded loop off-chain
-            for (uint256 i = 0; i < upperBound; i++) {
-                if (i < likesCount)
-                    // add all likers
-                    shareCount = _createPoolPass(
-                        users[sentiment.likes.at(i)],
-                        shareCount,
-                        tokenId
-                    );
+                // TODO: move this unbounded loop off-chain
+                for (uint256 i = 0; i < upperBound; i++) {
+                    if (i < likesCount)
+                        // add all likers
+                        shareCount = _createPoolPass(
+                            users[sentiment.likes.at(i)],
+                            shareCount,
+                            tokenId
+                        );
 
-                if (
-                    i < resqueaksCount &&
-                    !poolPasses[tokenId].contains(sentiment.resqueaks.at(i))
-                )
-                    // add all resqueakers who aren't likers
-                    shareCount = _createPoolPass(
-                        users[sentiment.resqueaks.at(i)],
-                        shareCount,
-                        tokenId
-                    );
+                    if (
+                        i < resqueaksCount &&
+                        !poolPasses[tokenId].contains(
+                            sentiment.resqueaks.at(i)
+                        )
+                    )
+                        // add all resqueakers who aren't likers
+                        shareCount = _createPoolPass(
+                            users[sentiment.resqueaks.at(i)],
+                            shareCount,
+                            tokenId
+                        );
+                }
+
+                // save pool to storage
+                pools[tokenId] = Pool(
+                    0, // amount
+                    shareCount,
+                    block.number,
+                    score
+                );
             }
-
-            // save pool to storage
-            pools[tokenId] = Pool(
-                0, // amount
-                shareCount,
-                block.number,
-                score
-            );
         }
 
         // make payment
