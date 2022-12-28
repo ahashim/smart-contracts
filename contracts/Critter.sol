@@ -620,19 +620,15 @@ contract Critter is
      * @dev See {ICritter-leavePool}.
      */
     function leavePool(uint256 tokenId) external {
-        // validate that a pool exists for the squeak
+        // valiation
         if (!viralSqueaks.contains(tokenId)) revert PoolDoesNotExist();
-
         EnumerableMapUpgradeable.AddressToUintMap storage passes = poolPasses[
             tokenId
         ];
-
-        // validate that the account is in the pool
         if (!passes.contains(msg.sender)) revert NotInPool();
 
-        Pool storage pool = pools[tokenId];
-
         // remove the member & their shares from the pool
+        Pool storage pool = pools[tokenId];
         pool.shares -= passes.get(msg.sender);
         passes.remove(msg.sender);
 
@@ -687,26 +683,21 @@ contract Critter is
     function updateRelationship(address account, Relation action) external {
         // validation
         Accountable.hasActiveAccount(users[msg.sender].status);
-
-        // sender cannot update a relationship to themselves
         if (account == msg.sender) revert InvalidRelationship();
-
-        // ensure the account is active
         if (users[account].status != Status.Active)
             revert InvalidAccountStatus();
 
-        // get blacklists
+        // blacklists + followers
         EnumerableSetUpgradeable.AddressSet storage accountBlacklist = blocked[
             account
         ];
         EnumerableSetUpgradeable.AddressSet storage senderBlacklist = blocked[
             msg.sender
         ];
-
-        // get the accounts followers
         EnumerableSetUpgradeable.AddressSet
             storage accountFollowers = followers[account];
 
+        // update relationship
         if (action == Relation.Follow) {
             // sender cannot follow if account has blocked the sender
             if (accountBlacklist.contains(msg.sender)) revert Blocked();
@@ -756,14 +747,10 @@ contract Critter is
     function updateStatus(address account, Status status) external {
         // validation
         _checkRole(MODERATOR_ROLE);
-        if (status == Status.Unknown) revert InvalidAccountStatus();
-
-        // ensure the account exists
         User storage user = users[account];
         if (user.status == Status.Unknown) revert InvalidAccount();
-
-        // ensure new status is not the same as the current status
-        if (user.status == status) revert InvalidAccountStatus();
+        if (status == Status.Unknown || user.status == status)
+            revert InvalidAccountStatus();
 
         // save the updated status
         user.status = status;
