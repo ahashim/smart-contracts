@@ -6,7 +6,6 @@ import type { Critter } from './typechain-types/contracts';
 import type {
   Accountable,
   Bankable,
-  Squeakable,
   ViralityScore,
 } from './typechain-types/contracts/libraries';
 
@@ -15,7 +14,6 @@ export type { Critter } from './typechain-types/contracts';
 export type {
   Accountable,
   Bankable,
-  Squeakable,
   ViralityScore,
 } from './typechain-types/contracts/libraries';
 export type { Result } from '@ethersproject/abi';
@@ -53,7 +51,6 @@ export type ContractInitializer = (string | number | BigNumber)[];
 export type LibraryContracts = {
   libAccountable: Accountable;
   libBankable: Bankable;
-  libSqueakable: Squeakable;
   libViralityScore: ViralityScore;
 };
 

@@ -36,7 +36,9 @@ error NotFollowing();
 error NotInPool();
 error NotInteractedYet();
 error PoolDoesNotExist();
+error SqueakEmpty();
 error SqueakDoesNotExist();
+error SqueakTooLong();
 error TransferFailed();
 
 // libraries

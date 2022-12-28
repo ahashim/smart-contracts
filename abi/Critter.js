@@ -46,6 +46,11 @@ export default [
   },
   {
     inputs: [],
+    name: 'InsufficientFunds',
+    type: 'error',
+  },
+  {
+    inputs: [],
     name: 'InvalidAccount',
     type: 'error',
   },
@@ -122,6 +127,16 @@ export default [
   {
     inputs: [],
     name: 'SqueakDoesNotExist',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'SqueakEmpty',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'SqueakTooLong',
     type: 'error',
   },
   {

@@ -6,7 +6,6 @@ import {
   DIVIDEND_THRESHOLD,
   LIB_ACCOUNTABLE,
   LIB_BANKABLE,
-  LIB_SQUEAKABLE,
   LIB_VIRALITY_SCORE,
   MAX_LEVEL,
   VIRALITY_THRESHOLD,
@@ -14,7 +13,6 @@ import {
 import {
   Accountable__factory,
   Bankable__factory,
-  Squeakable__factory,
   ViralityScore__factory,
 } from '../typechain-types';
 import type {
@@ -82,9 +80,10 @@ task(
       initializer[defaults[key].index] = defaults[key].value;
     }
 
-    // deploy ViralityScore library
-    const { libAccountable, libBankable, libSqueakable, libViralityScore } =
-      await run('deploy-libraries');
+    // deploy libraries
+    const { libAccountable, libBankable, libViralityScore } = await run(
+      'deploy-libraries'
+    );
 
     // get contract factory instance
     const critter: ContractFactory = await ethers.getContractFactory(
@@ -93,7 +92,6 @@ task(
         libraries: {
           Accountable: libAccountable.address,
           Bankable: libBankable.address,
-          Squeakable: libSqueakable.address,
           ViralityScore: libViralityScore.address,
         },
       }
@@ -108,7 +106,6 @@ task(
       libraries: {
         libAccountable,
         libBankable,
-        libSqueakable,
         libViralityScore,
       },
     };
@@ -125,9 +122,6 @@ subtask(
     const bankable: Bankable__factory = await ethers.getContractFactory(
       LIB_BANKABLE
     );
-    const squeakable: Squeakable__factory = await ethers.getContractFactory(
-      LIB_SQUEAKABLE
-    );
     const viralityScore: ViralityScore__factory =
       await ethers.getContractFactory(LIB_VIRALITY_SCORE);
 
@@ -135,7 +129,6 @@ subtask(
     return {
       libAccountable: await accountable.deploy(),
       libBankable: await bankable.deploy(),
-      libSqueakable: await squeakable.deploy(),
       libViralityScore: await viralityScore.deploy(),
     };
   }

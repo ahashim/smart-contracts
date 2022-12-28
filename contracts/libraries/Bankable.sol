@@ -75,11 +75,4 @@ library Bankable {
 
         return (interactionTake, interactionFee - interactionTake);
     }
-
-    /**
-     * @dev Validates that an interaction has enough to cover the fee.
-     */
-    function validateInteractionFee(uint256 interactionFee) public view {
-        if (msg.value < interactionFee) revert InsufficientFunds();
-    }
 }

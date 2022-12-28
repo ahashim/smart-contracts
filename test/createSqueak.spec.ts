@@ -5,7 +5,6 @@ import type {
   ContractReceipt,
   ContractTransaction,
   Critter,
-  LibraryContracts,
   SignerWithAddress,
   Squeak,
 } from '../types';
@@ -20,7 +19,6 @@ describe('createSqueak', () => {
     carlos: SignerWithAddress,
     daphne: SignerWithAddress,
     critter: Critter,
-    libraries: LibraryContracts,
     owner: SignerWithAddress,
     receipt: ContractReceipt,
     squeak: Squeak,
@@ -29,8 +27,7 @@ describe('createSqueak', () => {
 
   const createSqueakFixture = async () => {
     [owner, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
-    ({ critter, libraries } = await run('deploy-contracts'));
-    critter = critter.connect(ahmed);
+    critter = (await run('deploy-contracts')).critter.connect(ahmed);
 
     // ahmed, barbie, and daphne create accounts
     await run('create-accounts', {
@@ -57,7 +54,6 @@ describe('createSqueak', () => {
     return {
       accountBalance: await critter.balanceOf(ahmed.address),
       critter,
-      libraries,
       receipt,
       squeak: await critter.squeaks(squeakId),
       tx,
@@ -65,8 +61,9 @@ describe('createSqueak', () => {
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ accountBalance, critter, libraries, receipt, squeak, tx } =
-      await loadFixture(createSqueakFixture));
+    ({ accountBalance, critter, receipt, squeak, tx } = await loadFixture(
+      createSqueakFixture
+    ));
   });
 
   it('lets a user create a squeak', () => {
@@ -92,7 +89,7 @@ describe('createSqueak', () => {
 
   it('reverts when the squeak content is empty', async () => {
     await expect(critter.createSqueak('')).to.be.revertedWithCustomError(
-      libraries.libSqueakable,
+      critter,
       'SqueakEmpty'
     );
   });
@@ -103,7 +100,7 @@ describe('createSqueak', () => {
     Wise? I thought not. It’s not a story the Jedi would tell you. It’s a Sith
     legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise
     he could use the Force to influence the midichlorians to create life...`)
-    ).to.be.revertedWithCustomError(libraries.libSqueakable, 'SqueakTooLong');
+    ).to.be.revertedWithCustomError(critter, 'SqueakTooLong');
   });
 
   it('reverts when the user does not have a minter role', async () => {

@@ -30,7 +30,6 @@ import './ICritter.sol';
 // libraries
 import './libraries/Accountable.sol';
 import './libraries/Bankable.sol';
-import './libraries/Squeakable.sol';
 import './libraries/ViralityScore.sol';
 
 // types
@@ -238,7 +237,8 @@ contract Critter is
         Accountable.hasActiveAccount(users[msg.sender].status);
         _checkRole(MINTER_ROLE);
         bytes memory rawContent = bytes(content);
-        Squeakable.validateSqueak(rawContent);
+        if (rawContent.length == 0) revert SqueakEmpty();
+        if (rawContent.length > 256) revert SqueakTooLong();
 
         // create a Squeak
         uint256 tokenId = _nextTokenId();
@@ -418,7 +418,7 @@ contract Critter is
         Accountable.hasActiveAccount(users[msg.sender].status);
         if (!_exists(tokenId)) revert SqueakDoesNotExist();
         uint256 interactionFee = fees[interaction];
-        Bankable.validateInteractionFee(interactionFee);
+        if (msg.value < interactionFee) revert InsufficientFunds();
         address author = squeaks[tokenId].author;
         if (
             msg.sender != author &&
