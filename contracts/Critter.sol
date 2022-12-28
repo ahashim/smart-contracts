@@ -925,7 +925,8 @@ contract Critter is
         ];
 
         // TODO: move this unbounded loop off-chain
-        for (uint256 i = 0; i < passes.length(); i++) {
+        uint256 passCount = passes.length();
+        for (uint256 i = 0; i < passCount; i++) {
             // calculate the member payout based on the number of shares & price
             (address user, uint256 shares) = passes.at(i);
             uint256 payout = sharePrice * shares;
