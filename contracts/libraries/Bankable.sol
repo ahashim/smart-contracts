@@ -15,8 +15,8 @@ pragma solidity 0.8.17;
 // enums
 import '../Enums.sol';
 
-// error codes
-error InsufficientFunds();
+// errors
+import '../Errors.sol';
 
 /**
  * @title Bankable

@@ -18,28 +18,11 @@
 */
 pragma solidity 0.8.17;
 
+// errors
+import './Errors.sol';
+
 // enums
 import './Enums.sol';
-
-// error codes
-error AlreadyBlocked();
-error AlreadyFollowing();
-error AlreadyInteracted();
-error AlreadyRegistered();
-error Blocked();
-error InvalidAmount();
-error InvalidInteraction();
-error InvalidRelationship();
-error NotApprovedOrOwner();
-error NotBlocked();
-error NotFollowing();
-error NotInPool();
-error NotInteractedYet();
-error PoolDoesNotExist();
-error SqueakEmpty();
-error SqueakDoesNotExist();
-error SqueakTooLong();
-error TransferFailed();
 
 // libraries
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeable.sol';

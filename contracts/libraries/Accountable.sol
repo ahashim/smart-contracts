@@ -22,13 +22,7 @@ pragma solidity 0.8.17;
 import '../Enums.sol';
 
 // errors
-error InvalidAccount();
-error InvalidAccountStatus();
-error UsernameEmpty();
-error UsernameInvalid();
-error UsernameTooLong();
-error UsernameTooShort();
-error UsernameUnavailable();
+import '../Errors.sol';
 
 // libraries
 import {Slice, toSlice} from '@dk1a/solidity-stringutils/src/Slice.sol';
