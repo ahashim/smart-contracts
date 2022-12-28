@@ -174,6 +174,14 @@ interface ICritter {
     event Dividend(uint256 tokenId);
 
     /**
+     * @dev Emitted when funds in a pool are paid out to its members.
+     * @param tokenId ID of the viral squeak.
+     * @param account Address of the user it belongs to.
+     * @param shares Amount of pool shares belonging to the user.
+     */
+    event PoolPassCreated(uint256 tokenId, address account, uint256 shares);
+
+    /**
      * @dev Emitted after updating a relationship.
      * @param sender Address of the sender.
      * @param relative Address of the account to update relationship with.

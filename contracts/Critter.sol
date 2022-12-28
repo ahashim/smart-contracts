@@ -873,6 +873,8 @@ contract Critter is
         poolPasses[tokenId].set(user.account, user.level);
         poolShareCount += user.level;
 
+        emit PoolPassCreated(tokenId, user.account, user.level);
+
         return poolShareCount;
     }
 
