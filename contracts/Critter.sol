@@ -316,8 +316,12 @@ contract Critter is
     function getDeleteFee(uint256 tokenId) external view returns (uint256) {
         if (!_exists(tokenId)) revert SqueakDoesNotExist();
 
-        // defaulting confirmation threshold to 6
-        return _getDeleteFee(tokenId, 6);
+        return
+            Bankable.getDeleteFee(
+                squeaks[tokenId].blockNumber,
+                6, // defaulting {blocksValid} to 6
+                config[Configuration.DeleteRate]
+            );
     }
 
     /**
@@ -807,25 +811,6 @@ contract Critter is
         }
 
         emit FundsDeposited(amount);
-    }
-
-    /**
-     * @dev Gets the price of deleting a squeak based on its age.
-     * @param tokenId ID of the squeak to delete.
-     * @param blocksValid The number of future blocks that the delete will
-     *      potentially occur in. Required to give a mostly correct price
-     *      estimate assuming the transaction will get mined within that range.
-     *      6 blocks is connsidered a good default.
-     * @return Price of deleting the squeak in wei.
-     * @notice The token must exist.
-     */
-    function _getDeleteFee(
-        uint256 tokenId,
-        uint256 blocksValid
-    ) private view returns (uint256) {
-        return
-            ((block.number + blocksValid) - squeaks[tokenId].blockNumber) *
-            config[Configuration.DeleteRate];
     }
 
     /**
