@@ -6,6 +6,7 @@ import type { Critter } from './typechain-types/contracts';
 import type {
   Accountable,
   Bankable,
+  Relatable,
   Squeakable,
   ViralityScore,
 } from './typechain-types/contracts/libraries';
@@ -15,6 +16,7 @@ export type { Critter } from './typechain-types/contracts';
 export type {
   Accountable,
   Bankable,
+  Relatable,
   Squeakable,
   ViralityScore,
 } from './typechain-types/contracts/libraries';
@@ -53,6 +55,7 @@ export type ContractInitializer = (string | number | BigNumber)[];
 export type LibraryContracts = {
   libAccountable: Accountable;
   libBankable: Bankable;
+  libRelatable: Relatable;
   libSqueakable: Squeakable;
   libViralityScore: ViralityScore;
 };

@@ -4,6 +4,7 @@ import type {
   BigNumber,
   ContractTransaction,
   Critter,
+  LibraryContracts,
   SentimentCounts,
   SignerWithAddress,
   Squeak,
@@ -17,6 +18,7 @@ describe('deleteSqueak', () => {
     carlos: SignerWithAddress,
     critter: Critter,
     deleteFee: BigNumber,
+    libraries: LibraryContracts,
     owner: SignerWithAddress,
     sentiment: SentimentCounts,
     squeak: Squeak,
@@ -26,7 +28,8 @@ describe('deleteSqueak', () => {
 
   const deleteSqueakFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = (await run('deploy-contracts')).critter.connect(ahmed);
+    ({ critter, libraries } = await run('deploy-contracts'));
+    critter = critter.connect(ahmed);
 
     // ahmed, barbie, and carlos all create accounts
     await run('create-accounts', {
@@ -78,6 +81,7 @@ describe('deleteSqueak', () => {
       barbieSqueak,
       critter,
       deleteFee,
+      libraries,
       sentiment: await critter.getSentimentCounts(squeakId),
       squeak: await critter.squeaks(squeakId),
       squeakId,
@@ -91,6 +95,7 @@ describe('deleteSqueak', () => {
       barbieSqueak,
       critter,
       deleteFee,
+      libraries,
       sentiment,
       squeak,
       squeakId,
@@ -129,7 +134,10 @@ describe('deleteSqueak', () => {
   it('reverts when the delete fee is not sufficient', async () => {
     await expect(
       critter.connect(barbie).deleteSqueak(barbieSqueak, { value: 1 })
-    ).to.be.revertedWithCustomError(critter, 'InsufficientFunds');
+    ).to.be.revertedWithCustomError(
+      libraries.libBankable,
+      'InsufficientFunds'
+    );
   });
 
   it('reverts when a user who is not an owner or approver tries to delete the squeak', async () => {

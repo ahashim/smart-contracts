@@ -1,4 +1,4 @@
-import { PLATFORM_FEE, TREASURER_ROLE } from '../constants';
+import { TREASURER_ROLE } from '../constants';
 import { Interaction } from '../enums';
 import type { BigNumber, Critter, SignerWithAddress } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
@@ -53,14 +53,6 @@ describe('updateInteractionFee', () => {
 
   it('allows TREASURER_ROLE to update an interaction fee', () => {
     expect(likeFee).to.eq(updatedFee);
-  });
-
-  it('reverts when the update fee is not sufficient', async () => {
-    await expect(
-      critter
-        .connect(ahmed)
-        .interact(squeakId, Interaction.Like, { value: PLATFORM_FEE })
-    ).to.be.revertedWithCustomError(critter, 'InsufficientFunds');
   });
 
   it('reverts when someone other than the TREASURER_ROLE tries to update an interaction fee', async () => {

@@ -4,11 +4,17 @@ import type {
   BigNumber,
   BigNumberObject,
   Critter,
+  LibraryContracts,
   SignerWithAddress,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('interact basic', () => {
+  // common test case descriptions
+  const emitsSqueakInteractionEvent = 'emits a SqueakInteraction event';
+  const transferRemainingFeeToSqueakOwner =
+    'transfers the remaining fee to the squeak owner';
+
   // the values below should be the same for all interactions (except delete),
   // so we can declare treasuryTake and transferAmount in terms of PLATFORM_FEE
   // and PLATFORM_TAKE_RATE
@@ -24,12 +30,14 @@ describe('interact basic', () => {
     daphne: SignerWithAddress,
     daphneSqueakId: BigNumber,
     fees: BigNumberObject,
+    libraries: LibraryContracts,
     owner: SignerWithAddress,
     treasuryBalance: BigNumber;
 
   const interactBasicFixture = async () => {
     [owner, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
-    critter = (await run('deploy-contracts')).critter.connect(ahmed);
+    ({ critter, libraries } = await run('deploy-contracts'));
+    critter = critter.connect(ahmed);
 
     // creates accounts
     await run('create-accounts', {
@@ -67,12 +75,19 @@ describe('interact basic', () => {
         undoLike: await critter.fees(Interaction.UndoLike),
         UndoResqueak: await critter.fees(Interaction.UndoResqueak),
       },
+      libraries,
     };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ ahmedBalance, critter, daphneSqueakId, fees, ahmedSqueakId } =
-      await loadFixture(interactBasicFixture));
+    ({
+      ahmedBalance,
+      ahmedSqueakId,
+      critter,
+      daphneSqueakId,
+      fees,
+      libraries,
+    } = await loadFixture(interactBasicFixture));
   });
 
   describe('Dislike', () => {
@@ -118,7 +133,7 @@ describe('interact basic', () => {
       );
     });
 
-    it('emits a SqueakInteraction event', async () => {
+    it(emitsSqueakInteractionEvent, async () => {
       // dislike squeak
       await expect(
         critter.connect(barbie).interact(ahmedSqueakId, Interaction.Dislike, {
@@ -187,7 +202,7 @@ describe('interact basic', () => {
       );
     });
 
-    it('transfers the remaining fee to the squeak owner', async () => {
+    it(transferRemainingFeeToSqueakOwner, async () => {
       // like squeak
       await critter
         .connect(barbie)
@@ -198,7 +213,7 @@ describe('interact basic', () => {
       );
     });
 
-    it('emits a SqueakInteraction event', async () => {
+    it(emitsSqueakInteractionEvent, async () => {
       // like squeak
       await expect(
         critter
@@ -254,7 +269,7 @@ describe('interact basic', () => {
       );
     });
 
-    it('transfers the remaining fee to the squeak owner', async () => {
+    it(transferRemainingFeeToSqueakOwner, async () => {
       // resqueak
       await critter
         .connect(barbie)
@@ -267,7 +282,7 @@ describe('interact basic', () => {
       );
     });
 
-    it('emits a SqueakInteraction event', async () => {
+    it(emitsSqueakInteractionEvent, async () => {
       // resqueak
       await expect(
         critter.connect(barbie).interact(ahmedSqueakId, Interaction.Resqueak, {
@@ -332,20 +347,7 @@ describe('interact basic', () => {
       );
     });
 
-    it('transfers the remaining fee to the squeak owner', async () => {
-      // undo dislike
-      await critter
-        .connect(barbie)
-        .interact(ahmedSqueakId, Interaction.UndoDislike, {
-          value: fees.undoDislike,
-        });
-
-      expect((await critter.treasury()).sub(treasuryBalance)).to.eq(
-        treasuryTake
-      );
-    });
-
-    it('transfers the remaining fee to the squeak owner', async () => {
+    it(transferRemainingFeeToSqueakOwner, async () => {
       // undo dislike
       await critter
         .connect(barbie)
@@ -358,7 +360,7 @@ describe('interact basic', () => {
       );
     });
 
-    it('emits a SqueakInteraction event', async () => {
+    it(emitsSqueakInteractionEvent, async () => {
       // undo dislike
       await expect(
         critter
@@ -416,7 +418,7 @@ describe('interact basic', () => {
       );
     });
 
-    it('emits a SqueakInteraction event', async () => {
+    it(emitsSqueakInteractionEvent, async () => {
       // undo like
       await expect(
         critter.connect(barbie).interact(ahmedSqueakId, Interaction.UndoLike, {
@@ -476,7 +478,7 @@ describe('interact basic', () => {
       );
     });
 
-    it('emits a SqueakInteraction event', async () => {
+    it(emitsSqueakInteractionEvent, async () => {
       // undo resqueak
       await expect(
         critter
@@ -574,7 +576,10 @@ describe('interact basic', () => {
         critter
           .connect(barbie)
           .interact(ahmedSqueakId, Interaction.Like, { value: 1 })
-      ).to.be.revertedWithCustomError(critter, 'InsufficientFunds');
+      ).to.be.revertedWithCustomError(
+        libraries.libBankable,
+        'InsufficientFunds'
+      );
     });
 
     it('reverts when the squeak does not exist', async () => {

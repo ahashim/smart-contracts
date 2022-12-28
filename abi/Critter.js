@@ -46,11 +46,6 @@ export default [
   },
   {
     inputs: [],
-    name: 'InsufficientFunds',
-    type: 'error',
-  },
-  {
-    inputs: [],
     name: 'InvalidAccount',
     type: 'error',
   },

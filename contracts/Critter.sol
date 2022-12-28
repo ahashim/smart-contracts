@@ -30,6 +30,7 @@ import './ICritter.sol';
 // libraries
 import './libraries/Accountable.sol';
 import './libraries/Bankable.sol';
+import './libraries/Relatable.sol';
 import './libraries/Squeakable.sol';
 import './libraries/ViralityScore.sol';
 
@@ -418,16 +419,13 @@ contract Critter is
         Accountable.hasActiveAccount(users[msg.sender].status);
         if (!_exists(tokenId)) revert SqueakDoesNotExist();
         uint256 interactionFee = fees[interaction];
-        if (msg.value < interactionFee) revert InsufficientFunds();
-
+        Bankable.validateInteractionFee(interactionFee);
         address author = squeaks[tokenId].author;
-
-        // validate author & sender have not blocked each other
-        if (
-            msg.sender != author &&
-            (blocked[author].contains(msg.sender) ||
-                blocked[msg.sender].contains(author))
-        ) revert Blocked();
+        Relatable.checkIfBlocked(
+            author,
+            blocked[author].contains(msg.sender),
+            blocked[msg.sender].contains(author)
+        );
 
         // determine interaction & update sentiment
         Sentiment storage sentiment = sentiments[tokenId];
@@ -489,7 +487,54 @@ contract Critter is
             !viralSqueaks.contains(tokenId) &&
             score >= config[Configuration.ViralityThreshold]
         ) {
-            _markViral(tokenId, sentiment, score);
+            // add squeak to the list of viral squeaks
+            viralSqueaks.add(tokenId);
+
+            // give the user who propelled the squeak into virality a bonus level.
+            _increaseLevel(
+                users[msg.sender],
+                config[Configuration.ViralityBonus]
+            );
+
+            // iterate over both sets & add all unique addresses to the pool
+            uint256 likesCount = sentiment.likes.length();
+            uint256 resqueaksCount = sentiment.resqueaks.length();
+            uint256 upperBound = likesCount > resqueaksCount
+                ? likesCount
+                : resqueaksCount;
+
+            // initialize pool details
+            uint256 shareCount = 0;
+
+            // TODO: move this unbounded loop off-chain
+            for (uint256 i = 0; i < upperBound; i++) {
+                if (i < likesCount)
+                    // add all likers
+                    shareCount = _createPoolPass(
+                        users[sentiment.likes.at(i)],
+                        shareCount,
+                        tokenId
+                    );
+
+                if (
+                    i < resqueaksCount &&
+                    !poolPasses[tokenId].contains(sentiment.resqueaks.at(i))
+                )
+                    // add all resqueakers who aren't likers
+                    shareCount = _createPoolPass(
+                        users[sentiment.resqueaks.at(i)],
+                        shareCount,
+                        tokenId
+                    );
+            }
+
+            // save pool to storage
+            pools[tokenId] = Pool(
+                0, // amount
+                shareCount,
+                block.number,
+                score
+            );
         }
 
         // make payment
@@ -524,9 +569,9 @@ contract Critter is
                 // split remainder between pool members & the squeak owner
                 uint256 amount = remainder / 2;
 
-                // add funds to the pool (unchecked because pool payouts will
-                // ensure they get reset to zero)
+                // add funds to the pool
                 unchecked {
+                    // dividend payouts will reset pool amount to zero
                     pool.amount += amount;
                 }
 
@@ -914,65 +959,6 @@ contract Critter is
         }
 
         emit PoolPayout(tokenId);
-    }
-
-    /**
-     * @dev Adds a squeak to the list of viral squeaks, and all of its positive
-     *      interactors to a pool while upgrading their levels.
-     * @param tokenId ID of the squeak.
-     * @param sentiment Pointer to the {Sentiment} of the squeak.
-     * @param viralityScore Virality score of the squeak.
-     */
-    function _markViral(
-        uint256 tokenId,
-        Sentiment storage sentiment,
-        uint64 viralityScore
-    ) private {
-        // add squeak to the list of viral squeaks
-        viralSqueaks.add(tokenId);
-
-        // give the user who propelled the squeak into virality a bonus level.
-        _increaseLevel(users[msg.sender], config[Configuration.ViralityBonus]);
-
-        // iterate over both sets & add all unique addresses to the pool
-        uint256 likesCount = sentiment.likes.length();
-        uint256 resqueaksCount = sentiment.resqueaks.length();
-        uint256 upperBound = likesCount > resqueaksCount
-            ? likesCount
-            : resqueaksCount;
-
-        // initialize pool details
-        uint256 shareCount = 0;
-
-        // TODO: move this unbounded loop off-chain
-        for (uint256 i = 0; i < upperBound; i++) {
-            if (i < likesCount)
-                // add all likers
-                shareCount = _createPoolPass(
-                    users[sentiment.likes.at(i)],
-                    shareCount,
-                    tokenId
-                );
-
-            if (
-                i < resqueaksCount &&
-                !poolPasses[tokenId].contains(sentiment.resqueaks.at(i))
-            )
-                // add all resqueakers who aren't likers
-                shareCount = _createPoolPass(
-                    users[sentiment.resqueaks.at(i)],
-                    shareCount,
-                    tokenId
-                );
-        }
-
-        // save pool to storage
-        pools[tokenId] = Pool(
-            0, // amount
-            shareCount,
-            block.number,
-            viralityScore
-        );
     }
 
     /**

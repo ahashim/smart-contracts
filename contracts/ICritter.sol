@@ -26,7 +26,6 @@ error AlreadyBlocked();
 error AlreadyFollowing();
 error AlreadyInteracted();
 error AlreadyRegistered();
-error Blocked();
 error InvalidAmount();
 error InvalidInteraction();
 error InvalidRelationship();
