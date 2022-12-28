@@ -55,10 +55,25 @@ library Bankable {
         uint256 rate
     ) public view returns (uint256, uint256) {
         // calculate fee
-        uint256 fee = getDeleteFee(blockCreated, blocksValid, rate);
+        uint256 deleteFee = getDeleteFee(blockCreated, blocksValid, rate);
 
-        if (msg.value < fee) revert InsufficientFunds();
-        return (fee, msg.value - fee);
+        if (msg.value < deleteFee) revert InsufficientFunds();
+        return (deleteFee, msg.value - deleteFee);
+    }
+
+    /**
+     * @dev Calculates the interaction take & remainder amount to make payment.
+     * @param interactionFee Amount it costs for the interaction.
+     * @param takeRate The platform take rate.
+     */
+    function getInteractionTakeAndPaymentAmount(
+        uint256 interactionFee,
+        uint256 takeRate
+    ) public pure returns (uint256, uint256) {
+        // calculate fee
+        uint256 interactionTake = (interactionFee * takeRate) / 100;
+
+        return (interactionTake, interactionFee - interactionTake);
     }
 
     /**

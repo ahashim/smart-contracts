@@ -482,7 +482,6 @@ contract Critter is
 
         // check virality
         uint64 score = getViralityScore(tokenId);
-
         if (
             !viralSqueaks.contains(tokenId) &&
             score >= config[Configuration.ViralityThreshold]
@@ -556,9 +555,11 @@ contract Critter is
             interaction == Interaction.UndoDislike
         ) {
             // calculate amounts to deposit & transfer
-            uint256 interactionTake = (interactionFee *
-                config[Configuration.PlatformTakeRate]) / 100;
-            uint256 remainder = interactionFee - interactionTake;
+            (uint256 interactionTake, uint256 payment) = Bankable
+                .getInteractionTakeAndPaymentAmount(
+                    interactionFee,
+                    config[Configuration.PlatformTakeRate]
+                );
 
             // deposit fee into treasury
             _deposit(interactionTake);
@@ -566,16 +567,16 @@ contract Critter is
             if (viralSqueaks.contains(tokenId)) {
                 Pool storage pool = pools[tokenId];
 
-                // split remainder between pool members & the squeak owner
-                uint256 amount = remainder / 2;
+                // split payment between pool members & the squeak owner
+                uint256 poolFunds = payment / 2;
 
                 // add funds to the pool
                 unchecked {
-                    // dividend payouts will reset pool amount to zero
-                    pool.amount += amount;
+                    // dividend payouts will reset pool poolFunds to zero
+                    pool.amount += poolFunds;
                 }
 
-                emit FundsAddedToPool(tokenId, amount);
+                emit FundsAddedToPool(tokenId, poolFunds);
 
                 // determine if we need to payout
                 uint256 sharePrice = pool.amount / pool.shares;
@@ -583,11 +584,11 @@ contract Critter is
                     _makePoolDividends(tokenId, pool, sharePrice);
 
                 // any dust from odd division goes to the owner
-                remainder -= amount;
+                payment -= poolFunds;
             }
 
             // transfer remaining funds to the squeak owner
-            _transferFunds(owner.account, remainder);
+            _transferFunds(owner.account, payment);
         }
 
         // refund any funds excess of the interaction fee
