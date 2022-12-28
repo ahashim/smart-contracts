@@ -6,7 +6,7 @@ import type { Critter } from './typechain-types/contracts';
 import type {
   Accountable,
   Bankable,
-  ViralityScore,
+  Viral,
 } from './typechain-types/contracts/libraries';
 
 // exports
@@ -14,7 +14,7 @@ export type { Critter } from './typechain-types/contracts';
 export type {
   Accountable,
   Bankable,
-  ViralityScore,
+  Viral,
 } from './typechain-types/contracts/libraries';
 export type { Result } from '@ethersproject/abi';
 export type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -51,7 +51,7 @@ export type ContractInitializer = (string | number | BigNumber)[];
 export type LibraryContracts = {
   libAccountable: Accountable;
   libBankable: Bankable;
-  libViralityScore: ViralityScore;
+  libViral: Viral;
 };
 
 export type CritterContracts = {

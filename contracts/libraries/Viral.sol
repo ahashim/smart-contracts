@@ -27,11 +27,11 @@ using ABDKMath64x64 for int128;
  * @title ViralityScore
  * @dev A library to calculate the virality score of a squeak.
  */
-library ViralityScore {
+library Viral {
     /**
      * @dev See {IViralityScore-calculate}.
      */
-    function calculate(
+    function score(
         uint256 blockDelta,
         uint256 dislikes,
         uint256 likes,

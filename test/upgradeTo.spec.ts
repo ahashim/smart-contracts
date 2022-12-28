@@ -9,7 +9,7 @@ describe('upgradeTo', () => {
     [, ahmed] = await ethers.getSigners();
 
     // deploy librar
-    const { libAccountable, libBankable, libViralityScore } = await run(
+    const { libAccountable, libBankable, libViral } = await run(
       'deploy-libraries'
     );
 
@@ -18,7 +18,7 @@ describe('upgradeTo', () => {
       libraries: {
         Accountable: libAccountable.address,
         Bankable: libBankable.address,
-        ViralityScore: libViralityScore.address,
+        Viral: libViral.address,
       },
     });
     critter = (await upgrades.deployProxy(

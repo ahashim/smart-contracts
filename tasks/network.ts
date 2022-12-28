@@ -6,14 +6,14 @@ import {
   DIVIDEND_THRESHOLD,
   LIB_ACCOUNTABLE,
   LIB_BANKABLE,
-  LIB_VIRALITY_SCORE,
+  LIB_VIRAL,
   MAX_LEVEL,
   VIRALITY_THRESHOLD,
 } from '../constants';
 import {
   Accountable__factory,
   Bankable__factory,
-  ViralityScore__factory,
+  Viral__factory,
 } from '../typechain-types';
 import type {
   ContractFactory,
@@ -81,7 +81,7 @@ task(
     }
 
     // deploy libraries
-    const { libAccountable, libBankable, libViralityScore } = await run(
+    const { libAccountable, libBankable, libViral } = await run(
       'deploy-libraries'
     );
 
@@ -92,7 +92,7 @@ task(
         libraries: {
           Accountable: libAccountable.address,
           Bankable: libBankable.address,
-          ViralityScore: libViralityScore.address,
+          Viral: libViral.address,
         },
       }
     );
@@ -106,7 +106,7 @@ task(
       libraries: {
         libAccountable,
         libBankable,
-        libViralityScore,
+        libViral,
       },
     };
   }
@@ -122,14 +122,13 @@ subtask(
     const bankable: Bankable__factory = await ethers.getContractFactory(
       LIB_BANKABLE
     );
-    const viralityScore: ViralityScore__factory =
-      await ethers.getContractFactory(LIB_VIRALITY_SCORE);
+    const viral: Viral__factory = await ethers.getContractFactory(LIB_VIRAL);
 
     // deploy
     return {
       libAccountable: await accountable.deploy(),
       libBankable: await bankable.deploy(),
-      libViralityScore: await viralityScore.deploy(),
+      libViral: await viral.deploy(),
     };
   }
 );

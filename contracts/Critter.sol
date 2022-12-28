@@ -30,7 +30,7 @@ import './ICritter.sol';
 // libraries
 import './libraries/Accountable.sol';
 import './libraries/Bankable.sol';
-import './libraries/ViralityScore.sol';
+import './libraries/Viral.sol';
 
 // types
 using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
@@ -386,19 +386,16 @@ contract Critter is
         // validation
         if (!_exists(tokenId)) revert SqueakDoesNotExist();
 
+        // a squeak requires 1 like & 1 resqueak to be considered for virality
         Sentiment storage sentiment = sentiments[tokenId];
-
-        uint256 blockDelta = block.number - squeaks[tokenId].blockNumber;
-        uint256 dislikes = sentiment.dislikes.length();
         uint256 likes = sentiment.likes.length();
         uint256 resqueaks = sentiment.resqueaks.length();
         uint64 score = 0;
 
-        // squeak requires 1 like & 1 resqueak to be considered for virality
         if (likes > 0 && resqueaks > 0) {
-            score = ViralityScore.calculate(
-                blockDelta,
-                dislikes,
+            score = Viral.score(
+                block.number - squeaks[tokenId].blockNumber,
+                sentiment.dislikes.length(),
                 likes,
                 resqueaks
             );
