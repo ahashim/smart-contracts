@@ -34,7 +34,7 @@ enum Status {
 enum Configuration {
     DeleteRate,
     PlatformTakeRate,
-    PoolPayoutThreshold,
+    DividendThreshold,
     MaxLevel,
     ViralityBonus,
     ViralityThreshold

@@ -190,7 +190,7 @@ contract Critter is
         config[Configuration.DeleteRate] = platformFee;
         config[Configuration.PlatformTakeRate] = 10; // percent of platform fee
         config[Configuration.MaxLevel] = maxLevel;
-        config[Configuration.PoolPayoutThreshold] = dividendThreshold;
+        config[Configuration.DividendThreshold] = dividendThreshold;
         config[Configuration.ViralityBonus] = 3; // levels
         config[Configuration.ViralityThreshold] = viralityThreshold;
 
@@ -565,26 +565,20 @@ contract Critter is
             _deposit(interactionTake);
 
             if (viralSqueaks.contains(tokenId)) {
-                Pool storage pool = pools[tokenId];
-
                 // split payment between pool members & the squeak owner
+                Pool storage pool = pools[tokenId];
                 uint256 poolFunds = payment / 2;
-
-                // add funds to the pool
+                payment -= poolFunds;
                 unchecked {
-                    // dividend payouts will reset pool poolFunds to zero
                     pool.amount += poolFunds;
                 }
 
                 emit FundsAddedToPool(tokenId, poolFunds);
 
-                // determine if we need to payout
+                // determine if dividends need to be paid out
                 uint256 sharePrice = pool.amount / pool.shares;
-                if (sharePrice >= config[Configuration.PoolPayoutThreshold])
+                if (sharePrice >= config[Configuration.DividendThreshold])
                     _makePoolDividends(tokenId, pool, sharePrice);
-
-                // any dust from odd division goes to the owner
-                payment -= poolFunds;
             }
 
             // transfer remaining funds to the squeak owner
@@ -959,7 +953,7 @@ contract Critter is
             _transferFunds(user, payout);
         }
 
-        emit PoolPayout(tokenId);
+        emit Dividend(tokenId);
     }
 
     /**

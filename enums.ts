@@ -8,7 +8,7 @@ export const enum Status {
 export const enum Configuration {
   DeleteRate,
   PlatformTakeRate,
-  PoolPayoutThreshold,
+  DividendThreshold,
   MaxLevel,
   ViralityBonus,
   ViralityThreshold,

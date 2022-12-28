@@ -185,7 +185,7 @@ interface ICritter {
      * @dev Emitted when funds in a pool are paid out to its members.
      * @param tokenId ID of the viral squeak.
      */
-    event PoolPayout(uint256 tokenId);
+    event Dividend(uint256 tokenId);
 
     /**
      * @dev Emitted after updating a relationship.

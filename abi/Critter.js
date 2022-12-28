@@ -290,6 +290,19 @@ export default [
         name: 'tokenId',
         type: 'uint256',
       },
+    ],
+    name: 'Dividend',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
       {
         indexed: false,
         internalType: 'uint256',
@@ -381,19 +394,6 @@ export default [
       },
     ],
     name: 'InteractionFeeUpdated',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'tokenId',
-        type: 'uint256',
-      },
-    ],
-    name: 'PoolPayout',
     type: 'event',
   },
   {

@@ -21,7 +21,7 @@ describe('config', () => {
         deleteRate: await critter.config(Configuration.DeleteRate),
         platformTakeRate: await critter.config(Configuration.PlatformTakeRate),
         dividendThreshold: await critter.config(
-          Configuration.PoolPayoutThreshold
+          Configuration.DividendThreshold
         ),
         maxLevel: await critter.config(Configuration.MaxLevel),
         viralityBonus: await critter.config(Configuration.ViralityBonus),
