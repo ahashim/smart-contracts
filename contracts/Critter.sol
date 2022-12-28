@@ -177,10 +177,10 @@ contract Critter is
         uint256 platformFee = 80000000000000;
 
         // init 3rd party contracts
-        __AccessControl_init();
-        __ERC721A_init('Critter', 'CRTTR');
-        __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
+        __AccessControl_init();
+        __ReentrancyGuard_init();
+        __ERC721A_init('Critter', 'CRTTR');
 
         // set base token url
         baseTokenURI = 'https://critter.fyi/token/';
@@ -287,10 +287,9 @@ contract Critter is
         if (viralSqueaks.contains(tokenId)) {
             // delete associated virality
             Pool storage pool = pools[tokenId];
-
             if (pool.amount > 0) {
                 // pay out any remaining pool funds
-                _makePoolDividends(tokenId, pool);
+                _makePoolDividends(tokenId, pool, (pool.amount / pool.shares));
 
                 // deposit remaining dust into treasury
                 _deposit(pool.amount);
@@ -814,17 +813,6 @@ contract Critter is
     }
 
     /**
-     * @dev Gets the price of a single share of funds in a squeaks pool.
-     * @param pool Pool of the viral squeak.
-     * @return amount of each pool unit in wei.
-     */
-    function _getPoolSharePrice(
-        Pool storage pool
-    ) private view returns (uint256) {
-        return pool.amount / pool.shares;
-    }
-
-    /**
      * @dev Increases a users level until they hit the maximum.
      * @param user {User} to modify.
      * @param amount Number of levels to increase by.
@@ -894,7 +882,7 @@ contract Critter is
                 emit FundsAddedToPool(tokenId, amount);
 
                 // determine if we need to payout
-                uint256 sharePrice = _getPoolSharePrice(pool);
+                uint256 sharePrice = pool.amount / pool.shares;
                 if (sharePrice >= config[Configuration.PoolPayoutThreshold])
                     _makePoolDividends(tokenId, pool, sharePrice);
 
@@ -909,17 +897,6 @@ contract Critter is
         // refund any funds excess of the interaction fee
         if (msg.value > interactionFee)
             _transferFunds(msg.sender, msg.value - interactionFee);
-    }
-
-    /**
-     * @dev Pays out pool funds to its members.
-     * @param tokenId ID of viral squeak.
-     * @param pool Pool of the viral squeak.
-     */
-    function _makePoolDividends(uint256 tokenId, Pool storage pool) private {
-        uint256 sharePrice = _getPoolSharePrice(pool);
-
-        if (sharePrice > 0) _makePoolDividends(tokenId, pool, sharePrice);
     }
 
     /**
