@@ -30,7 +30,6 @@ import './ICritter.sol';
 // libraries
 import './libraries/Accountable.sol';
 import './libraries/Bankable.sol';
-import './libraries/Relatable.sol';
 import './libraries/Squeakable.sol';
 import './libraries/ViralityScore.sol';
 
@@ -421,11 +420,11 @@ contract Critter is
         uint256 interactionFee = fees[interaction];
         Bankable.validateInteractionFee(interactionFee);
         address author = squeaks[tokenId].author;
-        Relatable.checkIfBlocked(
-            author,
-            blocked[author].contains(msg.sender),
-            blocked[msg.sender].contains(author)
-        );
+        if (
+            msg.sender != author &&
+            (blocked[author].contains(msg.sender) ||
+                blocked[msg.sender].contains(author))
+        ) revert Blocked();
 
         // determine interaction & update sentiment
         Sentiment storage sentiment = sentiments[tokenId];
@@ -568,8 +567,8 @@ contract Critter is
                 // split payment between pool members & the squeak owner
                 Pool storage pool = pools[tokenId];
                 uint256 poolFunds = payment / 2;
-                payment -= poolFunds;
                 unchecked {
+                    payment -= poolFunds;
                     pool.amount += poolFunds;
                 }
 
@@ -698,12 +697,10 @@ contract Critter is
         if (users[account].status != Status.Active)
             revert InvalidAccountStatus();
 
-        // get the accounts blacklist
+        // get blacklists
         EnumerableSetUpgradeable.AddressSet storage accountBlacklist = blocked[
             account
         ];
-
-        // get the senders blacklist
         EnumerableSetUpgradeable.AddressSet storage senderBlacklist = blocked[
             msg.sender
         ];
