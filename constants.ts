@@ -16,7 +16,6 @@ export const PLATFORM_TAKE_RATE = 10;
 
 // role ID's
 export const OPERATOR_ROLE = utils.id('OPERATOR_ROLE');
-export const MINTER_ROLE = utils.id('MINTER_ROLE');
 export const MODERATOR_ROLE = utils.id('MODERATOR_ROLE');
 export const TREASURER_ROLE = utils.id('TREASURER_ROLE');
 export const UPGRADER_ROLE = utils.id('UPGRADER_ROLE');

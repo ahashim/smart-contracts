@@ -1,4 +1,4 @@
-import { MINTER_ROLE, UPGRADER_ROLE } from '../constants';
+import { OPERATOR_ROLE, UPGRADER_ROLE } from '../constants';
 import type {
   ContractTransaction,
   Critter,
@@ -14,37 +14,31 @@ describe('renounceRole', () => {
 
   const renounceRoleFixture = async () => {
     [owner, ahmed] = await ethers.getSigners();
-    const critter = (await run('deploy-contracts')).critter.connect(ahmed);
+    const critter = (await run('deploy-contracts')).critter;
 
-    // ahmed creates an account
-    await critter.createAccount('ahmed');
-
-    // ahmed renounces the minter role
-    tx = await critter.renounceRole(MINTER_ROLE, ahmed.address);
+    // owner renounces the operator role
+    tx = await critter.renounceRole(OPERATOR_ROLE, owner.address);
 
     return { critter, tx };
   };
 
-  beforeEach(
-    'load deployed contract fixture, and ahmed creates an account that gives him MINTER_ROLE access',
-    async () => {
-      ({ critter, tx } = await loadFixture(renounceRoleFixture));
-    }
-  );
+  beforeEach('load deployed contract fixture, ', async () => {
+    ({ critter, tx } = await loadFixture(renounceRoleFixture));
+  });
 
   it('lets a user to renounce any roles they might have', async () => {
-    expect(await critter.hasRole(MINTER_ROLE, ahmed.address)).to.be.false;
+    expect(await critter.hasRole(OPERATOR_ROLE, owner.address)).to.be.false;
   });
 
   it('emits a RoleRevoked event', async () => {
     await expect(tx)
       .to.emit(critter, 'RoleRevoked')
-      .withArgs(MINTER_ROLE, ahmed.address, ahmed.address);
+      .withArgs(OPERATOR_ROLE, owner.address, owner.address);
   });
 
   it('reverts when trying to renounce another addresses role', async () => {
     await expect(
-      critter.renounceRole(UPGRADER_ROLE, owner.address)
+      critter.renounceRole(UPGRADER_ROLE, ahmed.address)
     ).to.be.revertedWith('AccessControl: can only renounce roles for self');
   });
 });

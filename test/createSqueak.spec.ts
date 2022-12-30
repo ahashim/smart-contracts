@@ -1,4 +1,4 @@
-import { MINTER_ROLE, MODERATOR_ROLE } from '../constants';
+import { MODERATOR_ROLE } from '../constants';
 import { Status } from '../enums';
 import type {
   BigNumber,
@@ -17,7 +17,6 @@ describe('createSqueak', () => {
     ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
-    daphne: SignerWithAddress,
     critter: Critter,
     owner: SignerWithAddress,
     receipt: ContractReceipt,
@@ -26,12 +25,12 @@ describe('createSqueak', () => {
     tx: ContractTransaction;
 
   const createSqueakFixture = async () => {
-    [owner, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
+    [owner, ahmed, barbie, carlos] = await ethers.getSigners();
     critter = (await run('deploy-contracts')).critter.connect(ahmed);
 
     // ahmed, barbie, and daphne create accounts
     await run('create-accounts', {
-      accounts: [ahmed, barbie, daphne],
+      accounts: [ahmed, barbie],
       contract: critter,
     });
 
@@ -47,9 +46,6 @@ describe('createSqueak', () => {
 
     // ahmed bans barbie
     await critter.updateStatus(barbie.address, Status.Banned);
-
-    // contract owner revokes daphne's minter role
-    await critter.connect(owner).revokeRole(MINTER_ROLE, daphne.address);
 
     return {
       accountBalance: await critter.balanceOf(ahmed.address),
@@ -101,14 +97,6 @@ describe('createSqueak', () => {
     legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise
     he could use the Force to influence the midichlorians to create life...`)
     ).to.be.revertedWithCustomError(critter, 'SqueakTooLong');
-  });
-
-  it('reverts when the user does not have a minter role', async () => {
-    await expect(
-      critter.connect(daphne).createSqueak(content)
-    ).to.be.revertedWith(
-      `AccessControl: account ${daphne.address.toLowerCase()} is missing role ${MINTER_ROLE.toLowerCase()}`
-    );
   });
 
   it('reverts when the user does not have an account', async () => {

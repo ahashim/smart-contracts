@@ -66,11 +66,6 @@ contract Critter is
     ICritter
 {
     /**
-     * @dev MINTER_ROLE has priviledges to mint tokens.
-     */
-    bytes32 private constant MINTER_ROLE = keccak256('MINTER_ROLE');
-
-    /**
      * @dev MODERATOR_ROLE has priviledges to update a users account status.
      */
     bytes32 private constant MODERATOR_ROLE = keccak256('MODERATOR_ROLE');
@@ -202,7 +197,6 @@ contract Critter is
 
         // grant all roles to contract owner
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(MODERATOR_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(TREASURER_ROLE, msg.sender);
@@ -223,9 +217,6 @@ contract Critter is
         users[msg.sender] = User(msg.sender, Status.Active, 1, username);
         addresses[username] = msg.sender;
 
-        // grant them the ability to mint NFT's
-        _grantRole(MINTER_ROLE, msg.sender);
-
         emit AccountCreated(msg.sender, bytes32(rawUsername));
     }
 
@@ -235,7 +226,6 @@ contract Critter is
     function createSqueak(string calldata content) external {
         // validation
         Accountable.hasActiveAccount(users[msg.sender].status);
-        _checkRole(MINTER_ROLE);
         bytes memory rawContent = bytes(content);
         if (rawContent.length == 0) revert SqueakEmpty();
         if (rawContent.length > 256) revert SqueakTooLong();
