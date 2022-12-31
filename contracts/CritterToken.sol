@@ -122,7 +122,7 @@ contract CritterToken is
         squeaks[tokenId] = Squeak(block.number, author, author, content);
 
         // mint NFT
-        _mint(msg.sender, 1);
+        _mint(author, 1);
 
         return tokenId;
     }
