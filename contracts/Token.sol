@@ -27,8 +27,7 @@ import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 import './interfaces/IToken.sol';
 
 /**
- * @title Token: An ERc-721 contract for minting and burning Critter
- *        tokens.
+ * @title Token: An ERc-721 contract for minting and burning squeaks NFT's.
  * @author Ahmed Hashim <ahashim@users.noreply.github.com>
  * @dev An upgradeable contract to allow for minting and burning ERC721 tokens
  *      by the main Critter contract.
@@ -141,6 +140,33 @@ contract Token is
         return
             ERC721AUpgradeable.supportsInterface(interfaceId) ||
             super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev Hook that is called after a set of serially-ordered token ids have
+     *      been transferred. This includes minting. And also called after one
+     *      token has been burned. Calling conditions:
+     *      - When `from` and `to` are both non-zero, `from`'s `tokenId` has
+     *        been transferred to `to`.
+     *      - When `from` is zero, `tokenId` has been minted for `to`.
+     *      - When `to` is zero, `tokenId` has been burned by `from`.
+     *      - `from` and `to` are never both zero.
+     * @param from Address of the account that is relinquishing ownership of the
+     *      token.
+     * @param to Address of the account that is gaining ownership of the token.
+     * @param startTokenId The first token id to be transferred.
+     * @param quantity The amount to be transferred.
+     */
+    function _afterTokenTransfers(
+        address from,
+        address to,
+        uint256 startTokenId,
+        uint256 quantity
+    ) internal override(ERC721AUpgradeable) {
+        super._afterTokenTransfers(from, to, startTokenId, quantity);
+
+        // update squeak ownership
+        squeaks[startTokenId].owner = to;
     }
 
     /**
