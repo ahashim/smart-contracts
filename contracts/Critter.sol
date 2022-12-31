@@ -25,7 +25,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 
 // interface
-import './ICritter.sol';
+import './interfaces/ICritter.sol';
 
 // libraries
 import './libraries/Accountable.sol';

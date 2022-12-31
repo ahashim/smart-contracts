@@ -21,7 +21,7 @@ pragma solidity 0.8.17;
 /**
  * @dev Interface for the Critter Token contract.
  */
-interface ICritterToken {
+interface IToken {
     /**
      * @dev Squeak is the primary Critter message.
      * @param blockNumber Block in which the squeak was created.

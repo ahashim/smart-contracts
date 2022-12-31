@@ -19,10 +19,10 @@
 pragma solidity 0.8.17;
 
 // errors
-import './Errors.sol';
+import '../Errors.sol';
 
 // enums
-import './Enums.sol';
+import '../Enums.sol';
 
 // libraries
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeable.sol';
