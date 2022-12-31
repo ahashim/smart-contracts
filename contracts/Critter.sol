@@ -223,7 +223,7 @@ contract Critter is
     /**
      * @dev See {ICritter-createSqueak}.
      */
-    function createSqueak(string calldata content) external {
+    function createSqueak(string calldata content) external nonReentrant {
         // validation
         Accountable.hasActiveAccount(users[msg.sender].status);
         bytes memory rawContent = bytes(content);

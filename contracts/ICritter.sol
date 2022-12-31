@@ -312,7 +312,7 @@ interface ICritter {
     ) external payable;
 
     /**
-     * @dev Upgradeable "constructor" function to initialize sub-contracts.
+     * @dev Upgradeable "constructor" function.
      * @param dividendThreshold Minimum amount required to pay out pool
      *      dividends.
      * @param maxLevel The maximum level a user can reach.
