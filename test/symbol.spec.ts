@@ -1,4 +1,4 @@
-import { CONTRACT_SYMBOL } from '../constants';
+import { CRITTER_SYMBOL } from '../constants';
 import { expect, loadFixture, run } from './setup';
 
 describe('symbol', () => {
@@ -13,6 +13,6 @@ describe('symbol', () => {
   });
 
   it('returns the contract symbol', () => {
-    expect(symbol).to.eq(CONTRACT_SYMBOL);
+    expect(symbol).to.eq(CRITTER_SYMBOL);
   });
 });

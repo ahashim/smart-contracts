@@ -1,12 +1,12 @@
 import hardhat from 'hardhat';
 import repl from 'repl';
 
-import { CONTRACT_SYMBOL } from '../constants';
+import { CRITTER_SYMBOL } from '../constants';
 
 async function main() {
   // start repl with options
   const r = repl.start({
-    prompt: `🦔 <${CONTRACT_SYMBOL}>: `,
+    prompt: `🦔 <${CRITTER_SYMBOL}>: `,
     useColors: true,
   });
 
