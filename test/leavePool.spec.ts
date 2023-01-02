@@ -26,7 +26,7 @@ describe('leavePool', () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await run('deploy-contracts', {
+      await run('deploy-critter-contract', {
         viralityThreshold: 1,
       })
     ).critter.connect(ahmed);

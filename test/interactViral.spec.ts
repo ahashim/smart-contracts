@@ -32,7 +32,7 @@ describe('interact viral', () => {
     [, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
     critter = (
-      await run('deploy-contracts', {
+      await run('deploy-critter-contract', {
         dividendThreshold: ethers.utils.parseEther('0.000004'),
         viralityThreshold,
       })

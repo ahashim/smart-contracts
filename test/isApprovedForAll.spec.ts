@@ -6,7 +6,7 @@ describe('isApprovedForAll', () => {
 
   const isApprovedForAllFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('deploy-contracts')).critter.connect(ahmed);
+    critter = (await run('deploy-critter-contract')).critter.connect(ahmed);
 
     // creates accounts
     await run('create-accounts', {

@@ -13,7 +13,7 @@ describe('hasRole', () => {
 
   const hasRoleFixture = async () => {
     [owner] = await ethers.getSigners();
-    critter = (await run('deploy-contracts')).critter;
+    critter = (await run('deploy-critter-contract')).critter;
 
     return {
       critter,

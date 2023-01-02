@@ -14,7 +14,9 @@ describe('totalSupply', () => {
 
   const totalSupplyFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    const critter = (await run('deploy-contracts')).critter.connect(ahmed);
+    const critter = (await run('deploy-critter-contract')).critter.connect(
+      ahmed
+    );
 
     // ahmed creates an account
     await critter.createAccount('ahmed');

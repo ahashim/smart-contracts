@@ -5,7 +5,7 @@ describe('symbol', () => {
   let symbol: string;
 
   const symbolFixture = async () => {
-    return await (await run('deploy-contracts')).critter.symbol();
+    return await (await run('deploy-critter-contract')).critter.symbol();
   };
 
   beforeEach('load deployed contract fixture', async () => {

@@ -26,7 +26,7 @@ describe('createSqueak', () => {
 
   const createSqueakFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = (await run('deploy-contracts')).critter.connect(ahmed);
+    critter = (await run('deploy-critter-contract')).critter.connect(ahmed);
 
     // ahmed, barbie, and daphne create accounts
     await run('create-accounts', {

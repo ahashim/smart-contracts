@@ -14,7 +14,7 @@ describe('updateInteractionFee', () => {
 
   const updateInteractionFeeFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('deploy-contracts')).critter;
+    critter = (await run('deploy-critter-contract')).critter;
 
     // everybody creates an account
     await run('create-accounts', {

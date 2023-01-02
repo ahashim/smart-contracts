@@ -5,7 +5,8 @@ import { expect, loadFixture, run } from './setup';
 describe('name', () => {
   let critter: Critter;
 
-  const nameFixture = async () => (await run('deploy-contracts')).critter;
+  const nameFixture = async () =>
+    (await run('deploy-critter-contract')).critter;
 
   before('load deployed contract fixture', async () => {
     critter = await loadFixture(nameFixture);

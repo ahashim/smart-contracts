@@ -15,7 +15,7 @@ describe('getViralityScore', () => {
 
   const getViralityScoreFixture = async () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = (await run('deploy-contracts')).critter.connect(ahmed);
+    critter = (await run('deploy-critter-contract')).critter.connect(ahmed);
 
     // creates accounts
     await run('create-accounts', {

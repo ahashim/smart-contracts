@@ -43,7 +43,7 @@ task(
 );
 
 task(
-  'deploy-contracts',
+  'deploy-critter-contract',
   'Deploys contracts via an upgradeable proxy from the owner EOA',
   async (
     overrides: ContractInitializerOverrides,

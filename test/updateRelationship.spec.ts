@@ -7,6 +7,7 @@ import type {
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('updateRelationship', () => {
+  const emitsRelationshipUpdated = 'emits a RelationshipUpdated event';
   let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
@@ -23,7 +24,7 @@ describe('updateRelationship', () => {
 
   const updateRelationshipFixture = async () => {
     [owner, ahmed, barbie, carlos, daphne, evan] = await ethers.getSigners();
-    critter = (await run('deploy-contracts')).critter.connect(ahmed);
+    critter = (await run('deploy-critter-contract')).critter.connect(ahmed);
 
     // create accounts (except evan)
     await run('create-accounts', {
@@ -90,7 +91,7 @@ describe('updateRelationship', () => {
         .true;
     });
 
-    it('emits a RelationshipUpdated event', async () => {
+    it(emitsRelationshipUpdated, async () => {
       await expect(txs.follow)
         .to.emit(critter, 'RelationshipUpdated')
         .withArgs(ahmed.address, barbie.address, Relation.Follow);
@@ -111,7 +112,7 @@ describe('updateRelationship', () => {
         .false;
     });
 
-    it('emits a RelationshipUpdated event', async () => {
+    it(emitsRelationshipUpdated, async () => {
       await expect(txs.unfollow)
         .to.emit(critter, 'RelationshipUpdated')
         .withArgs(ahmed.address, barbie.address, Relation.Unfollow);
@@ -137,7 +138,7 @@ describe('updateRelationship', () => {
         .false;
     });
 
-    it('emits a RelationshipUpdated event', async () => {
+    it(emitsRelationshipUpdated, async () => {
       await expect(txs.block)
         .to.emit(critter, 'RelationshipUpdated')
         .withArgs(ahmed.address, carlos.address, Relation.Block);
@@ -156,7 +157,7 @@ describe('updateRelationship', () => {
         .true;
     });
 
-    it('emits a RelationshipUpdated event', async () => {
+    it(emitsRelationshipUpdated, async () => {
       await expect(txs.unblock)
         .to.emit(critter, 'RelationshipUpdated')
         .withArgs(ahmed.address, daphne.address, Relation.Unblock);
