@@ -6,7 +6,7 @@ describe('baseTokenURI', () => {
   let critter: Critter;
 
   const baseTokenURIFixture = async () =>
-    (await run('deploy-critter-contract')).critter;
+    (await run('initialize-contracts')).contracts.critter;
 
   it('returns the base token URI', async () => {
     critter = await loadFixture(baseTokenURIFixture);

@@ -14,7 +14,7 @@ describe('config', () => {
   let config: Config, critter: Critter;
 
   const configFixture = async () => {
-    critter = (await run('deploy-critter-contract')).critter;
+    critter = (await run('initialize-contracts')).contracts.critter;
 
     return {
       config: {

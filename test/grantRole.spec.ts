@@ -8,7 +8,7 @@ describe('grantRole', () => {
 
   const grantRoleFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    critter = (await run('deploy-critter-contract')).critter;
+    critter = (await run('initialize-contracts')).contracts.critter;
 
     // granting ahmed the treasurer role
     await critter.grantRole(ID_TREASURER_ROLE, ahmed.address);

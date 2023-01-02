@@ -17,7 +17,9 @@ describe('getSentimentCounts', () => {
 
   const getSentimentCountsFixture = async () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = (await run('deploy-critter-contract')).critter.connect(ahmed);
+    critter = (await run('initialize-contracts')).contracts.critter.connect(
+      ahmed
+    );
 
     // creates accounts
     await run('create-accounts', {

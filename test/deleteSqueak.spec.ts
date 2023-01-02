@@ -28,7 +28,10 @@ describe('deleteSqueak', () => {
 
   const deleteSqueakFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
-    ({ critter, libraries } = await run('deploy-critter-contract'));
+    ({
+      contracts: { critter },
+      libraries,
+    } = await run('initialize-contracts'));
     critter = critter.connect(ahmed);
 
     // ahmed, barbie, and carlos all create accounts

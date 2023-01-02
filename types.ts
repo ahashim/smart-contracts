@@ -3,18 +3,20 @@
 import type { BigNumber } from 'ethers';
 
 import { Status } from './enums';
-import type { Critter } from './typechain-types/contracts';
 import type {
   Accountable,
   Bankable,
+  Critter,
+  Token,
   Viral,
-} from './typechain-types/contracts/libraries';
+} from './typechain-types';
 
 // exports
 export type {
   Accountable__factory,
   Bankable__factory,
   Critter,
+  Token,
   Token__factory,
   Viral__factory,
 } from './typechain-types';
@@ -58,6 +60,14 @@ export type LibraryContracts = {
 
 export type CritterContracts = {
   critter: Critter;
+  libraries: LibraryContracts;
+};
+
+export type AllContracts = {
+  contracts: {
+    critter: Critter;
+    token: Token;
+  };
   libraries: LibraryContracts;
 };
 

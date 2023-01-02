@@ -5,7 +5,7 @@ describe('proxiableUUID', () => {
   let critter: Critter;
 
   const proxiableUUIDFixture = async () =>
-    (await run('deploy-critter-contract')).critter;
+    (await run('initialize-contracts')).contracts.critter;
 
   before('load deployed contract fixture', async () => {
     critter = await loadFixture(proxiableUUIDFixture);

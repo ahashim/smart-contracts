@@ -14,7 +14,7 @@ describe('renounceRole', () => {
 
   const renounceRoleFixture = async () => {
     [owner, ahmed] = await ethers.getSigners();
-    const critter = (await run('deploy-critter-contract')).critter;
+    const critter = (await run('initialize-contracts')).contracts.critter;
 
     // owner renounces the operator role
     tx = await critter.renounceRole(OPERATOR_ROLE, owner.address);

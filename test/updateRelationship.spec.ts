@@ -24,7 +24,9 @@ describe('updateRelationship', () => {
 
   const updateRelationshipFixture = async () => {
     [owner, ahmed, barbie, carlos, daphne, evan] = await ethers.getSigners();
-    critter = (await run('deploy-critter-contract')).critter.connect(ahmed);
+    critter = (await run('initialize-contracts')).contracts.critter.connect(
+      ahmed
+    );
 
     // create accounts (except evan)
     await run('create-accounts', {

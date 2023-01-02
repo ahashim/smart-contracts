@@ -7,6 +7,7 @@ import 'hardhat-contract-sizer';
 import 'hardhat-watcher';
 // task files
 import './tasks/contract';
+import './tasks/deploy';
 import './tasks/network';
 
 // hardhat

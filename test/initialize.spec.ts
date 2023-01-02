@@ -10,7 +10,7 @@ describe('initialize', () => {
   let critter: Critter;
 
   const initializeFixture = async () =>
-    (await run('deploy-critter-contract')).critter;
+    (await run('initialize-contracts')).contracts.critter;
 
   beforeEach('load deployed contract fixture', async () => {
     critter = await loadFixture(initializeFixture);

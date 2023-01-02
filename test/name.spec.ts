@@ -6,7 +6,7 @@ describe('name', () => {
   let critter: Critter;
 
   const nameFixture = async () =>
-    (await run('deploy-critter-contract')).critter;
+    (await run('initialize-contracts')).contracts.critter;
 
   before('load deployed contract fixture', async () => {
     critter = await loadFixture(nameFixture);

@@ -13,7 +13,9 @@ describe('updateConfiguration', () => {
 
   const updateConfigurationFixture = async () => {
     [owner, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('deploy-critter-contract')).critter.connect(ahmed);
+    critter = (await run('initialize-contracts')).contracts.critter.connect(
+      ahmed
+    );
 
     // the owner grants ahmed the ADMIN_ROLE
     await critter.connect(owner).grantRole(OPERATOR_ROLE, ahmed.address);
