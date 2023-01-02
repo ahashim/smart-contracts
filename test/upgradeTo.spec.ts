@@ -1,4 +1,4 @@
-import { CONTRACT_INITIALIZER, CONTRACT_NAME } from '../constants';
+import { CONTRACT_CRITTER, CONTRACT_INITIALIZER } from '../constants';
 import type { Contract, Critter, SignerWithAddress } from '../types';
 import { ethers, expect, loadFixture, run, upgrades } from './setup';
 
@@ -14,7 +14,7 @@ describe('upgradeTo', () => {
     );
 
     // deploy contract
-    const contractFactory = await ethers.getContractFactory(CONTRACT_NAME, {
+    const contractFactory = await ethers.getContractFactory(CONTRACT_CRITTER, {
       libraries: {
         Accountable: libAccountable.address,
         Bankable: libBankable.address,

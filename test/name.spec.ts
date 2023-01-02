@@ -1,4 +1,4 @@
-import { CONTRACT_NAME } from '../constants';
+import { CONTRACT_CRITTER } from '../constants';
 import type { Critter } from '../types';
 import { expect, loadFixture, run } from './setup';
 
@@ -12,6 +12,6 @@ describe('name', () => {
   });
 
   it('returns the contract name', async () => {
-    expect(await critter.name()).to.eq(CONTRACT_NAME);
+    expect(await critter.name()).to.eq(CONTRACT_CRITTER);
   });
 });

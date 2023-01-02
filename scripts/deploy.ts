@@ -2,7 +2,7 @@
 // but useful for running the script in a standalone fashion through `node <script>`.
 import { ethers, upgrades } from 'hardhat';
 
-import { CONTRACT_INITIALIZER, CONTRACT_NAME } from '../constants';
+import { CONTRACT_CRITTER, CONTRACT_INITIALIZER } from '../constants';
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -13,7 +13,7 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const factory = await ethers.getContractFactory(CONTRACT_NAME);
+  const factory = await ethers.getContractFactory(CONTRACT_CRITTER);
   const contract = await upgrades.deployProxy(factory, CONTRACT_INITIALIZER);
 
   console.log('Critter deployed to:', contract.address);

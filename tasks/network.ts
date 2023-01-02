@@ -2,7 +2,7 @@
 import { subtask, task } from 'hardhat/config';
 
 import {
-  CONTRACT_NAME,
+  CONTRACT_CRITTER,
   DIVIDEND_THRESHOLD,
   LIB_ACCOUNTABLE,
   LIB_BANKABLE,
@@ -87,7 +87,7 @@ task(
 
     // get contract factory instance
     const critter: ContractFactory = await ethers.getContractFactory(
-      CONTRACT_NAME,
+      CONTRACT_CRITTER,
       {
         libraries: {
           Accountable: libAccountable.address,
