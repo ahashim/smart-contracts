@@ -1,8 +1,9 @@
 import { BigNumber, constants, utils } from 'ethers';
 
-// contract
+// contracts
 export const BASE_TOKEN_URI = 'https://critter.fyi/token/';
 export const CONTRACT_CRITTER = 'Critter';
+export const CONTRACT_TOKEN = 'Token';
 export const CRITTER_SYMBOL = 'CRTTR';
 
 // libraries
@@ -14,7 +15,7 @@ export const LIB_VIRAL = 'Viral';
 export const PLATFORM_FEE = utils.parseEther('0.00008');
 export const PLATFORM_TAKE_RATE = 10;
 
-// role ID's
+// roles
 export const OPERATOR_ROLE = utils.id('OPERATOR_ROLE');
 export const MODERATOR_ROLE = utils.id('MODERATOR_ROLE');
 export const TREASURER_ROLE = utils.id('TREASURER_ROLE');

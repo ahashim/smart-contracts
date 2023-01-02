@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // imports
 import type { BigNumber } from 'ethers';
 
@@ -10,12 +11,13 @@ import type {
 } from './typechain-types/contracts/libraries';
 
 // exports
-export type { Critter } from './typechain-types/contracts';
 export type {
-  Accountable,
-  Bankable,
-  Viral,
-} from './typechain-types/contracts/libraries';
+  Accountable__factory,
+  Bankable__factory,
+  Critter,
+  Token__factory,
+  Viral__factory,
+} from './typechain-types';
 export type { Result } from '@ethersproject/abi';
 export type { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 export type {

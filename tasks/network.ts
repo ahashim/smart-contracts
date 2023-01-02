@@ -3,6 +3,7 @@ import { subtask, task } from 'hardhat/config';
 
 import {
   CONTRACT_CRITTER,
+  CONTRACT_TOKEN,
   DIVIDEND_THRESHOLD,
   LIB_ACCOUNTABLE,
   LIB_BANKABLE,
@@ -10,18 +11,18 @@ import {
   MAX_LEVEL,
   VIRALITY_THRESHOLD,
 } from '../constants';
-import {
+import type {
   Accountable__factory,
   Bankable__factory,
-  Viral__factory,
-} from '../typechain-types';
-import type {
+  Contract,
   ContractFactory,
   ContractInitializer,
   ContractInitializerOverrides,
   Critter,
   CritterContracts,
   LibraryContracts,
+  Token__factory,
+  Viral__factory,
 } from '../types';
 
 task('accounts', 'Prints the list of accounts', async (_, hre) => {
@@ -42,7 +43,7 @@ task(
   }
 );
 
-task(
+subtask(
   'deploy-critter-contract',
   'Deploys contracts via an upgradeable proxy from the owner EOA',
   async (
@@ -75,7 +76,7 @@ task(
       }
     }
 
-    // build contract constructor
+    // build contract initializer
     for (key in defaults) {
       initializer[defaults[key].index] = defaults[key].value;
     }
@@ -109,6 +110,17 @@ task(
         libViral,
       },
     };
+  }
+);
+
+subtask(
+  'deploy-token-contract',
+  'Deploys the ERC721 Token contract',
+  async (critterAddress: string, { ethers, upgrades }): Promise<Contract> => {
+    const tokenFactory: Token__factory = await ethers.getContractFactory(
+      CONTRACT_TOKEN
+    );
+    return await upgrades.deployProxy(tokenFactory, [critterAddress]);
   }
 );
 
