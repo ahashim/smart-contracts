@@ -70,7 +70,7 @@ subtask(
       'deploy-libraries'
     );
 
-    // get contract factory instance
+    // link contract factory instance with libraries
     const critter: ContractFactory = await ethers.getContractFactory(
       CONTRACT_CRITTER,
       {
@@ -82,7 +82,7 @@ subtask(
       }
     );
 
-    // deploy contract via upgradeable proxy
+    // deploy via UUPS proxy
     return {
       critter: (await upgrades.deployProxy(critter, initializer, {
         // necessary due to linking contracts to an UUPS proxy
@@ -104,6 +104,8 @@ subtask(
     const tokenFactory: Token__factory = await ethers.getContractFactory(
       CONTRACT_TOKEN
     );
+
+    // deploy via UUPS proxy & initialize it to link to the critter contract
     return await upgrades.deployProxy(tokenFactory, [critterAddress]);
   }
 );

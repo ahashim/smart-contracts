@@ -14,7 +14,8 @@ async function main() {
   process.stdout.write('Warming up...');
 
   // deploy the contract
-  const contract = await hardhat.run('deploy-contract');
+  const critter = (await hardhat.run('initialize-contracts')).contracts
+    .critter;
 
   // initialize accounts
   const names = ['owner', 'ahmed', 'barbie', 'carlos'];
@@ -23,7 +24,7 @@ async function main() {
   for (let i = 0; i < names.length; i++) {
     const signer = signers[i];
     const username = names[i];
-    const user = contract.connect(signer);
+    const user = critter.connect(signer);
 
     // create critter accounts for everybody except the owner
     if (i > 0) await user.createAccount(username);
