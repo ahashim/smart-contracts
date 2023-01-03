@@ -20,10 +20,9 @@ describe('updateStatus', () => {
     critter = (await run('initialize-contracts')).contracts.critter;
 
     // everybody creates an account
-    await run('create-accounts', {
-      accounts: [ahmed, barbie, carlos],
-      contract: critter,
-    });
+    await critter.connect(ahmed).createAccount('ahmed');
+    await critter.connect(barbie).createAccount('barbie');
+    await critter.connect(carlos).createAccount('carlos');
 
     // moderator suspends ahmed & barbie, then bans carlos (harsh!)
     await critter.updateStatus(ahmed.address, Status.Suspended);
@@ -31,9 +30,7 @@ describe('updateStatus', () => {
     await critter.updateStatus(carlos.address, Status.Banned);
 
     // they reactivate ahmeds account (phew!)
-    tx = await critter
-      .connect(owner)
-      .updateStatus(ahmed.address, Status.Active);
+    tx = await critter.updateStatus(ahmed.address, Status.Active);
 
     return { critter, tx };
   };

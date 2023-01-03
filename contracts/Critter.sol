@@ -153,6 +153,11 @@ contract Critter is
     mapping(uint256 => Sentiment) private sentiments;
 
     /**
+     * @dev Instance of the Squeakable contract
+     */
+    Squeakable private squeakable;
+
+    /**
      * @dev Set of squeak ID's that have gone viral.
      */
     EnumerableSetUpgradeable.UintSet private viralSqueaks;
@@ -608,6 +613,15 @@ contract Critter is
         if (!_exists(tokenId)) revert SqueakDoesNotExist();
 
         return viralSqueaks.contains(tokenId);
+    }
+
+    /**
+     * @dev See {ICritter-linkContracts}.
+     */
+    function linkContracts(address addressSqueakable) external {
+        squeakable = Squeakable(addressSqueakable);
+
+        emit LinkedContracts();
     }
 
     /**

@@ -174,6 +174,11 @@ interface ICritter {
     event Dividend(uint256 tokenId);
 
     /**
+     * @dev Emitted when all contracts are linked to the main Critter contract.
+     */
+    event LinkedContracts();
+
+    /**
      * @dev Emitted when funds in a pool are paid out to its members.
      * @param tokenId ID of the viral squeak.
      * @param account Address of the user it belongs to.
@@ -352,6 +357,12 @@ interface ICritter {
      * @notice The token must exist.
      */
     function isViral(uint256 tokenId) external view returns (bool);
+
+    /**
+     * @dev Links the main Critter contract to logic sub-contracts.
+     * @param contractSqueakable Address of the Squeakable contract.
+     */
+    function linkContracts(address contractSqueakable) external;
 
     /**
      * @dev Removes the sender from a pool they belong to.

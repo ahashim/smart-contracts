@@ -413,6 +413,12 @@ export default [
   },
   {
     anonymous: false,
+    inputs: [],
+    name: 'LinkedContracts',
+    type: 'event',
+  },
+  {
+    anonymous: false,
     inputs: [
       {
         indexed: false,
@@ -1212,6 +1218,19 @@ export default [
       },
     ],
     name: 'leavePool',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'addressSqueakable',
+        type: 'address',
+      },
+    ],
+    name: 'linkContracts',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

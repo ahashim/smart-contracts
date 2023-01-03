@@ -16,14 +16,14 @@ import type {
   AllContracts,
   Bankable__factory,
   Contract,
-  ContractFactory,
   ContractInitializer,
   ContractInitializerOverrides,
   Critter,
+  Critter__factory,
   CritterContracts,
   LibraryContracts,
-  Token,
-  Token__factory,
+  Squeakable,
+  Squeakable__factory,
   Viral__factory,
 } from '../types';
 
@@ -71,7 +71,7 @@ subtask(
     );
 
     // link contract factory instance with libraries
-    const critter: ContractFactory = await ethers.getContractFactory(
+    const critter: Critter__factory = await ethers.getContractFactory(
       CONTRACT_CRITTER,
       {
         libraries: {
@@ -99,14 +99,13 @@ subtask(
 
 subtask(
   'deploy-squeakable-contract',
-  'Deploys the ERC721 Token contract',
+  'Deploys the Squeakable contract',
   async ({ critterAddress }, { ethers, upgrades }): Promise<Contract> => {
-    const tokenFactory: Token__factory = await ethers.getContractFactory(
-      CONTRACT_SQUEAKABLE
-    );
+    const squeakableFactory: Squeakable__factory =
+      await ethers.getContractFactory(CONTRACT_SQUEAKABLE);
 
     // deploy via UUPS proxy & initialize it to link to the critter contract
-    return await upgrades.deployProxy(tokenFactory, [critterAddress]);
+    return await upgrades.deployProxy(squeakableFactory, [critterAddress]);
   }
 );
 
@@ -138,18 +137,24 @@ task(
     overrides: ContractInitializerOverrides,
     { run }
   ): Promise<AllContracts> => {
+    // deploy critter + libraries
     const { critter, libraries }: CritterContracts = await run(
       'deploy-critter-contract',
       overrides
     );
-    const tokenContract: Token = await run('deploy-squeakable-contract', {
+
+    // deploy squeakable
+    const squeakable: Squeakable = await run('deploy-squeakable-contract', {
       critterAddress: critter.address,
     });
+
+    // link critter to squeakable
+    await critter.linkContracts(squeakable.address);
 
     return {
       contracts: {
         critter,
-        token: tokenContract,
+        squeakable,
       },
       libraries,
     };

@@ -7,7 +7,7 @@ import type {
   Accountable,
   Bankable,
   Critter,
-  Token,
+  Squeakable,
   Viral,
 } from './typechain-types';
 
@@ -16,8 +16,9 @@ export type {
   Accountable__factory,
   Bankable__factory,
   Critter,
-  Token,
-  Token__factory,
+  Critter__factory,
+  Squeakable,
+  Squeakable__factory,
   Viral__factory,
 } from './typechain-types';
 export type { Result } from '@ethersproject/abi';
@@ -66,7 +67,7 @@ export type CritterContracts = {
 export type AllContracts = {
   contracts: {
     critter: Critter;
-    token: Token;
+    squeakable: Squeakable;
   };
   libraries: LibraryContracts;
 };
