@@ -3,7 +3,7 @@ import { BigNumber, constants, utils } from 'ethers';
 // contracts
 export const BASE_TOKEN_URI = 'https://critter.fyi/token/';
 export const CONTRACT_CRITTER = 'Critter';
-export const CONTRACT_TOKEN = 'Token';
+export const CONTRACT_SQUEAKABLE = 'Squeakable';
 export const CRITTER_SYMBOL = 'CRTTR';
 
 // libraries

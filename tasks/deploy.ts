@@ -3,7 +3,7 @@ import { subtask, task } from 'hardhat/config';
 
 import {
   CONTRACT_CRITTER,
-  CONTRACT_TOKEN,
+  CONTRACT_SQUEAKABLE,
   DIVIDEND_THRESHOLD,
   LIB_ACCOUNTABLE,
   LIB_BANKABLE,
@@ -98,11 +98,11 @@ subtask(
 );
 
 subtask(
-  'deploy-token-contract',
+  'deploy-squeakable-contract',
   'Deploys the ERC721 Token contract',
   async ({ critterAddress }, { ethers, upgrades }): Promise<Contract> => {
     const tokenFactory: Token__factory = await ethers.getContractFactory(
-      CONTRACT_TOKEN
+      CONTRACT_SQUEAKABLE
     );
 
     // deploy via UUPS proxy & initialize it to link to the critter contract
@@ -142,7 +142,7 @@ task(
       'deploy-critter-contract',
       overrides
     );
-    const tokenContract: Token = await run('deploy-token-contract', {
+    const tokenContract: Token = await run('deploy-squeakable-contract', {
       critterAddress: critter.address,
     });
 
