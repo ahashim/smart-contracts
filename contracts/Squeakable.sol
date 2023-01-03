@@ -24,19 +24,19 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 
 // interface
-import './interfaces/IToken.sol';
+import './interfaces/ISqueakable.sol';
 
 /**
- * @title Token: An ERc-721 contract for minting and burning squeaks NFT's.
+ * @title Squeakable
  * @author Ahmed Hashim <ahashim@users.noreply.github.com>
  * @dev An upgradeable contract to allow for minting and burning ERC721 tokens
- *      by the main Critter contract.
+ *      via the main Critter contract.
  */
-contract Token is
+contract Squeakable is
     UUPSUpgradeable,
     AccessControlUpgradeable,
     ERC721AUpgradeable,
-    IToken
+    ISqueakable
 {
     /**
      * @dev Token URL prefix used by squeaks.
@@ -70,7 +70,7 @@ contract Token is
     /* solhint-enable func-name-mixedcase, no-empty-blocks */
 
     /**
-     * @dev See {IToken-initialize}.
+     * @dev See {ISqueakable-initialize}.
      */
     function initialize(
         address critterContract
@@ -93,7 +93,7 @@ contract Token is
     }
 
     /**
-     * @dev See {IToken-burn}.
+     * @dev See {ISqueakable-burn}.
      */
     function burn(uint256 tokenId) external {
         // validation
@@ -107,7 +107,7 @@ contract Token is
     }
 
     /**
-     * @dev See {IToken-mint}.
+     * @dev See {ISqueakable-mint}.
      */
     function mint(
         address author,
@@ -134,7 +134,7 @@ contract Token is
     )
         public
         view
-        override(AccessControlUpgradeable, ERC721AUpgradeable, IToken)
+        override(AccessControlUpgradeable, ERC721AUpgradeable, ISqueakable)
         returns (bool)
     {
         return

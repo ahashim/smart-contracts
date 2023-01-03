@@ -24,6 +24,9 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 
+// contracts
+import './Squeakable.sol';
+
 // interface
 import './interfaces/ICritter.sol';
 
@@ -82,7 +85,8 @@ contract Critter is
     bytes32 private constant TREASURER_ROLE = keccak256('TREASURER_ROLE');
 
     /**
-     * @dev UPGRADER_ROLE has priviledges to upgrade the contract.
+     * @dev UPGRADER_ROLE has priviledges to upgrade the contract, and connect
+     *      to other contracts.
      */
     bytes32 private constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 
