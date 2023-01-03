@@ -619,6 +619,9 @@ contract Critter is
      * @dev See {ICritter-linkContracts}.
      */
     function linkContracts(address addressSqueakable) external {
+        // validation
+        _checkRole(UPGRADER_ROLE);
+
         squeakable = Squeakable(addressSqueakable);
 
         emit LinkedContracts();
