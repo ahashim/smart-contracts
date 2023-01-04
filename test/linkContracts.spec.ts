@@ -4,6 +4,7 @@ import type {
   ContractTransaction,
   Critter,
   CritterContracts,
+  LibraryContracts,
   SignerWithAddress,
   Squeakable,
 } from '../types';
@@ -15,8 +16,21 @@ describe('linkContracts', () => {
   const linkContractsFixture = async () => {
     [, ahmed] = await ethers.getSigners();
 
-    // deploy critter + libraries
-    const { critter }: CritterContracts = await run('deploy-critter-contract');
+    // deploy libraries
+    const { libAccountable, libBankable, libViral }: LibraryContracts =
+      await run('deploy-libraries');
+
+    // deploy critter
+    const { critter }: CritterContracts = await run(
+      'deploy-critter-contract',
+      {
+        libraries: {
+          libAccountable,
+          libBankable,
+          libViral,
+        },
+      }
+    );
 
     // deploy squeakable
     const squeakable: Squeakable = await run('deploy-squeakable-contract', {

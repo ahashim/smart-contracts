@@ -31,8 +31,14 @@ subtask(
   'deploy-critter-contract',
   'Deploys contracts via an upgradeable proxy from the owner EOA',
   async (
-    overrides: ContractInitializerOverrides,
-    { ethers, run, upgrades }
+    {
+      overrides,
+      libraries: { libAccountable, libBankable, libViral },
+    }: {
+      overrides: ContractInitializerOverrides;
+      libraries: LibraryContracts;
+    },
+    { ethers, upgrades }
   ): Promise<CritterContracts> => {
     const initializer: ContractInitializer = [];
     const defaults = {
@@ -64,11 +70,6 @@ subtask(
     for (key in defaults) {
       initializer[defaults[key].index] = defaults[key].value;
     }
-
-    // deploy libraries
-    const { libAccountable, libBankable, libViral } = await run(
-      'deploy-libraries'
-    );
 
     // link contract factory instance with libraries
     const critter: Critter__factory = await ethers.getContractFactory(
@@ -137,10 +138,21 @@ task(
     overrides: ContractInitializerOverrides,
     { run }
   ): Promise<AllContracts> => {
-    // deploy critter + libraries
+    // deploy libraries
+    const { libAccountable, libBankable, libViral }: LibraryContracts =
+      await run('deploy-libraries', overrides);
+
+    // deploy critter
     const { critter, libraries }: CritterContracts = await run(
       'deploy-critter-contract',
-      overrides
+      {
+        overrides,
+        libraries: {
+          libAccountable,
+          libBankable,
+          libViral,
+        },
+      }
     );
 
     // deploy squeakable
