@@ -55,12 +55,6 @@ interface ISqueakable {
     function getBlockCreated(uint256 tokenId) external view returns (uint256);
 
     /**
-     * @dev Gets the content of a squeak.
-     * @param tokenId ID of the squeak.
-     */
-    function getContent(uint256 tokenId) external view returns (bytes memory);
-
-    /**
      * @dev Gets the author of a squeak.
      * @param tokenId ID of the squeak.
      */

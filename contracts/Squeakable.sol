@@ -113,16 +113,6 @@ contract Squeakable is
     }
 
     /**
-     * @dev See {ISqueakable-getContent}.
-     */
-    function getContent(uint256 tokenId) external view returns (bytes memory) {
-        // validate token
-        if (!_exists(tokenId)) revert SqueakDoesNotExist();
-
-        return squeaks[tokenId].content;
-    }
-
-    /**
      * @dev See {ISqueakable-getAuthor}.
      */
     function getAuthor(uint256 tokenId) external view returns (address) {
