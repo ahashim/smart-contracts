@@ -65,10 +65,8 @@ export type CritterContracts = {
 };
 
 export type AllContracts = {
-  contracts: {
-    critter: Critter;
-    squeakable: Squeakable;
-  };
+  critter: Critter;
+  squeakable: Squeakable;
   libraries: LibraryContracts;
 };
 
@@ -99,7 +97,6 @@ export type SentimentCounts = {
 export type Squeak = {
   blockNumber: BigNumber;
   author: string;
-  owner: string;
   content: string;
 };
 

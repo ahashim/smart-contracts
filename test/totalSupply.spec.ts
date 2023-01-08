@@ -1,8 +1,8 @@
-import type { Critter, SignerWithAddress } from '../types';
+import type { Critter, SignerWithAddress, Squeakable } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('totalSupply', () => {
-  let ahmed: SignerWithAddress, critter: Critter;
+  let ahmed: SignerWithAddress, critter: Critter, squeakable: Squeakable;
 
   // test variables
   const squeaks = [
@@ -14,31 +14,29 @@ describe('totalSupply', () => {
 
   const totalSupplyFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    const critter = (
-      await run('initialize-contracts')
-    ).contracts.critter.connect(ahmed);
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // ahmed creates an account
-    await critter.createAccount('ahmed');
+    await critter.connect(ahmed).createAccount('ahmed');
 
     // ahmed creates a few squeaks
-    squeaks.forEach(async (content) => await critter.createSqueak(content));
+    squeaks.forEach(
+      async (content) => await critter.connect(ahmed).createSqueak(content)
+    );
 
     // ahmed burns the first created squeak at tokenId 0
     await run('delete-squeak', {
-      contract: critter,
+      contracts: { critter, squeakable },
       signer: ahmed,
       squeakId: 0,
     });
 
-    return critter;
+    return squeakable;
   };
 
-  beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(totalSupplyFixture);
-  });
-
   it('returns the number of unburned squeaks in circulation', async () => {
-    expect(await critter.totalSupply()).to.eq(squeaks.length - 1);
+    squeakable = await loadFixture(totalSupplyFixture);
+
+    expect(await squeakable.totalSupply()).to.eq(squeaks.length - 1);
   });
 });

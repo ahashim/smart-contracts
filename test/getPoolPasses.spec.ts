@@ -21,11 +21,9 @@ describe('getPoolPasses', () => {
   const getPoolPassesFixture = async () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
-    critter = (
-      await run('initialize-contracts', {
-        viralityThreshold: 1,
-      })
-    ).contracts.critter.connect(ahmed);
+    ({ critter } = await run('initialize-contracts', {
+      viralityThreshold: 1,
+    }));
 
     // creates accounts
     await run('create-accounts', {

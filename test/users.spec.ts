@@ -12,12 +12,10 @@ describe('users', () => {
 
   const usersFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    ({ critter } = await run('initialize-contracts'));
 
     // ahmed creates an account
-    await critter.createAccount(username);
+    await critter.connect(ahmed).createAccount(username);
 
     return {
       critter,

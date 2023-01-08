@@ -1,15 +1,9 @@
 import { BASE_TOKEN_URI } from '../constants';
-import type { Critter } from '../types';
-import { expect, loadFixture, run } from './setup';
+import { expect, run } from './setup';
 
 describe('baseTokenURI', () => {
-  let critter: Critter;
-
-  const baseTokenURIFixture = async () =>
-    (await run('initialize-contracts')).contracts.critter;
-
   it('returns the base token URI', async () => {
-    critter = await loadFixture(baseTokenURIFixture);
-    expect(await critter.baseTokenURI()).to.eq(BASE_TOKEN_URI);
+    const { squeakable } = await run('initialize-contracts');
+    expect(await squeakable.baseTokenURI()).to.eq(BASE_TOKEN_URI);
   });
 });

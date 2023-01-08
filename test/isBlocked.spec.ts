@@ -7,9 +7,7 @@ describe('isBlocked', () => {
 
   const isBlockedFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    critter = (await run('initialize-contracts')).critter.connect(ahmed);
 
     // creates accounts
     await run('create-accounts', {

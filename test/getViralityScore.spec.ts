@@ -1,5 +1,10 @@
 import { Interaction } from '../enums';
-import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import type {
+  BigNumber,
+  Critter,
+  SignerWithAddress,
+  Squeakable,
+} from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('getViralityScore', () => {
@@ -7,6 +12,7 @@ describe('getViralityScore', () => {
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
     critter: Critter,
+    squeakable: Squeakable,
     nonViralSqueakId: BigNumber,
     sentiment: {
       [key: string]: number;
@@ -15,9 +21,7 @@ describe('getViralityScore', () => {
 
   const getViralityScoreFixture = async () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // creates accounts
     await run('create-accounts', {
@@ -62,6 +66,7 @@ describe('getViralityScore', () => {
     return {
       critter,
       nonViralSqueakId,
+      squeakable,
       viralSqueakId,
     };
   };
@@ -69,9 +74,8 @@ describe('getViralityScore', () => {
   beforeEach(
     'load deployed contract fixture, ahmed creates a squeak that everybody likes',
     async () => {
-      ({ critter, nonViralSqueakId, viralSqueakId } = await loadFixture(
-        getViralityScoreFixture
-      ));
+      ({ critter, nonViralSqueakId, squeakable, viralSqueakId } =
+        await loadFixture(getViralityScoreFixture));
     }
   );
 
@@ -89,7 +93,7 @@ describe('getViralityScore', () => {
     // calculate blockDelta for the viral squeak
     const latestBlock = (await ethers.provider.getBlock('latest')).number;
     const publishedBlock = (
-      await critter.squeaks(viralSqueakId)
+      await squeakable.squeaks(viralSqueakId)
     ).blockNumber.toNumber();
     const blockDelta = latestBlock - publishedBlock;
 
@@ -116,7 +120,7 @@ describe('getViralityScore', () => {
     ).to.equal(0);
   });
 
-  it('reverts when querying for an unknown squeak', async () => {
-    await expect(critter.getViralityScore(420)).to.be.reverted;
+  it('returns a score of zero when the squeak does not exist', async () => {
+    expect(await critter.getViralityScore(420)).to.eq(0);
   });
 });

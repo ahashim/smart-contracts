@@ -13,7 +13,8 @@ describe('getRoleAdmin', () => {
   };
 
   const getRoleAdminFixture = async () => {
-    critter = (await run('initialize-contracts')).contracts.critter;
+    [owner] = await ethers.getSigners();
+    ({ critter } = await run('initialize-contracts'));
 
     return {
       critter,
@@ -25,7 +26,6 @@ describe('getRoleAdmin', () => {
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    [owner] = await ethers.getSigners();
     ({ critter, roleAdmins } = await loadFixture(getRoleAdminFixture));
   });
 

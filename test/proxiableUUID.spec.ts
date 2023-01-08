@@ -1,17 +1,9 @@
-import type { Critter } from '../types';
-import { expect, loadFixture, run } from './setup';
+import { expect, run } from './setup';
 
 describe('proxiableUUID', () => {
-  let critter: Critter;
+  it('reverts when calling through delegatecall', async () => {
+    const { critter } = await run('initialize-contracts');
 
-  const proxiableUUIDFixture = async () =>
-    (await run('initialize-contracts')).contracts.critter;
-
-  before('load deployed contract fixture', async () => {
-    critter = await loadFixture(proxiableUUIDFixture);
-  });
-
-  it('reverts when calling through delegatecall via the contract', async () => {
     await expect(critter.proxiableUUID()).to.be.revertedWith(
       'UUPSUpgradeable: must not be called through delegatecall'
     );

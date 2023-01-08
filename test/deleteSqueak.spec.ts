@@ -8,6 +8,7 @@ import type {
   SentimentCounts,
   SignerWithAddress,
   Squeak,
+  Squeakable,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
@@ -22,17 +23,14 @@ describe('deleteSqueak', () => {
     owner: SignerWithAddress,
     sentiment: SentimentCounts,
     squeak: Squeak,
+    squeakable: Squeakable,
     squeakId: BigNumber,
     treasuryBalance: BigNumber,
     tx: ContractTransaction;
 
   const deleteSqueakFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
-    ({
-      contracts: { critter },
-      libraries,
-    } = await run('initialize-contracts'));
-    critter = critter.connect(ahmed);
+    ({ critter, libraries, squeakable } = await run('initialize-contracts'));
 
     // ahmed, barbie, and carlos all create accounts
     await run('create-accounts', {
@@ -68,7 +66,7 @@ describe('deleteSqueak', () => {
 
     // ahmed deletes the squeak
     ({ deleteFee, tx } = await run('delete-squeak', {
-      contract: critter,
+      contracts: { critter, squeakable },
       signer: ahmed,
       squeakId,
     }));
@@ -86,7 +84,8 @@ describe('deleteSqueak', () => {
       deleteFee,
       libraries,
       sentiment: await critter.getSentimentCounts(squeakId),
-      squeak: await critter.squeaks(squeakId),
+      squeak: await squeakable.squeaks(squeakId),
+      squeakable,
       squeakId,
       treasuryBalance,
       tx,
@@ -101,6 +100,7 @@ describe('deleteSqueak', () => {
       libraries,
       sentiment,
       squeak,
+      squeakable,
       squeakId,
       treasuryBalance,
       tx,
@@ -108,13 +108,12 @@ describe('deleteSqueak', () => {
   });
 
   it('lets an owner delete their squeak for a fee', async () => {
-    expect(await critter.balanceOf(ahmed.address)).to.equal(0);
+    expect(await squeakable.balanceOf(ahmed.address)).to.equal(0);
   });
 
   it('removes all squeak information upon deletion', () => {
     expect(squeak.blockNumber).to.eq(0);
     expect(squeak.author).to.eq(ethers.constants.AddressZero);
-    expect(squeak.owner).to.eq(ethers.constants.AddressZero);
     expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 
@@ -145,13 +144,13 @@ describe('deleteSqueak', () => {
 
   it('reverts when a user who is not an owner or approver tries to delete the squeak', async () => {
     await expect(
-      critter.deleteSqueak(barbieSqueak)
-    ).to.be.revertedWithCustomError(critter, 'NotApprovedOrOwner');
+      critter.connect(ahmed).deleteSqueak(barbieSqueak, { value: deleteFee })
+    ).to.be.revertedWithCustomError(squeakable, 'NotApprovedOrOwner');
   });
 
   it('reverts when the squeak does not exist', async () => {
     await expect(
-      critter.deleteSqueak(squeakId, { value: deleteFee })
+      critter.connect(ahmed).deleteSqueak(squeakId, { value: deleteFee })
     ).to.be.revertedWithCustomError(critter, 'SqueakDoesNotExist');
   });
 
@@ -163,10 +162,12 @@ describe('deleteSqueak', () => {
 
   it('reverts when the users account status is not active', async () => {
     // moderator suspends squeak owners account
-    await critter.connect(owner).updateStatus(ahmed.address, Status.Suspended);
+    await critter
+      .connect(owner)
+      .updateStatus(barbie.address, Status.Suspended);
 
     await expect(
-      critter.deleteSqueak(barbieSqueak, { value: deleteFee })
+      critter.connect(barbie).deleteSqueak(barbieSqueak, { value: deleteFee })
     ).to.be.revertedWithCustomError(critter, 'InvalidAccountStatus');
   });
 });

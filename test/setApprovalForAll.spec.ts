@@ -2,6 +2,7 @@ import type {
   ContractTransaction,
   Critter,
   SignerWithAddress,
+  Squeakable,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
@@ -9,13 +10,12 @@ describe('setApprovalForAll', () => {
   let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     critter: Critter,
+    squeakable: Squeakable,
     tx: ContractTransaction;
 
   const setApprovalForAllFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // everybody creates an account
     await run('create-accounts', {
@@ -29,26 +29,30 @@ describe('setApprovalForAll', () => {
       'I hate sand 😤',
       'Hello there!',
       'A surpise to be sure, but a welcome one.',
-    ].forEach(async (content) => await critter.createSqueak(content));
+    ].forEach(
+      async (content) => await critter.connect(ahmed).createSqueak(content)
+    );
 
     // ahmed approves barbie as an operator on his behalf
-    tx = await critter.setApprovalForAll(barbie.address, true);
+    tx = await squeakable
+      .connect(ahmed)
+      .setApprovalForAll(barbie.address, true);
 
-    return { critter, tx };
+    return { squeakable, tx };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, tx } = await loadFixture(setApprovalForAllFixture));
+    ({ squeakable, tx } = await loadFixture(setApprovalForAllFixture));
   });
 
   it('returns true if an operator is approved to manage all of the owners squeaks', async () => {
-    expect(await critter.isApprovedForAll(ahmed.address, barbie.address)).to.be
-      .true;
+    expect(await squeakable.isApprovedForAll(ahmed.address, barbie.address)).to
+      .be.true;
   });
 
   it('emits an ApprovalForAll event', async () => {
     await expect(tx)
-      .to.emit(critter, 'ApprovalForAll')
+      .to.emit(squeakable, 'ApprovalForAll')
       .withArgs(ahmed.address, barbie.address, true);
   });
 });

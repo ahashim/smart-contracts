@@ -1,20 +1,10 @@
 import { CRITTER_SYMBOL } from '../constants';
-import { expect, loadFixture, run } from './setup';
+import { expect, run } from './setup';
 
 describe('symbol', () => {
-  let symbol: string;
+  it('returns the contract symbol', async () => {
+    const { squeakable } = await run('initialize-contracts');
 
-  const symbolFixture = async () => {
-    return await (
-      await run('initialize-contracts')
-    ).contracts.critter.symbol();
-  };
-
-  beforeEach('load deployed contract fixture', async () => {
-    symbol = await loadFixture(symbolFixture);
-  });
-
-  it('returns the contract symbol', () => {
-    expect(symbol).to.eq(CRITTER_SYMBOL);
+    expect(await squeakable.symbol()).to.eq(CRITTER_SYMBOL);
   });
 });

@@ -1,4 +1,9 @@
-import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import type {
+  BigNumber,
+  Critter,
+  SignerWithAddress,
+  Squeakable,
+} from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('approve', () => {
@@ -6,13 +11,12 @@ describe('approve', () => {
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
     critter: Critter,
+    squeakable: Squeakable,
     squeakId: BigNumber;
 
   const approveFixture = async () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // ahmed & barbie create accounts
     await run('create-accounts', {
@@ -28,34 +32,34 @@ describe('approve', () => {
     }));
 
     // ahmed approves barbie to transfer the squeak
-    await critter.approve(barbie.address, squeakId);
+    await squeakable.connect(ahmed).approve(barbie.address, squeakId);
 
-    return { critter, squeakId };
+    return { squeakable, squeakId };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, squeakId } = await loadFixture(approveFixture));
+    ({ squeakable, squeakId } = await loadFixture(approveFixture));
   });
 
   it('lets a user approve another account to manage a squeak', async () => {
-    expect(await critter.getApproved(squeakId)).to.eq(barbie.address);
+    expect(await squeakable.getApproved(squeakId)).to.eq(barbie.address);
   });
 
   it('sets the approver back to the zero address after transferring a squeak', async () => {
-    await critter
+    await squeakable
       .connect(barbie)
       .transferFrom(ahmed.address, barbie.address, squeakId);
 
-    expect(await critter.getApproved(squeakId)).to.eq(
+    expect(await squeakable.getApproved(squeakId)).to.eq(
       ethers.constants.AddressZero
     );
   });
 
   it('reverts if someone other than the squeak owner tries to approve it', async () => {
     await expect(
-      critter.connect(carlos).approve(ahmed.address, squeakId)
+      squeakable.connect(carlos).approve(ahmed.address, squeakId)
     ).to.be.revertedWithCustomError(
-      critter,
+      squeakable,
       'ApprovalCallerNotOwnerNorApproved'
     );
   });

@@ -19,10 +19,7 @@ describe('createAccount', () => {
 
   const createAccountFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    ({
-      contracts: { critter },
-      libraries,
-    } = await run('initialize-contracts'));
+    ({ critter, libraries } = await run('initialize-contracts'));
     critter = critter.connect(ahmed);
 
     // ahmed creates an account

@@ -1,17 +1,23 @@
-import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import type {
+  BigNumber,
+  Critter,
+  SignerWithAddress,
+  Squeakable,
+} from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('ownerOf', () => {
-  let critter: Critter, ahmed: SignerWithAddress, squeakId: BigNumber;
+  let critter: Critter,
+    ahmed: SignerWithAddress,
+    squeakable: Squeakable,
+    squeakId: BigNumber;
 
   const ownerOfFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    const critter = (
-      await run('initialize-contracts')
-    ).contracts.critter.connect(ahmed);
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // ahmed creates an account
-    await critter.createAccount('ahmed');
+    await critter.connect(ahmed).createAccount('ahmed');
 
     // ahmed posts a squeak
     ({ squeakId } = await run('create-squeak', {
@@ -20,21 +26,21 @@ describe('ownerOf', () => {
       signer: ahmed,
     }));
 
-    return { critter, squeakId };
+    return { squeakable, squeakId };
   };
 
   beforeEach(
     'load deployed contract fixture, ahmed creates an account & posts a squeak',
     async () => {
-      ({ critter, squeakId } = await loadFixture(ownerOfFixture));
+      ({ squeakable, squeakId } = await loadFixture(ownerOfFixture));
     }
   );
 
   it('gets the owner address of a squeak', async () => {
-    expect(await critter.ownerOf(squeakId)).to.equal(ahmed.address);
+    expect(await squeakable.ownerOf(squeakId)).to.equal(ahmed.address);
   });
 
   it('reverts if the squeak does not exist', async () => {
-    await expect(critter.ownerOf(420)).to.be.reverted;
+    await expect(squeakable.ownerOf(420)).to.be.reverted;
   });
 });

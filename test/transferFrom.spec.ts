@@ -1,4 +1,9 @@
-import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import type {
+  BigNumber,
+  Critter,
+  SignerWithAddress,
+  Squeakable,
+} from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('transferFrom', () => {
@@ -6,13 +11,12 @@ describe('transferFrom', () => {
     barbie: SignerWithAddress,
     critter: Critter,
     owner: SignerWithAddress,
+    squeakable: Squeakable,
     squeakId: BigNumber;
 
   const transferFromFixture = async () => {
     [owner, ahmed, barbie] = await ethers.getSigners();
-    const critter = (
-      await run('initialize-contracts')
-    ).contracts.critter.connect(ahmed);
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // everybody creates an account
     await run('create-accounts', {
@@ -28,66 +32,60 @@ describe('transferFrom', () => {
     }));
 
     // ahmed approve barbie to transfer it
-    await critter.approve(barbie.address, squeakId);
+    await squeakable.connect(ahmed).approve(barbie.address, squeakId);
 
-    return { critter, squeakId };
+    return { squeakable, squeakId };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, squeakId } = await loadFixture(transferFromFixture));
+    ({ squeakable, squeakId } = await loadFixture(transferFromFixture));
   });
 
   it('lets an owner transfer a token to another user', async () => {
-    await critter.transferFrom(ahmed.address, barbie.address, squeakId);
-    expect(await critter.ownerOf(squeakId)).to.eq(barbie.address);
+    await squeakable
+      .connect(ahmed)
+      .transferFrom(ahmed.address, barbie.address, squeakId);
+    expect(await squeakable.ownerOf(squeakId)).to.eq(barbie.address);
   });
 
   it('lets an approved user transfer a token to another user', async () => {
-    await critter
+    await squeakable
       .connect(barbie)
       .transferFrom(ahmed.address, barbie.address, squeakId);
-    expect(await critter.ownerOf(squeakId)).to.eq(barbie.address);
-  });
-
-  it('reassigns squeak ownership once the token has been transferred', async () => {
-    await critter.transferFrom(ahmed.address, barbie.address, squeakId);
-
-    expect((await critter.squeaks(squeakId)).owner).to.eq(barbie.address);
+    expect(await squeakable.ownerOf(squeakId)).to.eq(barbie.address);
   });
 
   it('reverts if transferring from a zero address', async () => {
     await expect(
-      critter.transferFrom(
-        ethers.constants.AddressZero,
-        barbie.address,
-        squeakId
-      )
-    ).to.be.revertedWithCustomError(critter, 'TransferFromIncorrectOwner');
+      squeakable
+        .connect(ahmed)
+        .transferFrom(ethers.constants.AddressZero, barbie.address, squeakId)
+    ).to.be.revertedWithCustomError(squeakable, 'TransferFromIncorrectOwner');
   });
 
   it('reverts if transferring to a zero address', async () => {
     await expect(
-      critter.transferFrom(
-        ahmed.address,
-        ethers.constants.AddressZero,
-        squeakId
-      )
-    ).to.be.revertedWithCustomError(critter, 'TransferToZeroAddress');
+      squeakable
+        .connect(ahmed)
+        .transferFrom(ahmed.address, ethers.constants.AddressZero, squeakId)
+    ).to.be.revertedWithCustomError(squeakable, 'TransferToZeroAddress');
   });
 
   it('reverts if the squeak is not owned by the "from" address', async () => {
     await expect(
-      critter.transferFrom(owner.address, barbie.address, squeakId)
-    ).to.be.revertedWithCustomError(critter, 'TransferFromIncorrectOwner');
+      squeakable
+        .connect(ahmed)
+        .transferFrom(owner.address, barbie.address, squeakId)
+    ).to.be.revertedWithCustomError(squeakable, 'TransferFromIncorrectOwner');
   });
 
   it('reverts if the caller is not approved or an owner of the squeak being transferred', async () => {
     await expect(
-      critter
+      squeakable
         .connect(owner)
         .transferFrom(ahmed.address, barbie.address, squeakId)
     ).to.be.revertedWithCustomError(
-      critter,
+      squeakable,
       'TransferCallerNotOwnerNorApproved'
     );
   });

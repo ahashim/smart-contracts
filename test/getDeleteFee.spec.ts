@@ -1,5 +1,10 @@
 import { Configuration } from '../enums';
-import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import type {
+  BigNumber,
+  Critter,
+  SignerWithAddress,
+  Squeakable,
+} from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('getDeleteFee', () => {
@@ -8,16 +13,15 @@ describe('getDeleteFee', () => {
     critter: Critter,
     expectedFee: number,
     latestBlock: number,
+    squeakable: Squeakable,
     squeakId: BigNumber;
 
   const getDeleteFeeFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // ahmed creates an account
-    await critter.createAccount('ahmed');
+    await critter.connect(ahmed).createAccount('ahmed');
 
     // ahmed posts a squeak
     ({ squeakId } = await run('create-squeak', {
@@ -26,16 +30,18 @@ describe('getDeleteFee', () => {
       signer: ahmed,
     }));
 
-    return { critter, squeakId };
+    return { critter, squeakable, squeakId };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, squeakId } = await loadFixture(getDeleteFeeFixture));
+    ({ critter, squeakable, squeakId } = await loadFixture(
+      getDeleteFeeFixture
+    ));
   });
 
   it('calculates a delete fee for a squeak based on when it was created', async () => {
-    const defaultConfirmationThreshold = 6; // defaults to 6 under the hood
-    ({ blockNumber: blockCreated } = await critter.squeaks(squeakId));
+    const defaultConfirmationThreshold = 6; // contract defaults to 6
+    ({ blockNumber: blockCreated } = await squeakable.squeaks(squeakId));
     ({ number: latestBlock } = await ethers.provider.getBlock('latest'));
     expectedFee =
       (latestBlock + defaultConfirmationThreshold - blockCreated.toNumber()) *

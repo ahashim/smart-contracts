@@ -4,19 +4,14 @@ import {
   VIRALITY_THRESHOLD,
 } from '../constants';
 import type { Critter } from '../types';
-import { expect, loadFixture, run } from './setup';
+import { expect, run } from './setup';
 
 describe('initialize', () => {
   let critter: Critter;
 
-  const initializeFixture = async () =>
-    (await run('initialize-contracts')).contracts.critter;
-
-  beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(initializeFixture);
-  });
-
   it('reverts when trying to initialize the contract more than once', async () => {
+    ({ critter } = await run('initialize-contracts'));
+
     await expect(
       critter.initialize(DIVIDEND_THRESHOLD, MAX_LEVEL, VIRALITY_THRESHOLD)
     ).to.be.reverted;

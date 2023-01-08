@@ -13,11 +13,9 @@ describe('isViral', () => {
   const isViralFixture = async () => {
     [, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
-    critter = (
-      await run('initialize-contracts', {
-        viralityThreshold: 1,
-      })
-    ).contracts.critter.connect(ahmed);
+    ({ critter } = await run('initialize-contracts', {
+      viralityThreshold: 1,
+    }));
 
     // creates accounts
     await run('create-accounts', {
@@ -73,10 +71,7 @@ describe('isViral', () => {
     expect(await critter.isViral(nonViralSqueakId)).to.be.false;
   });
 
-  it('reverts when looking up an unknown squeak', async () => {
-    await expect(critter.isViral(420)).to.be.revertedWithCustomError(
-      critter,
-      'SqueakDoesNotExist'
-    );
+  it('returns false when the squeak does not exist', async () => {
+    expect(await critter.isViral(420)).to.be.false;
   });
 });

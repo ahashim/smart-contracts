@@ -7,7 +7,7 @@ describe('fees', () => {
   let critter: Critter, fees: BigNumberObject;
 
   const feesFixture = async () => {
-    critter = (await run('initialize-contracts')).contracts.critter;
+    ({ critter } = await run('initialize-contracts'));
 
     return {
       critter,

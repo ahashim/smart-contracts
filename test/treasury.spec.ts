@@ -11,9 +11,7 @@ describe('treasury', () => {
 
   const treasuryFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    const critter = (
-      await run('initialize-contracts')
-    ).contracts.critter.connect(ahmed);
+    ({ critter } = await run('initialize-contracts'));
 
     // everybody creates an account
     await run('create-accounts', {
@@ -37,11 +35,9 @@ describe('treasury', () => {
     return { critter, dislikeFee };
   };
 
-  beforeEach('load deployed contract fixture', async () => {
-    ({ critter, dislikeFee } = await loadFixture(treasuryFixture));
-  });
-
   it('gets the current treasury value', async () => {
+    ({ critter, dislikeFee } = await loadFixture(treasuryFixture));
+
     expect(await critter.treasury()).to.eq(dislikeFee);
   });
 });

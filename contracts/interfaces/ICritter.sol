@@ -372,13 +372,6 @@ interface ICritter {
     function leavePool(uint256 tokenId) external;
 
     /**
-     * @dev See {IERC721AUpgradeable-supportsInterface}.
-     */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) external view returns (bool);
-
-    /**
      * @dev Updates an interaction fee.
      * @param interaction A value from the Interaction enum.
      * @param amount Value of the updated fee in wei.

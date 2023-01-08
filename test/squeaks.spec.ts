@@ -5,6 +5,7 @@ import type {
   Critter,
   SignerWithAddress,
   Squeak,
+  Squeakable,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
@@ -16,17 +17,16 @@ describe('squeaks', () => {
     ahmed: SignerWithAddress,
     receipt: ContractReceipt,
     invalidSqueak: Squeak,
-    squeakId: BigNumber,
-    squeak: Squeak;
+    squeak: Squeak,
+    squeakable: Squeakable,
+    squeakId: BigNumber;
 
   const squeaksFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // ahmed creates an account
-    await critter.createAccount('ahmed');
+    await critter.connect(ahmed).createAccount('ahmed');
 
     // ahmed creates a squeak
     ({ receipt, squeakId } = await run('create-squeak', {
@@ -38,8 +38,8 @@ describe('squeaks', () => {
     return {
       critter,
       receipt,
-      invalidSqueak: await critter.squeaks(420),
-      squeak: await critter.squeaks(squeakId),
+      invalidSqueak: await squeakable.squeaks(420),
+      squeak: await squeakable.squeaks(squeakId),
       squeakId,
     };
   };
@@ -55,14 +55,12 @@ describe('squeaks', () => {
   it('returns a squeak using a squeakId', () => {
     expect(squeak.blockNumber).to.eq(receipt.blockNumber);
     expect(squeak.author).to.eq(ahmed.address);
-    expect(squeak.owner).to.eq(ahmed.address);
     expect(squeak.content).to.eq(rawContent);
   });
 
   it('returns an empty squeak for an unknown squeakId', () => {
     expect(invalidSqueak.blockNumber).to.eq(0);
     expect(invalidSqueak.author).to.eq(ethers.constants.AddressZero);
-    expect(invalidSqueak.owner).to.eq(ethers.constants.AddressZero);
     expect(invalidSqueak.content).to.eq(EMPTY_BYTE_STRING);
   });
 });

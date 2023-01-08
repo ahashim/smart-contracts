@@ -21,10 +21,7 @@ describe('updateUsername', () => {
 
   const updateUsernameFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
-    ({
-      contracts: { critter },
-      libraries,
-    } = await run('initialize-contracts'));
+    ({ critter, libraries } = await run('initialize-contracts'));
     critter = critter.connect(ahmed);
 
     // ahmed creates an account

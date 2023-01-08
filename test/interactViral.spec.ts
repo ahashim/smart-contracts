@@ -31,12 +31,10 @@ describe('interact viral', () => {
   const interactViralFixture = async () => {
     [, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
-    critter = (
-      await run('initialize-contracts', {
-        dividendThreshold: ethers.utils.parseEther('0.000004'),
-        viralityThreshold,
-      })
-    ).contracts.critter.connect(ahmed);
+    ({ critter } = await run('initialize-contracts', {
+      dividendThreshold: ethers.utils.parseEther('0.000004'),
+      viralityThreshold,
+    }));
 
     // creates accounts
     await run('create-accounts', {

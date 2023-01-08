@@ -1,17 +1,21 @@
-import type { BigNumber, Critter, SignerWithAddress } from '../types';
+import type {
+  BigNumber,
+  Critter,
+  SignerWithAddress,
+  Squeakable,
+} from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('getApproved', () => {
   let ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     critter: Critter,
+    squeakable: Squeakable,
     squeakId: BigNumber;
 
   const approveFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // ahmed & barbie create an accounts
     await run('create-accounts', {
@@ -27,22 +31,22 @@ describe('getApproved', () => {
     }));
 
     // ahmed approves barbie for it
-    await critter.approve(barbie.address, squeakId);
+    await squeakable.connect(ahmed).approve(barbie.address, squeakId);
 
-    return { critter, squeakId };
+    return { squeakable, squeakId };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ critter, squeakId } = await loadFixture(approveFixture));
+    ({ squeakable, squeakId } = await loadFixture(approveFixture));
   });
 
   it('returns the account approved to manage a squeak', async () => {
-    expect(await critter.getApproved(squeakId)).to.eq(barbie.address);
+    expect(await squeakable.getApproved(squeakId)).to.eq(barbie.address);
   });
 
   it('reverts if the squeak does not exist', async () => {
-    await expect(critter.getApproved(420)).to.be.revertedWithCustomError(
-      critter,
+    await expect(squeakable.getApproved(420)).to.be.revertedWithCustomError(
+      squeakable,
       'ApprovalQueryForNonexistentToken'
     );
   });

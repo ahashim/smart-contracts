@@ -7,6 +7,7 @@ import type {
   Critter,
   SignerWithAddress,
   Squeak,
+  Squeakable,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
@@ -21,14 +22,13 @@ describe('createSqueak', () => {
     owner: SignerWithAddress,
     receipt: ContractReceipt,
     squeak: Squeak,
+    squeakable: Squeakable,
     squeakId: BigNumber,
     tx: ContractTransaction;
 
   const createSqueakFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // ahmed, barbie, and daphne create accounts
     await run('create-accounts', {
@@ -47,27 +47,27 @@ describe('createSqueak', () => {
     }));
 
     // ahmed bans barbie
+    critter = critter.connect(ahmed);
     await critter.updateStatus(barbie.address, Status.Banned);
 
     return {
-      accountBalance: await critter.balanceOf(ahmed.address),
+      accountBalance: await squeakable.balanceOf(ahmed.address),
       critter,
       receipt,
-      squeak: await critter.squeaks(squeakId),
+      squeak: await squeakable.squeaks(squeakId),
+      squeakable,
       tx,
     };
   };
 
   beforeEach('load deployed contract fixture', async () => {
-    ({ accountBalance, critter, receipt, squeak, tx } = await loadFixture(
-      createSqueakFixture
-    ));
+    ({ accountBalance, critter, receipt, squeak, squeakable, tx } =
+      await loadFixture(createSqueakFixture));
   });
 
   it('lets a user create a squeak', () => {
     expect(squeak.blockNumber).to.eq(receipt.blockNumber);
     expect(squeak.author).to.eq(ahmed.address);
-    expect(squeak.owner).to.eq(ahmed.address);
     expect(squeak.content).to.eq(rawContent);
   });
 
@@ -87,7 +87,7 @@ describe('createSqueak', () => {
 
   it('reverts when the squeak content is empty', async () => {
     await expect(critter.createSqueak('')).to.be.revertedWithCustomError(
-      critter,
+      squeakable,
       'SqueakEmpty'
     );
   });
@@ -98,7 +98,7 @@ describe('createSqueak', () => {
     Wise? I thought not. It’s not a story the Jedi would tell you. It’s a Sith
     legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise
     he could use the Force to influence the midichlorians to create life...`)
-    ).to.be.revertedWithCustomError(critter, 'SqueakTooLong');
+    ).to.be.revertedWithCustomError(squeakable, 'SqueakTooLong');
   });
 
   it('reverts when the user does not have an account', async () => {

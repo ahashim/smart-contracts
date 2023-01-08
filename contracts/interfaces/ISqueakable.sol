@@ -26,22 +26,45 @@ interface ISqueakable {
      * @dev Squeak is the primary Critter message.
      * @param blockNumber Block in which the squeak was created.
      * @param author Address of the original author of the squeak.
-     * @param owner Address of the current owner of the squeak.
      * @param content Message content of the squeak.
      */
     struct Squeak {
         uint256 blockNumber;
         address author;
-        address owner;
         bytes content;
     }
 
     /**
      * @dev Burns an NFT and deletes a squeak from storage.
      * @param tokenId ID of the squeak.
+     * @param sender Account that initiated the call from the main contract.
      * @notice This can only be called by {BURNER_ROLE}.
      */
-    function burn(uint256 tokenId) external;
+    function burn(uint256 tokenId, address sender) external;
+
+    /**
+     * @dev Checks whether a squeak exists.
+     * @param tokenId ID of the squeak.
+     */
+    function exists(uint256 tokenId) external returns (bool);
+
+    /**
+     * @dev Gets the block number at the time a squeak was created.
+     * @param tokenId ID of the squeak.
+     */
+    function getBlockCreated(uint256 tokenId) external view returns (uint256);
+
+    /**
+     * @dev Gets the content of a squeak.
+     * @param tokenId ID of the squeak.
+     */
+    function getContent(uint256 tokenId) external view returns (bytes memory);
+
+    /**
+     * @dev Gets the author of a squeak.
+     * @param tokenId ID of the squeak.
+     */
+    function getAuthor(uint256 tokenId) external view returns (address);
 
     /**
      * @dev Saves the squeak contents to storage & mints an NFT.

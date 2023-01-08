@@ -8,7 +8,7 @@ describe('revokeRole', () => {
 
   const revokeRoleFixture = async () => {
     [owner, ahmed] = await ethers.getSigners();
-    const critter = (await run('initialize-contracts')).contracts.critter;
+    ({ critter } = await run('initialize-contracts'));
 
     // owner revokes his operator role
     await critter.revokeRole(OPERATOR_ROLE, owner.address);

@@ -6,9 +6,11 @@ import type {
   Contract,
   ContractReceipt,
   ContractTransaction,
+  Critter,
   Event,
   Result,
   SignerWithAddress,
+  Squeakable,
 } from '../types';
 
 task(
@@ -68,11 +70,14 @@ task(
   'Delete a squeak',
   async (
     {
-      contract,
+      contracts,
       signer,
       squeakId,
     }: {
-      contract: Contract;
+      contracts: {
+        critter: Critter;
+        squeakable: Squeakable;
+      };
       signer: SignerWithAddress;
       squeakId: BigNumber;
     },
@@ -82,21 +87,22 @@ task(
     tx: ContractTransaction;
   }> => {
     // connect signer
-    contract = contract.connect(signer);
+    let { critter, squeakable } = contracts;
+    critter = critter.connect(signer);
 
     // get the block the squeak was authored in
-    const blockAuthored: BigNumber = (await contract.squeaks(squeakId))
+    const blockAuthored: BigNumber = (await squeakable.squeaks(squeakId))
       .blockNumber;
 
     // delete the squeak by paying the quoted delete fee
-    const tx: ContractTransaction = await contract.deleteSqueak(squeakId, {
-      value: await contract.getDeleteFee(squeakId),
+    const tx: ContractTransaction = await critter.deleteSqueak(squeakId, {
+      value: await critter.getDeleteFee(squeakId),
     });
 
     // get the actual cost of deleting the squeak without the quoted buffer
     const deleteFee = ethers.BigNumber.from((await tx.wait()).blockNumber)
       .sub(blockAuthored)
-      .mul(await contract.config(Configuration.DeleteRate));
+      .mul(await critter.config(Configuration.DeleteRate));
 
     return { deleteFee, tx };
   }

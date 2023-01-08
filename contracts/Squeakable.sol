@@ -23,6 +23,9 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 
+// errors
+import './Errors.sol';
+
 // interface
 import './interfaces/ISqueakable.sol';
 
@@ -93,11 +96,56 @@ contract Squeakable is
     }
 
     /**
+     * @dev See {ISqueakable-exists}.
+     */
+    function exists(uint256 tokenId) external view returns (bool) {
+        return _exists(tokenId);
+    }
+
+    /**
+     * @dev See {ISqueakable-getBlockCreated}.
+     */
+    function getBlockCreated(uint256 tokenId) external view returns (uint256) {
+        // validate token
+        if (!_exists(tokenId)) revert SqueakDoesNotExist();
+
+        return squeaks[tokenId].blockNumber;
+    }
+
+    /**
+     * @dev See {ISqueakable-getContent}.
+     */
+    function getContent(uint256 tokenId) external view returns (bytes memory) {
+        // validate token
+        if (!_exists(tokenId)) revert SqueakDoesNotExist();
+
+        return squeaks[tokenId].content;
+    }
+
+    /**
+     * @dev See {ISqueakable-getAuthor}.
+     */
+    function getAuthor(uint256 tokenId) external view returns (address) {
+        // validate token
+        if (!_exists(tokenId)) revert SqueakDoesNotExist();
+
+        return squeaks[tokenId].author;
+    }
+
+    /**
      * @dev See {ISqueakable-burn}.
      */
-    function burn(uint256 tokenId) external {
-        // validation
+    function burn(uint256 tokenId, address sender) external {
+        // validate contract call
         _checkRole(BURNER_ROLE);
+
+        // validate token
+        if (!_exists(tokenId)) revert SqueakDoesNotExist();
+
+        // validate sender permissions
+        address owner = ownerOf(tokenId);
+        if (sender != owner && !isApprovedForAll(owner, sender))
+            revert NotApprovedOrOwner();
 
         // delete the squeak
         delete squeaks[tokenId];
@@ -113,12 +161,16 @@ contract Squeakable is
         address author,
         bytes calldata content
     ) external returns (uint256) {
-        // validation
+        // validate contract call
         _checkRole(MINTER_ROLE);
+
+        // content validation
+        if (content.length == 0) revert SqueakEmpty();
+        if (content.length > 256) revert SqueakTooLong();
 
         // save squeak
         uint256 tokenId = _nextTokenId();
-        squeaks[tokenId] = Squeak(block.number, author, author, content);
+        squeaks[tokenId] = Squeak(block.number, author, content);
 
         // mint NFT
         _mint(author, 1);
@@ -143,37 +195,10 @@ contract Squeakable is
     }
 
     /**
-     * @dev Hook that is called after a set of serially-ordered token ids have
-     *      been transferred. This includes minting. And also called after one
-     *      token has been burned. Calling conditions:
-     *      - When `from` and `to` are both non-zero, `from`'s `tokenId` has
-     *        been transferred to `to`.
-     *      - When `from` is zero, `tokenId` has been minted for `to`.
-     *      - When `to` is zero, `tokenId` has been burned by `from`.
-     *      - `from` and `to` are never both zero.
-     * @param from Address of the account that is relinquishing ownership of the
-     *      token.
-     * @param to Address of the account that is gaining ownership of the token.
-     * @param startTokenId The first token id to be transferred.
-     * @param quantity The amount to be transferred.
-     */
-    function _afterTokenTransfers(
-        address from,
-        address to,
-        uint256 startTokenId,
-        uint256 quantity
-    ) internal override(ERC721AUpgradeable) {
-        super._afterTokenTransfers(from, to, startTokenId, quantity);
-
-        // update squeak ownership
-        squeaks[startTokenId].owner = to;
-    }
-
-    /**
      * @dev Reverts when caller isn't authorized to upgrade the contract.
      */
     function _authorizeUpgrade(address) internal view override {
-        // validation
+        // validate contract call
         _checkRole(UPGRADER_ROLE);
     }
 

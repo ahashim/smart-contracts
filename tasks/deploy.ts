@@ -164,10 +164,8 @@ task(
     await critter.linkContracts(squeakable.address);
 
     return {
-      contracts: {
-        critter,
-        squeakable,
-      },
+      critter,
+      squeakable,
       libraries,
     };
   }

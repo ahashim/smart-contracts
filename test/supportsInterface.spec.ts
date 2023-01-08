@@ -1,22 +1,23 @@
-import type { Critter } from '../types';
+import type { Critter, Squeakable } from '../types';
 import { expect, loadFixture, run } from './setup';
 
 describe('supportsInterface', () => {
-  let critter: Critter;
-  let supportedInterfaces: {
-    [key: string]: boolean;
-  };
+  let critter: Critter,
+    squeakable: Squeakable,
+    supportedInterfaces: {
+      [key: string]: boolean;
+    };
 
   const supportsInterfaceFixture = async () => {
-    critter = (await run('initialize-contracts')).contracts.critter;
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     return {
       critter,
       supportedInterfaces: {
         ERC165: await critter.supportsInterface('0x01ffc9a7'),
-        ERC721: await critter.supportsInterface('0x80ac58cd'),
-        ERC721Metadata: await critter.supportsInterface('0x5b5e139f'),
-        Other: await critter.supportsInterface('0xdeadbea7'),
+        ERC721: await squeakable.supportsInterface('0x80ac58cd'),
+        ERC721Metadata: await squeakable.supportsInterface('0x5b5e139f'),
+        Other: await critter.supportsInterface('0xd34db347'),
       },
     };
   };

@@ -25,11 +25,9 @@ describe('leavePool', () => {
   const leavePoolFixture = async () => {
     [owner, ahmed, barbie, carlos] = await ethers.getSigners();
     // deploy contract with a lower virality threshold
-    critter = (
-      await run('initialize-contracts', {
-        viralityThreshold: 1,
-      })
-    ).contracts.critter.connect(ahmed);
+    ({ critter } = await run('initialize-contracts', {
+      viralityThreshold: 1,
+    }));
 
     // everybody creates an account
     await run('create-accounts', {

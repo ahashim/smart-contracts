@@ -1,14 +1,15 @@
-import type { Critter, SignerWithAddress } from '../types';
+import type { Critter, SignerWithAddress, Squeakable } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('isApprovedForAll', () => {
-  let ahmed: SignerWithAddress, barbie: SignerWithAddress, critter: Critter;
+  let ahmed: SignerWithAddress,
+    barbie: SignerWithAddress,
+    critter: Critter,
+    squeakable: Squeakable;
 
   const isApprovedForAllFixture = async () => {
     [, ahmed, barbie] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter.connect(
-      ahmed
-    );
+    ({ critter, squeakable } = await run('initialize-contracts'));
 
     // creates accounts
     await run('create-accounts', {
@@ -17,28 +18,28 @@ describe('isApprovedForAll', () => {
     });
 
     // ahmed creates a squeak
-    await critter.createSqueak('hello blockchain!');
+    await critter.connect(ahmed).createSqueak('hello blockchain!');
 
     // ahmed approves barbie to manage all his squeaks
-    await critter.setApprovalForAll(barbie.address, true);
+    await squeakable.connect(ahmed).setApprovalForAll(barbie.address, true);
 
-    return critter;
+    return squeakable;
   };
 
   beforeEach(
     'load deployed contract fixture, barbie & ahmed create an accounts, and ahmed posts a squeak',
     async () => {
-      critter = await loadFixture(isApprovedForAllFixture);
+      squeakable = await loadFixture(isApprovedForAllFixture);
     }
   );
 
   it('returns true if a user is approved to manage all assets of an owner', async () => {
-    expect(await critter.isApprovedForAll(ahmed.address, barbie.address)).to.be
-      .true;
+    expect(await squeakable.isApprovedForAll(ahmed.address, barbie.address)).to
+      .be.true;
   });
 
   it('returns false if a user is not approved to manage all assets of an owner', async () => {
-    expect(await critter.isApprovedForAll(barbie.address, ahmed.address)).to.be
-      .false;
+    expect(await squeakable.isApprovedForAll(barbie.address, ahmed.address)).to
+      .be.false;
   });
 });

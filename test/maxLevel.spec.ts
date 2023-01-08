@@ -13,15 +13,13 @@ describe('maxLevel', () => {
   const maxLevelFixture = async () => {
     [, ahmed] = await ethers.getSigners();
     // deploy contract with a lower virality threshold to test max level
-    critter = (
-      await run('initialize-contracts', {
-        viralityThreshold,
-        maxLevel,
-      })
-    ).contracts.critter.connect(ahmed);
+    ({ critter } = await run('initialize-contracts', {
+      viralityThreshold,
+      maxLevel,
+    }));
 
     // ahmed creates an account
-    await critter.createAccount('ahmed');
+    await critter.connect(ahmed).createAccount('ahmed');
 
     // ahmed creates a squeak
     ({ squeakId } = await run('create-squeak', {

@@ -22,7 +22,6 @@ pragma solidity 0.8.17;
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
 
 // contracts
 import './Squeakable.sol';
@@ -65,7 +64,6 @@ contract Critter is
     UUPSUpgradeable,
     AccessControlUpgradeable,
     ReentrancyGuardUpgradeable,
-    ERC721AUpgradeable,
     ICritter
 {
     /**
@@ -91,11 +89,6 @@ contract Critter is
     bytes32 private constant UPGRADER_ROLE = keccak256('UPGRADER_ROLE');
 
     /**
-     * @dev Token URL prefix used by squeaks.
-     */
-    string public baseTokenURI;
-
-    /**
      * @dev Contract funds.
      * @notice Can only be withdrawn by TREASURER_ROLE.
      */
@@ -115,11 +108,6 @@ contract Critter is
      * @dev Mapping of Interaction <=> fee amounts.
      */
     mapping(Interaction => uint256) public fees;
-
-    /**
-     * @dev Mapping of tokenId <=> Squeak.
-     */
-    mapping(uint256 => Squeak) public squeaks;
 
     /**
      * @dev Mapping of account address <=> User.
@@ -175,7 +163,7 @@ contract Critter is
         uint256 dividendThreshold,
         uint256 maxLevel,
         uint256 viralityThreshold
-    ) public initializerERC721A initializer {
+    ) public initializer {
         // base platform fee in wei
         uint256 platformFee = 80000000000000;
 
@@ -183,10 +171,6 @@ contract Critter is
         __UUPSUpgradeable_init();
         __AccessControl_init();
         __ReentrancyGuard_init();
-        __ERC721A_init('Critter', 'CRTTR');
-
-        // set base token url
-        baseTokenURI = 'https://critter.fyi/token/';
 
         // set default config values
         config[Configuration.DeleteRate] = platformFee;
@@ -233,23 +217,12 @@ contract Critter is
      * @dev See {ICritter-createSqueak}.
      */
     function createSqueak(string calldata content) external nonReentrant {
-        // validation
+        // user validation
         Accountable.hasActiveAccount(users[msg.sender].status);
+
+        // mint squeak content as an NFT
         bytes memory rawContent = bytes(content);
-        if (rawContent.length == 0) revert SqueakEmpty();
-        if (rawContent.length > 256) revert SqueakTooLong();
-
-        // create a Squeak
-        uint256 tokenId = _nextTokenId();
-        squeaks[tokenId] = Squeak(
-            block.number,
-            msg.sender,
-            msg.sender,
-            rawContent
-        );
-
-        // mint the NFT
-        _mint(msg.sender, 1);
+        uint256 tokenId = squeakable.mint(msg.sender, rawContent);
 
         emit SqueakCreated(msg.sender, bytes32(rawContent), tokenId);
     }
@@ -258,17 +231,13 @@ contract Critter is
      * @dev See {ICritter-deleteSqueak}.
      */
     function deleteSqueak(uint256 tokenId) external payable nonReentrant {
-        // validation
+        // validate account
         Accountable.hasActiveAccount(users[msg.sender].status);
-        if (!_exists(tokenId)) revert SqueakDoesNotExist();
-        address owner = ownerOf(tokenId);
-        if (msg.sender != owner && !isApprovedForAll(owner, msg.sender))
-            revert NotApprovedOrOwner();
 
         // validate delete fee & calculate refund
-        (uint256 deleteFee, uint256 remainder) = Bankable
+        (uint256 deleteFee, uint256 refund) = Bankable
             .getDeleteFeeAndRefundAmount(
-                squeaks[tokenId].blockNumber,
+                squeakable.getBlockCreated(tokenId),
                 0,
                 config[Configuration.DeleteRate]
             );
@@ -277,13 +246,12 @@ contract Critter is
         _deposit(deleteFee);
 
         // refund any excess
-        if (remainder > 0) _transferFunds(msg.sender, remainder);
+        if (refund > 0) _transferFunds(msg.sender, refund);
 
         // burn the NFT
-        _burn(tokenId);
+        squeakable.burn(tokenId, msg.sender);
 
-        // delete the squeak + sentiment
-        delete squeaks[tokenId];
+        // delete the sentiment
         delete sentiments[tokenId];
 
         if (viralSqueaks.contains(tokenId)) {
@@ -311,11 +279,11 @@ contract Critter is
      * @dev See {ICritter-getDeleteFee}.
      */
     function getDeleteFee(uint256 tokenId) external view returns (uint256) {
-        if (!_exists(tokenId)) revert SqueakDoesNotExist();
+        if (!squeakable.exists(tokenId)) revert SqueakDoesNotExist();
 
         return
             Bankable.getDeleteFee(
-                squeaks[tokenId].blockNumber,
+                squeakable.getBlockCreated(tokenId),
                 6, // default {blocksValid} amount
                 config[Configuration.DeleteRate]
             );
@@ -382,9 +350,6 @@ contract Critter is
      * @dev See {ICritter-getViralityScore}.
      */
     function getViralityScore(uint256 tokenId) public view returns (uint64) {
-        // validation
-        if (!_exists(tokenId)) revert SqueakDoesNotExist();
-
         // a squeak requires 1 like & 1 resqueak to be considered for virality
         Sentiment storage sentiment = sentiments[tokenId];
         uint256 likes = sentiment.likes.length();
@@ -393,7 +358,7 @@ contract Critter is
 
         if (likes > 0 && resqueaks > 0) {
             score = Viral.score(
-                block.number - squeaks[tokenId].blockNumber,
+                block.number - squeakable.getBlockCreated(tokenId),
                 sentiment.dislikes.length(),
                 likes,
                 resqueaks
@@ -410,12 +375,12 @@ contract Critter is
         uint256 tokenId,
         Interaction interaction
     ) external payable nonReentrant {
-        // validation
+        // user validation
         Accountable.hasActiveAccount(users[msg.sender].status);
-        if (!_exists(tokenId)) revert SqueakDoesNotExist();
+        if (!squeakable.exists(tokenId)) revert SqueakDoesNotExist();
         uint256 interactionFee = fees[interaction];
         if (msg.value < interactionFee) revert InsufficientFunds();
-        address author = squeaks[tokenId].author;
+        address author = squeakable.getAuthor(tokenId);
         if (
             msg.sender != author &&
             (blocked[author].contains(msg.sender) ||
@@ -533,10 +498,10 @@ contract Critter is
         }
 
         // make payment
-        User storage owner = users[ownerOf(tokenId)];
+        address ownerAddress = squeakable.ownerOf(tokenId);
         if (
             // the squeak owner is banned
-            owner.status == Status.Banned ||
+            users[ownerAddress].status == Status.Banned ||
             // negative interaction
             interaction == Interaction.Dislike ||
             interaction == Interaction.UndoLike ||
@@ -578,7 +543,7 @@ contract Critter is
             }
 
             // transfer remaining funds to the squeak owner
-            _transferFunds(owner.account, payment);
+            _transferFunds(ownerAddress, payment);
         }
 
         // refund any funds excess of the interaction fee
@@ -610,8 +575,6 @@ contract Critter is
      * @dev See {ICritter-isViral}.
      */
     function isViral(uint256 tokenId) external view returns (bool) {
-        if (!_exists(tokenId)) revert SqueakDoesNotExist();
-
         return viralSqueaks.contains(tokenId);
     }
 
@@ -654,22 +617,6 @@ contract Critter is
             // remove the squeak from the viral squeaks list
             viralSqueaks.remove(tokenId);
         }
-    }
-
-    /**
-     * @dev See {IERC721AUpgradeable-supportsInterface}.
-     */
-    function supportsInterface(
-        bytes4 interfaceId
-    )
-        public
-        view
-        override(AccessControlUpgradeable, ERC721AUpgradeable, ICritter)
-        returns (bool)
-    {
-        return
-            ERC721AUpgradeable.supportsInterface(interfaceId) ||
-            super.supportsInterface(interfaceId);
     }
 
     /**
@@ -821,48 +768,11 @@ contract Critter is
     }
 
     /**
-     * @dev Hook that is called after a set of serially-ordered token ids have
-     *      been transferred. This includes minting. And also called after one
-     *      token has been burned. Calling conditions:
-     *      - When `from` and `to` are both non-zero, `from`'s `tokenId` has
-     *        been transferred to `to`.
-     *      - When `from` is zero, `tokenId` has been minted for `to`.
-     *      - When `to` is zero, `tokenId` has been burned by `from`.
-     *      - `from` and `to` are never both zero.
-     * @param from Address of the account that is relinquishing ownership of the
-     *      token.
-     * @param to Address of the account that is gaining ownership of the token.
-     * @param startTokenId The first token id to be transferred.
-     * @param quantity The amount to be transferred.
-     */
-    function _afterTokenTransfers(
-        address from,
-        address to,
-        uint256 startTokenId,
-        uint256 quantity
-    ) internal override(ERC721AUpgradeable) {
-        super._afterTokenTransfers(from, to, startTokenId, quantity);
-        squeaks[startTokenId].owner = to;
-    }
-
-    /**
      * @dev Reverts when caller isn't authorized to upgrade the contract.
      */
     function _authorizeUpgrade(address) internal view override {
         // user validation
         _checkRole(UPGRADER_ROLE);
-    }
-
-    /**
-     * @dev See {IERC721AUpgradeable-_baseURI}.
-     */
-    function _baseURI()
-        internal
-        view
-        override(ERC721AUpgradeable)
-        returns (string memory)
-    {
-        return baseTokenURI;
     }
 
     /**

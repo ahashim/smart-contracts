@@ -8,7 +8,7 @@ describe('grantRole', () => {
 
   const grantRoleFixture = async () => {
     [, ahmed] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter;
+    ({ critter } = await run('initialize-contracts'));
 
     // granting ahmed the treasurer role
     await critter.grantRole(ID_TREASURER_ROLE, ahmed.address);
@@ -16,11 +16,9 @@ describe('grantRole', () => {
     return critter;
   };
 
-  beforeEach('load deployed contract fixture', async () => {
-    critter = await loadFixture(grantRoleFixture);
-  });
-
   it('lets the role admin grant a role to an address', async () => {
+    critter = await loadFixture(grantRoleFixture);
+
     expect(await critter.hasRole(ID_TREASURER_ROLE, ahmed.address)).to.be.true;
   });
 });

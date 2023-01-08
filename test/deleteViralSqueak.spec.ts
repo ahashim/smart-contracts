@@ -8,33 +8,33 @@ import type {
   SentimentCounts,
   SignerWithAddress,
   Squeak,
+  Squeakable,
 } from '../types';
 import { ethers, expect, loadFixture, run } from './setup';
 
 describe('deleteViralSqueak', () => {
   let amount: BigNumber,
     deleteFee: BigNumber,
-    squeakId: BigNumber,
-    treasuryBalance: BigNumber,
     critter: Critter,
     ahmed: SignerWithAddress,
     barbie: SignerWithAddress,
     carlos: SignerWithAddress,
     daphne: SignerWithAddress,
+    passes: PoolPassInfo[],
     poolInfo: PoolInfo,
     sentimentCounts: SentimentCounts,
-    passes: PoolPassInfo[],
-    squeak: Squeak;
+    squeak: Squeak,
+    squeakable: Squeakable,
+    squeakId: BigNumber,
+    treasuryBalance: BigNumber;
 
   const deleteViralSqueakFixture = async () => {
     [, ahmed, barbie, carlos, daphne] = await ethers.getSigners();
     // deploy contract with a lower virality & pool threshold for testing
-    critter = (
-      await run('initialize-contracts', {
-        dividendThreshold: ethers.utils.parseEther('0.000002'),
-        viralityThreshold: 60,
-      })
-    ).contracts.critter.connect(ahmed);
+    ({ critter, squeakable } = await run('initialize-contracts', {
+      dividendThreshold: ethers.utils.parseEther('0.000002'),
+      viralityThreshold: 60,
+    }));
 
     // everybody creates an account
     await run('create-accounts', {
@@ -92,7 +92,7 @@ describe('deleteViralSqueak', () => {
 
     // ahmed deletes the viral squeak
     ({ deleteFee } = await run('delete-squeak', {
-      contract: critter,
+      contracts: { critter, squeakable },
       signer: ahmed,
       squeakId,
     }));
@@ -104,7 +104,7 @@ describe('deleteViralSqueak', () => {
       poolInfo: await critter.getPoolInfo(squeakId),
       sentimentCounts: await critter.getSentimentCounts(squeakId),
       passes: await critter.getPoolPasses(squeakId),
-      squeak: await critter.squeaks(squeakId),
+      squeak: await squeakable.squeaks(squeakId),
       treasuryBalance,
     };
   };
@@ -125,7 +125,6 @@ describe('deleteViralSqueak', () => {
   it('deletes the viral squeak', () => {
     expect(squeak.blockNumber).to.eq(0);
     expect(squeak.author).to.eq(ethers.constants.AddressZero);
-    expect(squeak.owner).to.eq(ethers.constants.AddressZero);
     expect(squeak.content).to.eq(EMPTY_BYTE_STRING);
   });
 

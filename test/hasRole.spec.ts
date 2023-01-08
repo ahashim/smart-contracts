@@ -13,7 +13,7 @@ describe('hasRole', () => {
 
   const hasRoleFixture = async () => {
     [owner] = await ethers.getSigners();
-    critter = (await run('initialize-contracts')).contracts.critter;
+    ({ critter } = await run('initialize-contracts'));
 
     return {
       critter,
@@ -30,12 +30,12 @@ describe('hasRole', () => {
       .true;
   });
 
-  it('grants the contract owner the OPERATOR_ROLE', async () => {
-    expect(await critter.hasRole(OPERATOR_ROLE, owner.address)).to.be.true;
-  });
-
   it('grants the contract owner the MODERATOR_ROLE', async () => {
     expect(await critter.hasRole(MODERATOR_ROLE, owner.address)).to.be.true;
+  });
+
+  it('grants the contract owner the OPERATOR_ROLE', async () => {
+    expect(await critter.hasRole(OPERATOR_ROLE, owner.address)).to.be.true;
   });
 
   it('grants the contract owner the TREASURER_ROLE', async () => {
